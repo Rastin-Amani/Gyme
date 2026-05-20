@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block content %}
+<div class="max-w-md mx-auto mt-12">
+    <h1 class="text-2xl font-bold mb-6">Login</h1>
+
+    {% if error %}
+    <div class="mb-4 p-3 rounded bg-red-100 text-red-700">{{ error }}</div>
+    {% endif %}
+
+    <!-- app/templates/pages/login.html -->
+    <form
+        hx-post="/login"
+        hx-target="#main-content"
+        hx-swap="innerHTML"
+        hx-boost="true"
+        onsubmit="console.log('Form submit triggered')"
+    >
+        <!-- Hidden input to keep identity if login fails -->
+        <div class="flex flex-col gap-8">
+            <div>
+                <label class="block mb-1">Email / Username</label>
+                <input name="identity" class="input input-bordered w-full" required />
+            </div>
+            <div>
+                <label class="block mb-1">Password</label>
+                <input
+                    type="password"
+                    name="password"
+                    class="input input-bordered w-full"
+                    required
+                />
+            </div>
+            <button type="submit" class="btn btn-primary w-full">Sign in</button>
+        </div>
+    </form>
+
+    <!-- This handles redirecting via HTMX after login -->
+    <script>
+        document.body.addEventListener('htmx:beforeSwap', function (evt) {
+            if (evt.detail.xhr.status === 303) {
+                window.location.href =
+                    evt.detail.xhr.getResponseHeader('HX-Redirect') || '/dashboard';
+                evt.detail.shouldSwap = false;
+            }
+        });
+    </script>
+</div>
+{% endblock %}
