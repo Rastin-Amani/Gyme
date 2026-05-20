@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+@plugin "daisyui" {
+    themes:
+        light, dark, cupckake, bumblebee, emerald, corporate, synthwave, retro, cyberpunk,
+        valentine, halloween, garden, forest, aqua, lofi, pastel, fantasy, wireframe, black, luxury,
+        dracula, cmyk, autumn, business, acid, lemonade, night, coffee, winter, dim, nord, sunset;
+}
+
+@theme {
+    --font-sans: 'yekanbakh', ui-sans-serif, system-ui, sans-serif;
+    --font-brand: 'yekanbakh';
+}
+
+@font-face {
+    font-family: 'yekanbakh'; /* Remove the space to match config */
+    src: url('./assets/YekanBakh-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'yekanbakh';
+    src: url('./assets/YekanBakh-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'yekanbakh';
+    src: url('./assets/YekanBakh-Fat.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/* FIX DaisyUI select dropdown in RTL */
+html[dir='rtl'] .select {
+    direction: rtl;
+}
+
+html[dir='rtl'] .select + ul,
+html[dir='rtl'] .dropdown-content {
+    right: 0 !important;
+    left: auto !important;
+}
