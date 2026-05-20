@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>{% block title %}Gyme{% endblock %}</title>
-    <link rel="stylesheet" href="/static/assets/main.css" />
-  </head>
-  <body class="min-h-screen bg-base-200">
-    <main class="p-6">{% block content %}{% endblock %}</main>
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Gyme{% endblock %}</title>
+        <link rel="stylesheet" href="{{ url_for('static', path='/css/app.css') }}" />
+    </head>
+    <body class="bg-amber-300 min-h-screen">
+        <main class="p-6">{% block content %}{% endblock %}</main>
+        <button class="btn btn-accent">hey world</button>
+    </body>
 </html>
