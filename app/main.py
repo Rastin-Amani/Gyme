@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from app.middleware import TenantMiddleware
 from .routes import dashboard
+from app.routes.debug import router as debug_router
+from .routes import auth
 
 ###disable default swagger ui
 app = FastAPI(
@@ -11,11 +13,19 @@ app = FastAPI(
     redoc_url=None,
     openapi_url="/openapi.json",
 )
+
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # include routers
 app.include_router(dashboard.router)
+app.add_middleware(TenantMiddleware)
+app.include_router(debug_router)
+app.include_router(auth.router)
+
+
+
+
 
 @app.get("/docs", include_in_schema=False)
 def custom_docs():

@@ -6,9 +6,13 @@ router = APIRouter()
 @router.get("/dashboard")
 def dashboard(request: Request):
     user = {"name": "Demo User"}
+    tenant = request.state.tenant
     return templates.TemplateResponse(
         request=request, 
         name="pages/dashboard.html", 
-        context={"user": user}
+        context={
+        "user": user,
+        "tenant": tenant        
+        }
     )
 

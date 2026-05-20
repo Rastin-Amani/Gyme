@@ -1,7 +1,4 @@
-from pocketbase import Pocetkbase
+from pocketbase import PocketBase
 
-PB_URL = "http://127.0.0.1:8090"
-
-
-def get_pb():
-    return Pocetkbase(PB_URL)
+PB_URL = "http://127.0.0.1:8091"
+pb = PocketBase(PB_URL)
