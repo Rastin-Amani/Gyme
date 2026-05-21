@@ -12,7 +12,8 @@ def dashboard(request: Request):
         name="pages/dashboard.html", 
         context={
         "user": user,
-        "tenant": tenant        
+        "tenant": tenant,
+        "role": getattr(getattr(request.state, "user", None), "role", "trainee"),
         }
     )
 

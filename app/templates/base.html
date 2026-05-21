@@ -2,16 +2,25 @@
 <html data-theme="light">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
     </head>
-    <body class="bg-base-200">
-        <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl relative">
-            <main id="main-content" class="p-6">{% block content %}{% endblock %}</main>
-            <div class="p-6">
-                <button class="btn btn-accent">hey world</button>
-            </div>
+    <body class="bg-base-200 font-sans">
+        <header class="px-4 py-3 flex justify-between items-center mx-auto max-w-150">
+            <div class="font-bold text-lg">{{ tenant.name if tenant else "Gym" }}</div>
+
+            <div class="text-sm">{{ role if user else "" }}</div>
+        </header>
+        <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl pb-20">
+            <main id="main-content" class="p-6">
+                {% block content %}{% endblock %}
+                <div>
+                    <button class="btn btn-accent">hey world</button>
+                </div>
+            </main>
         </div>
+
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
     </body>
 </html>
