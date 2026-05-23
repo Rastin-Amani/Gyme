@@ -1,84 +1,110 @@
-{% extends "layouts/dashboard.html" %} {% block dashboard_content %}
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <form
+        hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees' }}"
+        class="bg-base-100 space-y-4"
+    >
+        <div class="grid grid-cols-2 gap-4">
+            <!-- First Name -->
+            <div class="form-control">
+                <label class="label"><span class="label-text">نام</span></label>
+                <input
+                    type="text"
+                    name="first_name"
+                    placeholder="مثل راستین"
+                    value="{{ trainee.first_name }}"
+                    required
+                    class="input input-bordered w-full"
+                />
+            </div>
 
-<form hx-post="/trainees" class="bg-base-100 space-y-4">
-    <div class="grid grid-cols-2 gap-4">
-        <!-- First Name -->
-        <div class="form-control">
-            <label class="label"><span class="label-text">نام</span></label>
-            <input
-                type="text"
-                name="first_name"
-                placeholder="مثل راستین"
-                required
-                class="input input-bordered w-full"
-            />
+            <!-- Last Name -->
+            <div class="form-control">
+                <label class="label"><span class="label-text">نام خانوادگی</span></label>
+                <input
+                    type="text"
+                    name="last_name"
+                    placeholder="مثل امانی"
+                    value="{{ trainee.last_name }}"
+                    required
+                    class="input input-bordered w-full"
+                />
+            </div>
         </div>
 
-        <!-- Last Name -->
-        <div class="form-control">
-            <label class="label"><span class="label-text">نام خانوادگی</span></label>
-            <input
-                type="text"
-                name="last_name"
-                placeholder="مثل امانی"
-                required
-                class="input input-bordered w-full"
-            />
+        <!-- Contact Info -->
+        <div class="grid grid-cols-1 gap-4">
+            <div class="form-control">
+                <label class="label"><span class="label-text">ایمیل</span></label>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ trainee.email }}"
+                    required
+                    placeholder="مثل test.email@gmail.com"
+                    class="input input-bordered w-full"
+                />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control ">
+                    <label class="label"><span class="label-text">شماره موبایل</span></label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        value="{{ trainee.phone }}"
+                        required
+                        placeholder="مثل ۰۹۱۰۷۶۵۶۲۹۵"
+                        class="input input-bordered w-full text-right"
+                    />
+                </div>
+                <div>
+                    {% with name="birthdate", label="تاریخ تولد", value=trainee.birthdate %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Contact Info -->
-    <div class="grid grid-cols-1 gap-4">
-        <div class="form-control">
-            <label class="label"><span class="label-text">ایمیل</span></label>
-            <input
-                type="email"
-                name="email"
-                required
-                placeholder="مثل test.email@gmail.com"
-                class="input input-bordered w-full"
-            />
+        <!-- Gender and Statud -->
+        <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+                <label class="label"><span class="label-text">جنسیت</span></label>
+                <select name="gender" class="select select-bordered w-full">
+                    <option value="male" {{ 'selected' if trainee.gender == 'male' else '' }}>
+                        آقا
+                    </option>
+                    <option value="female" {{ 'selected' if trainee.gender == 'female' else '' }}>
+                        خانم
+                    </option>
+                </select>
+            </div>
+            <div class="form-control">
+                <label class="label"><span class="lable-text">وضعیت</span></label>
+                <select name="status" class="select select-bordered w-full">
+                    <option value="active" {{ 'selected' if trainee.status == 'active' else '' }}>
+                        فعال
+                    </option>
+                    <option
+                        value="inactive"
+                        {{ 'selected' if trainee.status == 'inactive' else '' }}
+                    >
+                        غیرفعال
+                    </option>
+                </select>
+            </div>
         </div>
+        <!-- Notes -->
         <div class="form-control">
-            <label class="label"><span class="label-text">شماره موبایل</span></label>
-            <input
-                type="tel"
-                name="phone"
-                required
-                placeholder="مثل ۰۹۱۰۷۶۵۶۲۹۵"
-                class="input input-bordered w-full text-right"
-            />
+            <label class="label"><span class="label-text">یادداشت تکمیلی</span></label>
+            <textarea name="notes" class="textarea textarea-bordered h-24 w-full">
+{{ trainee.notes }}</textarea
+            >
         </div>
-    </div>
 
-    <!-- Gender and Statud -->
-    <div class="grid grid-cols-2 gap-4">
-        <div class="form-control">
-            <label class="label"><span class="label-text">جنسیت</span></label>
-            <select name="gender" class="select select-bordered w-full">
-                <option value="male">آقا</option>
-                <option value="female">خانم</option>
-            </select>
+        <!-- Actions -->
+        <div class="flex flex-col-reverse justify-end gap-2 mt-6">
+            <a href="/trainees" class="btn btn-ghost">انصراف</a>
+            <button type="submit" class="w-full btn btn-primary">ثبت شاگرد</button>
         </div>
-        <div class="form-control">
-            <label class="label"><span class="lable-text">وضعیت</span></label>
-            <select name="status" class="select select-bordered w-full">
-                <option value="active">فعال</option>
-                <option value="inactive">غیرفعال</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Notes -->
-    <div class="form-control">
-        <label class="label"><span class="label-text">یادداشت تکمیلی</span></label>
-        <textarea name="notes" class="textarea textarea-bordered h-24 w-full"></textarea>
-    </div>
-
-    <!-- Actions -->
-    <div class="flex flex-col-reverse justify-end gap-2 mt-6">
-        <a href="/trainees" class="btn btn-ghost">انصراف</a>
-        <button type="submit" class="w-full btn btn-primary">ثبت شاگرد</button>
-    </div>
-</form>
+    </form>
 {% endblock %}

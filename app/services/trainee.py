@@ -24,14 +24,8 @@ def create_trainee(pb, tenant, data: dict):
         }
         return pb.collection("trainees").create(payload)
 
-def get_trainee(pb, tenant, trainee_id):
-        return pb.collection("trainees").get_first_list_item(
-            f'id="{trainee_id}" && tenant="{tenant}"'
-        )
-
-def update_trainee(pb, tenant, trainee_id, data: dict):
-        # Optional safety check: ensure tenant match before update
-        return pb.collection("trainees").update(trainee_id, data, tenant)
+def update_trainee(pb, trainee_id, data: dict):
+        return pb.collection("trainees").update(trainee_id, data)
 
 def delete_trainee(pb, tenant, trainee_id):
         return pb.collection("trainees").delete(trainee_id, tenant)
