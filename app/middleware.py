@@ -26,17 +26,19 @@ class TenantMiddleware(BaseHTTPMiddleware):
             try:
                 # load token
                 pb.auth_store.save(token, None)
-
                 # verify token and get user
                 pb.collection("users").auth_refresh()
 
+                request.state.pb = pb 
                 user = pb.auth_store.model
-
                 request.state.user = user
                 request.state.role = getattr(user, "role", "trainee")
 
             except Exception as e:
                 print("Auth error:", e)
+                request.state.pb = get_pb()
+        else:
+                request.state.pb = get_pb() # Anonymous fallback
 
         response = await call_next(request)
         return response

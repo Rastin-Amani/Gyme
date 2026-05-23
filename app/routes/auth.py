@@ -7,10 +7,13 @@ router = APIRouter()
 
 @router.get("/login")
 def login_page(request: Request):
+    tenant = request.state.tenant
     return templates.TemplateResponse(
         request=request,
         name="pages/login.html",
-        context={}
+        context={"title":"ورود",
+        "tenant": tenant,
+        }
     )
 
 @router.post("/login")
@@ -22,7 +25,7 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
         return templates.TemplateResponse(
             request=request,
             name="pages/login.html",
-            context={"error": result["error"]}
+            context={"error": result["error"]} 
         )
 
     user = result["user"]
