@@ -1,9 +1,11 @@
-{# Usage in your forms: {% include 'components/datepicker.html' with context name="birth_date"
-label="تاریخ تولد" value=trainee.birth_date %} #} {% set input_name = name | default("date") %} {%
-set input_label = label | default("") %} {% set placeholder = placeholder | default("انتخاب تاریخ")
-%} {% set min_year = min_year | default(1300) %} {% set max_year = max_year | default(1500) %} {%
-set modal_title = modal_title | default("انتخاب تاریخ") %} {% set confirm_text = confirm_text |
-default("تایید") %} {% set cancel_text = cancel_text | default("بستن") %}
+{% set input_name = name | default("date") %}
+{% set input_label = label | default("") %}
+{% set placeholder = placeholder | default("انتخاب تاریخ") %}
+{% set min_year = min_year | default(1330) %}
+{% set max_year = max_year | default(1407) %}
+{% set modal_title = modal_title | default("انتخاب تاریخ") %}
+{% set confirm_text = confirm_text | default("تایید") %}
+{% set cancel_text = cancel_text | default("بستن") %}
 
 <div
     class="form-control w-full"
@@ -14,9 +16,9 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
 
     <!-- Label -->
     {% if input_label %}
-    <label class="label">
-        <span class="label-text">{{ input_label }}</span>
-    </label>
+        <label class="label">
+            <span class="label-text">{{ input_label }}</span>
+        </label>
     {% endif %}
 
     <!-- Visible Input -->
@@ -58,12 +60,15 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
                 </button>
             </div>
         </div>
-        <form method="dialog" class="modal-backdrop">
-            <button @click="closeModal()">close</button>
-        </form>
+
+        <!-- Changed from <form method="dialog"> to <div> -->
+        <div class="modal-backdrop" @click="closeModal()">
+            <button class="cursor-default">close</button>
+        </div>
     </dialog>
 </div>
 
+<!-- Scripts injected once per page -->
 <!-- Scripts injected once per page -->
 <script>
     if (typeof window.JalaliDatePickerLoaded === 'undefined') {
@@ -87,7 +92,6 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
         function toPersianNumber(value) {
             return value.toString().replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
         }
-
         function formatJalali(jy, jm, jd) {
             return `${toPersianNumber(jy)}/${toPersianNumber(jm.toString().padStart(2, '0'))}/${toPersianNumber(jd.toString().padStart(2, '0'))}`;
         }
@@ -223,11 +227,11 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
             }
             init() {
                 this.el.innerHTML = `
-          <ul class="absolute inset-0 z-10 w-full cursor-grab active:cursor-grabbing">
-            ${this.source.map((item, index) => `<li data-index="${index}" class="h-10 leading-10 text-center transition-all duration-200 select-none">${item.text}</li>`).join('')}
-          </ul>
-          <div class="absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 border-y border-primary pointer-events-none z-0"></div>
-        `;
+                  <ul class="absolute inset-0 z-10 w-full cursor-grab active:cursor-grabbing">
+                    ${this.source.map((item, index) => `<li data-index="${index}" class="h-10 leading-10 text-center transition-all duration-200 select-none">${item.text}</li>`).join('')}
+                  </ul>
+                  <div class="absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 border-y border-primary pointer-events-none z-0"></div>
+                `;
                 this.list = this.el.querySelector('ul');
                 this.items = this.el.querySelectorAll('li');
                 this.setPosition();
@@ -291,7 +295,7 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
             }
         }
 
-        document.addEventListener('alpine:init', () => {
+        const registerAlpineComponent = () => {
             Alpine.data('jalaliDatePicker', (initialValue, minYear, maxYear) => ({
                 gregorianDate: initialValue || '',
                 formattedDate: '',
@@ -315,7 +319,6 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
                 openModal() {
                     this.$refs.modalRef.showModal();
                     if (!this.isInitialized) {
-                        // Slight delay ensures the DOM modal is painted so heights calculate correctly
                         setTimeout(() => this.initSelectors(), 50);
                     }
                 },
@@ -326,7 +329,6 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
 
                 initSelectors() {
                     let today = toJalali(new Date());
-
                     if (this.gregorianDate) {
                         const parts = this.gregorianDate.split('-');
                         if (parts.length === 3)
@@ -340,13 +342,11 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
                         source: createRange(minYear, maxYear),
                         selectedIndex: today.jy - minYear,
                     });
-
                     this.monthSelector = new IosSelector({
                         el: this.$refs.monthRef,
                         source: persianMonths.map((m, i) => ({ value: i + 1, text: m })),
                         selectedIndex: today.jm - 1,
                     });
-
                     const daysInMonth = getJalaliMonthLength(today.jy, today.jm);
                     this.daySelector = new IosSelector({
                         el: this.$refs.dayRef,
@@ -355,11 +355,9 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
                     });
 
                     const updateDays = () => {
-                        const y = parseInt(this.yearSelector.getValue());
-                        const m = parseInt(this.monthSelector.getValue());
+                        const y = parseInt(this.yearSelector.getValue()),
+                            m = parseInt(this.monthSelector.getValue());
                         const days = createRange(1, getJalaliMonthLength(y, m));
-
-                        // Avoid resetting completely if not needed, but recreate for ease
                         const currentDayIndex = this.daySelector.selectedIndex;
                         this.daySelector = new IosSelector({
                             el: this.$refs.dayRef,
@@ -370,23 +368,26 @@ default("تایید") %} {% set cancel_text = cancel_text | default("بستن") 
 
                     this.$refs.yearRef.addEventListener('change', updateDays);
                     this.$refs.monthRef.addEventListener('change', updateDays);
-
                     this.isInitialized = true;
                 },
 
                 confirmDate() {
-                    const jy = this.yearSelector.getValue();
-                    const jm = this.monthSelector.getValue();
-                    const jd = this.daySelector.getValue();
-
+                    const jy = this.yearSelector.getValue(),
+                        jm = this.monthSelector.getValue(),
+                        jd = this.daySelector.getValue();
                     const { gy, gm, gd } = jalaliToGregorian(jy, jm, jd);
-
                     this.gregorianDate = `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
                     this.formattedDate = formatJalali(jy, jm, jd);
-
                     this.closeModal();
                 },
             }));
-        });
+        };
+
+        // Initialize immediately if Alpine is ready, otherwise wait for alpine:init
+        if (window.Alpine) {
+            registerAlpineComponent();
+        } else {
+            document.addEventListener('alpine:init', registerAlpineComponent);
+        }
     }
 </script>
