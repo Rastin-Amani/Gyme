@@ -1,0 +1,73 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <div class="max-w-150">
+        <div class="items-center justify-between bg-base-200 p-4 mb-6 card flex-row-reverse">
+            <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+            <div class="text-center">
+                <h1 class="text-m font-semibold text-right ml-4">{{ plan.title }}</h1>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
+            <div>
+                <span class="opacity-60 block">نوع</span>
+                <span class="font-medium">
+                    {% if plan.type == 'diet' %}
+                        غذایی
+                    {% elif plan.gender =='training' %}
+                        ورزشی
+                    {% else %}
+                        استروئید
+                    {% endif %}
+                </span>
+            </div>
+            <div>
+                <span class="opacity-60 block">مربی</span>
+                <span class="font-medium">
+                    {{ plan.expand.coach.first_name if plan.expand.coach is defined  else '-' }}
+                </span>
+            </div>
+            <div>
+                <span class="opacity-60 block">روز در هفته</span>
+                <span class="font-medium">{{ plan.days_per_week or '-' }}</span>
+            </div>
+            <div>
+                <span class="opacity-60 block">تاریخ شروع</span>
+                <span class="font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
+            </div>
+            <div>
+                <span class="opacity-60 block">تاریخ پایان</span>
+                <span class="font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
+            </div>
+            <div>
+                <span class="opacity-60 block">وضعیت</span>
+                <span class="font-medium">
+                    {% if plan.status == 'active' %}
+                        فعال
+                    {% elif plan.status == 'inactive' %}
+                        غیرفعال
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
+            </div>
+            {% if plan.description != "" %}
+                <div class="bg-base-200 p-4 rounded-lg col-span-3 text-right">
+                    <p class="text-sm opacity-60">{{ plan.description }}</p>
+                </div>
+            {% else %}
+
+            {% endif %}
+        </div>
+
+        <!-- Items Section -->
+        <div class="mt-4">
+            <div class="divider text-xs opacity-50">آیتم‌های برنامه</div>
+            <div class="bg-base-200 p-4 rounded-lg">
+                <!-- This is where your future records component will go -->
+                <p class="text-sm opacity-60">هیچ آیتمی ثبت نشده.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

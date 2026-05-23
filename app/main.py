@@ -7,7 +7,8 @@ from fastapi.responses import HTMLResponse
 from .routes import auth
 from .routes import dashboard
 from .routes import trainee
-from app.routes.debug import router as debug_router
+from .routes import debug
+from .routes import plan
 
 # middleware import
 from app.middleware import TenantMiddleware
@@ -29,9 +30,10 @@ app.add_middleware(TenantMiddleware)
 
 # include routers
 app.include_router(dashboard.router)
-app.include_router(debug_router)
+app.include_router(debug.router)
 app.include_router(auth.router)
 app.include_router(trainee.router)
+app.include_router(plan.router)
 
 
 

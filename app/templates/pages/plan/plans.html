@@ -1,0 +1,69 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <div>
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold">برنامه‌ها</h1>
+                <p class="text-sm opacity-70">مدیریت برنامه‌های ثبت‌شده</p>
+            </div>
+
+            <a href="/plans/new" class="btn btn-primary">برنامه جدید</a>
+        </div>
+
+        <div class="card bg-base-100 border-base-300 border">
+            <div class="card-body p-0">
+                <div class="max-w-150 overflow-x-auto">
+                    <table class="table min-w-max w-full table-zebra">
+                        <thead>
+                            <tr>
+                                <th class="text-right"></th>
+                                <th>عنوان</th>
+                                <th>نوع</th>
+                                <th>مربی</th>
+                                <th>روز در هفته</th>
+                                <th>تاریخ شروع</th>
+                                <th>تاریخ پایان</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% if plans and plans|length > 0 %}
+                                {% for plan in plans %}
+                                    <tr>
+                                        <td class="text-right">
+                                            <a href="/plans/{{ plan.id }}" class="btn btn-sm">
+                                                مشاهده
+                                            </a>
+                                        </td>
+                                        <td>{{ plan.title }}</td>
+                                        <td>
+                                            {% if plan.type == 'diet' %}
+                                                غذایی
+                                            {% elif plan.gender =='training' %}
+                                                ورزشی
+                                            {% else %}
+                                                استروئید
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ plan.expand.coach.first_name if plan.expand.coach is defined and plan.expand.coach.email else '-' }}
+                                        </td>
+                                        <td>{{ plan.days_per_week or '-' }}</td>
+                                        <td>{{ plan.start_date | jalali_year or '-' }}</td>
+                                        <td>{{ plan.end_date | jalali_year or '-' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-8 opacity-60">
+                                        هنوز برنامه‌ای ثبت نکردید!
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
