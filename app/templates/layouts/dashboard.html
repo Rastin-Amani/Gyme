@@ -1,23 +1,49 @@
 {% extends "base.html" %} {% block content %}
+<!-- Content area that gets swapped -->
+<header class="py-2 flex bg-base-100 items-center text-center mx-auto max-w-150">
+    <div class="flex items-center">
+        <button
+            class="btn btn-ghost btn-circle btn-sm"
+            aria-label="بازگشت به صفحه قبل"
+            onclick="history.back()"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                />
+            </svg>
+        </button>
+    </div>
+    <div class="font-medium text-lg pr-1.5">{{ title }}</div>
+    <div class="text-m ml-2 text-end flex-auto">{{ tenant.name if tenant else "Gym" }}</div>
+</header>
+<div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
 
-<main class="pt-4 pb-24">{% block dashboard_content %}{% endblock %}</main>
-
+<!-- Persistent Navigation -->
 <nav
-    class="fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around p-3 w-full mx-auto max-w-150"
+    class="fixed bottom-0 left-0 right-0 bg-base-200 border-t border-base-300 flex justify-around p-3 w-full mx-auto max-w-150 z-50"
 >
     {% if role == "owner" or role == "coach" %}
-
     <a href="/dashboard">Dashboard</a>
     <a href="/members">Members</a>
     <a href="/plans">Plans</a>
-
+    <a href="/members">Members</a>
+    <a href="/plans">Plans</a>
     {% else %}
-
     <a href="/dashboard">Home</a>
     <a href="/workouts">Workouts</a>
     <a href="/profile">Profile</a>
-
+    <a href="/members">Members</a>
+    <a href="/plans">Plans</a>
     {% endif %}
 </nav>
-
 {% endblock %}
