@@ -1,0 +1,83 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" class="bg-base-100 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+            <!-- First Name -->
+            <div class="form-control">
+                <label class="label"><span class="label-text">عنوان</span></label>
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="مثل: برنامه‌ی حجم زمستان"
+                    value="{{ plan.first_name }}"
+                    required
+                    class="input input-bordered w-full"
+                />
+            </div>
+
+            <!-- Last Name -->
+            <div class="form-control">
+                <label class="label"><span class="label-text">نوع برنامه</span></label>
+                <select name="gender" class="select select-bordered w-full">
+                    <option value="training" {{ 'selected' if plan.type == 'training' else '' }}>
+                        تمرینی
+                    </option>
+                    <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>
+                        غذایی
+                    </option>
+                    <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>
+                        استروئیدی
+                    </option>
+                </select>
+            </div>
+
+            <!-- Contact Info -->
+
+            <div>
+                {% with name="birthdate", label="تاریخ شروع", value=plan.start_date %}
+                    {% include 'components/datepicker.html' %}
+                {% endwith %}
+            </div>
+            <div>
+                {% with name="birthdate", label="تاریخ پایان", value=plan.end_date %}
+                    {% include 'components/datepicker.html' %}
+                {% endwith %}
+            </div>
+            <div class="form-control ">
+                <label class="label"><span class="label-text">روز در هفته</span></label>
+                <input
+                    type="number"
+                    name="days_per_week"
+                    value="{{ plan.phone }}"
+                    required
+                    placeholder="مثل: ۳"
+                    class="input input-bordered w-full text-right"
+                />
+            </div>
+            <div class="form-control">
+                <label class="label"><span class="lable-text">وضعیت</span></label>
+                <select name="status" class="select select-bordered w-full">
+                    <option value="active" {{ 'selected' if plan.status == 'active' else '' }}>
+                        فعال
+                    </option>
+                    <option value="inactive" {{ 'selected' if plan.status == 'inactive' else '' }}>
+                        غیرفعال
+                    </option>
+                </select>
+            </div>
+        </div>
+        <!-- Notes -->
+        <div class="form-control">
+            <label class="label"><span class="label-text">یادداشت تکمیلی</span></label>
+            <textarea name="notes" class="textarea textarea-bordered h-24 w-full">
+                {{ plan.notes }}</textarea
+            >
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col-reverse justify-end gap-2 mt-6">
+            <a href="/plans" class="btn btn-ghost">انصراف</a>
+            <button type="submit" class="w-full btn btn-primary">ثبت برنامه</button>
+        </div>
+    </form>
+{% endblock %}

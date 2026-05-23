@@ -8,14 +8,14 @@ router = APIRouter(
 )
 # Get Requests
 @router.get("/trainees")
-async def trainee_new_form (request: Request):
+async def trainees_list (request: Request):
     pb = request.state.pb
     tenant = request.state.tenant.id
     trainees = list_trainees(pb, tenant)
     tenant_name = request.state.tenant
     return templates.TemplateResponse(
         request=request,
-        name="pages/trainees.html",
+        name="pages/trainee/trainees.html",
         context={
         "title" : "لیست شاگردان",
         "tenant": tenant_name,
@@ -24,7 +24,7 @@ async def trainee_new_form (request: Request):
     )
 
 @router.get("/trainees/new")
-async def trainees_list (request: Request):
+async def trainees_new_form (request: Request):
     # This returns just the form fragment for HTMX or a full page
     tenant = request.state.tenant
     return templates.TemplateResponse(
@@ -46,7 +46,7 @@ async def show_trainee_detail (request: Request, id: str):
     tenant_name = request.state.tenant
     return templates.TemplateResponse(
         request=request,
-        name="pages/trainee_detail.html",
+        name="pages/trainee/trainee_detail.html",
         context={
         "title" : "اطلاعات شاگرد",
         "tenant": tenant_name,

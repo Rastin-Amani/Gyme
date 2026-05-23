@@ -12,7 +12,7 @@ def login_page(request: Request):
     tenant = request.state.tenant
     return templates.TemplateResponse(
         request=request,
-        name="pages/login.html",
+        name="pages/auth/login.html",
         context={"title":"ورود",
         "tenant": tenant,
         }
@@ -26,7 +26,7 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
     if not result["ok"]:
         return templates.TemplateResponse(
             request=request,
-            name="pages/login.html",
+            name="pages/auth/login.html",
             context={"error": result["error"]} 
         )
 
