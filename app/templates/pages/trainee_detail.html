@@ -1,0 +1,86 @@
+{% extends "layouts/dashboard.html" %} {% block dashboard_content %}
+<div class="max-w-150">
+    <!-- Header: Name, Edit button, Avatar placeholder -->
+    <div class="items-center justify-between bg-base-200 p-4 mb-6 card flex-row-reverse">
+        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">ویرایش</a>
+        <div class="text-center">
+            <h1 class="text-m font-bold">{{ trainee.first_name }} {{ trainee.last_name }}</h1>
+            <div>
+                <span class="text-sm opacity-50">{{ trainee.email or '-' }}</span>
+            </div>
+        </div>
+        <div class="avatar placeholder">
+            <div class="bg-base-100 text-neutral-content w-10 h-10 rounded-full text-center">
+                <span class="text-xs">{{ trainee.first_name[0] }}{{ trainee.last_name[0] }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="grid grid-cols-3 grid gap-4 text-sm mb-8 text-center">
+        <div>
+            <span class="opacity-60 block">تلفن</span>
+            <span class="font-medium">{{ trainee.phone or '-' }}</span>
+        </div>
+        <div>
+            <span class="opacity-60 block">جنسیت</span>
+            <span class="font-medium">
+                {% set gender_map = {'male': 'آقا', 'female': 'خانم'} %} {{
+                gender_map.get(trainee.gender, '-') }}
+            </span>
+        </div>
+        <div>
+            <span class="opacity-60 block">تاریخ تولد</span>
+            <span class="font-medium">{{ trainee.birthdate or '-' }}</span>
+        </div>
+        <div>
+            <span class="opacity-60 block">قد</span>
+            <span class="font-medium">{{ trainee.height or '-' }}</span>
+        </div>
+        <div>
+            <span class="opacity-60 block">وزن</span>
+            <span class="font-medium">{{ trainee.weight or '-' }}</span>
+        </div>
+        <div>
+            <span class="opacity-60 block">وضعیت</span>
+            <span class="font-medium">
+                {% if trainee.status == 'active' %} فعال {% elif trainee.status == 'inactive' %}
+                غیرفعال {% else %} - {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <!-- Info / Records Section -->
+    <div>
+        <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
+        <!-- This is where your future records component will go -->
+        {% if trainee.notes != "" %}
+        <div class="bg-base-200 p-4 rounded-lg">
+            <p class="text-sm opacity-60">{{ trainee.notes }}</p>
+        </div>
+        {% else %} {% endif %}
+        <div class="grid grid-cols-1 gap-4 text-sm my-4">
+            <div class="flex flex-row gap-3 items-center">
+                <span class="opacity-60 block">سابقه تمرینی</span>
+                <span class="font-medium">{{ trainee.birthdate or '-' }}</span>
+            </div>
+            <div class="flex flex-row gap-3 items-center">
+                <span class="opacity-60 block">مصرف استروئید</span>
+                <span class="font-medium">{{ trainee.notes or '-' }}</span>
+            </div>
+            <div class="flex flex-row gap-3 items-center">
+                <span class="opacity-60 block">مصرف مکمل</span>
+                <span class="font-medium">{{ trainee.weight or '-' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="divider text-xs opacity-50">سوابق</div>
+        <div class="bg-base-200 p-4 rounded-lg">
+            <!-- This is where your future records component will go -->
+            <p class="text-sm opacity-60">هیچ سابقه ثبت‌شده‌ای موجود نیست.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
