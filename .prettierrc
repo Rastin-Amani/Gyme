@@ -10,11 +10,12 @@
     "htmlWhitespaceSensitivity": "ignore",
     "proseWrap": "preserve",
     "endOfLine": "lf",
+    "plugins": ["prettier-plugin-jinja-template"],
     "overrides": [
         {
             "files": ["*.html", "*.jinja", "*.j2"],
             "options": {
-                "parser": "html"
+                "parser": "jinja-template"
             }
         }
     ]
