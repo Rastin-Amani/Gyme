@@ -21,5 +21,16 @@ def to_jalali_year(date_str):
     except (ValueError, TypeError):
         return date_str  # Return original if parsing fails
 
+def to_jalali_date (date_srt):
+    if not date_srt:
+        return ""
+    try:
+        gregorian_dt = datetime.strptime(date_srt, "%Y-%m-%d %H:%M:%S.%fZ")
+        jalali_dt = jdatetime.datetime.fromgregorian(datetime=gregorian_dt)
+        return jalali_dt.strftime("%Y/%m/%d")
+    except (ValueError, TypeError):
+        return date_srt
+      
 # Register the filter
 templates.env.filters["jalali_year"] = to_jalali_year
+templates.env.filters["jalali_date"] = to_jalali_date
