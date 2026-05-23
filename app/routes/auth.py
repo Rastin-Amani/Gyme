@@ -3,7 +3,9 @@ from fastapi.responses import RedirectResponse
 from ..templates import templates
 from app.services.auth import login_user
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Authentication"]
+)
 
 @router.get("/login")
 def login_page(request: Request):

@@ -3,8 +3,9 @@ from app.services.trainee import create_trainee, list_trainees, get_trainee_by_i
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 
-router = APIRouter()
-
+router = APIRouter(
+    tags=["Trainees Management"]
+)
 # Get Requests
 @router.get("/trainees")
 async def trainee_new_form (request: Request):

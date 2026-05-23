@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request
 from ..templates import templates
 
-router = APIRouter()
-
+router = APIRouter(
+    tags=["Dashboard"]
+)
 @router.get("/dashboard")
 def dashboard(request: Request):
     user = {"name": "Demo User"}
