@@ -1,11 +1,17 @@
+# fast api imports
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from app.middleware import TenantMiddleware
-from .routes import dashboard
-from app.routes.debug import router as debug_router
+
+# route imports
 from .routes import auth
+from .routes import dashboard
 from .routes import trainee
+from app.routes.debug import router as debug_router
+
+# middleware import
+from app.middleware import TenantMiddleware
+
 
 ###disable default swagger ui
 app = FastAPI(
