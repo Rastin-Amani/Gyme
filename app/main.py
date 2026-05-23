@@ -5,6 +5,7 @@ from app.middleware import TenantMiddleware
 from .routes import dashboard
 from app.routes.debug import router as debug_router
 from .routes import auth
+from .routes import trainee
 
 ###disable default swagger ui
 app = FastAPI(
@@ -17,11 +18,15 @@ app = FastAPI(
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+# middleware
+app.add_middleware(TenantMiddleware)
+
 # include routers
 app.include_router(dashboard.router)
-app.add_middleware(TenantMiddleware)
 app.include_router(debug_router)
 app.include_router(auth.router)
+app.include_router(trainee.router)
+
 
 
 
