@@ -1,0 +1,196 @@
+{% extends "layouts/modal.html" %}
+
+{% block modal_body %}
+    <form
+        hx-post="{{ '/items/' + item.id if item else '/items/new' }}"
+        hx-on:htmx:after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML = ''"
+        class="flex flex-col gap-2 text-right"
+        dir="rtl"
+    >
+        {% if plan_type == 'training' %}
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">نام حرکت</span></label>
+                <input
+                    type="text"
+                    name="item_name"
+                    value="{{ item.name or '' }}"
+                    class="input input-bordered w-full"
+                    required
+                />
+            </div>
+
+            <!-- Grid 3 for compact mobile view -->
+            <div class="grid grid-cols-3 gap-2">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">روز</span></label>
+                    <input
+                        type="number"
+                        name="seq"
+                        value="{{ item.seq or 1 }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">ترتیب</span></label>
+                    <input
+                        type="number"
+                        name="order"
+                        value="{{ item.order or 1 }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">ست</span></label>
+                    <input
+                        type="number"
+                        name="sets"
+                        value="{{ item.sets or '' }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">تکرار</span></label>
+                    <input
+                        type="number"
+                        name="reps"
+                        value="{{ item.reps or '' }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">وزنه</span></label>
+                    <input
+                        type="number"
+                        step="0.1"
+                        name="weight"
+                        value="{{ item.weight or '' }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">استراحت (s)</span></label>
+                    <input
+                        type="number"
+                        name="rest_seconds"
+                        value="{{ item.rest_seconds or '' }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+            </div>
+        {% elif plan_type == 'diet' %}
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">نام وعده (صبحانه...)</span></label>
+                <input
+                    type="text"
+                    name="meal_name"
+                    value="{{ item.meal_name or '' }}"
+                    class="input input-bordered w-full"
+                />
+            </div>
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">نام غذا</span></label>
+                <input
+                    type="text"
+                    name="food_name"
+                    value="{{ item.food_name or '' }}"
+                    class="input input-bordered w-full"
+                />
+            </div>
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">مقدار / واحد</span></label>
+                <input
+                    type="text"
+                    name="quantity"
+                    value="{{ item.quantity or '' }}"
+                    class="input input-bordered w-full"
+                />
+            </div>
+        {% elif plan_type == 'steroid' %}
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">نام مکمل/دارو</span></label>
+                <input
+                    type="text"
+                    name="name"
+                    value="{{ item.name or '' }}"
+                    class="input input-bordered w-full"
+                />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="form-control">
+                    <label class="label"><span class="label-text">نوع</span></label>
+                    <select name="type" class="select select-bordered w-full">
+                        <option
+                            value="supplement"
+                            {% if item.type == 'supplement' %}selected{% endif %}
+                        >
+                            مکمل
+                        </option>
+                        <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>
+                            استروئید
+                        </option>
+                    </select>
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text">دوز</span></label>
+                    <input
+                        type="text"
+                        name="dosage"
+                        value="{{ item.dosage or '' }}"
+                        class="input input-bordered w-full"
+                    />
+                </div>
+            </div>
+            <div class="form-control w-full">
+                <label class="label"><span class="label-text">زمان/تکرار مصرف</span></label>
+                <input
+                    type="text"
+                    name="frequency"
+                    value="{{ item.frequency or '' }}"
+                    class="input input-bordered w-full"
+                />
+            </div>
+        {% endif %}
+
+        <div class="form-control w-full mt-2 flex flex-col">
+            <label class="label"><span class="label-text">توضیحات اضافی</span></label>
+            <textarea name="notes" class="textarea textarea-bordered h-20 w-full">
+                {{ item.notes or '' }}</textarea
+            >
+        </div>
+
+        <div class="hidden">
+            <input type="hidden" name="plan_type" value="{{ plan_type }}" />
+            <!-- Pass the original plan ID so the relation doesn't break -->
+            <input type="hidden" name="plan" value="{{ item.plan if item else '' }}" />
+        </div>
+
+        <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+            <button
+                type="button"
+                class="btn btn-ghost flex-1"
+                onclick="document.getElementById('modal-container').innerHTML = ''"
+            >
+                لغو
+            </button>
+            <button
+                type="submit"
+                class="btn btn-primary flex-3"
+                hx-on:htmx:after-request="
+                    if (event.detail.successful) {
+                        // 1. Clear the modal content immediately
+                        document.getElementById('modal-container').innerHTML = '';
+                        // 2. Trigger a specific event that the list wrapper will listen to.
+                        //    This event name is intentional to differentiate from other potential triggers.
+                        htmx.trigger(document.body, 'performListRefresh');
+                    }
+                "
+            >
+                <span class="text-center"></span>
+                {% if item %}بروزرسانی{% else %}افزودن به لیست{% endif %}
+            </button>
+        </div>
+    </form>
+{% endblock %}
