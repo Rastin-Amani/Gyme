@@ -1,5 +1,3 @@
-from app.pb import pb
-
 def list_plans(pb, tenant, page=1, per_page=50):
         return pb.collection("plans").get_list(
             page=page,

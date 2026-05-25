@@ -1,5 +1,3 @@
-from app.pb import pb
-
 def list_trainees(pb, tenant, page=1, per_page=50):
         return pb.collection("trainees").get_list(
             page=page,
