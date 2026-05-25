@@ -20,7 +20,7 @@
         </div>
 
         <!-- Info Grid -->
-        <div class="grid grid-cols-3 grid gap-4 text-sm mb-8 text-center">
+        <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
             <div>
                 <span class="opacity-60 block">تلفن</span>
                 <span class="font-medium">{{ trainee.phone or '-' }}</span>
@@ -34,7 +34,7 @@
             </div>
             <div>
                 <span class="opacity-60 block">تاریخ تولد</span>
-                <span class="font-medium">{{ trainee.birthdate | jalali_year or '-' }}</span>
+                <span class="font-medium">{{ trainee.birthdate | jalali_date or '-' }}</span>
             </div>
             <div>
                 <span class="opacity-60 block">قد</span>

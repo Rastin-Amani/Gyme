@@ -75,7 +75,7 @@ async def plan_edit_form (request: Request, id: str):
         request=request,
         name="forms/plans_form.html",
         context={
-        "title" : "ویرایش شاگرد",
+        "title" : "ویرایش برنامه",
         "tenant": tenant_name,
         "plan": plan_data,
         }
@@ -88,14 +88,12 @@ async def plan_edit_form (request: Request, id: str):
 @router.post("/plans")
 async def plan_create(
     request: Request,
-    first_name: str = Form(...),
-    last_name: str = Form(...),
-    email: str = Form(None),
-    phone: str = Form(None),
-    gender: str = Form(None),
-    birthdate: str = Form(None),
-    height: int = Form(None),
-    weight: int = Form(None),
+    title: str = Form(...),
+    type: str = Form(...),
+    start_date: str = Form(None),
+    end_date: str = Form(None),
+    days_per_week: int = Form(None),
+    status: str = Form(None),
     notes: str = Form(None),
 
 ):
@@ -103,15 +101,12 @@ async def plan_create(
     tenant = request.state.tenant.id # Passing the ID string
     
     data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email,
-        "phone": phone,
-        "status": "active",
-        "gender": gender,
-        "birthdate": birthdate,
-        "height": height,
-        "weight": weight,
+        "title": title,
+        "type": type,
+        "start_date": start_date,
+        "end_date": end_date,
+        "status": status,
+        "days_per_week": days_per_week,
         "notes": notes,
     }
 
@@ -126,14 +121,12 @@ async def plan_create(
 async def plan_update(
     request: Request,
     id: str,
-    first_name: str = Form(...),
-    last_name: str = Form(...),
-    email: str = Form(None),
-    phone: str = Form(None),
-    gender: str = Form(None),
-    birthdate: str = Form(None),
-    height: int = Form(None),
-    weight: int = Form(None),
+    title: str = Form(...),
+    type: str = Form(...),
+    start_date: str = Form(None),
+    end_date: str = Form(None),
+    days_per_week: int = Form(None),
+    status: str = Form(None),
     notes: str = Form(None),
 
 ):
@@ -141,15 +134,12 @@ async def plan_update(
     tenant = request.state.tenant.id # Passing the ID string
     
     data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email,
-        "phone": phone,
-        "status": "active",
-        "gender": gender,
-        "birthdate": birthdate,
-        "height": height,
-        "weight": weight,
+        "title": title,
+        "type": type,
+        "start_date": start_date,
+        "end_date": end_date,
+        "status": status,
+        "days_per_week": days_per_week,
         "notes": notes,
     }
 

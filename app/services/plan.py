@@ -24,8 +24,8 @@ def create_plan(pb, tenant, data: dict):
         }
         return pb.collection("plans").create(payload)
 
-def update_plan(pb, plan_id, data: dict):
-        return pb.collection("plans").update(plan_id, data)
+def update_plan(pb, id, data: dict):
+        return pb.collection("plans").update(id, data)
 
 def delete_plan(pb, tenant, plan_id):
         return pb.collection("plans").delete(plan_id, tenant)

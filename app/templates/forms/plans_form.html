@@ -9,7 +9,7 @@
                     type="text"
                     name="title"
                     placeholder="مثل: برنامه‌ی حجم زمستان"
-                    value="{{ plan.first_name }}"
+                    value="{{ plan.title }}"
                     required
                     class="input input-bordered w-full"
                 />
@@ -18,7 +18,7 @@
             <!-- Last Name -->
             <div class="form-control">
                 <label class="label"><span class="label-text">نوع برنامه</span></label>
-                <select name="gender" class="select select-bordered w-full">
+                <select name="type" class="select select-bordered w-full">
                     <option value="training" {{ 'selected' if plan.type == 'training' else '' }}>
                         تمرینی
                     </option>
@@ -34,12 +34,12 @@
             <!-- Contact Info -->
 
             <div>
-                {% with name="birthdate", label="تاریخ شروع", value=plan.start_date %}
+                {% with name="start_date", label="تاریخ شروع", value=plan.start_date %}
                     {% include 'components/datepicker.html' %}
                 {% endwith %}
             </div>
             <div>
-                {% with name="birthdate", label="تاریخ پایان", value=plan.end_date %}
+                {% with name="end_date", label="تاریخ پایان", value=plan.end_date %}
                     {% include 'components/datepicker.html' %}
                 {% endwith %}
             </div>
@@ -48,7 +48,7 @@
                 <input
                     type="number"
                     name="days_per_week"
-                    value="{{ plan.phone }}"
+                    value="{{ plan.days_per_week }}"
                     required
                     placeholder="مثل: ۳"
                     class="input input-bordered w-full text-right"
