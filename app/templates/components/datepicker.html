@@ -227,7 +227,7 @@
             }
             init() {
                 this.el.innerHTML = `
-                  <ul class="absolute inset-0 z-10 w-full cursor-grab active:cursor-grabbing">
+                  <ul class="absolute inset-0 z-101 w-full cursor-grab active:cursor-grabbing">
                     ${this.source.map((item, index) => `<li data-index="${index}" class="h-10 leading-10 text-center transition-all duration-200 select-none">${item.text}</li>`).join('')}
                   </ul>
                   <div class="absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 border-y border-primary pointer-events-none z-0"></div>
