@@ -2,6 +2,8 @@ from fastapi import APIRouter, Request, Form
 from app.services.trainee import create_trainee, list_trainees, get_trainee_by_id, update_trainee
 from ..templates import templates
 from fastapi.responses import HTMLResponse
+from fastapi.responses import RedirectResponse
+
 
 router = APIRouter(
     tags=["Trainees Management"]
@@ -11,28 +13,39 @@ router = APIRouter(
 async def trainees_list (request: Request):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
     trainees = list_trainees(pb, tenant)
     tenant_name = request.state.tenant
+
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     return templates.TemplateResponse(
         request=request,
-        name="pages/trainee/trainees.html",
+        name="pages/owner/trainee/trainees.html",
         context={
         "title" : "لیست شاگردان",
         "tenant": tenant_name,
+        "user": user,
         "trainees": trainees.items,
         }
     )
 
 @router.get("/trainees/new")
 async def trainees_new_form (request: Request):
-    # This returns just the form fragment for HTMX or a full page
+    user = request.state.user
     tenant = request.state.tenant
+
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     return templates.TemplateResponse(
         request=request,
         name="forms/trainees_form.html",
         context={
         "title" : "ثبت شاگرد جدید",
         "tenant": tenant,
+        "user": user,
         "trainee": None,
 
         }
@@ -42,14 +55,20 @@ async def trainees_new_form (request: Request):
 async def show_trainee_detail (request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
     trainee_data = get_trainee_by_id(pb, tenant, id)
     tenant_name = request.state.tenant
+
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     return templates.TemplateResponse(
         request=request,
-        name="pages/trainee/trainee_detail.html",
+        name="pages/owner/trainee/trainee_detail.html",
         context={
         "title" : "اطلاعات شاگرد",
         "tenant": tenant_name,
+        "user": user,
         "trainee": trainee_data,
         }
     )
@@ -59,14 +78,20 @@ async def show_trainee_detail (request: Request, id: str):
 async def trainee_edit_form (request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
     trainee_data = get_trainee_by_id(pb, tenant, id)
     tenant_name = request.state.tenant
+
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     return templates.TemplateResponse(
         request=request,
         name="forms/trainees_form.html",
         context={
         "title" : "ویرایش شاگرد",
         "tenant": tenant_name,
+        "user": user,
         "trainee": trainee_data,
         }
     )

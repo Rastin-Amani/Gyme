@@ -4,7 +4,10 @@
         <div class="items-center justify-between bg-base-200 p-4 mb-4 card flex-row-reverse">
             <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
             <div class="text-center">
-                <h1 class="text-m font-semibold text-right ml-4">{{ plan.title }}</h1>
+                <h1 class="text-m font-semibold text-right ml-4">
+                    برنامه‌ی
+                    {{ plan.expand.trainee.first_name ~ ' ' ~  plan.expand.trainee.last_name if plan.expand.trainee is defined and plan.expand.trainee.id else '-' }}
+                </h1>
             </div>
         </div>
         <!--         <div>
@@ -72,7 +75,7 @@
                 <button
                     class="btn btn-primary btn-s w-full mb-4"
                     type="button"
-                    hx-get="/items/new?plan_type={{ plan.type }}"
+                    hx-get="/items/new?plan_type={{ plan.type }}&plan_id={{ plan.id }}"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
                 >

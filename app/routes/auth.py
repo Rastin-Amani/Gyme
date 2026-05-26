@@ -10,6 +10,11 @@ router = APIRouter(
 @router.get("/login")
 def login_page(request: Request):
     tenant = request.state.tenant
+    user = request.state.user
+
+    if user:
+        return RedirectResponse(url="/dashboard")
+
     return templates.TemplateResponse(
         request=request,
         name="pages/auth/login.html",

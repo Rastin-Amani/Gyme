@@ -1,21 +1,18 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
     <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" class="bg-base-100 space-y-4">
+        <!--         <div class="form-control">
+            <label class="label"><span class="label-text">عنوان</span></label>
+            <input
+                type="text"
+                name="title"
+                placeholder="مثل: برنامه‌ی حجم زمستان"
+                value="{{ plan.title }}"
+                required
+                class="input input-bordered w-full"
+            />
+        </div> -->
         <div class="grid grid-cols-2 gap-4">
-            <!-- First Name -->
-            <div class="form-control">
-                <label class="label"><span class="label-text">عنوان</span></label>
-                <input
-                    type="text"
-                    name="title"
-                    placeholder="مثل: برنامه‌ی حجم زمستان"
-                    value="{{ plan.title }}"
-                    required
-                    class="input input-bordered w-full"
-                />
-            </div>
-
-            <!-- Last Name -->
             <div class="form-control">
                 <label class="label"><span class="label-text">نوع برنامه</span></label>
                 <select name="type" class="select select-bordered w-full">
@@ -31,7 +28,16 @@
                 </select>
             </div>
 
-            <!-- Contact Info -->
+            <div class="form-control">
+                <label class="label"><span class="label-text">شاگرد</span></label>
+                <select name="trainee" class="select select-bordered w-full">
+                    {% for trainee in trainees %}
+                        <option value="{{ trainee.id }}">
+                            {{ trainee.first_name ~ ' ' ~   trainee.last_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
             <div>
                 {% with name="start_date", label="تاریخ شروع", value=plan.start_date %}

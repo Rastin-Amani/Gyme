@@ -17,7 +17,7 @@
                         <thead>
                             <tr>
                                 <th class="text-right"></th>
-                                <th>عنوان</th>
+                                <th>شاگرد</th>
                                 <th>نوع</th>
                                 <th>مربی</th>
                                 <th>روز در هفته</th>
@@ -35,7 +35,9 @@
                                                 مشاهده
                                             </a>
                                         </td>
-                                        <td>{{ plan.title }}</td>
+                                        <td>
+                                            {{ plan.expand.trainee.first_name ~ ' ' ~  plan.expand.trainee.last_name if plan.expand.trainee is defined and plan.expand.trainee.id else '-' }}
+                                        </td>
                                         <td>
                                             {% if plan.type == 'diet' %}
                                                 غذایی
@@ -49,8 +51,8 @@
                                             {{ plan.expand.coach.first_name if plan.expand.coach is defined and plan.expand.coach.email else '-' }}
                                         </td>
                                         <td>{{ plan.days_per_week or '-' }}</td>
-                                        <td>{{ plan.start_date | jalali_year or '-' }}</td>
-                                        <td>{{ plan.end_date | jalali_year or '-' }}</td>
+                                        <td>{{ plan.start_date | jalali_date or '-' }}</td>
+                                        <td>{{ plan.end_date | jalali_date or '-' }}</td>
                                     </tr>
                                 {% endfor %}
                             {% else %}

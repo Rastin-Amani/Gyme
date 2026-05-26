@@ -4,6 +4,8 @@ from app.services.item import (
     )
 from ..templates import templates
 from fastapi.responses import HTMLResponse
+from fastapi.responses import RedirectResponse
+
 
 router = APIRouter(
     tags=["items Management"]
@@ -11,10 +13,13 @@ router = APIRouter(
 
 # Get Requests
 @router.get("/items/new")
-async def item_edit_form (request: Request, plan_type: str = Query(...)):
+async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
     tenant = request.state.tenant.id
     collection_name = f"{plan_type}_items"
 
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+   
     return templates.TemplateResponse(
         request=request,
         name="modals/items_form.html",
@@ -22,6 +27,7 @@ async def item_edit_form (request: Request, plan_type: str = Query(...)):
         "title" : "ویرایش آیتم",
         "tenant": tenant,
         "plan_type": plan_type,
+        "plan_id": plan_id,
         "collection_name": collection_name,
         "item": None,
         }
@@ -36,6 +42,10 @@ async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)
     item = get_item_by_id(pb, tenant, collection_name, id)
 
     tenant_name = request.state.tenant
+
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     return templates.TemplateResponse(
         request=request,
         name="modals/items_form.html",
@@ -53,7 +63,7 @@ async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)
 async def item_create(
     request: Request,
     plan_type: str = Form(...),      
-    plan: str = Form(None),          
+    plan: str = Form(...),          
     item_name: str = Form(None),     # Training
     seq: int = Form(None),           # Training (Day)
     order: int = Form(None),         # Training
@@ -72,11 +82,14 @@ async def item_create(
 ):
     pb = request.state.pb
     tenant = request.state.tenant.id
-    data = {"notes": notes}
+    data = {
+        "plan": plan,
+        "notes": notes
+        }
+    collection_name = f"{plan_type}_items"
 
     # Only send plan if it's a valid ID (prevents the 400 error)
-    if plan and not plan.startswith(plan_type):
-        data["plan"] = plan
+
 
     # Mapping logic per collection
     if plan_type == "training":
@@ -108,7 +121,7 @@ async def item_create(
         })
 
 
-    create_item(pb, tenant, plan_type, data)
+    create_item(pb, tenant, collection_name, data)
 
     return HTMLResponse(status_code=204, headers={"HX-Trigger": "closeModal"})
 

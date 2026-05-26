@@ -26,7 +26,7 @@
         </div>
         <div class="text-m opacity-70 pr-1">{{ title }}</div>
         <div class="font-bold text-m ml-2 text-end flex-auto">
-            {{ tenant.name if tenant else "Gym" }}
+            {{ tenant.name if tenant else "باشگاه" }}
         </div>
     </header>
     <div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
@@ -35,18 +35,18 @@
     <nav
         class="fixed bottom-0 left-0 right-0 bg-base-200 border-t border-base-300 flex justify-around px-3 py-6 w-full mx-auto max-w-150 z-100 text-xs"
     >
-        {% if role == "owner" or role == "coach" %}
+        {% if user.role != "user" %}
             <a href="/dashboard">داشبورد</a>
             <a href="/plans">برنامه‌ها</a>
             <a href="/trainees/new">افزودن شاگرد</a>
             <a href="/trainees">شاگردها</a>
             <a href="/plans">تنظیمات</a>
         {% else %}
-            <a href="/dashboard">داشبورد</a>
-            <a href="/plans">برنامه‌ها</a>
-            <a href="/trainees/new">افزودن شاگرد</a>
-            <a href="/trainees">شاگردها</a>
-            <a href="/plans">تنظیمات</a>
+            <a href="/dashboard">برنامه غذایی</a>
+            <a href="/plans">برنامه‌ تمرینی</a>
+            <a href="/trainees/new">امروز</a>
+            <a href="/trainees">برنامه‌ تمرینی</a>
+            <a href="/plans">پروفایل</a>
         {% endif %}
     </nav>
 {% endblock %}

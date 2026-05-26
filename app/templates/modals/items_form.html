@@ -2,7 +2,7 @@
 
 {% block modal_body %}
     <form
-        hx-post="{{ '/items/' + item.id if item else '/items/new' }}"
+        hx-post="{{ '/items/' + item.id if item else '/items' }}"
         hx-on:htmx:after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML = ''"
         class="flex flex-col gap-2 text-right"
         dir="rtl"
@@ -164,7 +164,7 @@
         <div class="hidden">
             <input type="hidden" name="plan_type" value="{{ plan_type }}" />
             <!-- Pass the original plan ID so the relation doesn't break -->
-            <input type="hidden" name="plan" value="{{ item.plan if item else '' }}" />
+            <input type="hidden" name="plan" value="{{ plan_id }}" />
         </div>
 
         <div class="modal-action flex flex-row-reverse gap-3 mt-6">

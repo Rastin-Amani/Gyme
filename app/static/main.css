@@ -18,3 +18,16 @@
     font-weight: 100 900; /* Define the range of weights the variable font covers */
     font-display: swap;
 }
+
+@keyframes slide-up {
+    0% {
+        transform: translateY(100%);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@utility animate-slide-up {
+    animation: slide-up 0.3s ease-out both;
+}

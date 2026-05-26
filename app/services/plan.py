@@ -5,7 +5,7 @@ def list_plans(pb, tenant, page=1, per_page=50):
             query_params={
                 "filter": f'tenant="{tenant}"',
                 "sort": "-created",
-                "expand": "coach",
+                "expand": "coach,trainee",
                 }
         )
 
@@ -13,7 +13,7 @@ def get_plan_by_id (pb, tenant, id):
         return pb.collection("plans").get_one(id,
             query_params={
                 "filter": f'tenant="{tenant}"',
-                "expand": "coach",
+                "expand": "coach,trainee",
                 }
         )
 
