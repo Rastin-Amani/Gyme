@@ -118,7 +118,6 @@ async def plan_edit_form (request: Request, id: str):
 @router.post("/plans")
 async def plan_create(
     request: Request,
-    title: str = Form(...),
     type: str = Form(...),
     trainee:str = Form(None),
     start_date: str = Form(None),
@@ -132,7 +131,6 @@ async def plan_create(
     tenant = request.state.tenant.id # Passing the ID string
     
     data = {
-        "title": title,
         "type": type,
         "trainee": trainee,
         "start_date": start_date,
