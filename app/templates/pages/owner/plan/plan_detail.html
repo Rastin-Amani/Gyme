@@ -84,7 +84,7 @@
                 <div id="items-list-content" class="flex flex-col gap-2">
                     <!-- Iterate over the items array inside the pagination object -->
                     {% for item in item.items %}
-                        <div class="bg-base-200 p-4 rounded-lg">
+                        <div class="bg-base-200 p-4 card">
                             {% if plan.type == 'diet' %}
                                 <div class="flex justify-between items-center">
                                     <div class="max-w-3/4">
@@ -161,7 +161,7 @@
                             {% endif %}
                         </div>
                     {% else %}
-                        <div class="bg-base-200 p-4 rounded-lg text-center">
+                        <div class="bg-base-200 p-4 text-center">
                             <p class="text-sm opacity-60">هیچ آیتمی ثبت نشده است.</p>
                         </div>
                     {% endfor %}
