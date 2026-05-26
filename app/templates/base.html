@@ -1,10 +1,23 @@
 <!doctype html>
-<html data-theme="light" dir="rtl">
+<html   data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'dim') }}" dir="rtl">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
+        {% if tenant.theme == 'custom' and tenant.brand_colors %}
+        <style>
+        :root {
+            /* These will only be used if the data-theme is 'tenant-theme' */
+            --color-primary: {{ tenant.brand_colors.primary }};
+            --color-primary-content: {{ tenant.brand_colors.primary_content or '#ffffff' }};
+            --s--color-secondary: {{ tenant.brand_colors.secondary }};
+            --color-accent: {{ tenant.brand_colors.accent }};
+            --color-neutral: {{ tenant.brand_colors.neutral }};
+            --color-base-100: {{ tenant.brand_colors.base_100 }};
+            }
+        </style>
+        {% endif %}
     </head>
     <!-- hx-boost="true" makes all internal links act like an SPA -->
     <body class="bg-base-200 font-sans" hx-boost="true">
@@ -12,6 +25,7 @@
             <!-- This container will be updated by HTMX -->
             <main id="main-content" class="px-4">{% block content %}{% endblock %}</main>
             <div id="modal-container"></div>
+            <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2" s></div>
         </div>
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
     </body>
