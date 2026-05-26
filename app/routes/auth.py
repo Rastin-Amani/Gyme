@@ -32,7 +32,9 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
         return templates.TemplateResponse(
             request=request,
             name="pages/auth/login.html",
-            context={"error": result["error"]} 
+            context={
+                "error": result["error"]
+            } 
         )
 
     user = result["user"]

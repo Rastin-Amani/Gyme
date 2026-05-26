@@ -10,6 +10,8 @@ from .routes import trainee
 from .routes import debug
 from .routes import plan
 from .routes import item
+from .routes import profile
+from .routes.user import dashboard as user_dashboard
 
 # middleware import
 from app.middleware import TenantMiddleware
@@ -36,6 +38,9 @@ app.include_router(auth.router)
 app.include_router(trainee.router)
 app.include_router(plan.router)
 app.include_router(item.router)
+app.include_router(profile.router)
+app.include_router(user_dashboard.router)
+
 
 # swagger ui
 @app.get("/docs", include_in_schema=False)

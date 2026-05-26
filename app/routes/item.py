@@ -16,6 +16,7 @@ router = APIRouter(
 async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
     tenant = request.state.tenant.id
     collection_name = f"{plan_type}_items"
+    user = request.state.user
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
@@ -37,10 +38,9 @@ async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id
 async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
     collection_name = f"{plan_type}_items"
-
     item = get_item_by_id(pb, tenant, collection_name, id)
-
     tenant_name = request.state.tenant
 
     if user.role == "trainee":
