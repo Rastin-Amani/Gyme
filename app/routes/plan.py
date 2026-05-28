@@ -151,7 +151,6 @@ async def plan_create(
 async def plan_update(
     request: Request,
     id: str,
-    title: str = Form(...),
     trainee:str = Form(None),
     type: str = Form(...),
     start_date: str = Form(None),
@@ -165,7 +164,6 @@ async def plan_update(
     tenant = request.state.tenant.id # Passing the ID string
     
     data = {
-        "title": title,
         "type": type,
         "trainee": trainee,
         "start_date": start_date,
