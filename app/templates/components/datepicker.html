@@ -6,6 +6,7 @@
 {% set modal_title = modal_title | default("انتخاب تاریخ") %}
 {% set confirm_text = confirm_text | default("تایید") %}
 {% set cancel_text = cancel_text | default("بستن") %}
+{% set required = required | default("-") %}
 
 <div
     class="form-control w-full"
@@ -16,20 +17,22 @@
 
     <!-- Label -->
     {% if input_label %}
-        <label class="label">
+        <label class="floating-label">
             <span class="label-text">{{ input_label }}</span>
+            <input
+                type="text"
+                readonly
+                x-model="formattedDate"
+                placeholder="{{ placeholder }}"
+                class="input input-bordered w-full font-sans cursor-pointer validator"
+                @click="openModal()"
+                {{ required }}
+            />
+            <div class="validator-hint hidden">این فیلد اجباریه.</div>
         </label>
     {% endif %}
 
     <!-- Visible Input -->
-    <input
-        type="text"
-        readonly
-        x-model="formattedDate"
-        placeholder="{{ placeholder }}"
-        class="input input-bordered w-full font-sans cursor-pointer"
-        @click="openModal()"
-    />
 
     <!-- Modal -->
     <dialog x-ref="modalRef" class="modal">

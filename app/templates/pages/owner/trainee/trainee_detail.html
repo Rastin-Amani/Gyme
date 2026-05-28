@@ -10,7 +10,7 @@
                     <span class="text-sm opacity-50">{{ trainee.email or '-' }}</span>
                 </div>
             </div>
-            <div class="avatar placeholder">
+            <div class="avatar avatar-placeholder">
                 <div class="bg-base-100 text-neutral-content w-10 h-10 rounded-full text-center">
                     <span class="text-xs">
                         {{ trainee.first_name[0] }}{{ trainee.last_name[0] }}
@@ -86,10 +86,12 @@
         </div>
 
         <div class="mt-4">
-            <div class="divider text-xs opacity-50">سوابق</div>
-            <div class="bg-base-200 p-4 rounded-lg">
-                <!-- This is where your future records component will go -->
-                <p class="text-sm opacity-60">هیچ سابقه ثبت‌شده‌ای موجود نیست.</p>
+            <div class="divider text-xs opacity-50">برنامه‌ها</div>
+            <div class="bg-base-200 p-4 text-center card">
+                <p class="text-sm opacity-60 p-4">
+                    <span class="status status-secondary animate-bounce ml-1"></span>
+                    برای {{ trainee.first_name ~ ' ' ~ trainee.last_name }} برنامه‌ای ثبت نکردید.
+                </p>
             </div>
         </div>
     </div>

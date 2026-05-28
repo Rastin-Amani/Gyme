@@ -12,71 +12,93 @@
                 class="input input-bordered w-full"
             />
         </div> -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4">
             <div class="form-control">
-                <label class="label"><span class="label-text">نوع برنامه</span></label>
-                <select name="type" class="select select-bordered w-full">
-                    <option value="training" {{ 'selected' if plan.type == 'training' else '' }}>
-                        تمرینی
-                    </option>
-                    <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>
-                        غذایی
-                    </option>
-                    <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>
-                        استروئیدی
-                    </option>
-                </select>
-            </div>
-
-            <div class="form-control">
-                <label class="label"><span class="label-text">شاگرد</span></label>
-                <select name="trainee" class="select select-bordered w-full">
-                    {% for trainee in trainees %}
-                        <option value="{{ trainee.id }}">
-                            {{ trainee.first_name ~ ' ' ~   trainee.last_name }}
+                <label class="select w-full">
+                    <span class="label">نوع برنامه</span>
+                    <select name="type">
+                        <option
+                            value="training"
+                            {{ 'selected' if plan.type == 'training' else '' }}
+                        >
+                            تمرینی
                         </option>
-                    {% endfor %}
-                </select>
+                        <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>
+                            غذایی
+                        </option>
+                        <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>
+                            استروئیدی
+                        </option>
+                    </select>
+                </label>
             </div>
 
-            <div>
-                {% with name="start_date", label="تاریخ شروع", value=plan.start_date %}
-                    {% include 'components/datepicker.html' %}
-                {% endwith %}
-            </div>
-            <div>
-                {% with name="end_date", label="تاریخ پایان", value=plan.end_date %}
-                    {% include 'components/datepicker.html' %}
-                {% endwith %}
-            </div>
-            <div class="form-control ">
-                <label class="label"><span class="label-text">روز در هفته</span></label>
-                <input
-                    type="number"
-                    name="days_per_week"
-                    value="{{ plan.days_per_week }}"
-                    required
-                    placeholder="مثل: ۳"
-                    class="input input-bordered w-full text-right"
-                />
-            </div>
             <div class="form-control">
-                <label class="label"><span class="lable-text">وضعیت</span></label>
-                <select name="status" class="select select-bordered w-full">
-                    <option value="active" {{ 'selected' if plan.status == 'active' else '' }}>
-                        فعال
-                    </option>
-                    <option value="inactive" {{ 'selected' if plan.status == 'inactive' else '' }}>
-                        غیرفعال
-                    </option>
-                </select>
+                <label class="select w-full">
+                    <span class="label">شاگرد</span>
+                    <select name="trainee" class="select select-bordered w-full">
+                        {% for trainee in trainees %}
+                            <option value="{{ trainee.id }}">
+                                {{ trainee.first_name ~ ' ' ~   trainee.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {% with name="start_date", label="تاریخ شروع", placeholder="تاریخ شروع", value=plan.start_date %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+                <div>
+                    {% with name="end_date", label="تاریخ پایان", placeholder= "تاریخ پایان", value=plan.end_date %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control ">
+                    <label class="input">
+                        <span class="label">روز در هفته</span>
+                        <input
+                            type="number"
+                            name="days_per_week"
+                            value="{{ plan.days_per_week or '3' }}"
+                            required
+                        />
+                    </label>
+                </div>
+                <div class="form-control">
+                    <label class="input select">
+                        <span class="label">وضعیت</span>
+                        <select name="status">
+                            <option
+                                value="active"
+                                {{ 'selected' if plan.status == 'active' else '' }}
+                            >
+                                فعال
+                            </option>
+                            <option
+                                value="inactive"
+                                {{ 'selected' if plan.status == 'inactive' else '' }}
+                            >
+                                غیرفعال
+                            </option>
+                        </select>
+                    </label>
+                </div>
             </div>
         </div>
         <!-- Notes -->
         <div class="form-control">
-            <label class="label"><span class="label-text">یادداشت تکمیلی</span></label>
-            <textarea name="notes" class="textarea textarea-bordered h-24 w-full">
-                {{ plan.notes }}</textarea
+            <textarea
+                name="notes"
+                class="textarea textarea-bordered h-24 w-full"
+                placeholder="یادداشت"
+            >
+                {{ plan.notes }}
+            </textarea
             >
         </div>
 

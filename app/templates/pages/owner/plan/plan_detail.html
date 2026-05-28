@@ -161,8 +161,11 @@
                             {% endif %}
                         </div>
                     {% else %}
-                        <div class="bg-base-200 p-4 text-center">
-                            <p class="text-sm opacity-60">هیچ آیتمی ثبت نشده است.</p>
+                        <div class="bg-base-200 p-4 text-center card">
+                            <p class="text-sm opacity-60 p-4">
+                                <span class="status status-secondary animate-bounce ml-1"></span>
+                                هیچ آیتمی ثبت نشده نکردید.
+                            </p>
                         </div>
                     {% endfor %}
                 </div>
