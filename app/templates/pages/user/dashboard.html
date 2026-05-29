@@ -150,14 +150,14 @@
         <section id="tab-training" class="hidden">
             {% if plans['training'] %}
                 {% for p in plans['training'] %}
-                    <button
-                        hx-post="/user/plans/{{ p['id'] }}/done"
-                        class="btn btn-primary w-full mb-4"
-                    >
-                        انجام شد
-                    </button>
                     <div class="mb-6">
                         {% for item in p['items'] %}
+                            <button
+                                hx-post="/user/plans/{{ p['id'] }}/done"
+                                class="btn btn-primary w-full mb-4"
+                            >
+                                انجام شد
+                            </button>
                             <div class="card bg-base-200">
                                 <div class="card-body p-4 text-right justify-between gap-4">
                                     <div class="flex flex-col gap-2">
@@ -195,7 +195,9 @@
                                 </div>
                             </div>
                         {% else %}
-                            <div class="text-center py-6 text-base-content/50 text-sm">
+                            <div
+                                class="text-center py-6 text-base-content/50 text-sm card bg-base-200"
+                            >
                                 آیتمی وجود ندارد 📭
                             </div>
                         {% endfor %}
@@ -211,14 +213,14 @@
         <section id="tab-steroid" class="hidden ">
             {% if plans['steroid'] %}
                 {% for p in plans['steroid'] %}
-                    <button
-                        hx-post="/user/plans/{{ p['id'] }}/done"
-                        class="btn btn-primary w-full mb-4"
-                    >
-                        انجام شد
-                    </button>
                     <div class="flex flex-col gap-3">
                         {% for item in p['items'] %}
+                            <button
+                                hx-post="/user/plans/{{ p['id'] }}/done"
+                                class="btn btn-primary w-full mb-4"
+                            >
+                                انجام شد
+                            </button>
                             <div class="card bg-base-200">
                                 <div class="card-body">
                                     <span class="font-bold">{{ item.name }}</span>
