@@ -15,7 +15,7 @@ def list_items_by_plan (pb, tenant, collection, plan=None, page=1, per_page=100)
         page=page,
         per_page=per_page,
         query_params={
-            "filter": f'tenant="{tenant}"',
+            "filter": f'tenant="{tenant}" && plan="{plan}"',
             "sort": "+seq,+order"
         }
     )
