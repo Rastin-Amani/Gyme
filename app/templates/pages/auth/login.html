@@ -1,47 +1,31 @@
-{% extends "layouts/dashboard.html" %} {% block dashboard_content %}
-<div class="max-w-md mx-auto mt-12">
-    <h1 class="text-2xl font-bold mb-6">{{title}}</h1>
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <div class="max-w-md mx-auto mt-12">
+        <h1 class="text-2xl font-bold mb-6">{{ title }}</h1>
 
-    {% if error %}
-    <div class="mb-4 p-3 rounded bg-red-100 text-red-700">{{ error }}</div>
-    {% endif %}
+        {% if error %}
+            <div class="mb-4 p-3 rounded bg-red-100 text-red-700">{{ error }}</div>
+        {% endif %}
 
-    <!-- app/templates/pages/login.html -->
-    <form
-        hx-post="/login"
-        hx-target="#main-content"
-        hx-swap="innerHTML"
-        hx-boost="true"
-        onsubmit="console.log('Form submit triggered')"
-    >
-        <!-- Hidden input to keep identity if login fails -->
-        <div class="flex flex-col gap-4">
-            <div>
-                <label class="block mb-2">ایمیل / یوزرنیم</label>
-                <input name="identity" class="input input-bordered w-full" required />
+        <!-- app/templates/pages/login.html -->
+        <form method="post" action="/login">
+            <!-- Hidden input to keep identity if login fails -->
+            <div class="flex flex-col gap-4">
+                <div>
+                    <label class="block mb-2">ایمیل / یوزرنیم</label>
+                    <input name="identity" class="input input-bordered w-full" required />
+                </div>
+                <div>
+                    <label class="block mb-2">پسورد</label>
+                    <input
+                        type="password"
+                        name="password"
+                        class="input input-bordered w-full"
+                        required
+                    />
+                </div>
+                <button type="submit" class="btn btn-primary w-full">ورود</button>
             </div>
-            <div>
-                <label class="block mb-2">پسورد</label>
-                <input
-                    type="password"
-                    name="password"
-                    class="input input-bordered w-full"
-                    required
-                />
-            </div>
-            <button type="submit" class="btn btn-primary w-full">ورود</button>
-        </div>
-    </form>
-
-    <!-- This handles redirecting via HTMX after login -->
-    <script>
-        document.body.addEventListener('htmx:beforeSwap', function (evt) {
-            if (evt.detail.xhr.status === 303) {
-                window.location.href =
-                    evt.detail.xhr.getResponseHeader('HX-Redirect') || '/dashboard';
-                evt.detail.shouldSwap = false;
-            }
-        });
-    </script>
-</div>
+        </form>
+    </div>
 {% endblock %}
