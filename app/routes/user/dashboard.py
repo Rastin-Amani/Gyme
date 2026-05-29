@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Response
 from ...templates import templates
 from fastapi.responses import HTMLResponse
 from app.services.trainee import get_trainee_by_user
@@ -63,3 +63,43 @@ async def trainee_dashboard(request: Request):
             "plans": categorized
         }
     )
+
+@router.post("/user/plans/{plan_id}/done")
+async def mark_plan_done(plan_id: str, request: Request):
+    pb = request.state.pb
+    tenant_id = request.state.tenant.id
+
+    # 1. Try to fetch existing progress
+    try:
+        records = pb.collection("plan_progress").get_full_list(
+            query_params={"filter": f'plan="{plan_id}" && tenant="{tenant_id}"'}
+        )
+        progress = records[0] if records else None
+    except Exception:
+        progress = None
+
+    # 2. Logic: Update existing OR Create new
+    if progress:
+        current_seq = getattr(progress, 'current_seq', 1)
+        next_seq = current_seq + 1 if current_seq < 7 else 7
+        
+        pb.collection("plan_progress").update(progress.id, {
+            "current_seq": next_seq
+        })
+    else:
+        pb.collection("plan_progress").create({
+            "tenant": tenant_id,
+            "plan": plan_id,
+            "current_seq": 2
+        })
+
+    # 3. Return an HTMX response to trigger the UI update ⚡
+    response = Response(status_code=200)
+    
+    # Use HX-Refresh to smoothly reload the current dashboard page
+    response.headers["HX-Refresh"] = "true" 
+    
+    # OR, if you strictly want to use HX-Redirect to a specific URL:
+    # response.headers["HX-Redirect"] = "/user/dashboard"
+    
+    return response
