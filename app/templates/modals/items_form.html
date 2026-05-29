@@ -3,7 +3,13 @@
 {% block modal_body %}
     <form
         hx-post="{{ '/items/' + item.id if item else '/items' }}"
-        hx-on:htmx:after-request="if(event.detail.successful) document.getElementById('modal-container').innerHTML = ''"
+        hx-boost="false"
+        hx-swap="none"
+        hx-on:htmx:after-request="if(event.detail.successful) {
+                    console.log('modal success, triggering refresh');
+                    document.getElementById('modal-container').innerHTML = '';
+                    htmx.trigger(document.body, 'performListRefresh');
+                    }"
         class="flex flex-col gap-2 text-right"
         dir="rtl"
     >
@@ -175,19 +181,7 @@
             >
                 لغو
             </button>
-            <button
-                type="submit"
-                class="btn btn-primary flex-3"
-                hx-on:htmx:after-request="
-                    if (event.detail.successful) {
-                        // 1. Clear the modal content immediately
-                        document.getElementById('modal-container').innerHTML = '';
-                        // 2. Trigger a specific event that the list wrapper will listen to.
-                        //    This event name is intentional to differentiate from other potential triggers.
-                        htmx.trigger(document.body, 'performListRefresh');
-                    }
-                "
-            >
+            <button type="submit" class="btn btn-primary flex-3">
                 <span class="text-center"></span>
                 {% if item %}بروزرسانی{% else %}افزودن به لیست{% endif %}
             </button>
