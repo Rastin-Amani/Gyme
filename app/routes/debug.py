@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Request
-from app.services.plan import list_plans, get_plan_by_id
-from app.services.item import list_items_by_plan
-from app.services.trainee import list_trainees
+from app.services.plan import list_plans, get_plan_by_id, get_plans_by_trainee
+from app.services.item import list_items_by_plan, get_items_by_plan_seq
+from app.services.trainee import list_trainees, get_trainee_by_user
+from app.services.progress import get_progress_by_plan
+
 
 router = APIRouter(prefix="/debug", tags=["debug"])
 
@@ -65,6 +67,68 @@ def debug_expand(request: Request):
     return {
         "user": user,
     }
+@router.get("/usertest")
+def debug_expand(request: Request):
+    pb = request.state.pb
+    # 🟢 Extract the string ID explicitly for your database filters
+    tenant_id = request.state.tenant.id 
+    user = request.state.user
+    
+    trainee = get_trainee_by_user(pb, tenant_id, user.id)
+    plans = get_plans_by_trainee(pb, tenant_id, trainee.id)
+
+    categorized = {"training": [], "diet": [], "steroid": []}
+
+    for p in plans:
+        plan_type = p.type.value if hasattr(p.type, 'value') else str(p.type)
+        
+        try:
+            progress = get_progress_by_plan(pb, tenant_id, p.id)
+            current_seq = progress.current_seq if progress else 1
+        except Exception as e:
+            progress = None
+            current_seq = 1
+
+        coll_name = f'{plan_type}_items'
+        try:
+            # 🟢 Passing tenant_id (string) and current_seq dynamically!
+            items = get_items_by_plan_seq(pb, tenant_id, coll_name, p.id, current_seq)
+        except Exception as e:
+            items = []
+
+        # 🟢 Map to native dict to keep Jinja2 templates happy
+        plan_dict = {
+            "id": getattr(p, 'id', None),
+            "title": getattr(p, 'title', None),
+            "start_date": getattr(p, 'start_date', None),
+            "end_date": getattr(p, 'end_date', None),
+            "progress": progress,
+            "items": items 
+        }
+
+        if plan_type in categorized:
+            categorized[plan_type].append(plan_dict)
+
+
+    return {
+        "title": "داشبورد کاربر",
+        "user": user,
+        "tenant": request.state.tenant, # Frontend might still want the object
+        "trainee": trainee,
+        "plans": categorized
+        }   
 
 
 
+
+@router.get("/test")
+def debug_expand(request: Request):
+    pb = request.state.pb
+    tenant = request.state.tenant
+    user = request.state.user
+
+
+    return {
+        "user": user.id,
+        "tenant_id": tenant.id,
+    }

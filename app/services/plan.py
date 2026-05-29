@@ -17,6 +17,14 @@ def get_plan_by_id (pb, tenant, id):
                 }
         )
 
+def get_plans_by_trainee (pb, tenant, trainee):
+        return pb.collection("plans").get_full_list(
+            query_params={
+                "filter":
+                f'tenant="{tenant}" && trainee="{trainee}"',
+                }
+        )
+
 def create_plan(pb, tenant, data: dict):
         payload = {
             **data,

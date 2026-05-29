@@ -21,11 +21,19 @@ def list_items_by_plan (pb, tenant, collection, plan=None, page=1, per_page=100)
     )
 
 def get_item_by_id (pb, tenant, collection, id):
-        return pb.collection(collection).get_one(id,
-            query_params={
-                "filter": f'tenant="{tenant}"',
-                }
-        )
+    return pb.collection(collection).get_one(id,
+        query_params={
+            "filter": f'tenant="{tenant}"',
+        }
+    )
+
+def get_items_by_plan_seq (pb, tenant, collection, plan, current_seq):
+    return pb.collection(collection).get_full_list(
+        query_params={
+            "filter": f'tenant="{tenant}" && plan= "{plan}" && seq= "{current_seq}"',
+            "order": "+seq"
+        }
+    )
 
 
 def create_item (pb, tenant, collection, data: dict):

@@ -1,3 +1,5 @@
+from pocketbase.errors import ClientResponseError
+
 def list_trainees(pb, tenant, page=1, per_page=50):
         return pb.collection("trainees").get_list(
             page=page,
@@ -9,11 +11,20 @@ def list_trainees(pb, tenant, page=1, per_page=50):
         )
 
 def get_trainee_by_id (pb, tenant, id):
-        return pb.collection("trainees").get_one(id,
-            query_params={
-                "filter": f'tenant="{tenant}"',
-                }
+    return pb.collection("trainees").get_first_list_item(
+        f'tenant="{tenant}" && id="{id}"'
         )
+
+def get_trainee_by_user (pb, tenant, user):
+    try:
+        return pb.collection("trainees").get_first_list_item(
+        f'tenant="{tenant}" && user="{user}"'
+        )
+    except ClientResponseError as e:
+        if e.status == 404:
+          return None
+        raise
+
 
 def create_trainee(pb, tenant, data: dict):
         payload = {
