@@ -4,6 +4,7 @@ from app.services.auth import create_user, update_user
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
+from app.services.plan import get_plans_by_trainee
 
 
 router = APIRouter(
@@ -55,10 +56,11 @@ async def trainees_new_form (request: Request):
 @router.get("/trainees/{id}")
 async def show_trainee_detail (request: Request, id: str):
     pb = request.state.pb
-    tenant = request.state.tenant.id
+    tenant = request.state.tenant
     user = request.state.user
-    trainee_data = get_trainee_by_id(pb, tenant, id)
+    trainee_data = get_trainee_by_id(pb, tenant.id, id)
     tenant_name = request.state.tenant
+    plans = get_plans_by_trainee(pb, tenant.id, id)
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
@@ -71,6 +73,7 @@ async def show_trainee_detail (request: Request, id: str):
         "tenant": tenant_name,
         "user": user,
         "trainee": trainee_data,
+        "plans": plans
         }
     )
 

@@ -95,12 +95,80 @@
 
         <div class="mt-4">
             <div class="divider text-xs opacity-50">برنامه‌ها</div>
-            <div class="bg-base-200 p-4 text-center card">
-                <p class="text-sm opacity-60 p-4">
-                    <span class="status status-secondary animate-bounce ml-1"></span>
-                    برنامه‌ای ثبت نشده!
-                </p>
-            </div>
+
+            {# Safely extract the list depending on if your service uses get_list() or get_full_list() #}
+            {% set plan_list = plans.items if plans.items is defined else plans %}
+
+            {% if plan_list and plan_list | length > 0 %}
+                <div class="flex flex-col gap-3">
+                    {% for plan in plan_list %}
+                        <div class="bg-base-200 p-4 card">
+                            <div class="flex justify-between items-center">
+                                <div class="max-w-[75%]">
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="font-bold text-sm truncate">
+                                            {% if plan.type == 'training' %}
+                                                برنامه تمرینی
+                                            {% elif plan.type == 'diet' %}
+                                                برنامه غذایی
+                                            {% elif plan.type == 'steroid' %}
+                                                برنامه استروئیدی
+                                            {% endif %}
+                                        </h3>
+                                        {% if plan.type == 'training' %}
+                                            <span class="text-xl">💪🏻</span>
+                                        {% elif plan.type == 'diet' %}
+                                            <span class="text-xl">🥑</span>
+                                        {% elif plan.type == 'steroid' %}
+                                            <span class="text-xl">💊</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="text-xs opacity-60 mt-2 flex flex-col gap-1">
+                                        <div>
+                                            وضعیت:
+                                            {% if plan.status == 'active' %}
+                                                فعال
+                                            {% elif plan.status == 'draft' %}
+                                                پیش‌نویس
+                                            {% elif plan.status == 'inactive' %}
+                                                غیرفعال
+                                            {% else %}
+                                                {{ plan.status }}
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            {% if plan.start_date %}
+                                                شروع: {{ plan.start_date | jalali_date }}
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            {% if plan.end_date %}
+                                                پایان: {{ plan.end_date | jalali_date }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <a
+                                        href="/plans/{{ plan.id }}"
+                                        class="btn btn-sm btn-ghost text-primary"
+                                    >
+                                        مشاهده
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="bg-base-200 p-4 text-center card">
+                    <p class="text-sm opacity-60 p-4 flex items-center justify-center">
+                        <span class="status status-secondary animate-bounce ml-2"></span>
+                        برنامه‌ای ثبت نشده!
+                    </p>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

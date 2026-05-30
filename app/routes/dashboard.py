@@ -2,6 +2,9 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from app.services.dashboard import get_owner_dashboard_stats
 from ..templates import templates
+from fastapi.responses import RedirectResponse
+
+
 
 router = APIRouter(tags=["Dashboard"])
 
@@ -14,7 +17,9 @@ async def owner_dashboard(request: Request, timeframe: str = "all"):
 
     # Fetch the stats based on the selected timeframe
     stats = get_owner_dashboard_stats(pb, tenant_id, timeframe)
-
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    
     context = {
         "title": "داشبورد مدیریت",
         "stats": stats,

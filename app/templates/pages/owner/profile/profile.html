@@ -25,7 +25,7 @@
             </div>
             <div>
                 <span class="opacity-60 block">تاریخ آخرین آپدیت</span>
-                <span class="font-medium">{{ tenant.domain }}</span>
+                <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
             </div>
         </div>
 
@@ -40,7 +40,7 @@
                     </div>
                     <div>
                         <span class="opacity-60 block">تم</span>
-                        <span class="font-medium">{{tenant.theme or '-'}}</span>
+                        <span class="font-medium">{{ tenant.theme or '-' }}</span>
                     </div>
                     <div></div>
                 </div>
