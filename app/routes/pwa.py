@@ -32,6 +32,7 @@ async def dynamic_manifest(request: Request):
         "short_name": tenant_name,
         "description": f"اپلیکیشن اختصاصی {tenant_name}",
         "start_url": "/dashboard",
+        "scope": "/", 
         "display": "standalone",
         "orientation": "portrait",
         "background_color": "#1d232a",

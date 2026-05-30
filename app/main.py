@@ -12,6 +12,7 @@ from .routes import plan
 from .routes import item
 from .routes import profile
 from .routes.user import dashboard as user_dashboard
+from .routes import pwa
 
 # middleware import
 from app.middleware import TenantMiddleware
@@ -40,6 +41,7 @@ app.include_router(plan.router)
 app.include_router(item.router)
 app.include_router(profile.router)
 app.include_router(user_dashboard.router)
+app.include_router(pwa.router)
 
 
 # swagger ui
