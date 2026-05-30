@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the FastAPI app and your pre-built statics folder
 
 COPY ./app ./app
+COPY ./static ./static
 
 # Start the FastAPI server (Update 'app.main:app' if your entry point is named differently)
 
