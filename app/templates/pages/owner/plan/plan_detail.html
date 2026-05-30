@@ -6,7 +6,7 @@
             <div class="text-center">
                 <h1 class="text-m font-semibold text-right ml-4">
                     برنامه‌ی
-                    {{ plan.expand.trainee.first_name ~ ' ' ~  plan.expand.trainee.last_name if plan.expand.trainee is defined and plan.expand.trainee.id else '-' }}
+                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                 </h1>
             </div>
         </div>

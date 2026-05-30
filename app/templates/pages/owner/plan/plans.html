@@ -36,7 +36,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            {{ plan.expand.trainee.first_name ~ ' ' ~  plan.expand.trainee.last_name if plan.expand.trainee is defined and plan.expand.trainee.id else '-' }}
+                                            {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                                         </td>
                                         <td>
                                             {% if plan.type == 'diet' %}
@@ -48,7 +48,7 @@
                                             {% endif %}
                                         </td>
                                         <td>
-                                            {{ plan.expand.coach.first_name if plan.expand.coach is defined and plan.expand.coach.email else '-' }}
+                                            {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
                                         </td>
                                         <td>{{ plan.days_per_week or '-' }}</td>
                                         <td>{{ plan.start_date | jalali_date or '-' }}</td>

@@ -5,15 +5,19 @@
         <div class="items-center justify-between bg-base-200 p-4 mb-6 card flex-row-reverse">
             <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">ویرایش</a>
             <div class="text-center">
-                <h1 class="text-m font-bold">{{ trainee.first_name }} {{ trainee.last_name }}</h1>
+                <h1 class="text-m font-bold">
+                    {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '-' }}
+                </h1>
                 <div>
-                    <span class="text-sm opacity-50">{{ trainee.email or '-' }}</span>
+                    <span class="text-sm opacity-50">
+                        {{ trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '-' }}
+                    </span>
                 </div>
             </div>
             <div class="avatar avatar-placeholder">
                 <div class="bg-base-100 text-neutral-content w-10 h-10 rounded-full text-center">
                     <span class="text-xs">
-                        {{ trainee.first_name[0] }}{{ trainee.last_name[0] }}
+                        {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '-' }}
                     </span>
                 </div>
             </div>
@@ -23,7 +27,9 @@
         <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
             <div>
                 <span class="opacity-60 block">تلفن</span>
-                <span class="font-medium">{{ trainee.phone or '-' }}</span>
+                <span class="font-medium">
+                    {{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '-' }}
+                </span>
             </div>
             <div>
                 <span class="opacity-60 block">جنسیت</span>
@@ -72,15 +78,17 @@
             <div class="grid grid-cols-1 gap-4 text-sm my-4">
                 <div class="flex flex-row gap-3 items-center">
                     <span class="opacity-60 block">سابقه تمرینی</span>
-                    <span class="font-medium">{{ trainee.birthdate | jalali_year or '-' }}</span>
+                    <span class="font-medium">
+                        {{ trainee.training_history | jalali_year or '-' }}
+                    </span>
                 </div>
                 <div class="flex flex-row gap-3 items-center">
                     <span class="opacity-60 block">مصرف استروئید</span>
-                    <span class="font-medium">{{ trainee.notes or '-' }}</span>
+                    <span class="font-medium">{{ trainee.steroid_history or '-' }}</span>
                 </div>
                 <div class="flex flex-row gap-3 items-center">
                     <span class="opacity-60 block">مصرف مکمل</span>
-                    <span class="font-medium">{{ trainee.weight or '-' }}</span>
+                    <span class="font-medium">{{ trainee.supplement_history or '-' }}</span>
                 </div>
             </div>
         </div>
@@ -90,7 +98,7 @@
             <div class="bg-base-200 p-4 text-center card">
                 <p class="text-sm opacity-60 p-4">
                     <span class="status status-secondary animate-bounce ml-1"></span>
-                    برای {{ trainee.first_name ~ ' ' ~ trainee.last_name }} برنامه‌ای ثبت نکردید.
+                    برنامه‌ای ثبت نشده!
                 </p>
             </div>
         </div>

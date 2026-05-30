@@ -39,7 +39,7 @@
                     <select name="trainee" class="select select-bordered w-full">
                         {% for trainee in trainees %}
                             <option value="{{ trainee.id }}">
-                                {{ trainee.first_name ~ ' ' ~   trainee.last_name }}
+                                {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '' }}
                             </option>
                         {% endfor %}
                     </select>

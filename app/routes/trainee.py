@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Request, Form
 from app.services.trainee import create_trainee, list_trainees, get_trainee_by_id, update_trainee
+from app.services.auth import create_user, update_user
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
@@ -105,23 +106,40 @@ async def trainee_create(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
-    email: str = Form(None),
-    phone: str = Form(None),
+    email: str = Form(...), 
+    phone: str = Form(None), # 🟢 Still captured from the HTML form
     gender: str = Form(None),
     birthdate: str = Form(None),
     height: int = Form(None),
     weight: int = Form(None),
     notes: str = Form(None),
-
 ):
     pb = request.state.pb
-    tenant = request.state.tenant.id # Passing the ID string
+    tenant_id = request.state.tenant.id 
     
-    data = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email,
-        "phone": phone,
+    # --- STEP 1: Create the Auth User ---
+    user_result = create_user(
+        pb=pb,
+        tenant_id=tenant_id,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        phone=phone, # 🟢 Handed off to the users collection
+        role="trainee"
+    )
+    
+    if not user_result["ok"]:
+        return HTMLResponse(
+            content=f"<div class='alert alert-error'>{user_result['error']}</div>", 
+            status_code=400
+        )
+        
+    new_user = user_result["user"]
+
+    # --- STEP 2: Create the Trainee Profile ---
+    trainee_data = {
+        "tenant": tenant_id,
+        "user": new_user.id,
         "status": "active",
         "gender": gender,
         "birthdate": birthdate,
@@ -130,11 +148,18 @@ async def trainee_create(
         "notes": notes,
     }
 
-    # Use your functional service
-    create_trainee(pb, tenant, data)
+    try:
+        # Assumes you have your create_trainee function imported
+        create_trainee(pb, tenant_id, trainee_data)
+    except Exception as e:
+        # Cleanup: Delete the auth user if the trainee profile fails to create
+        pb.collection("users").delete(new_user.id)
+        return HTMLResponse(
+            content="<div class='alert alert-error'>خطا در ایجاد پروفایل شاگرد!</div>", 
+            status_code=400
+        )
     
-    # After creation, HTMX can redirect the whole page back to the list
-    # or just return the updated list fragment.
+    # --- STEP 3: Success! Redirect back to the list ---
     return HTMLResponse(headers={"HX-Redirect": "/trainees"})
 
 @router.post("/trainees/{id}")
@@ -143,24 +168,49 @@ async def trainee_update(
     id: str,
     first_name: str = Form(...),
     last_name: str = Form(...),
-    email: str = Form(None),
+    email: str = Form(...), # Required for Auth User
     phone: str = Form(None),
     gender: str = Form(None),
     birthdate: str = Form(None),
     height: int = Form(None),
     weight: int = Form(None),
     notes: str = Form(None),
-
 ):
     pb = request.state.pb
-    tenant = request.state.tenant.id # Passing the ID string
+    tenant_id = request.state.tenant.id 
     
-    data = {
+    # --- STEP 1: Fetch existing trainee to get the User ID ---
+    try:
+        # Reusing your existing service to get the trainee record
+        trainee = get_trainee_by_id(pb, tenant_id, id)
+        user_id = trainee.user
+    except Exception:
+        return HTMLResponse(
+            content="<div class='alert alert-error'>Trainee not found!</div>", 
+            status_code=404
+        )
+
+    # --- STEP 2: Update the Auth User ---
+    user_data = {
         "first_name": first_name,
         "last_name": last_name,
         "email": email,
-        "phone": phone,
-        "status": "active",
+        "phone": phone
+    }
+    
+    try:
+        # Using the new service you just created
+        update_user(pb, user_id, user_data)
+    except Exception as e:
+        print(f"Failed to update user: {e}")
+        return HTMLResponse(
+            content="<div class='alert alert-error'>Failed to update user! (Email might already be in use)</div>", 
+            status_code=400
+        )
+
+    # --- STEP 3: Update the Trainee Profile ---
+    # Notice we removed name, email, and phone from this payload!
+    trainee_data = {
         "gender": gender,
         "birthdate": birthdate,
         "height": height,
@@ -168,9 +218,14 @@ async def trainee_update(
         "notes": notes,
     }
 
-    # Use your functional service
-    update_trainee(pb, id, data)
+    try:
+        update_trainee(pb, id, trainee_data)
+    except Exception as e:
+        print(f"Failed to update trainee: {e}")
+        return HTMLResponse(
+            content="<div class='alert alert-error'>Failed to update trainee profile!</div>", 
+            status_code=400
+        )
     
-    # After creation, HTMX can redirect the whole page back to the list
-    # or just return the updated list fragment.
+    # --- STEP 4: Success! Redirect back to the list ---
     return HTMLResponse(headers={"HX-Redirect": "/trainees"})
