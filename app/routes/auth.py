@@ -41,5 +41,5 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
     target_url = "/user/dashboard" if getattr(user, "role", None) == "trainee" else "/dashboard"
 
     response = RedirectResponse(url=target_url, status_code=303)
-    response.set_cookie("pb_auth", result["token"], httponly=True, secure=False)
+    response.set_cookie("pb_auth", result["token"], httponly=True, secure=True)
     return response
