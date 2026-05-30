@@ -1,0 +1,30 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block dashboard_content %}
+    <div class="bg-base-100 pb-24 ">
+        <div class="flex justify-between text-right flex-col gap-3 mb-8">
+            <h1 class="text-xl font-black">آمار کلی 📊</h1>
+
+            <select
+                name="timeframe"
+                class="select select-bordered w-full"
+                hx-get="/dashboard"
+                hx-target="#stats-container"
+                hx-swap="innerHTML"
+            >
+                <option value="all" {% if timeframe == 'all' %}selected{% endif %}>
+                    همه زمان‌ها
+                </option>
+                <option value="month" {% if timeframe == 'month' %}selected{% endif %}>
+                    این ماه
+                </option>
+                <option value="week" {% if timeframe == 'week' %}selected{% endif %}>
+                    این هفته
+                </option>
+            </select>
+        </div>
+        <div id="stats-container" class="flex flex-col gap-6">
+            {% include "components/dashboard_stats.html" %}
+        </div>
+    </div>
+{% endblock %}
