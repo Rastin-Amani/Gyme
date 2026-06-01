@@ -24,6 +24,7 @@
     <!-- hx-boost="true" makes all internal links act like an SPA -->
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true"> 
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl">
+            <div id="top-progress-bar" class="fixed top-0 right-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0"></div>
             <!-- This container will be updated by HTMX -->
             <main id="main-content" class="px-4">
                 {% block content %}{% endblock %}
@@ -33,5 +34,33 @@
 
         </div>
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const progressBar = document.getElementById("top-progress-bar");
+
+                // When any HTMX request starts
+                document.body.addEventListener('htmx:beforeRequest', function() {
+                    progressBar.style.opacity = '1';
+                    progressBar.style.width = '30%'; // Initial jump
+                    
+                    // Fake progress if the network is slow
+                    setTimeout(() => { 
+                        if(progressBar.style.opacity === '1') progressBar.style.width = '70%'; 
+                    }, 300);
+                });
+
+                // When the HTMX request finishes successfully
+                document.body.addEventListener('htmx:afterSettle', function() {
+                    progressBar.style.width = '100%'; // Snap to complete
+                    
+                    // Fade out and reset
+                    setTimeout(() => {
+                        progressBar.style.opacity = '0';
+                        setTimeout(() => { progressBar.style.width = '0%'; }, 300); 
+                    }, 300);
+                });
+            });
+        </script>
+
     </body>
 </html>
