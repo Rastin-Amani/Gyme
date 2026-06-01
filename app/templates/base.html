@@ -1,5 +1,5 @@
 <!doctype html>
-<html   data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'dim') }}" dir="rtl">
+<html data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'dim') }}" dir="rtl">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,60 +7,79 @@
         <link rel="icon" href="/favicon.ico">
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
+        
         {% if tenant.theme == 'custom' and tenant.brand_colors %}
         <style>
         :root {
-            /* These will only be used if the data-theme is 'tenant-theme' */
+            /* These will only be used if the data-theme is 'custom' */
             --color-primary: {{ tenant.brand_colors.primary }};
             --color-primary-content: {{ tenant.brand_colors.primary_content or '#ffffff' }};
-            --s--color-secondary: {{ tenant.brand_colors.secondary }};
+            --color-secondary: {{ tenant.brand_colors.secondary }};
             --color-accent: {{ tenant.brand_colors.accent }};
             --color-neutral: {{ tenant.brand_colors.neutral }};
             --color-base-100: {{ tenant.brand_colors.base_100 }};
-            }
+        }
         </style>
         {% endif %}
     </head>
-    <!-- hx-boost="true" makes all internal links act like an SPA -->
+    
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true"> 
+        
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl">
-            <div id="top-progress-bar" class="fixed top-0 right-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0"></div>
-            <!-- This container will be updated by HTMX -->
+            
+            <div id="top-progress-bar" class="fixed top-0 right-0 h-1 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 drop-shadow-md pointer-events-none"></div>
+            
             <main id="main-content" class="px-4">
                 {% block content %}{% endblock %}
+                
                 <div id="modal-container"></div>
-                <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2" s></div>
+                <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2"></div>
             </main>
 
         </div>
+        
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
+        
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 const progressBar = document.getElementById("top-progress-bar");
 
-                // When any HTMX request starts
-                document.body.addEventListener('htmx:beforeRequest', function() {
+                // 1. Define the animations
+                function startProgress() {
+                    progressBar.style.transition = 'width 0.3s ease-out, opacity 0.1s ease-in';
                     progressBar.style.opacity = '1';
-                    progressBar.style.width = '30%'; // Initial jump
+                    progressBar.style.width = '30%'; 
                     
-                    // Fake progress if the network is slow
+                    // Fake progress while waiting for the server
                     setTimeout(() => { 
                         if(progressBar.style.opacity === '1') progressBar.style.width = '70%'; 
-                    }, 300);
-                });
+                    }, 400);
+                }
 
-                // When the HTMX request finishes successfully
-                document.body.addEventListener('htmx:afterSettle', function() {
-                    progressBar.style.width = '100%'; // Snap to complete
+                function stopProgress() {
+                    progressBar.style.transition = 'width 0.2s ease-out, opacity 0.3s ease-out';
+                    progressBar.style.width = '100%'; // Snap to finish
                     
                     // Fade out and reset
                     setTimeout(() => {
                         progressBar.style.opacity = '0';
-                        setTimeout(() => { progressBar.style.width = '0%'; }, 300); 
+                        setTimeout(() => { 
+                            progressBar.style.transition = 'none'; // Turn off transition for reset
+                            progressBar.style.width = '0%'; 
+                        }, 300); 
                     }, 300);
-                });
+                }
+
+                // 2. Catch all HTMX clicks and forms (Powered by hx-boost!)
+                document.body.addEventListener('htmx:beforeRequest', startProgress);
+                document.body.addEventListener('htmx:afterSettle', stopProgress);
+
+                // 3. Catch native browser reloads (e.g., F5 or clicking 'Refresh')
+                window.addEventListener('beforeunload', startProgress);
+
+                // 4. Play a quick completion animation when a cold page first loads
+                stopProgress();
             });
         </script>
-
     </body>
 </html>
