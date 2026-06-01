@@ -27,7 +27,7 @@
         
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl">
             
-            <div id="top-progress-bar" class="fixed top-0 right-0 h-1 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 drop-shadow-md pointer-events-none"></div>
+            <div id="top-progress-bar" class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 drop-shadow-md pointer-events-none max-w-150 mx-auto"></div>
             
             <main id="main-content" class="px-4">
                 {% block content %}{% endblock %}
@@ -41,45 +41,51 @@
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
         
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const progressBar = document.getElementById("top-progress-bar");
+            // Helper function to ALWAYS get the fresh element from the current DOM
+            function getProgressBar() {
+                return document.getElementById("top-progress-bar");
+            }
 
-                // 1. Define the animations
-                function startProgress() {
-                    progressBar.style.transition = 'width 0.3s ease-out, opacity 0.1s ease-in';
-                    progressBar.style.opacity = '1';
-                    progressBar.style.width = '30%'; 
-                    
-                    // Fake progress while waiting for the server
+            function startProgress() {
+                const bar = getProgressBar();
+                if (!bar) return; // Safety check
+                
+                bar.style.transition = 'width 0.3s ease-out, opacity 0.1s ease-in';
+                bar.style.opacity = '1';
+                bar.style.width = '30%'; 
+                
+                // Fake progress while waiting for the server
+                setTimeout(() => { 
+                    if(bar.style.opacity === '1') bar.style.width = '70%'; 
+                }, 400);
+            }
+
+            function stopProgress() {
+                const bar = getProgressBar();
+                if (!bar) return; // Safety check
+                
+                bar.style.transition = 'width 0.2s ease-out, opacity 0.3s ease-out';
+                bar.style.width = '100%'; // Snap to finish
+                
+                // Fade out and reset
+                setTimeout(() => {
+                    bar.style.opacity = '0';
                     setTimeout(() => { 
-                        if(progressBar.style.opacity === '1') progressBar.style.width = '70%'; 
-                    }, 400);
-                }
+                        bar.style.transition = 'none'; // Turn off transition for reset
+                        bar.style.width = '0%'; 
+                    }, 300); 
+                }, 300);
+            }
 
-                function stopProgress() {
-                    progressBar.style.transition = 'width 0.2s ease-out, opacity 0.3s ease-out';
-                    progressBar.style.width = '100%'; // Snap to finish
-                    
-                    // Fade out and reset
-                    setTimeout(() => {
-                        progressBar.style.opacity = '0';
-                        setTimeout(() => { 
-                            progressBar.style.transition = 'none'; // Turn off transition for reset
-                            progressBar.style.width = '0%'; 
-                        }, 300); 
-                    }, 300);
-                }
+            // 🟢 Attach to 'document' instead of 'document.body' so they survive page swaps!
+            document.addEventListener('htmx:beforeRequest', startProgress);
+            document.addEventListener('htmx:afterSettle', stopProgress);
 
-                // 2. Catch all HTMX clicks and forms (Powered by hx-boost!)
-                document.body.addEventListener('htmx:beforeRequest', startProgress);
-                document.body.addEventListener('htmx:afterSettle', stopProgress);
+            // Catch native browser reloads (e.g., F5 or clicking 'Refresh')
+            window.addEventListener('beforeunload', startProgress);
 
-                // 3. Catch native browser reloads (e.g., F5 or clicking 'Refresh')
-                window.addEventListener('beforeunload', startProgress);
-
-                // 4. Play a quick completion animation when a cold page first loads
-                stopProgress();
-            });
+            // Play a quick completion animation when a cold page first loads
+            document.addEventListener("DOMContentLoaded", stopProgress);
         </script>
     </body>
 </html>
