@@ -187,11 +187,18 @@
             </div>
         {% endif %}
 
-        <div class="form-control w-full mt-2 flex flex-col">
-            <label class="floating-label"><span class="label-text">توضیحات اضافی</span></label>
-            <textarea name="notes" class="textarea textarea-bordered h-20 w-full">
-                {{ item.notes or '' }}</textarea
-            >
+        <div class="form-control">
+            {% if item.notes and item.notes.strip() %}
+                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
+                    {{ item.notes.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="notes"
+                    class="textarea textarea-bordered h-12 w-full"
+                    placeholder="یادداشت"
+                ></textarea>
+            {% endif %}
         </div>
 
         <div class="hidden">

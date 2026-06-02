@@ -92,14 +92,17 @@
         </div>
         <!-- Notes -->
         <div class="form-control">
-            <textarea
-                name="notes"
-                class="textarea textarea-bordered h-24 w-full"
-                placeholder="یادداشت"
-            >
-                {{ plan.notes }}
-            </textarea
-            >
+            {% if plan.notes and plan.notes.strip() %}
+                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
+                    {{ plan.notes.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="notes"
+                    class="textarea textarea-bordered h-12 w-full"
+                    placeholder="یادداشت"
+                ></textarea>
+            {% endif %}
         </div>
 
         <!-- Actions -->

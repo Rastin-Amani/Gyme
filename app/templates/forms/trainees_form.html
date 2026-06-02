@@ -41,9 +41,7 @@
         <!-- Contact Info -->
         <div class="grid grid-cols-1 gap-4">
             <div class="form-control">
-                <label
-                    class="input w-full validator read-only:bg-base-200 read-only:border-base-200 read-only:text-base-content/50 read-only:cursor-not-allowed read-only:focus:outline-none"
-                >
+                <label class="input w-full validator ">
                     <span class="label">ایمیل</span>
                     {% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
                     <input
@@ -148,13 +146,17 @@
         </div>
         <!-- Notes -->
         <div class="form-control">
-            <textarea
-                name="notes"
-                class="textarea textarea-bordered h-12 w-full"
-                placeholder="یادداشت"
-            >
-                {{ trainee.notes or '' }}</textarea
-            >
+            {% if trainee.notes and trainee.notes.strip() %}
+                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
+                    {{ trainee.notes.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="notes"
+                    class="textarea textarea-bordered h-12 w-full"
+                    placeholder="یادداشت"
+                ></textarea>
+            {% endif %}
         </div>
 
         <!-- Actions -->

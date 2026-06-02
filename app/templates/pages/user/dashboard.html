@@ -81,8 +81,9 @@
 
         <section id="tab-diet" class="{% if active_tab != 'diet' %}hidden{% endif %}">
             {% if plans['diet'] %}
-                {% for p in plans['diet'] %}
-                    {% if p['items'] %}
+                {# 🟢 FIXED: Loop filters out empty plans automatically! #}
+                {% for p in plans['diet'] if p['items'] %}
+                    <div class="mb-6">
                         {% set meal_categories = ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
@@ -98,7 +99,7 @@
                                     {{ category }}
                                 </div>
                                 {% for item in category_items %}
-                                    <div class="card bg-base-200 border border-base-200">
+                                    <div class="card bg-base-200 border border-base-200 mb-3">
                                         <div
                                             class="card-body p-3 flex-row items-center justify-between"
                                         >
@@ -129,7 +130,7 @@
                         {% if other_items %}
                             <div class="divider divider-start text-sm opacity-30">سایر</div>
                             {% for item in other_items %}
-                                <div class="card bg-base-200">
+                                <div class="card bg-base-200 mb-3">
                                     <div
                                         class="card-body p-3 flex-row items-center justify-between"
                                     >
@@ -150,11 +151,12 @@
                                 </div>
                             {% endfor %}
                         {% endif %}
-                    {% else %}
-                        <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
-                            آیتمی وجود ندارد 📭
-                        </div>
-                    {% endif %}
+                    </div>
+                {% else %}
+                    {# This triggers ONLY if all diet plans are empty #}
+                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                        آیتمی وجود ندارد 📭
+                    </div>
                 {% endfor %}
             {% else %}
                 <div class="text-center py-10 text-base-content/50 card bg-base-200">
@@ -165,92 +167,27 @@
 
         <section id="tab-training" class="{% if active_tab != 'training' %}hidden{% endif %}">
             {% if plans['training'] %}
-                {% for p in plans['training'] %}
+                {# 🟢 FIXED: Loop filters out empty plans automatically! #}
+                {% for p in plans['training'] if p['items'] %}
                     <div class="mb-6">
-                        {% if p['items'] %}
-                            <!-- 🟢 FIXED: Button only shows if items actually exist! -->
-                            <button
-                                hx-post="/user/plans/{{ p['id'] }}/done"
-                                class="btn btn-primary w-full mb-4"
-                            >
-                                انجام شد
-                            </button>
+                        <button
+                            hx-post="/user/plans/{{ p['id'] }}/done"
+                            class="btn btn-primary w-full mb-4"
+                        >
+                            انجام شد
+                        </button>
 
-                            {# 🟢 Jinja2 logic to group training items chronologically #}
-                            {% set training_categories = ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+                        {# Jinja2 logic to group training items chronologically #}
+                        {% set training_categories = ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
 
-                            {% for category in training_categories %}
-                                {# Change 'category' below to match your exact PocketBase field name if different #}
-                                {% set category_items = p['items'] | selectattr('category', 'equalto', category) | list %}
+                        {% for category in training_categories %}
+                            {% set category_items = p['items'] | selectattr('category', 'equalto', category) | list %}
 
-                                {% if category_items %}
-                                    <div class="divider divider-start text-sm opacity-30">
-                                        {{ category }}
-                                    </div>
-                                    {% for item in category_items %}
-                                        <div class="card bg-base-200 mb-3">
-                                            <div
-                                                class="card-body p-4 text-right justify-between gap-4"
-                                            >
-                                                <div class="flex flex-col gap-2">
-                                                    <div class="flex justify-between">
-                                                        <span class="font-bold">
-                                                            {{ item.name }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="flex gap-3 justify-start items-center flex-wrap"
-                                                >
-                                                    {% if item.sets and item.reps %}
-                                                        <div
-                                                            class="badge badge-primary justify-end"
-                                                        >
-                                                            <span class="font-bold">
-                                                                {{ item.sets }}
-                                                            </span>
-                                                            ست ×
-                                                            <span class="font-bold">
-                                                                {{ item.reps }}
-                                                            </span>
-                                                            تکرار
-                                                        </div>
-                                                    {% endif %}
-                                                    {% if item.weight %}
-                                                        <div
-                                                            class="badge badge-primary badge-sm badge-soft"
-                                                        >
-                                                            {{ item.weight }} کیلوگرم
-                                                        </div>
-                                                    {% endif %}
-                                                    {% if item.rest_seconds %}
-                                                        <div
-                                                            class="badge badge-primary badge-sm badge-soft"
-                                                        >
-                                                            {{ item.rest_seconds }} ثانیه
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                                {% if item.notes %}
-                                                    <div class="bg-base-100 w-full card">
-                                                        <span
-                                                            class="text-xs text-base-content/60 py-4 px-2"
-                                                        >
-                                                            {{ item.notes }}
-                                                        </span>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
-
-                            {# Catch-all for training items with missing or custom categories #}
-                            {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
-                            {% if other_training_items %}
-                                <div class="divider divider-start text-sm opacity-30">سایر</div>
-                                {% for item in other_training_items %}
+                            {% if category_items %}
+                                <div class="divider divider-start text-sm opacity-30">
+                                    {{ category }}
+                                </div>
+                                {% for item in category_items %}
                                     <div class="card bg-base-200 mb-3">
                                         <div class="card-body p-4 text-right justify-between gap-4">
                                             <div class="flex flex-col gap-2">
@@ -301,13 +238,64 @@
                                     </div>
                                 {% endfor %}
                             {% endif %}
-                        {% else %}
-                            <div
-                                class="text-center py-6 text-base-content/50 text-sm card bg-base-200"
-                            >
-                                آیتمی وجود ندارد 📭
-                            </div>
+                        {% endfor %}
+
+                        {# Catch-all for training items with missing or custom categories #}
+                        {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
+                        {% if other_training_items %}
+                            <div class="divider divider-start text-sm opacity-30">سایر</div>
+                            {% for item in other_training_items %}
+                                <div class="card bg-base-200 mb-3">
+                                    <div class="card-body p-4 text-right justify-between gap-4">
+                                        <div class="flex flex-col gap-2">
+                                            <div class="flex justify-between">
+                                                <span class="font-bold">{{ item.name }}</span>
+                                            </div>
+                                        </div>
+                                        <div
+                                            class="flex gap-3 justify-start items-center flex-wrap"
+                                        >
+                                            {% if item.sets and item.reps %}
+                                                <div class="badge badge-primary justify-end">
+                                                    <span class="font-bold">{{ item.sets }}</span>
+                                                    ست ×
+                                                    <span class="font-bold">{{ item.reps }}</span>
+                                                    تکرار
+                                                </div>
+                                            {% endif %}
+                                            {% if item.weight %}
+                                                <div
+                                                    class="badge badge-primary badge-sm badge-soft"
+                                                >
+                                                    {{ item.weight }} کیلوگرم
+                                                </div>
+                                            {% endif %}
+                                            {% if item.rest_seconds %}
+                                                <div
+                                                    class="badge badge-primary badge-sm badge-soft"
+                                                >
+                                                    {{ item.rest_seconds }} ثانیه
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if item.notes %}
+                                            <div class="bg-base-100 w-full card">
+                                                <span
+                                                    class="text-xs text-base-content/60 py-4 px-2"
+                                                >
+                                                    {{ item.notes }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
                         {% endif %}
+                    </div>
+                {% else %}
+                    {# This triggers ONLY if all training plans are empty #}
+                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                        آیتمی وجود ندارد 📭
                     </div>
                 {% endfor %}
             {% else %}
@@ -319,31 +307,27 @@
 
         <section id="tab-steroid" class="{% if active_tab != 'steroid' %}hidden{% endif %}">
             {% if plans['steroid'] %}
-                {% for p in plans['steroid'] %}
+                {# 🟢 FIXED: Loop filters out empty plans automatically! #}
+                {% for p in plans['steroid'] if p['items'] %}
                     <div class="mb-6 flex flex-col gap-3">
-                        {% if p['items'] %}
-                            <!-- 🟢 FIXED: Button only shows once per plan and only if items exist! -->
-                            <button
-                                hx-post="/user/plans/{{ p['id'] }}/done"
-                                class="btn btn-primary w-full mb-4"
-                            >
-                                انجام شد
-                            </button>
-
-                            {% for item in p['items'] %}
-                                <div class="card bg-base-200">
-                                    <div class="card-body">
-                                        <span class="font-bold">{{ item.name }}</span>
-                                    </div>
+                        <button
+                            hx-post="/user/plans/{{ p['id'] }}/done"
+                            class="btn btn-primary w-full mb-4"
+                        >
+                            انجام شد
+                        </button>
+                        {% for item in p['items'] %}
+                            <div class="card bg-base-200">
+                                <div class="card-body">
+                                    <span class="font-bold">{{ item.name }}</span>
                                 </div>
-                            {% endfor %}
-                        {% else %}
-                            <div
-                                class="text-center py-6 text-base-content/50 text-sm card bg-base-200"
-                            >
-                                آیتمی وجود ندارد 📭
                             </div>
-                        {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {# This triggers ONLY if all steroid plans are empty #}
+                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                        آیتمی وجود ندارد 📭
                     </div>
                 {% endfor %}
             {% else %}
