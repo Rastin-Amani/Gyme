@@ -11,7 +11,8 @@ PUBLIC_PATHS = [
     "/static",          # Required so your CSS/JS loads on the login page!
     "/manifest.json",   # Required for your PWA
     "/sw.js",           # Required for offline caching
-    "/favicon.ico"
+    "/favicon.ico",
+    "/"
 ]
 
 class TenantMiddleware(BaseHTTPMiddleware):
