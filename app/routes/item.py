@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Request, Form, Query
+import json
 from app.services.item import (
     list_items, get_item_by_id, create_item, update_item
     )
@@ -58,6 +59,7 @@ async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)
         }
     )
 
+
 # Post requests
 @router.post("/items")
 async def item_create(
@@ -88,9 +90,6 @@ async def item_create(
         }
     collection_name = f"{plan_type}_items"
 
-    # Only send plan if it's a valid ID (prevents the 400 error)
-
-
     # Mapping logic per collection
     if plan_type == "training":
         data.update({
@@ -120,10 +119,24 @@ async def item_create(
             "order": order,
         })
 
+    try:
+        create_item(pb, tenant, collection_name, data)
+        
+        # 🟢 SUCCESS: Close modal and show success toast!
+        trigger_data = {
+            "closeModal": True,
+            "show-toast": {"message": "آیتم با موفقیت اضافه شد.", "type": "success"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+        
+    except Exception as e:
+        print(f"Error creating item: {e}")
+        # 🔴 ERROR: Keep modal open and show error toast!
+        trigger_data = {
+            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
-    create_item(pb, tenant, collection_name, data)
-
-    return HTMLResponse(status_code=204, headers={"HX-Trigger": "closeModal"})
 
 @router.post("/items/{id}")
 async def item_update(
@@ -186,8 +199,22 @@ async def item_update(
             "order": order,
         })
 
-    # Call your service with CORRECT ORDER: (pb, id, collection_name, data)
-    update_item(pb, id, collection_name, data)
+    try:
+        # Call your service with CORRECT ORDER: (pb, id, collection_name, data)
+        update_item(pb, id, collection_name, data)
 
-    # Trigger closeModal event to remove the modal from DOM
-    return HTMLResponse(status_code=204, headers={"HX-Trigger": "closeModal, refreshList"})
+        # 🟢 SUCCESS: Close modal, refresh the list, and show success toast!
+        trigger_data = {
+            "closeModal": True,
+            "refreshList": True,
+            "show-toast": {"message": "آیتم با موفقیت ویرایش شد.", "type": "success"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+        
+    except Exception as e:
+        print(f"Error updating item: {e}")
+        # 🔴 ERROR: Keep modal open and show error toast!
+        trigger_data = {
+            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
