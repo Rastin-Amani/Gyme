@@ -4,12 +4,17 @@ FROM python:3.11-slim
 # Set the working directory in the container
 WORKDIR /code
 
-# Copy requirements directly from the app folder and install them
-COPY ./app/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy the local packages folder into the image
+COPY ./packages ./packages
 
-# Copy the entire app folder (This automatically includes your static folder!)
+# Copy requirements file
+COPY ./app/requirements.txt .
+
+# Install ONLY from the local folder, ignore the internet
+RUN pip install --no-index --find-links=./packages -r requirements.txt
+
+# Copy the entire app folder
 COPY ./app ./app
 
-# Start the FastAPI server behind a proxy
+# Start the FastAPI server
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
