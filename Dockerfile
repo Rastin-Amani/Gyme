@@ -4,14 +4,11 @@ FROM python:3.11-slim
 # Set the working directory in the container
 WORKDIR /code
 
-# Copy the local packages folder into the image
-COPY ./packages ./packages
-
-# Copy requirements file
+# Copy requirements directly from the app folder
 COPY ./app/requirements.txt .
 
-# Install ONLY from the local folder, ignore the internet
-RUN pip install --no-index --find-links=./packages -r requirements.txt
+# Install using the Liara mirror to bypass network blocks
+RUN pip install --no-cache-dir -i https://package-mirror.liara.ir/repository/pypi/simple -r requirements.txt
 
 # Copy the entire app folder
 COPY ./app ./app
