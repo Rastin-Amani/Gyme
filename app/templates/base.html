@@ -1,5 +1,8 @@
 <!doctype html>
-<html data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'dim') }}" dir="rtl">
+<html
+    data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'gyme') }}"
+    dir="rtl"
+>
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +10,6 @@
         <link rel="icon" href="/favicon.ico" />
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
-
         {% if tenant.theme == 'custom' and tenant.brand_colors %}
             <style>        
             :root {
@@ -18,7 +20,7 @@
             --color-accent: {{ tenant.brand_colors.accent }};
             --color-neutral: {{ tenant.brand_colors.neutral }};
             --color-base-100: {{ tenant.brand_colors.base_100 }};
-        }</style>
+            }</style>
         {% endif %}
     </head>
 
@@ -89,59 +91,58 @@
             // Play a quick completion animation when a cold page first loads
             document.addEventListener('DOMContentLoaded', stopProgress);
         </script>
+        <!-- 🟢 FIXED Toast Notification Logic -->
         <script>
-            // Safety check: We only want to attach this listener ONCE,
-            // even if HTMX re-injects this script tag during a page swap.
             if (!window.toastListenerAttached) {
-                // Attached to 'document' so it is immortal
                 document.addEventListener('show-toast', function (evt) {
                     const message = evt.detail.message;
                     const type = evt.detail.type || 'info';
 
                     const toastContainer = document.getElementById('toast-container');
-                    if (!toastContainer) {
-                        console.warn('Toast container missing!');
-                        return;
-                    }
+                    if (!toastContainer) return;
 
                     const toast = document.createElement('div');
-                    toast.className = `alert alert-${type} alert-soft shadow-lg transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
 
+                    // 🟢 FIXED: Explicitly define the full Tailwind class names so they don't get purged!
+                    let colorClass = 'alert-info';
                     let icon = '';
 
                     if (type === 'info') {
+                        colorClass = 'alert-info';
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                     } else if (type === 'success') {
+                        colorClass = 'alert-success';
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     } else if (type === 'error') {
+                        colorClass = 'alert-error';
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     } else if (type === 'warning') {
+                        colorClass = 'alert-warning';
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
                     }
 
-                    // Inject the icon and the message
+                    // Inject the specific color class directly into the className
+                    toast.className = `alert ${colorClass} alert-soft shadow-lg transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
+
                     toast.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            ${icon}
-                            <span class="font-bold text-sm">${message}</span>
-                        </div>
-                    `;
+                <div class="flex items-center gap-3">
+                    ${icon}
+                    <span class="font-bold text-sm">${message}</span>
+                </div>
+            `;
 
                     toastContainer.appendChild(toast);
 
-                    // Give the browser 50ms to render the HTML before starting the slide-in animation
                     setTimeout(() => {
                         toast.classList.remove('translate-x-full', 'opacity-0');
                     }, 50);
 
-                    // Auto-remove after 4 seconds
                     setTimeout(() => {
                         toast.classList.add('opacity-0', 'scale-90');
                         setTimeout(() => toast.remove(), 300);
                     }, 4000);
                 });
 
-                // Mark it as attached so we never create duplicates!
                 window.toastListenerAttached = true;
             }
         </script>
