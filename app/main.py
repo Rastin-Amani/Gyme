@@ -3,6 +3,8 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
+from app.routes import marketing
+
 # route imports
 from .routes import auth
 from .routes import dashboard
@@ -42,6 +44,8 @@ app.include_router(item.router)
 app.include_router(profile.router)
 app.include_router(user_dashboard.router)
 app.include_router(pwa.router)
+app.include_router(marketing.router)
+
 
 
 # swagger ui

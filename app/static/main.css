@@ -4,6 +4,41 @@
     themes: all;
 }
 
+@plugin "daisyui/theme" {
+    name: 'gyme';
+    default: false;
+    prefersdark: false;
+    color-scheme: 'dark';
+    --color-base-100: oklch(14% 0.004 49.25);
+    --color-base-200: oklch(21% 0.006 56.043);
+    --color-base-300: oklch(26% 0.007 34.298);
+    --color-base-content: oklch(97% 0.001 106.424);
+    --color-primary: oklch(70% 0.14 182.503);
+    --color-primary-content: oklch(98% 0.014 180.72);
+    --color-secondary: oklch(79% 0.184 86.047);
+    --color-secondary-content: oklch(98% 0.026 102.212);
+    --color-accent: oklch(68% 0.169 237.323);
+    --color-accent-content: oklch(97% 0.013 236.62);
+    --color-neutral: oklch(14% 0.004 49.25);
+    --color-neutral-content: oklch(98% 0.001 106.423);
+    --color-info: oklch(62% 0.214 259.815);
+    --color-info-content: oklch(97% 0.014 254.604);
+    --color-success: oklch(69% 0.17 162.48);
+    --color-success-content: oklch(97% 0.021 166.113);
+    --color-warning: oklch(70% 0.213 47.604);
+    --color-warning-content: oklch(98% 0.016 73.684);
+    --color-error: oklch(63% 0.237 25.331);
+    --color-error-content: oklch(97% 0.013 17.38);
+    --radius-selector: 0.25rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 2px;
+    --depth: 0;
+    --noise: 1;
+}
+
 @theme {
     --font-sans: 'yekanbakh';
     --font-brand: 'yekanbakh';
