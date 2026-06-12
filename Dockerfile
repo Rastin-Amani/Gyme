@@ -13,5 +13,8 @@ RUN pip install --no-cache-dir -i https://package-mirror.liara.ir/repository/pyp
 # Copy the entire app folder
 COPY ./app ./app
 
+# Add this line to copy your data folder into the container!
+COPY ./data ./data
+
 # Start the FastAPI server
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
