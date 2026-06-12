@@ -143,14 +143,24 @@
                 </label>
             </div>
             <div class="form-control w-full">
-                <label class="floating-label">
-                    <span class="label-text">نام غذا</span>
+                <label class="floating-label w-full">
+                    <span>نام غذا</span>
+
                     <input
+                        list="food-options"
                         type="text"
                         name="food_name"
                         value="{{ item.food_name or '' }}"
+                        placeholder="نام غذا (انتخاب یا تایپ کنید)"
                         class="input input-bordered w-full"
+                        autocomplete="off"
                     />
+
+                    <datalist id="food-options">
+                        {% for name in food_names %}
+                            <option value="{{ name }}"></option>
+                        {% endfor %}
+                    </datalist>
                 </label>
             </div>
             <div class="form-control w-full">

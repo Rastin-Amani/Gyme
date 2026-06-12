@@ -15,6 +15,9 @@ router = APIRouter(
 df = pd.read_csv('data/Persian_Fitness_Exercises_Dataset.csv')
 EXERCISE_NAMES = df['نام حرکت (Exercise Name)'].dropna().unique().tolist()
 
+df = pd.read_csv('data/Persian_Diet_Foods_Dataset.csv')
+FOOD_NAMES = df['نام غذا/ماده (Persian Name)'].dropna().unique().tolist()
+
 # Get Requests
 @router.get("/items/new")
 async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
@@ -36,6 +39,7 @@ async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id
         "collection_name": collection_name,
         "item": None,
         "exercise_names": EXERCISE_NAMES,
+        "food_names": FOOD_NAMES,
         }
     )
 
@@ -61,6 +65,7 @@ async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)
         "plan_type": plan_type,
         "collection_name": collection_name,
         "exercise_names": EXERCISE_NAMES,
+        "food_names": FOOD_NAMES,
         }
     )
 
