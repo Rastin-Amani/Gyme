@@ -6,11 +6,14 @@ from app.services.item import (
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
-
+import pandas as pd
 
 router = APIRouter(
     tags=["items Management"]
 )
+
+df = pd.read_csv('data/Persian_Fitness_Exercises_Dataset.csv')
+EXERCISE_NAMES = df['نام حرکت (Exercise Name)'].dropna().unique().tolist()
 
 # Get Requests
 @router.get("/items/new")
@@ -32,6 +35,7 @@ async def item_edit_form (request: Request, plan_type: str = Query(...), plan_id
         "plan_id": plan_id,
         "collection_name": collection_name,
         "item": None,
+        "exercise_names": EXERCISE_NAMES,
         }
     )
 
@@ -56,6 +60,7 @@ async def item_edit_form (request: Request, id: str, plan_type: str = Query(...)
         "item": item,
         "plan_type": plan_type,
         "collection_name": collection_name,
+        "exercise_names": EXERCISE_NAMES,
         }
     )
 

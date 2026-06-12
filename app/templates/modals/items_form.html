@@ -14,18 +14,40 @@
         dir="rtl"
     >
         {% if plan_type == 'training' %}
-            <div class="form-control w-full">
-                <label class="floating-label">
-                    <span>نام حرکت</span>
+            <div class="form-control w-full flex flex-col gap-4">
+                <label class="floating-label w-full">
+                    <span>Exercise Name</span>
                     <input
+                        list="exercise-options"
                         type="text"
                         name="item_name"
                         value="{{ item.name or '' }}"
-                        placeholder="نام حرکت"
+                        placeholder="نام حرکت (انتخاب یا تایپ کنید)"
                         class="input input-bordered w-full validator"
+                        autocomplete="off"
                         required
                     />
-                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+
+                    <datalist id="exercise-options">
+                        {% for name in exercise_names %}
+                            <option value="{{ name }}"></option>
+                        {% endfor %}
+                    </datalist>
+
+                    <div class="validator-hint text-error text-xs mt-1 hidden">
+                        This field is required.
+                    </div>
+                </label>
+                <label class="floating-label w-full">
+                    <span>دسته‌بندی حرکت</span>
+
+                    <select name="category" class="select select-bordered w-full" required>
+                        <option value="گرم کردن">گرم کردن</option>
+                        <option value="حرکات اصلاحی">حرکات اصلاحی</option>
+                        <option value="اصلی" selected>اصلی</option>
+                        <option value="هوازی">هوازی</option>
+                        <option value="سرد کردن">سرد کردن</option>
+                    </select>
                 </label>
             </div>
 
@@ -104,13 +126,20 @@
         {% elif plan_type == 'diet' %}
             <div class="form-control w-full">
                 <label class="floating-label">
-                    <span class="label-text">نام وعده (صبحانه...)</span>
-                    <input
-                        type="text"
-                        name="meal_name"
-                        value="{{ item.meal_name or '' }}"
-                        class="input input-bordered w-full"
-                    />
+                    <span>نام وعده</span>
+                    <select name="meal_name" class="select select-bordered w-full" required>
+                        <option value="" {% if not item.meal_name %}selected{% endif %} disabled>
+                            انتخاب وعده...
+                        </option>
+                        {% for category in ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+                            <option
+                                value="{{ category }}"
+                                {% if item.meal_name == category %}selected{% endif %}
+                            >
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
                 </label>
             </div>
             <div class="form-control w-full">
