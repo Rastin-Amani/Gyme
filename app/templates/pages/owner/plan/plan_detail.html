@@ -112,34 +112,31 @@
                                     >
                                         ویرایش
                                     </button>
-                                    {% if item.notes %}
-                                        <p class="text-xs opacity-60 mt-2">
-                                            توضیحات: {{ item.notes }}
-                                        </p>
-                                    {% endif %}
                                 </div>
+                                {% if item.notes %}
+                                    <p class="text-xs opacity-60 mt-2">توضیحات: {{ item.notes }}</p>
+                                {% endif %}
                             {% elif plan.type == 'steroid' %}
                                 <div class="flex justify-between items-center">
-                                    <h3 class="font-bold text-sm">{{ item.name }}</h3>
-                                    <span class="badge badge-outline badge-sm">
-                                        {{ item.type }}
-                                    </span>
+                                    <div>
+                                        <h3 class="font-bold text-sm">{{ item.name }}</h3>
+                                        <p class="text-sm opacity-80 mt-1">
+                                            روز مصرف: {{ item.seq or '-' }}
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        class="btn btn-xs text-left"
+                                        hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
+                                        hx-target="#modal-container"
+                                        hx-swap="innerHTML"
+                                        hx-boost="false"
+                                        hx-select="unset"
+                                    >
+                                        ویرایش
+                                    </button>
                                 </div>
-                                <p class="text-sm opacity-80 mt-1">
-                                    دوز: {{ item.dosage }} | زمان مصرف: {{ item.frequency }} | مدت:
-                                    {{ item.duration }}
-                                </p>
-                                <button
-                                    type="button"
-                                    class="btn btn-xs text-left"
-                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                    hx-target="#modal-container"
-                                    hx-swap="innerHTML"
-                                    hx-boost="false"
-                                    hx-select="unset"
-                                >
-                                    ویرایش
-                                </button>
+
                                 {% if item.notes %}
                                     <p class="text-xs opacity-60 mt-2">توضیحات: {{ item.notes }}</p>
                                 {% endif %}
