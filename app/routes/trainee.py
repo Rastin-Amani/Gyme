@@ -110,15 +110,18 @@ async def trainee_create(
     first_name: str = Form(...),
     last_name: str = Form(...),
     email: str = Form(...), 
-    phone: str = Form(None), # 🟢 Still captured from the HTML form
+    phone: str = Form(None), 
     gender: str = Form(None),
     birthdate: str = Form(None),
     height: int = Form(None),
     weight: int = Form(None),
+    training_history: str = Form(None),   # 🟢 Added Field
+    steroid_history: str = Form(None),    # 🟢 Added Field
+    supplement_history: str = Form(None), # 🟢 Added Field
     notes: str = Form(None),
 ):
-    pb = request.state.pb
-    tenant_id = request.state.tenant.id 
+    pb = getattr(request.state, 'pb', None)
+    tenant_id = getattr(request.state, 'tenant', None).id 
     
     # --- STEP 1: Create the Auth User ---
     user_result = create_user(
@@ -127,13 +130,13 @@ async def trainee_create(
         email=email,
         first_name=first_name,
         last_name=last_name,
-        phone=phone, # 🟢 Handed off to the users collection
+        phone=phone,
         role="trainee"
     )
     
     if not user_result["ok"]:
         return HTMLResponse(
-            content=f"<div class='alert alert-error'>{user_result['error']}</div>", 
+            content=f"<div class='alert alert-error alert-soft'>{user_result['error']}</div>", 
             status_code=400
         )
         
@@ -148,21 +151,22 @@ async def trainee_create(
         "birthdate": birthdate,
         "height": height,
         "weight": weight,
+        "training_history": training_history,     # 🟢 Added Field
+        "steroid_history": steroid_history,       # 🟢 Added Field
+        "supplement_history": supplement_history, # 🟢 Added Field
         "notes": notes,
     }
 
     try:
-        # Assumes you have your create_trainee function imported
         create_trainee(pb, tenant_id, trainee_data)
     except Exception as e:
         # Cleanup: Delete the auth user if the trainee profile fails to create
         pb.collection("users").delete(new_user.id)
         return HTMLResponse(
-            content="<div class='alert alert-error'>خطا در ایجاد پروفایل شاگرد!</div>", 
+            content="<div class='alert alert-error alert-soft'>خطا در ایجاد پروفایل شاگرد!</div>", 
             status_code=400
         )
     
-    # --- STEP 3: Success! Redirect back to the list ---
     return HTMLResponse(headers={"HX-Redirect": "/trainees"})
 
 @router.post("/trainees/{id}")
@@ -171,29 +175,31 @@ async def trainee_update(
     id: str,
     first_name: str = Form(...),
     last_name: str = Form(...),
-    email: str = Form(...), # Required for Auth User
+    email: str = Form(...),
     phone: str = Form(None),
     gender: str = Form(None),
     birthdate: str = Form(None),
     height: int = Form(None),
     weight: int = Form(None),
+    training_history: str = Form(None),   # 🟢 Added Field
+    steroid_history: str = Form(None),    # 🟢 Added Field
+    supplement_history: str = Form(None), # 🟢 Added Field
     notes: str = Form(None),
 ):
-    pb = request.state.pb
-    tenant_id = request.state.tenant.id 
+    pb = getattr(request.state, 'pb', None)
+    tenant_id = getattr(request.state, 'tenant', None).id 
     
-    # --- STEP 1: Fetch existing trainee to get the User ID ---
+    # --- STEP 1: Fetch existing trainee ---
     try:
-        # Reusing your existing service to get the trainee record
         trainee = get_trainee_by_id(pb, tenant_id, id)
         user_id = trainee.user
     except Exception:
         return HTMLResponse(
-            content="<div class='alert alert-error'>Trainee not found!</div>", 
+            content="<div class='alert alert-error alert-soft'>Trainee not found!</div>", 
             status_code=404
         )
 
-    # --- STEP 2: Update the Auth User ---
+    # --- STEP 2: Update Auth User ---
     user_data = {
         "first_name": first_name,
         "last_name": last_name,
@@ -202,22 +208,23 @@ async def trainee_update(
     }
     
     try:
-        # Using the new service you just created
         update_user(pb, user_id, user_data)
     except Exception as e:
         print(f"Failed to update user: {e}")
         return HTMLResponse(
-            content="<div class='alert alert-error'>Failed to update user! (Email might already be in use)</div>", 
+            content="<div class='alert alert-error alert-soft'>Failed to update user!</div>", 
             status_code=400
         )
 
-    # --- STEP 3: Update the Trainee Profile ---
-    # Notice we removed name, email, and phone from this payload!
+    # --- STEP 3: Update Trainee Profile ---
     trainee_data = {
         "gender": gender,
         "birthdate": birthdate,
         "height": height,
         "weight": weight,
+        "training_history": training_history,     # 🟢 Added Field
+        "steroid_history": steroid_history,       # 🟢 Added Field
+        "supplement_history": supplement_history, # 🟢 Added Field
         "notes": notes,
     }
 
@@ -226,9 +233,8 @@ async def trainee_update(
     except Exception as e:
         print(f"Failed to update trainee: {e}")
         return HTMLResponse(
-            content="<div class='alert alert-error'>Failed to update trainee profile!</div>", 
+            content="<div class='alert alert-error alert-soft'>Failed to update trainee profile!</div>", 
             status_code=400
         )
     
-    # --- STEP 4: Success! Redirect back to the list ---
     return HTMLResponse(headers={"HX-Redirect": "/trainees"})
