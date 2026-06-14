@@ -19,14 +19,7 @@ from .routes import pwa
 # middleware import
 from app.middleware import TenantMiddleware
 
-APP_VERSION = "0.1.0"
-@app.get("/version")
-async def get_version():
-    return {"version": APP_VERSION}
 
-def get_current_version():
-    with open("version.txt", "r") as f:
-        return f.read().strip()
 
 ###disable default swagger ui
 app = FastAPI(
@@ -35,6 +28,17 @@ app = FastAPI(
     redoc_url=None,
     openapi_url="/openapi.json",
 )
+
+APP_VERSION = "0.1.0"
+@app.get("/version")
+def get_current_version():
+    with open("version.txt", "r") as f:
+        return f.read().strip()
+
+# Update your endpoint to call the function
+@app.get("/version")
+async def get_version():
+    return {"version": get_current_version()}
 
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
