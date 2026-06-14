@@ -5,7 +5,11 @@
 >
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <link rel="manifest" href="/manifest.json" />
@@ -152,61 +156,67 @@
         </script>
         <script>
             function generateIOSSplashScreen(logoUrl, bgColor) {
-                // 1. Only execute if the user is on an iOS device
                 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 if (!isIOS) return;
-
-                // 2. Check if running as a standalone PWA already to save resources
                 if (window.navigator.standalone === true) return;
 
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // 3. Get exact device pixel dimensions (Retina @2x or @3x)
-                const width = window.screen.width * window.devicePixelRatio;
-                const height = window.screen.height * window.devicePixelRatio;
+                // Logical screen size
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const pixelRatio = window.devicePixelRatio;
 
-                canvas.width = width;
-                canvas.height = height;
+                // Actual image size needs to be multiplied by pixel ratio
+                canvas.width = screenWidth * pixelRatio;
+                canvas.height = screenHeight * pixelRatio;
 
-                // 4. Paint the tenant's background color
                 ctx.fillStyle = bgColor;
-                ctx.fillRect(0, 0, width, height);
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // 5. Load the tenant's logo
                 const img = new Image();
-                img.crossOrigin = 'Anonymous'; // CRITICAL: Prevents CORS tainted canvas errors
+                img.crossOrigin = 'Anonymous';
 
                 img.onload = () => {
-                    // Scale logo to be 1/3 of the screen width
-                    const targetLogoWidth = width / 3;
+                    const targetLogoWidth = canvas.width / 3;
                     const scale = targetLogoWidth / img.width;
                     const targetLogoHeight = img.height * scale;
 
-                    // Center the logo
-                    const x = (width - targetLogoWidth) / 2;
-                    const y = (height - targetLogoHeight) / 2;
+                    const x = (canvas.width - targetLogoWidth) / 2;
+                    const y = (canvas.height - targetLogoHeight) / 2;
 
                     ctx.drawImage(img, x, y, targetLogoWidth, targetLogoHeight);
 
-                    // 6. Convert canvas to base64 image
                     const dataUrl = canvas.toDataURL('image/png');
 
-                    // 7. Inject the Apple startup image link tag
                     const link = document.createElement('link');
                     link.setAttribute('rel', 'apple-touch-startup-image');
                     link.setAttribute('href', dataUrl);
+
+                    // 🟢 THE FIX: Apple strictly requires this media query!
+                    link.setAttribute(
+                        'media',
+                        `(device-width: ${screenWidth}px) and (device-height: ${screenHeight}px) and (-webkit-device-pixel-ratio: ${pixelRatio})`
+                    );
+
                     document.head.appendChild(link);
+                    console.log('iOS Splash Screen successfully injected!');
+                };
+
+                // If the image fails to load (CORS issue), we catch it here
+                img.onerror = () => {
+                    console.error(
+                        'Failed to load logo for splash screen. Check CORS settings on the image host.'
+                    );
                 };
 
                 img.src = logoUrl;
             }
 
-            // 🟢 Inject your FastAPI / PocketBase Tenant Data Here
-            // Assuming request.state.tenant has logo_url and primary_color
             generateIOSSplashScreen(
                 "{{ request.state.tenant.logo_url | default('/static/default-logo.png') }}",
-                "{{ request.state.tenant.primary_color | default('#1d232a') }}" // Use DaisyUI base-100 hex here
+                "{{ request.state.tenant.primary_color | default('#1d232a') }}"
             );
         </script>
     </body>
