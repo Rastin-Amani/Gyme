@@ -16,7 +16,5 @@ COPY ./app ./app
 # Add this line to copy your data folder into the container!
 COPY ./data ./data
 
-COPY app/version.txt /code/version.txt
-
 # Start the FastAPI server
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
