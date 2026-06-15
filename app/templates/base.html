@@ -9,31 +9,34 @@
             name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
+        
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/static/icons/gyme.webp" />
+        
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
+        
         {% if tenant.theme == 'custom' and tenant.brand_colors %}
             <style>        
             :root {
-            /* These will only be used if the data-theme is 'custom' */
-            --color-primary: {{ tenant.brand_colors.primary }};
-            --color-primary-content: {{ tenant.brand_colors.primary_content or '#ffffff' }};
-            --color-secondary: {{ tenant.brand_colors.secondary }};
-            --color-accent: {{ tenant.brand_colors.accent }};
-            --color-neutral: {{ tenant.brand_colors.neutral }};
-            --color-base-100: {{ tenant.brand_colors.base_100 }};
-            }</style>
+                --color-primary: {{ tenant.brand_colors.primary }};
+                --color-primary-content: {{ tenant.brand_colors.primary_content or '#ffffff' }};
+                --color-secondary: {{ tenant.brand_colors.secondary }};
+                --color-accent: {{ tenant.brand_colors.accent }};
+                --color-neutral: {{ tenant.brand_colors.neutral }};
+                --color-base-100: {{ tenant.brand_colors.base_100 }};
+            }
+            </style>
         {% endif %}
     </head>
 
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
-        <div
-            class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content"
-        >
+        <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content">
+            
             <div
                 id="top-progress-bar"
                 class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 drop-shadow-md pointer-events-none max-w-150 mx-auto"
@@ -53,20 +56,18 @@
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
 
         <script>
-            // Helper function to ALWAYS get the fresh element from the current DOM
             function getProgressBar() {
                 return document.getElementById('top-progress-bar');
             }
 
             function startProgress() {
                 const bar = getProgressBar();
-                if (!bar) return; // Safety check
+                if (!bar) return; 
 
                 bar.style.transition = 'width 0.3s ease-out, opacity 0.1s ease-in';
                 bar.style.opacity = '1';
                 bar.style.width = '30%';
 
-                // Fake progress while waiting for the server
                 setTimeout(() => {
                     if (bar.style.opacity === '1') bar.style.width = '70%';
                 }, 400);
@@ -74,32 +75,26 @@
 
             function stopProgress() {
                 const bar = getProgressBar();
-                if (!bar) return; // Safety check
+                if (!bar) return; 
 
                 bar.style.transition = 'width 0.2s ease-out, opacity 0.3s ease-out';
-                bar.style.width = '100%'; // Snap to finish
+                bar.style.width = '100%'; 
 
-                // Fade out and reset
                 setTimeout(() => {
                     bar.style.opacity = '0';
                     setTimeout(() => {
-                        bar.style.transition = 'none'; // Turn off transition for reset
+                        bar.style.transition = 'none'; 
                         bar.style.width = '0%';
                     }, 300);
                 }, 300);
             }
 
-            // 🟢 Attach to 'document' instead of 'document.body' so they survive page swaps!
             document.addEventListener('htmx:beforeRequest', startProgress);
             document.addEventListener('htmx:afterSettle', stopProgress);
-
-            // Catch native browser reloads (e.g., F5 or clicking 'Refresh')
             window.addEventListener('beforeunload', startProgress);
-
-            // Play a quick completion animation when a cold page first loads
             document.addEventListener('DOMContentLoaded', stopProgress);
         </script>
-        <!-- 🟢 FIXED Toast Notification Logic -->
+
         <script>
             if (!window.toastListenerAttached) {
                 document.addEventListener('show-toast', function (evt) {
@@ -111,7 +106,6 @@
 
                     const toast = document.createElement('div');
 
-                    // 🟢 FIXED: Explicitly define the full Tailwind class names so they don't get purged!
                     let colorClass = 'alert-info';
                     let icon = '';
 
@@ -129,15 +123,14 @@
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
                     }
 
-                    // Inject the specific color class directly into the className
                     toast.className = `alert ${colorClass} alert-soft shadow-lg transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
 
                     toast.innerHTML = `
-                <div class="flex items-center gap-3">
-                    ${icon}
-                    <span class="font-bold text-sm">${message}</span>
-                </div>
-            `;
+                        <div class="flex items-center gap-3">
+                            ${icon}
+                            <span class="font-bold text-sm">${message}</span>
+                        </div>
+                    `;
 
                     toastContainer.appendChild(toast);
 
@@ -154,21 +147,22 @@
                 window.toastListenerAttached = true;
             }
         </script>
+        
         <script>
             function generateIOSSplashScreen(logoUrl, bgColor) {
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                if (!isIOS) return;
-                if (window.navigator.standalone === true) return;
+                
+                // 🔴 UNCOMMENT THESE 3 LINES FOR PRODUCTION (After testing on desktop)
+                // const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                // if (!isIOS) return;
+                // if (window.navigator.standalone === true) return;
 
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
-                // Logical screen size
                 const screenWidth = window.screen.width;
                 const screenHeight = window.screen.height;
                 const pixelRatio = window.devicePixelRatio;
 
-                // Actual image size needs to be multiplied by pixel ratio
                 canvas.width = screenWidth * pixelRatio;
                 canvas.height = screenHeight * pixelRatio;
 
@@ -194,28 +188,35 @@
                     link.setAttribute('rel', 'apple-touch-startup-image');
                     link.setAttribute('href', dataUrl);
 
-                    // 🟢 THE FIX: Apple strictly requires this media query!
                     link.setAttribute(
                         'media',
                         `(device-width: ${screenWidth}px) and (device-height: ${screenHeight}px) and (-webkit-device-pixel-ratio: ${pixelRatio})`
                     );
 
                     document.head.appendChild(link);
-                    console.log('iOS Splash Screen successfully injected!');
+                    console.log('✅ iOS Splash Screen successfully injected!');
                 };
 
-                // If the image fails to load (CORS issue), we catch it here
                 img.onerror = () => {
-                    console.error(
-                        'Failed to load logo for splash screen. Check CORS settings on the image host.'
-                    );
+                    console.error('❌ Failed to load logo for splash screen. Check CORS settings.');
                 };
 
                 img.src = logoUrl;
             }
 
+            // 🟢 Jinja2 logic to intelligently choose the PB URL or the local WebP fallback
+            {% if request.state.tenant and request.state.tenant.logo %}
+                {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                {% set col_id = request.state.tenant.collection_id %}
+                {% set rec_id = request.state.tenant.id %}
+                {% set filename = request.state.tenant.logo %}
+                {% set dynamic_logo_url = pb_url ~ '/api/files/' ~ col_id ~ '/' ~ rec_id ~ '/' ~ filename ~ '?thumb=512x512f' %}
+            {% else %}
+                {% set dynamic_logo_url = '/static/icons/gyme.webp' %}
+            {% endif %}
+
             generateIOSSplashScreen(
-                "{{ request.state.tenant.logo_url | default('/static/default-logo.png') }}",
+                "{{ dynamic_logo_url }}",
                 "{{ request.state.tenant.primary_color | default('#1d232a') }}"
             );
         </script>
