@@ -24,26 +24,45 @@
                 </svg>
             </button>
         </div>
-        <div class="text-m opacity-70 pr-1">{{ title }}</div>
-        <div class="font-bold text-m ml-2 text-end flex-auto text-primary">
-            {{ tenant.name if tenant else "باشگاه" }}
+
+        <div class="text-sm font-medium opacity-70 pr-2">{{ title }}</div>
+
+        <div class="flex flex-auto items-center justify-end gap-4 ml-2">
+            <span class="font-bold text-base text-primary">
+                {{ tenant.name if tenant else "باشگاه" }}
+            </span>
+
+            {% if tenant and tenant.logo %}
+                {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                <div class="avatar">
+                    <div class="w-10 h-10 rounded-xl shadow-sm border border-base-200 bg-base-100">
+                        <img
+                            src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=100x100f"
+                            alt="{{ tenant.name }}"
+                            class="object-cover"
+                        />
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </header>
     <div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
 
-    <!-- Persistent Navigation -->
-    <nav class="dock text-xs max-w-150 mx-auto bg-base-100">
-        {% if user and user.role != "trainee" %}
-            <a href="/dashboard">داشبورد</a>
-            <a href="/plans">برنامه‌ها</a>
-            <a href="/trainees/new">افزودن شاگرد</a>
-            <a href="/trainees">شاگردها</a>
-            <a href="/profile">پروفایل</a>
-        {% else %}
-            <a href="/user/plans">برنامه‌ها</a>
-            <a href="/user/dashboard">امروز</a>
-            <a href="/user/tools">ابزارها</a>
-            <a href="/user/profile">پروفایل</a>
-        {% endif %}
-    </nav>
+    {% if user %}
+        <!-- Persistent Navigation -->
+        <nav class="dock text-xs max-w-150 mx-auto bg-base-100">
+            {% if user and user.role in ['coach', 'owner'] %}
+                <a href="/dashboard">داشبورد</a>
+                <a href="/plans">برنامه‌ها</a>
+                <a href="/trainees/new">افزودن شاگرد</a>
+                <a href="/trainees">شاگردها</a>
+                <a href="/profile">پروفایل</a>
+            {% elif user and user.role == 'trainee' %}
+                <a href="/user/plans">برنامه‌ها</a>
+                <a href="/user/dashboard">امروز</a>
+                <a href="/user/tools">ابزارها</a>
+                <a href="/user/profile">پروفایل</a>
+            {% endif %}
+        </nav>
+    {% endif %}
 {% endblock %}
