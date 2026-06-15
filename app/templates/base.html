@@ -147,11 +147,10 @@
                 window.toastListenerAttached = true;
             }
         </script>
-        
-        <script>
-            function generateIOSSplashScreen(logoUrl, bgColor) {
+<script>
+            function generateIOSSplashScreen(logoUrl, bgColor, tenantName, textColor) {
                 
-                // 🔴 UNCOMMENT THESE 3 LINES FOR PRODUCTION (After testing on desktop)
+                // 🔴 UNCOMMENT THESE FOR PRODUCTION
                 // const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
                 // if (!isIOS) return;
                 // if (window.navigator.standalone === true) return;
@@ -166,45 +165,106 @@
                 canvas.width = screenWidth * pixelRatio;
                 canvas.height = screenHeight * pixelRatio;
 
+                // 1. Paint Background
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const injectSplashTag = () => {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('link');
+                    link.setAttribute('rel', 'apple-touch-startup-image');
+                    link.setAttribute('href', dataUrl);
+                    link.setAttribute(
+                        'media',
+                        `(device-width: ${screenWidth}px) and (device-height: ${screenHeight}px) and (-webkit-device-pixel-ratio: ${pixelRatio})`
+                    );
+                    document.head.appendChild(link);
+                    console.log('✅ iOS Splash Screen successfully injected!');
+                };
+
+                // Helper to draw the Text and Loading Dots
+                const drawTextAndDots = (yOffset) => {
+                    // Draw Tenant Name
+                    ctx.fillStyle = textColor;
+                    ctx.font = `bold ${canvas.width * 0.06}px system-ui, -apple-system, sans-serif`;
+                    ctx.textAlign = "center";
+                    ctx.fillText(tenantName, canvas.width / 2, yOffset + 120);
+
+                    // Draw Static DaisyUI Loading Dots
+                    const dotY = canvas.height - (canvas.height * 0.15); // Bottom 15% of screen
+                    const dotRadius = canvas.width * 0.015;
+                    const spacing = canvas.width * 0.07;
+                    const centerX = canvas.width / 2;
+
+                    ctx.fillStyle = textColor;
+                    
+                    // Dot 1 (Solid)
+                    ctx.globalAlpha = 0.8;
+                    ctx.beginPath(); ctx.arc(centerX - spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
+                    // Dot 2 (Medium)
+                    ctx.globalAlpha = 0.4;
+                    ctx.beginPath(); ctx.arc(centerX, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
+                    // Dot 3 (Faded)
+                    ctx.globalAlpha = 0.15;
+                    ctx.beginPath(); ctx.arc(centerX + spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
+                    
+                    ctx.globalAlpha = 1.0; // Reset alpha
+                };
+
+                // If no logo, just draw text and dots
+                if (!logoUrl || logoUrl.trim() === '') {
+                    drawTextAndDots(canvas.height / 2);
+                    injectSplashTag();
+                    return;
+                }
 
                 const img = new Image();
                 img.crossOrigin = 'Anonymous';
 
                 img.onload = () => {
-                    const targetLogoWidth = canvas.width / 3;
+                    const targetLogoWidth = canvas.width / 3.5; // Slightly smaller to look premium
                     const scale = targetLogoWidth / img.width;
                     const targetLogoHeight = img.height * scale;
 
                     const x = (canvas.width - targetLogoWidth) / 2;
-                    const y = (canvas.height - targetLogoHeight) / 2;
+                    const y = (canvas.height - targetLogoHeight) / 2 - 80; // Shifted up
 
+                    // Draw Image with DaisyUI Border Radius (~1.5rem scaled)
+                    const radius = canvas.width * 0.04;
+                    ctx.save();
+                    ctx.beginPath();
+                    // Using bezier curves because older iOS Safari doesn't support ctx.roundRect()
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + targetLogoWidth - radius, y);
+                    ctx.quadraticCurveTo(x + targetLogoWidth, y, x + targetLogoWidth, y + radius);
+                    ctx.lineTo(x + targetLogoWidth, y + targetLogoHeight - radius);
+                    ctx.quadraticCurveTo(x + targetLogoWidth, y + targetLogoHeight, x + targetLogoWidth - radius, y + targetLogoHeight);
+                    ctx.lineTo(x + radius, y + targetLogoHeight);
+                    ctx.quadraticCurveTo(x, y + targetLogoHeight, x, y + targetLogoHeight - radius);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.clip();
+                    
                     ctx.drawImage(img, x, y, targetLogoWidth, targetLogoHeight);
+                    ctx.restore();
 
-                    const dataUrl = canvas.toDataURL('image/png');
-
-                    const link = document.createElement('link');
-                    link.setAttribute('rel', 'apple-touch-startup-image');
-                    link.setAttribute('href', dataUrl);
-
-                    link.setAttribute(
-                        'media',
-                        `(device-width: ${screenWidth}px) and (device-height: ${screenHeight}px) and (-webkit-device-pixel-ratio: ${pixelRatio})`
-                    );
-
-                    document.head.appendChild(link);
-                    console.log('✅ iOS Splash Screen successfully injected!');
+                    // Draw text and dots below the image
+                    drawTextAndDots(y + targetLogoHeight);
+                    
+                    injectSplashTag();
                 };
 
                 img.onerror = () => {
-                    console.error('❌ Failed to load logo for splash screen. Check CORS settings.');
+                    console.error('❌ Failed to load logo from database.');
+                    drawTextAndDots(canvas.height / 2);
+                    injectSplashTag();
                 };
 
                 img.src = logoUrl;
             }
 
-            // 🟢 Jinja2 logic to intelligently choose the PB URL or the local WebP fallback
+            // 🟢 Jinja2 Variables Construction
             {% if request.state.tenant and request.state.tenant.logo %}
                 {% set pb_url = request.state.pb.base_url.rstrip("/") %}
                 {% set col_id = request.state.tenant.collection_id %}
@@ -212,12 +272,30 @@
                 {% set filename = request.state.tenant.logo %}
                 {% set dynamic_logo_url = pb_url ~ '/api/files/' ~ col_id ~ '/' ~ rec_id ~ '/' ~ filename ~ '?thumb=512x512f' %}
             {% else %}
-                {% set dynamic_logo_url = '/static/icons/gyme.webp' %}
+                {% set dynamic_logo_url = '' %}
+            {% endif %}
+
+            // Background Color Logic
+            {% if request.state.tenant and request.state.tenant.primary_color %}
+                {% set splash_bg = request.state.tenant.primary_color %}
+            {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
+                {% set splash_bg = request.state.tenant.brand_colors.base_100 %}
+            {% else %}
+                {% set splash_bg = 'oklch(14% .004 49.25)' %}
+            {% endif %}
+
+            // Text Color Logic (Defaults to white for the dark OKLCH background)
+            {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
+                {% set splash_text = request.state.tenant.brand_colors.base_content %}
+            {% else %}
+                {% set splash_text = '#ffffff' %}
             {% endif %}
 
             generateIOSSplashScreen(
                 "{{ dynamic_logo_url }}",
-                "{{ request.state.tenant.primary_color | default('#1d232a') }}"
+                "{{ splash_bg }}",
+                "{{ request.state.tenant.name | default('Gyme Platform') }}",
+                "{{ splash_text }}"
             );
         </script>
     </body>
