@@ -22,6 +22,7 @@ def get_plans_by_trainee (pb, tenant, trainee):
             query_params={
                 "filter":
                 f'tenant="{tenant}" && trainee="{trainee}"',
+                "sort": "status,-updated",                
                 }
         )
 

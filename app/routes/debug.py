@@ -132,3 +132,19 @@ def debug_expand(request: Request):
         "user": user.id,
         "tenant_id": tenant.id,
     }
+
+
+@router.get("/userplans")
+def debug_expand(request: Request):
+    pb = request.state.pb
+    tenant = request.state.tenant.id
+    user = request.state.user
+    trainee = get_trainee_by_user(pb, tenant, user.id)
+    plans = get_plans_by_trainee(pb, tenant, trainee.id)
+    tenant_name = request.state.tenant
+    
+    return {
+        "tenant": tenant_name,
+        "user": user,
+        "plans": plans    
+        }
