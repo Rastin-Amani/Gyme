@@ -61,5 +61,5 @@ def update_user_password(pb, collection_name: str, user_id: str, old_password: s
     except Exception as e:
         return {
             "ok": False, 
-            "error": "رمز عبور فعلی اشتباه است یا خطایی رخ داد."
+            "error": "پسورد فعلی اشتباه است یا خطایی رخ داد."
         }

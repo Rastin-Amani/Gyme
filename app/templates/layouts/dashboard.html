@@ -32,23 +32,18 @@
     <div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
 
     <!-- Persistent Navigation -->
-    {% if user and user.role != "trainee" %}
-        <nav class="dock text-xs max-w-150 mx-auto bg-base-100">
-            {% if user and user.role != "trainee" %}
-                <a href="/dashboard">داشبورد</a>
-                <a href="/plans">برنامه‌ها</a>
-                <a href="/trainees/new">افزودن شاگرد</a>
-                <a href="/trainees">شاگردها</a>
-                <a href="/profile">پروفایل</a>
-            {% else %}
-                <a href="/dashboard">برنامه غذایی</a>
-                <a href="/plans">برنامه‌ تمرینی</a>
-                <a href="/trainees/new">امروز</a>
-                <a href="/trainees">برنامه‌ تمرینی</a>
-                <a href="/plans">پروفایل</a>
-            {% endif %}
-        </nav>
-    {% else %}
-
-    {% endif %}
+    <nav class="dock text-xs max-w-150 mx-auto bg-base-100">
+        {% if user and user.role != "trainee" %}
+            <a href="/dashboard">داشبورد</a>
+            <a href="/plans">برنامه‌ها</a>
+            <a href="/trainees/new">افزودن شاگرد</a>
+            <a href="/trainees">شاگردها</a>
+            <a href="/profile">پروفایل</a>
+        {% else %}
+            <a href="/user/plans">برنامه‌ها</a>
+            <a href="/user/dashboard">امروز</a>
+            <a href="/user/tools">ابزارها</a>
+            <a href="/user/profile">پروفایل</a>
+        {% endif %}
+    </nav>
 {% endblock %}

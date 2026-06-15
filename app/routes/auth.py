@@ -57,7 +57,7 @@ async def login(request: Request, identity: str = Form(...), password: str = For
 
     # 3. Handle Failure with HTMX Toasts 🚨
     if not result.get("ok"):
-        error_msg = result.get("error", "ایمیل یا رمز عبور اشتباه است.")
+        error_msg = result.get("error", "ایمیل یا پسورد اشتباه است.")
         
         # Attach the beautiful DaisyUI toast to the response headers!
         headers = hx_toast(error_msg, "error")
@@ -110,11 +110,11 @@ async def handle_change_password(
         return HTMLResponse(content="", headers=headers)
 
     if new_password != confirm_password:
-        headers = hx_toast("رمز عبور جدید و تکرار آن یکسان نیستند.", "warning")
+        headers = hx_toast("پسورد جدید و تکرار آن یکسان نیستند.", "warning")
         return HTMLResponse(content="", headers=headers)
         
     if len(new_password) < 8:
-        headers = hx_toast("رمز عبور باید حداقل ۸ کاراکتر باشد.", "warning")
+        headers = hx_toast("پسورد باید حداقل ۸ کاراکتر باشد.", "warning")
         return HTMLResponse(content="", headers=headers)
 
     collection_name = getattr(user, 'collectionName', 'users') 
@@ -139,7 +139,7 @@ async def handle_change_password(
     login_result = login_user(identity, new_password, tenant.id)
 
     # 3. Setup Success Response & Redirect
-    headers = hx_toast("رمز عبور با موفقیت تغییر کرد! 🔒", "success")
+    headers = hx_toast("پسورد با موفقیت تغییر کرد! 🔒", "success")
     target_url = "/user/dashboard" if getattr(user, "role", None) == "trainee" else "/dashboard"
     headers["HX-Redirect"] = target_url
     
