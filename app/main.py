@@ -15,6 +15,7 @@ from .routes import item
 from .routes import profile
 from .routes.user import dashboard as user_dashboard
 from .routes import pwa
+from .templates import templates
 
 # middleware import
 from app.middleware import TenantMiddleware
@@ -30,15 +31,7 @@ app = FastAPI(
 )
 
 APP_VERSION = "0.1.0"
-@app.get("/version")
-def get_current_version():
-    with open("version.txt", "r") as f:
-        return f.read().strip()
-
-# Update your endpoint to call the function
-@app.get("/version")
-async def get_version():
-    return {"version": get_current_version()}
+templates.env.globals['app_version'] = APP_VERSION
 
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
