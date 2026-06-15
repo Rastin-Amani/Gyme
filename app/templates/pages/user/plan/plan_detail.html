@@ -1,0 +1,374 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block dashboard_content %}
+    <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24 max-w-3xl mx-auto">
+        <div class="items-center justify-between bg-base-200 p-4 card flex-row-reverse">
+            <div>
+                {% if plan.status == 'active' %}
+                    <span class="badge badge-success badge-sm badge-soft font-medium">فعال</span>
+                {% elif plan.status == 'draft' %}
+                    <span class="badge badge-ghost badge-sm font-medium">پیش‌نویس</span>
+                {% elif plan.status == 'inactive' %}
+                    <span class="badge badge-error badge-sm badge-soft font-medium">غیرفعال</span>
+                {% else %}
+                    <span class="badge badge-ghost badge-sm">{{ plan.status }}</span>
+                {% endif %}
+            </div>
+            <div class="text-right flex-1 px-4">
+                <h1 class="text-lg font-bold text-base-content">
+                    {% if plan.type == 'training' %}
+                        برنامه تمرینی
+                    {% elif plan.type == 'diet' %}
+                        برنامه غذایی
+                    {% elif plan.type == 'steroid' %}
+                        برنامه استروئیدی
+                    {% else %}
+                        جزئیات برنامه
+                    {% endif %}
+                </h1>
+                <div class="text-xs text-base-content/60 font-medium mt-1">
+                    {% if plan.start_date %}از {{ plan.start_date | jalali_date }}{% endif %}
+                    {% if plan.end_date %}تا {{ plan.end_date | jalali_date }}{% endif %}
+                </div>
+            </div>
+
+            <div class="avatar avatar-placeholder">
+                <div
+                    class="bg-base-100 text-neutral-content w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm"
+                >
+                    {% if plan.type == 'training' %}
+                        💪🏻
+                    {% elif plan.type == 'diet' %}
+                        🥑
+                    {% elif plan.type == 'steroid' %}
+                        💊
+                    {% else %}
+                        📋
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# 🟢 2. Safely Extract Items & Unique Days (Sequences) #}
+        {% set item_list = item.items if item.items is defined else item %}
+        {% set seqs = item_list | map(attribute='seq') | unique | sort | list %}
+
+        {% if seqs and seqs | length > 0 %}
+            <div class="mb-6 sticky top-4 z-20">
+                <div
+                    role="tablist"
+                    class="tabs tabs-box bg-base-200 justify-start mt-6 !overflow-x-auto !flex !flex-nowrap shadow-sm border border-base-300"
+                >
+                    {% for seq in seqs %}
+                        <a
+                            role="tab"
+                            id="btn-seq-{{ seq }}"
+                            class="tab transition-all px-6 whitespace-nowrap font-medium {% if loop.first %}tab-active{% endif %}"
+                            onclick="showSeq('{{ seq }}')"
+                        >
+                            روز {{ seq }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% for seq in seqs %}
+                {# Get only the items for this specific day using the safe list #}
+                {% set day_items = item_list | selectattr('seq', 'equalto', seq) | list %}
+
+                <section
+                    id="seq-{{ seq }}"
+                    class="{% if not loop.first %}hidden{% endif %} animate-fade-in"
+                >
+                    {# --- 🥑 DIET PLAN RENDER --- #}
+                    {% if plan.type == 'diet' %}
+                        {% set meal_categories = ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+
+                        {% for category in meal_categories %}
+                            {% set category_items = day_items | selectattr('meal_name', 'equalto', category) | list %}
+                            {% if category_items %}
+                                <div
+                                    class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                >
+                                    {{ category }}
+                                </div>
+                                {% for i in category_items %}
+                                    <div
+                                        class="card bg-base-200 border border-base-200 mb-3 shadow-sm"
+                                    >
+                                        <div
+                                            class="card-body p-3 flex-row items-center justify-between"
+                                        >
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-sm">{{ i.name }}</span>
+                                                {% if i.notes and i.notes.strip() %}
+                                                    <span class="text-xs text-base-content/60 mt-1">
+                                                        {{ i.notes.strip() }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            {% if i.quantity %}
+                                                <div
+                                                    class="badge badge-primary badge-soft badge-sm font-medium"
+                                                >
+                                                    {{ i.quantity }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Catch-all for diet items without a standard meal name #}
+                        {% set other_items = day_items | rejectattr('meal_name', 'in', meal_categories) | list %}
+                        {% if other_items %}
+                            <div
+                                class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                            >
+                                سایر
+                            </div>
+                            {% for i in other_items %}
+                                <div class="card bg-base-200 border border-base-200 mb-3 shadow-sm">
+                                    <div
+                                        class="card-body p-3 flex-row items-center justify-between"
+                                    >
+                                        <div class="flex flex-col gap-1">
+                                            <span class="font-bold text-sm">{{ i.name }}</span>
+                                            {% if i.meal_name %}
+                                                <span class="text-xs text-primary">
+                                                    {{ i.meal_name }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        {% if i.quantity %}
+                                            <div class="badge badge-ghost badge-sm">
+                                                {{ i.quantity }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {# --- 💪🏻 TRAINING PLAN RENDER --- #}
+                    {% elif plan.type == 'training' %}
+                        {% set training_categories = ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+
+                        {% for category in training_categories %}
+                            {% set category_items = day_items | selectattr('category', 'equalto', category) | list %}
+                            {% if category_items %}
+                                <div
+                                    class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                >
+                                    {{ category }}
+                                </div>
+                                {% for i in category_items %}
+                                    <div
+                                        class="card bg-base-200 mb-3 shadow-sm border border-base-200"
+                                    >
+                                        <div class="card-body p-4 text-right justify-between gap-4">
+                                            <div class="flex justify-between items-center">
+                                                <span class="font-bold text-base">
+                                                    {{ i.name }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                class="flex gap-2 justify-start items-center flex-wrap mt-1"
+                                            >
+                                                {% if i.sets and i.reps %}
+                                                    <div
+                                                        class="badge badge-primary gap-1 px-3 py-3"
+                                                    >
+                                                        <span class="font-black text-sm">
+                                                            {{ i.sets }}
+                                                        </span>
+                                                        ست ×
+                                                        <span class="font-black text-sm">
+                                                            {{ i.reps }}
+                                                        </span>
+                                                        تکرار
+                                                    </div>
+                                                {% endif %}
+                                                {% if i.weight %}
+                                                    <div
+                                                        class="badge badge-primary badge-soft px-3 py-3 font-medium"
+                                                    >
+                                                        {{ i.weight }} کیلوگرم
+                                                    </div>
+                                                {% endif %}
+                                                {% if i.rest_seconds %}
+                                                    <div
+                                                        class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1"
+                                                    >
+                                                        <svg
+                                                            class="w-4 h-4"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke-width="1.5"
+                                                            stroke="currentColor"
+                                                        >
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                            />
+                                                        </svg>
+                                                        {{ i.rest_seconds }} ثانیه استراحت
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                            {% if i.notes %}
+                                                <div
+                                                    class="bg-base-100 rounded-lg p-3 mt-1 border border-base-300"
+                                                >
+                                                    <span class="text-xs text-base-content/70">
+                                                        {{ i.notes }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Catch-all for training items #}
+                        {% set other_training_items = day_items | rejectattr('category', 'in', training_categories) | list %}
+                        {% if other_training_items %}
+                            <div
+                                class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                            >
+                                سایر حرکات
+                            </div>
+                            {% for i in other_training_items %}
+                                <div class="card bg-base-200 mb-3 shadow-sm border border-base-200">
+                                    <div class="card-body p-4 text-right justify-between gap-4">
+                                        <div class="flex justify-between items-center">
+                                            <span class="font-bold text-base">{{ i.name }}</span>
+                                        </div>
+                                        <div
+                                            class="flex gap-2 justify-start items-center flex-wrap mt-1"
+                                        >
+                                            {% if i.sets and i.reps %}
+                                                <div class="badge badge-primary gap-1 px-3 py-3">
+                                                    <span class="font-black text-sm">
+                                                        {{ i.sets }}
+                                                    </span>
+                                                    ست ×
+                                                    <span class="font-black text-sm">
+                                                        {{ i.reps }}
+                                                    </span>
+                                                    تکرار
+                                                </div>
+                                            {% endif %}
+                                            {% if i.weight %}
+                                                <div
+                                                    class="badge badge-primary badge-soft px-3 py-3 font-medium"
+                                                >
+                                                    {{ i.weight }} کیلوگرم
+                                                </div>
+                                            {% endif %}
+                                            {% if i.rest_seconds %}
+                                                <div
+                                                    class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1"
+                                                >
+                                                    {{ i.rest_seconds }} ثانیه
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if i.notes %}
+                                            <div
+                                                class="bg-base-100 rounded-lg p-3 mt-1 border border-base-300"
+                                            >
+                                                <span class="text-xs text-base-content/70">
+                                                    {{ i.notes }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        {# --- 💊 STEROID PLAN RENDER --- #}
+                    {% elif plan.type == 'steroid' %}
+                        <div class="flex flex-col gap-3 mt-4">
+                            {% for i in day_items %}
+                                <div class="card bg-base-200 shadow-sm border border-base-200">
+                                    <div class="card-body p-4">
+                                        <span class="font-bold text-lg">{{ i.name }}</span>
+                                        {% if i.quantity or i.notes %}
+                                            <div class="flex flex-col gap-2 mt-2">
+                                                {% if i.quantity %}
+                                                    <div class="badge badge-primary badge-soft">
+                                                        {{ i.quantity }}
+                                                    </div>
+                                                {% endif %}
+                                                {% if i.notes %}
+                                                    <span class="text-sm text-base-content/60">
+                                                        {{ i.notes }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        {% else %}
+            <div
+                class="card bg-base-200 p-10 text-center flex flex-col items-center justify-center mt-6"
+            >
+                <div class="text-4xl mb-4 opacity-50">📭</div>
+                <h3 class="text-lg font-bold">آیتمی یافت نشد</h3>
+                <p class="text-sm text-base-content/60 mt-2">
+                    هنوز هیچ آیتمی برای این برنامه ثبت نشده است.
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function showSeq(selectedSeq) {
+            // Collect all available sequences injected by Jinja
+            const sequences = JSON.parse('{{ seqs | tojson | safe }}');
+            sequences.forEach((seq) => {
+                const section = document.getElementById('seq-' + seq);
+                const btn = document.getElementById('btn-seq-' + seq);
+
+                if (section) {
+                    if (seq.toString() === selectedSeq.toString()) {
+                        section.classList.remove('hidden');
+                        btn.classList.add('tab-active');
+                    } else {
+                        section.classList.add('hidden');
+                        btn.classList.remove('tab-active');
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        /* Smooth fade-in for tab switching */
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+{% endblock %}

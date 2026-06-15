@@ -37,3 +37,31 @@ async def plan_list (request: Request):
         }
     )
 
+
+@router.get("/user/plans/{id}")
+async def show_plan_detail (request: Request, id: str):
+    pb = request.state.pb
+    tenant = request.state.tenant.id
+    plan_data = get_plan_by_id(pb, tenant, id)
+    user = request.state.user
+
+    plan_type = plan_data.type 
+    collection_name = f"{plan_type}_items"
+
+    item_data = list_items_by_plan(pb, tenant, collection_name, plan=id)
+    tenant_name = request.state.tenant
+
+    if user.role != "trainee":
+        return RedirectResponse(url="/dashboard")
+   
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/user/plan/plan_detail.html",
+        context={
+        "title" : "جزئیات برنامه",
+        "tenant": tenant_name,
+        "user": user,
+        "plan": plan_data,
+        "item": item_data
+        }
+    )
