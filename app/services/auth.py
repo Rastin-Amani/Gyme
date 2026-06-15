@@ -47,3 +47,19 @@ def load_auth_from_cookie(request: Request):
         pb.auth_store.save(token, None) 
     else:
         pb.auth_store.clear()
+
+
+def update_user_password(pb, collection_name: str, user_id: str, old_password: str, new_password: str, confirm_password: str) -> dict:
+    try:
+        pb.collection(collection_name).update(user_id, {
+            "oldPassword": old_password,
+            "password": new_password,
+            "passwordConfirm": confirm_password
+        })
+        return {"ok": True}
+        
+    except Exception as e:
+        return {
+            "ok": False, 
+            "error": "رمز عبور فعلی اشتباه است یا خطایی رخ داد."
+        }
