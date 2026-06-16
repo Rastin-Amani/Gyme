@@ -7,16 +7,13 @@ WORKDIR /code
 # Copy requirements directly from the app folder
 COPY ./app/requirements.txt .
 
-# Use the Kargadan aggregated mirror to bypass restrictions and missing packages
-RUN pip install --no-cache-dir \
-    -i https://mirror.kargadan.ir/repository/pypi-group/simple/ \
-    --trusted-host mirror.kargadan.ir \
-    -r requirements.txt
+# Use Chabokan's PyPI mirror
+RUN pip install --no-cache-dir -i https://mirror2.chabokan.net/pypi/simple/ -r requirements.txt
 
 # Copy the entire app folder
 COPY ./app ./app
 
-# Add this line to copy your data folder into the container!
+# Copy your data folder into the container
 COPY ./data ./data
 
 # Start the FastAPI server
