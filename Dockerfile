@@ -7,8 +7,11 @@ WORKDIR /code
 # Copy requirements directly from the app folder
 COPY ./app/requirements.txt .
 
-# Force pip to use the mirror so it doesn't time out
-RUN pip install --no-cache-dir -i https://package-mirror.liara.ir/repository/pypi/simple -r requirements.txt
+# Use the Kargadan aggregated mirror to bypass restrictions and missing packages
+RUN pip install --no-cache-dir \
+    -i https://mirror.kargadan.ir/repository/pypi-group/simple/ \
+    --trusted-host mirror.kargadan.ir \
+    -r requirements.txt
 
 # Copy the entire app folder
 COPY ./app ./app
