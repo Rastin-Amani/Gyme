@@ -8,7 +8,7 @@ WORKDIR /code
 COPY ./app/requirements.txt .
 
 # Install using the Liara mirror to bypass network blocks
-RUN pip install --no-cache-dir -i https://package-mirror.liara.ir/repository/pypi/simple -r requirements.txt
+RUN pip install --no-cache-dir --index-url https://package-mirror.liara.ir/repository/pypi/simple -r requirements.txt
 
 # Copy the entire app folder
 COPY ./app ./app
