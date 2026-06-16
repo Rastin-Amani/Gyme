@@ -1,5 +1,5 @@
-fastapi>=0.136.1
-uvicorn>=0.47.0
+fastapi
+uvicorn
 pocketbase>=0.17.1
 Jinja2>=3.1.6
 python-multipart
