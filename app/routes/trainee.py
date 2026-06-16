@@ -10,6 +10,7 @@ from app.services.plan import get_plans_by_trainee
 router = APIRouter(
     tags=["Trainees Management"]
 )
+
 # Get Requests
 @router.get("/trainees")
 async def trainees_list (request: Request):
@@ -101,10 +102,8 @@ async def trainee_edit_form (request: Request, id: str):
     )
 
 
-
-
 # Post Requests
-@router.post("/trainees")
+@router.post("/trainees/new")
 async def trainee_create(
     request: Request,
     first_name: str = Form(...),
@@ -113,11 +112,10 @@ async def trainee_create(
     phone: str = Form(None), 
     gender: str = Form(None),
     birthdate: str = Form(None),
-    height: int = Form(None),
-    weight: int = Form(None),
-    training_history: str = Form(None),   # 🟢 Added Field
-    steroid_history: str = Form(None),    # 🟢 Added Field
-    supplement_history: str = Form(None), # 🟢 Added Field
+    status: str = Form("active"),         # 🟢 Added Status
+    training_history: str = Form(None),   
+    steroid_history: str = Form(None),    
+    supplement_history: str = Form(None), 
     notes: str = Form(None),
 ):
     pb = getattr(request.state, 'pb', None)
@@ -131,7 +129,8 @@ async def trainee_create(
         first_name=first_name,
         last_name=last_name,
         phone=phone,
-        role="trainee"
+        role="trainee",
+
     )
     
     if not user_result["ok"]:
@@ -146,19 +145,18 @@ async def trainee_create(
     trainee_data = {
         "tenant": tenant_id,
         "user": new_user.id,
-        "status": "active",
+        "status": status,
         "gender": gender,
         "birthdate": birthdate,
-        "height": height,
-        "weight": weight,
-        "training_history": training_history,     # 🟢 Added Field
-        "steroid_history": steroid_history,       # 🟢 Added Field
-        "supplement_history": supplement_history, # 🟢 Added Field
+        "training_history": training_history,     
+        "steroid_history": steroid_history,       
+        "supplement_history": supplement_history, 
         "notes": notes,
     }
 
     try:
-        create_trainee(pb, tenant_id, trainee_data)
+        created_trainee = create_trainee(pb, tenant_id, trainee_data)
+        new_trainee_id = created_trainee.id
     except Exception as e:
         # Cleanup: Delete the auth user if the trainee profile fails to create
         pb.collection("users").delete(new_user.id)
@@ -167,7 +165,9 @@ async def trainee_create(
             status_code=400
         )
     
-    return HTMLResponse(headers={"HX-Redirect": "/trainees"})
+    # 🟢 Redirect instantly to the progress log form!
+    return HTMLResponse(headers={"HX-Redirect": f"/progress-log/new/{new_trainee_id}"})
+
 
 @router.post("/trainees/{id}")
 async def trainee_update(
@@ -179,11 +179,10 @@ async def trainee_update(
     phone: str = Form(None),
     gender: str = Form(None),
     birthdate: str = Form(None),
-    height: int = Form(None),
-    weight: int = Form(None),
-    training_history: str = Form(None),   # 🟢 Added Field
-    steroid_history: str = Form(None),    # 🟢 Added Field
-    supplement_history: str = Form(None), # 🟢 Added Field
+    status: str = Form(None),             # 🟢 Added Status
+    training_history: str = Form(None),   
+    steroid_history: str = Form(None),    
+    supplement_history: str = Form(None), 
     notes: str = Form(None),
 ):
     pb = getattr(request.state, 'pb', None)
@@ -220,11 +219,10 @@ async def trainee_update(
     trainee_data = {
         "gender": gender,
         "birthdate": birthdate,
-        "height": height,
-        "weight": weight,
-        "training_history": training_history,     # 🟢 Added Field
-        "steroid_history": steroid_history,       # 🟢 Added Field
-        "supplement_history": supplement_history, # 🟢 Added Field
+        "status": status,
+        "training_history": training_history,     
+        "steroid_history": steroid_history,       
+        "supplement_history": supplement_history, 
         "notes": notes,
     }
 
@@ -237,4 +235,5 @@ async def trainee_update(
             status_code=400
         )
     
-    return HTMLResponse(headers={"HX-Redirect": "/trainees"})
+    # 🟢 Redirect back to the trainee details page
+    return HTMLResponse(headers={"HX-Redirect": f"/trainees/{id}"})
