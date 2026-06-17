@@ -1,39 +1,167 @@
-{% extends "layouts/dashboard.html" %}
-{% block dashboard_content %}
-    <div class="max-w-md mx-auto mt-12">
-        <h1 class="text-2xl font-bold mb-6">پنل کاربری {{ tenant.name }}</h1>
-        <!-- app/templates/pages/login.html -->
-        <form method="post" action="/login">
-            <!-- Hidden input to keep identity if login fails -->
-            <div class="flex flex-col gap-4">
-                <div>
-                    <label class="floating-label">
-                        <span>ایمیل</span>
-                        <input
-                            name="identity"
-                            class="input input-bordered w-full validator"
-                            placeholder="ایمیل"
-                            type="email"
-                            required
-                        />
-                        <div class="validator-hint hidden">این فیلد اجباریه.</div>
-                    </label>
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8">
+        <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-0">
+            <div
+                class="w-64 h-64 bg-primary/20 rounded-full blur-[60px] absolute -top-10 -right-10 mix-blend-multiply"
+            ></div>
+            <div
+                class="w-64 h-64 bg-secondary/20 rounded-full blur-[60px] absolute -bottom-10 -left-10 mix-blend-multiply"
+            ></div>
+        </div>
+
+        <div
+            class="card bg-base-100/90 backdrop-blur-xl shadow-2xl border border-base-200 w-full max-w-sm rounded-[2rem] z-10"
+        >
+            <div class="card-body p-6 sm:p-8">
+                <div class="text-center mb-8 flex flex-col items-center">
+                    {% if tenant and tenant.logo %}
+                        {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                        <div
+                            class="avatar drop-shadow-sm mb-5 transition-transform hover:scale-105 duration-300"
+                        >
+                            <div
+                                class="w-20 h-20 rounded-2xl border border-base-200 bg-base-100 p-1"
+                            >
+                                <img
+                                    src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
+                                    alt="{{ tenant.name }}"
+                                    class="rounded-xl object-cover"
+                                />
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="avatar placeholder drop-shadow-sm mb-5">
+                            <div
+                                class="bg-primary/10 text-primary rounded-2xl w-20 h-20 border border-primary/20 flex items-center justify-center text-3xl font-black"
+                            >
+                                {{ tenant.name[:1] if tenant else "G" }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <h1 class="text-2xl font-black text-base-content tracking-tight">
+                        {{ tenant.name if tenant else "Gyme" }}
+                    </h1>
+                    <p
+                        class="text-xs font-medium text-base-content/50 mt-1.5 uppercase tracking-widest"
+                    >
+                        پورتال مدیریت
+                    </p>
                 </div>
-                <div>
-                    <label class="floating-label">
-                        <span>پسورد</span>
-                        <input
-                            name="password"
-                            class="input input-bordered w-full validator"
-                            placeholder="پسورد"
-                            type="password"
-                            required
-                        />
-                        <div class="validator-hint hidden">این فیلد اجباریه.</div>
-                    </label>
-                </div>
-                <button type="submit" class="btn btn-primary w-full">ورود</button>
+
+                <form method="post" action="/login" class="space-y-4">
+                    <div class="form-control">
+                        <label class="floating-label">
+                            <span>پست الکترونیک</span>
+                            <input
+                                name="identity"
+                                class="input input-bordered w-full validator rounded-xl focus:border-primary/50 transition-colors"
+                                placeholder="ایمیل خود را وارد کنید"
+                                type="email"
+                                required
+                                autofocus
+                            />
+                            <div class="validator-hint hidden text-xs mt-1">ایمیل معتبر نیست.</div>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <div class="relative w-full">
+                            <label class="floating-label w-full">
+                                <span>رمز عبور</span>
+                                <input
+                                    name="password"
+                                    class="input input-bordered w-full validator rounded-xl pl-12 focus:border-primary/50 transition-colors"
+                                    placeholder="رمز عبور"
+                                    type="password"
+                                    required
+                                />
+                                <div class="validator-hint hidden text-xs mt-1">
+                                    رمز عبور الزامی است.
+                                </div>
+                            </label>
+
+                            <button
+                                type="button"
+                                class="absolute top-1/2 -translate-y-1/2 left-3 p-2 text-base-content/40 hover:text-primary transition-colors focus:outline-none z-10"
+                                onclick="toggleLoginPassword(this)"
+                                tabindex="-1"
+                            >
+                                <svg
+                                    class="eye-open w-5 h-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                                    />
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                    />
+                                </svg>
+                                <svg
+                                    class="eye-closed w-5 h-5 hidden"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-start pt-1 hidden">
+                        <a
+                            href="#"
+                            class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                        >
+                            رمز عبور را فراموش کردید؟
+                        </a>
+                    </div>
+
+                    <div class="pt-4">
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-full rounded-xl text-base shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-[1px] transition-all duration-300"
+                        >
+                            ورود
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
+
+    <script>
+        function toggleLoginPassword(button) {
+            const container = button.closest('.relative');
+            const input = container.querySelector('input');
+            const eyeOpen = button.querySelector('.eye-open');
+            const eyeClosed = button.querySelector('.eye-closed');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeOpen.classList.add('hidden');
+                eyeClosed.classList.remove('hidden');
+            } else {
+                input.type = 'password';
+                eyeOpen.classList.remove('hidden');
+                eyeClosed.classList.add('hidden');
+            }
+        }
+    </script>
 {% endblock %}
