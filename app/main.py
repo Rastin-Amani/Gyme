@@ -23,8 +23,6 @@ from .templates import templates
 # middleware import
 from app.middleware import TenantMiddleware
 
-
-
 ###disable default swagger ui
 app = FastAPI(
     title="Gyme",
@@ -33,8 +31,8 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-APP_VERSION = "0.2.0"
-templates.env.globals['app_version'] = APP_VERSION
+APP_VERSION = "0.3.0"
+templates.env.globals["app_version"] = APP_VERSION
 
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -56,7 +54,6 @@ app.include_router(user_profile.router)
 app.include_router(user_plan.router)
 app.include_router(pwa.router)
 app.include_router(marketing.router)
-
 
 
 # swagger ui

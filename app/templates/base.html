@@ -148,7 +148,7 @@
             }
         </script>
 <script>
-            function generateIOSSplashScreen(logoUrl, bgColor, tenantName, textColor) {
+            function generateIOSSplashScreen(logoUrl, bgColor, tenantName, textColor, version) {
                 
                 // 🔴 UNCOMMENT THESE FOR PRODUCTION
                 // const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -189,6 +189,12 @@
                     ctx.font = `bold ${canvas.width * 0.06}px system-ui, -apple-system, sans-serif`;
                     ctx.textAlign = "center";
                     ctx.fillText(tenantName, canvas.width / 2, yOffset + 120);
+
+                    // Draw Version below tenant name
+                    if (version) {
+                        ctx.font = `${canvas.width * 0.035}px system-ui, -apple-system, sans-serif`;
+                        ctx.fillText(version, canvas.width / 2, yOffset + 120 + (canvas.width * 0.06) + 20);
+                    }
 
                     // Draw Static DaisyUI Loading Dots
                     const dotY = canvas.height - (canvas.height * 0.15); // Bottom 15% of screen
