@@ -19,9 +19,25 @@ async def plan_list (request: Request):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
-    plans = list_plans(pb, tenant)
+    query = request.query_params.get("query", "")
+    plan_type = request.query_params.get("type", None)
+    coach_id = request.query_params.get("coach_id", None)
+    plans = list_plans(pb, tenant, query=query, type=plan_type, coach_id=coach_id)
     tenant_name = request.state.tenant
-
+    
+    # Get coaches for the filter dropdown (fallback to empty list if collection not found)
+    try:
+        coaches = pb.collection("coaches").get_list(
+            page=1,
+            per_page=100,
+            query_params={
+                "filter": f'tenant="{tenant}"',
+                "sort": "-created",
+            }
+        ).items
+    except Exception:
+        coaches = []
+    
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
     
@@ -33,6 +49,15 @@ async def plan_list (request: Request):
         "tenant": tenant_name,
         "user": user,
         "plans": plans.items,
+        "coaches": coaches,
+        "is_search_result": bool(query or plan_type or coach_id),
+        "search_query": query,
+        "filter_params": {
+            "type": plan_type,
+            "coach_id": coach_id
+        },
+        "show_empty_state": len(plans.items) == 0 and bool(query or plan_type or coach_id),
+        "empty_message": "هیچ برنامه‌ای با این مشخصات پیدا نشد"
         }
     )
 
