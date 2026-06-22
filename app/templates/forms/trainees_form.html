@@ -2,6 +2,7 @@
 {% block dashboard_content %}
     <form
         hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees/new' }}"
+        hx-swap="none"
         class="bg-base-100 space-y-4"
     >
         <div class="grid grid-cols-2 gap-4 items-baseline">
@@ -120,7 +121,7 @@
         <div class="form-control">
             {% if trainee.training_history and trainee.training_history.strip() %}
                 <textarea name="training_history" class="textarea textarea-bordered h-6 w-full">
-                    {{ trainee.training_history.strip() }}</textarea
+{{ trainee.training_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
@@ -134,7 +135,7 @@
         <div class="form-control">
             {% if trainee.steroid_history and trainee.steroid_history.strip() %}
                 <textarea name="steroid_history" class="textarea textarea-bordered h-6 w-full">
-                    {{ trainee.steroid_history.strip() }}</textarea
+{{ trainee.steroid_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
@@ -148,7 +149,7 @@
         <div class="form-control">
             {% if trainee.supplement_history and trainee.supplement_history.strip() %}
                 <textarea name="supplement_history" class="textarea textarea-bordered h-6 w-full">
-                    {{ trainee.supplement_history.strip() }}</textarea
+{{ trainee.supplement_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
@@ -162,7 +163,7 @@
         <div class="form-control">
             {% if trainee.notes and trainee.notes.strip() %}
                 <textarea name="notes" class="textarea textarea-bordered !h-6 w-full">
-                    {{ trainee.notes.strip() }}</textarea
+{{ trainee.notes.strip() }}</textarea
                 >
             {% else %}
                 <textarea
