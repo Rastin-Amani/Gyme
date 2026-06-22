@@ -10,11 +10,9 @@ from app.services.plan import (
 )
 from app.services.item import list_items_by_plan
 from ..templates import templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.trainee import list_trainees
-from fastapi.responses import RedirectResponse
 import json
-from app.utils import hx_toast
 
 router = APIRouter(tags=["Plans Management"])
 
@@ -34,7 +32,6 @@ async def plan_list(
     tenant = request.state.tenant.id
     user = request.state.user
 
-    # Safely convert to boolean
     is_template_bool = str(is_template).lower() in ["true", "1", "yes"]
 
     plans = list_plans(
@@ -113,67 +110,45 @@ async def plan_new_form(request: Request, template: str = Query("false")):
     )
 
 
-
 # ──────────────────────────────────────────────
-#  POST /templates/{id}/apply  –  apply template
+#  GET /plans/{id}  –  plan detail
 # ──────────────────────────────────────────────
-@router.post("/templates/{id}/apply")
-async def template_apply(
-    request: Request,
-    id: str,
-    trainee: str = Form(...),
-    start_date: str = Form(None),
-    end_date: str = Form(None),
-    notes: str = Form(None),
-):
+@router.get("/plans/{id}")
+async def show_plan_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
 
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+
     try:
-        # 1. Attempt to build the plan from the template
-        new_plan = apply_template(
-            pb,
-            tenant,
-            id,
-            trainee_id=trainee,
-            coach_id=user.id,
-            start_date=start_date,
-            end_date=end_date,
-            notes=notes,
-        )
+        plan_data = get_plan_by_id(pb, tenant, id)
+    except Exception:
+        return RedirectResponse(url="/plans")
 
-        # 2. Success! Use hx_toast to trigger the success message.
-        # We also need to close the modal.
-        headers = hx_toast("برنامه با موفقیت از قالب ایجاد شد 🚀", "success")
+    if not hasattr(plan_data, "is_template") or plan_data.is_template is None:
+        plan_data.is_template = False
 
-        # Add the modal close command to the existing HX-Trigger JSON
-        trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
-        trigger_dict["closeModal"] = True
-        headers["HX-Trigger"] = json.dumps(trigger_dict)
+    plan_type = plan_data.type
+    collection_name = f"{plan_type}_items"
 
-        # Redirect to the new plan
-        headers["HX-Redirect"] = f"/plans/{new_plan.id}"
+    try:
+        item_data = list_items_by_plan(pb, tenant, collection_name, plan=id)
+    except Exception:
+        item_data = {"items": []}
 
-        return HTMLResponse(content="", headers=headers)
-
-    except Exception as e:
-        # 3. Handle Errors
-        error_msg = str(e)
-        print(f"❌ Error applying template: {error_msg}")
-
-        # Determine a user-friendly error message
-        user_message = "خطا در برقراری ارتباط با پایگاه داده."
-        if "404" in error_msg:
-            user_message = "قالب یا شاگرد مورد نظر یافت نشد!"
-        elif "400" in error_msg:
-            user_message = "اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید."
-
-        # 4. Error! Use hx_toast.
-        # Modal stays open (hx-swap="none" handles this) so they can fix errors.
-        headers = hx_toast(user_message, "error")
-
-        return HTMLResponse(content="", headers=headers)
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/owner/plan/plan_detail.html",
+        context={
+            "title": "جزئیات برنامه",
+            "tenant": request.state.tenant,
+            "user": user,
+            "plan": plan_data,
+            "item": item_data,
+        },
+    )
 
 
 # ──────────────────────────────────────────────
@@ -258,31 +233,26 @@ async def template_apply(
             end_date=end_date,
             notes=notes,
         )
+
+        # 🟢 SUCCESS: Modal closes, Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {
             "closeModal": True,
-            "show-toast": {
-                "message": "برنامه با موفقیت از قالب ایجاد شد.",
-                "type": "success",
-            },
+            "show-toast": {"message": "برنامه با موفقیت از قالب ایجاد شد", "type": "success"},
+            "delayed-redirect": {"url": f"/plans/{new_plan.id}"},
         }
-        return HTMLResponse(
-            status_code=200,
-            headers={
-                "HX-Redirect": f"/plans/{new_plan.id}",
-                "HX-Trigger": json.dumps(trigger_data),
-            },
-        )
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
     except Exception as e:
-        trigger_data = {
-            "show-toast": {
-                "message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.",
-                "type": "error",
-            },
-        }
-        return HTMLResponse(
-            status_code=200,
-            headers={"HX-Trigger": json.dumps(trigger_data)},
-        )
+        error_msg = str(e)
+        user_message = "خطا در برقراری ارتباط با پایگاه داده."
+        if "404" in error_msg:
+            user_message = "قالب یا شاگرد مورد نظر یافت نشد!"
+        elif "400" in error_msg:
+            user_message = "اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید."
+
+        # 🔴 ERROR: Modal stays open, Toast shows
+        trigger_data = {"show-toast": {"message": user_message, "type": "error"}}
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
 
 # ──────────────────────────────────────────────
@@ -301,7 +271,6 @@ async def plan_create(
     is_template: str = Form("false"),
     template_name: str = Form(None),
 ):
-    # Convert form string to native boolean
     is_template_bool = str(is_template).lower() in ["true", "on", "1", "yes"]
     pb = request.state.pb
     tenant = request.state.tenant.id
@@ -314,14 +283,34 @@ async def plan_create(
         "status": status or "active",
         "days_per_week": days_per_week,
         "notes": notes,
-        "is_template": is_template_bool,  # Passed cleanly to PB as boolean
+        "is_template": is_template_bool,
         "template_name": template_name if is_template_bool else None,
     }
 
-    create_plan(pb, tenant, data)
+    try:
+        create_plan(pb, tenant, data)
 
-    redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
-    return HTMLResponse(headers={"HX-Redirect": redirect_url})
+        # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
+        success_msg = (
+            "قالب جدید با موفقیت ذخیره شد"
+            if is_template_bool
+            else "برنامه جدید با موفقیت ایجاد شد"
+        )
+        redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
+
+        trigger_data = {
+            "show-toast": {"message": success_msg, "type": "success"},
+            "delayed-redirect": {"url": redirect_url},
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
+    except Exception as e:
+        print(f"❌ Error creating plan/template: {e}")
+        # 🔴 ERROR: Stays on page, Toast shows
+        trigger_data = {
+            "show-toast": {"message": "خطا در ایجاد. لطفا فیلدها را بررسی کنید.", "type": "error"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
 
 # ──────────────────────────────────────────────
@@ -353,10 +342,22 @@ async def plan_update(
         "status": status,
         "days_per_week": days_per_week,
         "notes": notes,
-        "is_template": is_template_bool,  # Passed cleanly to PB as boolean
+        "is_template": is_template_bool,
         "template_name": template_name if is_template_bool else None,
     }
 
-    update_plan(pb, id, data)
+    try:
+        update_plan(pb, id, data)
 
-    return HTMLResponse(headers={"HX-Redirect": f"/plans/{id}"})
+        # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
+        trigger_data = {
+            "show-toast": {"message": "تغییرات با موفقیت ذخیره شد", "type": "success"},
+            "delayed-redirect": {"url": f"/plans/{id}"},
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
+    except Exception as e:
+        print(f"❌ Error updating plan/template: {e}")
+        # 🔴 ERROR: Stays on page, Toast shows
+        trigger_data = {"show-toast": {"message": "خطا در بروزرسانی اطلاعات.", "type": "error"}}
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})

@@ -97,6 +97,7 @@
 
         <script>
             if (!window.toastListenerAttached) {
+                // 1. Toast Listener
                 document.addEventListener('show-toast', function (evt) {
                     const message = evt.detail.message;
                     const type = evt.detail.type || 'info';
@@ -144,17 +145,20 @@
                     }, 4000);
                 });
 
+                // 🟢 2. Delayed Redirect Listener (Solves the Race Condition!)
+                document.addEventListener('delayed-redirect', function (evt) {
+                    const targetUrl = evt.detail.url;
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, 500); // Gives the toast 1.2 seconds to shine before moving
+                });
+
                 window.toastListenerAttached = true;
             }
         </script>
 <script>
             function generateIOSSplashScreen(logoUrl, bgColor, tenantName, textColor, version) {
-                
-                // 🔴 UNCOMMENT THESE FOR PRODUCTION
-                // const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                // if (!isIOS) return;
-                // if (window.navigator.standalone === true) return;
-
+                // (Splash screen logic remains identical)
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
 
@@ -165,7 +169,6 @@
                 canvas.width = screenWidth * pixelRatio;
                 canvas.height = screenHeight * pixelRatio;
 
-                // 1. Paint Background
                 ctx.fillStyle = bgColor;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -182,42 +185,34 @@
                     console.log('✅ iOS Splash Screen successfully injected!');
                 };
 
-                // Helper to draw the Text and Loading Dots
                 const drawTextAndDots = (yOffset) => {
-                    // Draw Tenant Name
                     ctx.fillStyle = textColor;
                     ctx.font = `bold ${canvas.width * 0.06}px system-ui, -apple-system, sans-serif`;
                     ctx.textAlign = "center";
                     ctx.fillText(tenantName, canvas.width / 2, yOffset + 120);
 
-                    // Draw Version below tenant name
                     if (version) {
                         ctx.font = `${canvas.width * 0.035}px system-ui, -apple-system, sans-serif`;
                         ctx.fillText(version, canvas.width / 2, yOffset + 120 + (canvas.width * 0.06) + 20);
                     }
 
-                    // Draw Static DaisyUI Loading Dots
-                    const dotY = canvas.height - (canvas.height * 0.15); // Bottom 15% of screen
+                    const dotY = canvas.height - (canvas.height * 0.15); 
                     const dotRadius = canvas.width * 0.015;
                     const spacing = canvas.width * 0.07;
                     const centerX = canvas.width / 2;
 
                     ctx.fillStyle = textColor;
                     
-                    // Dot 1 (Solid)
                     ctx.globalAlpha = 0.8;
                     ctx.beginPath(); ctx.arc(centerX - spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
-                    // Dot 2 (Medium)
                     ctx.globalAlpha = 0.4;
                     ctx.beginPath(); ctx.arc(centerX, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
-                    // Dot 3 (Faded)
                     ctx.globalAlpha = 0.15;
                     ctx.beginPath(); ctx.arc(centerX + spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
                     
-                    ctx.globalAlpha = 1.0; // Reset alpha
+                    ctx.globalAlpha = 1.0; 
                 };
 
-                // If no logo, just draw text and dots
                 if (!logoUrl || logoUrl.trim() === '') {
                     drawTextAndDots(canvas.height / 2);
                     injectSplashTag();
@@ -228,18 +223,16 @@
                 img.crossOrigin = 'Anonymous';
 
                 img.onload = () => {
-                    const targetLogoWidth = canvas.width / 3.5; // Slightly smaller to look premium
+                    const targetLogoWidth = canvas.width / 3.5; 
                     const scale = targetLogoWidth / img.width;
                     const targetLogoHeight = img.height * scale;
 
                     const x = (canvas.width - targetLogoWidth) / 2;
-                    const y = (canvas.height - targetLogoHeight) / 2 - 80; // Shifted up
+                    const y = (canvas.height - targetLogoHeight) / 2 - 80; 
 
-                    // Draw Image with DaisyUI Border Radius (~1.5rem scaled)
                     const radius = canvas.width * 0.04;
                     ctx.save();
                     ctx.beginPath();
-                    // Using bezier curves because older iOS Safari doesn't support ctx.roundRect()
                     ctx.moveTo(x + radius, y);
                     ctx.lineTo(x + targetLogoWidth - radius, y);
                     ctx.quadraticCurveTo(x + targetLogoWidth, y, x + targetLogoWidth, y + radius);
@@ -255,9 +248,7 @@
                     ctx.drawImage(img, x, y, targetLogoWidth, targetLogoHeight);
                     ctx.restore();
 
-                    // Draw text and dots below the image
                     drawTextAndDots(y + targetLogoHeight);
-                    
                     injectSplashTag();
                 };
 
@@ -270,7 +261,6 @@
                 img.src = logoUrl;
             }
 
-            // 🟢 Jinja2 Variables Construction
             {% if request.state.tenant and request.state.tenant.logo %}
                 {% set pb_url = request.state.pb.base_url.rstrip("/") %}
                 {% set col_id = request.state.tenant.collection_id %}
@@ -281,7 +271,6 @@
                 {% set dynamic_logo_url = '' %}
             {% endif %}
 
-            // Background Color Logic
             {% if request.state.tenant and request.state.tenant.primary_color %}
                 {% set splash_bg = request.state.tenant.primary_color %}
             {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
@@ -290,7 +279,6 @@
                 {% set splash_bg = 'oklch(14% .004 49.25)' %}
             {% endif %}
 
-            // Text Color Logic (Defaults to white for the dark OKLCH background)
             {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
                 {% set splash_text = request.state.tenant.brand_colors.base_content %}
             {% else %}
