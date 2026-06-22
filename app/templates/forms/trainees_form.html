@@ -115,16 +115,17 @@
                 </label>
             </div>
         </div>
+        <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
 
         <div class="form-control">
             {% if trainee.training_history and trainee.training_history.strip() %}
-                <textarea name="training_history" class="textarea textarea-bordered h-12 w-full">
-{{ trainee.training_history.strip() }}</textarea
+                <textarea name="training_history" class="textarea textarea-bordered h-6 w-full">
+                    {{ trainee.training_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
                     name="training_history"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea textarea-bordered h-6 w-full"
                     placeholder="سابقه تمرین"
                 ></textarea>
             {% endif %}
@@ -132,13 +133,13 @@
 
         <div class="form-control">
             {% if trainee.steroid_history and trainee.steroid_history.strip() %}
-                <textarea name="steroid_history" class="textarea textarea-bordered h-12 w-full">
-{{ trainee.steroid_history.strip() }}</textarea
+                <textarea name="steroid_history" class="textarea textarea-bordered h-6 w-full">
+                    {{ trainee.steroid_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
                     name="steroid_history"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea textarea-bordered h-6 w-full"
                     placeholder="سابقه استروئید"
                 ></textarea>
             {% endif %}
@@ -146,13 +147,13 @@
 
         <div class="form-control">
             {% if trainee.supplement_history and trainee.supplement_history.strip() %}
-                <textarea name="supplement_history" class="textarea textarea-bordered h-12 w-full">
-{{ trainee.supplement_history.strip() }}</textarea
+                <textarea name="supplement_history" class="textarea textarea-bordered h-6 w-full">
+                    {{ trainee.supplement_history.strip() }}</textarea
                 >
             {% else %}
                 <textarea
                     name="supplement_history"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea textarea-bordered h-6 w-full"
                     placeholder="سابقه مکمل"
                 ></textarea>
             {% endif %}
@@ -160,13 +161,13 @@
 
         <div class="form-control">
             {% if trainee.notes and trainee.notes.strip() %}
-                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
+                <textarea name="notes" class="textarea textarea-bordered !h-6 w-full">
                     {{ trainee.notes.strip() }}</textarea
                 >
             {% else %}
                 <textarea
                     name="notes"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea textarea-bordered !h-6 w-full"
                     placeholder="یادداشت"
                 ></textarea>
             {% endif %}
