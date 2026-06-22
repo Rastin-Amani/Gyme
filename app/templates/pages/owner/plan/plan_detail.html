@@ -2,21 +2,28 @@
 {% block dashboard_content %}
     <div class="max-w-150">
         <div class="items-center justify-between bg-base-200 p-4 mb-4 card flex-row-reverse">
-            <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
-            <div class="text-center">
-                <h1 class="text-m font-semibold text-right ml-4">
-                    برنامه‌ی
-                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                </h1>
-            </div>
+            {% if plan.is_template | string | lower == 'true' %}
+                <div class="flex gap-2">
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                </div>
+                <div class="text-center">
+                    <h1 class="text-m font-semibold text-right ml-4">
+                        <span class="opacity-60 font-extrabold">قالب:</span>
+                        {{ plan.template_name or 'بدون نام' }}
+                    </h1>
+                </div>
+            {% else %}
+                <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                <div class="text-center">
+                    <h1 class="text-m font-semibold text-right ml-4">
+                        برنامه‌ی
+                        {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                    </h1>
+                </div>
+            {% endif %}
         </div>
-        <!--         <div>
-            <a href="/items_for_plan/{{ plan.id }}" class="btn btn-primary w-full mb-4">
-                افزودن آیتم به برنامه
-            </a>
-        </div> -->
-        <!-- Info Grid -->
-        <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
+
+        <div class="grid grid-cols-3 gap-4 text-sm mb-4 text-center">
             <div>
                 <span class="opacity-60 block">نوع</span>
                 <span class="font-medium">
@@ -30,22 +37,8 @@
                 </span>
             </div>
             <div>
-                <span class="opacity-60 block">مربی</span>
-                <span class="font-medium">
-                    {{ plan.expand.coach.first_name if plan.expand.coach is defined  else '-' }}
-                </span>
-            </div>
-            <div>
                 <span class="opacity-60 block">روز در هفته</span>
                 <span class="font-medium">{{ plan.days_per_week or '-' }}</span>
-            </div>
-            <div>
-                <span class="opacity-60 block">تاریخ شروع</span>
-                <span class="font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
-            </div>
-            <div>
-                <span class="opacity-60 block">تاریخ پایان</span>
-                <span class="font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
             </div>
             <div>
                 <span class="opacity-60 block">وضعیت</span>
@@ -59,21 +52,49 @@
                     {% endif %}
                 </span>
             </div>
-            {% if plan.description != "" %}
-                <div class="bg-base-200 p-4 rounded-lg col-span-3 text-right">
-                    <p class="text-sm opacity-60">{{ plan.description }}</p>
-                </div>
-            {% else %}
 
+            {% if plan.is_template | string | lower != 'true' %}
+                <div>
+                    <span class="opacity-60 block">مربی</span>
+                    <span class="font-medium">
+                        {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand else '-' }}
+                    </span>
+                </div>
+                <div>
+                    <span class="opacity-60 block">تاریخ شروع</span>
+                    <span class="font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
+                </div>
+                <div>
+                    <span class="opacity-60 block">تاریخ پایان</span>
+                    <span class="font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
+                </div>
+            {% endif %}
+
+            {% if plan.notes and plan.notes != "" %}
+                <div class="bg-base-200 p-4 rounded-lg col-span-3 text-right mt-2">
+                    <p class="text-sm opacity-60">{{ plan.notes }}</p>
+                </div>
             {% endif %}
         </div>
 
-        <!-- Items Section -->
+        {% if plan.is_template | string | lower == 'true' %}
+            <button
+                class="btn btn-s w-full"
+                type="button"
+                hx-get="/templates/{{ plan.id }}/apply"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
+            >
+                اعمال برای شاگرد
+            </button>
+        {% endif %}
+
         <div>
             <div class="mt-4">
                 <div class="divider text-xs opacity-50">آیتم‌های برنامه</div>
                 <button
-                    class="btn btn-primary btn-s w-full mb-4"
+                    class="btn btn-primary btn-soft btn-s w-full mb-4"
                     type="button"
                     hx-get="/items/new?plan_type={{ plan.type }}&plan_id={{ plan.id }}"
                     hx-target="#modal-container"
@@ -90,7 +111,6 @@
                     hx-select="#items-list-content"
                     hx-swap="outerHTML"
                 >
-                    <!-- Iterate over the items array inside the pagination object -->
                     {% for item in item.items %}
                         <div class="bg-base-200 p-4 card">
                             {% if plan.type == 'diet' %}
@@ -136,18 +156,15 @@
                                         ویرایش
                                     </button>
                                 </div>
-
                                 {% if item.notes %}
                                     <p class="text-xs opacity-60 mt-2">توضیحات: {{ item.notes }}</p>
                                 {% endif %}
                             {% elif plan.type == 'training' %}
                                 <div class="flex justify-between items-center gap-2">
-                                    <!-- Format the day badge -->
                                     <div>
                                         <span class="badge badge-accent badge-sm">
                                             روز {{ item.seq }}
                                         </span>
-                                        <!-- Use item.name instead of item.item_name -->
                                         <h3 class="font-bold text-sm mt-1">{{ item.name }}</h3>
                                         <p class="text-sm opacity-80 mt-1">
                                             ست: {{ item.sets }} | تکرار: {{ item.reps }} | وزن:
@@ -167,7 +184,6 @@
                                     </button>
                                 </div>
                             {% else %}
-                                <!-- Fallback -->
                                 <p class="text-sm opacity-60">{{ item.name }}</p>
                             {% endif %}
                         </div>
@@ -175,7 +191,7 @@
                         <div class="bg-base-200 p-4 text-center card">
                             <p class="text-sm opacity-60 p-4">
                                 <span class="status status-secondary animate-bounce ml-1"></span>
-                                هیچ آیتمی ثبت نشده نکردید.
+                                هیچ آیتمی ثبت نشده.
                             </p>
                         </div>
                     {% endfor %}

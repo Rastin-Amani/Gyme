@@ -1,186 +1,234 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div>
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-xl font-bold">برنامه‌ها</h1>
-                <p class="text-sm opacity-70">مدیریت برنامه‌های ثبت‌شده</p>
-            </div>
-
-            <a href="/plans/new" class="btn btn-primary">برنامه جدید</a>
+    <div id="plans-content">
+        <!-- Tab Bar: Active Plans | Templates -->
+        <div class="tabs tabs-box mb-6 bg-base-200 p-1 gap-0">
+            <a
+                href="/plans"
+                class="tab {{ 'tab-active' if not is_template else '' }}"
+                hx-get="/plans"
+                hx-target="#plans-content"
+                hx-swap="outerHTML"
+                hx-select="#plans-content"
+                hx-push-url="true"
+            >
+                برنامه‌ها
+            </a>
+            <a
+                href="/plans?is_template=true"
+                class="tab {{ 'tab-active' if is_template else '' }}"
+                hx-get="/plans?is_template=true"
+                hx-target="#plans-content"
+                hx-swap="outerHTML"
+                hx-select="#plans-content"
+                hx-push-url="true"
+            >
+                قالب‌ها
+            </a>
         </div>
 
-        <div class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-6">
-            <input type="checkbox" />
-            <div class="collapse-title text-md font-medium">جستجو و فیلتر</div>
-            <div class="collapse-content">
-                <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
-                    <!-- Search Input -->
-                    <label class="form-control floating-label">
-                        <input
-                            type="text"
-                            name="query"
-                            id="search-input"
-                            placeholder="جستجو (نام شاگرد، نام مربی...)"
-                            class="input input-bordered w-full peer"
-                            hx-get="/plans"
-                            hx-target="#plans-table-container"
-                            hx-select="#plans-table-container"
-                            hx-swap="innerHTML"
-                            hx-trigger="keyup changed delay:500ms, search"
-                            hx-include="[name='query']"
-                        />
-                        <span class="label-text">جستجو (نام شاگرد، نام مربی...)</span>
-                    </label>
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold">
+                    {% if is_template %}قالب‌ها{% else %}برنامه‌ها{% endif %}
+                </h1>
+                <p class="text-sm opacity-70">
+                    {% if is_template %}
 
-                    <div class="grid grid-cols-1 sm:grid-cols- gap-4">
-                        <!-- Plan Type Filter -->
+                    {% else %}
+
+                    {% endif %}
+                </p>
+            </div>
+
+            {% if is_template %}
+                <a href="/plans/new?template=true" class="btn btn-primary">قالب جدید</a>
+            {% else %}
+                <a href="/plans/new" class="btn btn-primary">برنامه جدید</a>
+            {% endif %}
+        </div>
+
+        <!-- Search / Filter (only for active plans) -->
+        {% if not is_template %}
+            <div
+                class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-6"
+            >
+                <input type="checkbox" />
+                <div class="collapse-title text-md font-medium">جستجو و فیلتر</div>
+                <div class="collapse-content">
+                    <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                         <label class="form-control floating-label">
-                            <select
-                                name="type"
-                                id="type-filter"
-                                class="select select-bordered w-full peer"
+                            <input
+                                type="text"
+                                name="query"
+                                id="search-input"
+                                placeholder="جستجو (نام شاگرد، نام مربی...)"
+                                class="input input-bordered w-full peer"
                                 hx-get="/plans"
                                 hx-target="#plans-table-container"
                                 hx-select="#plans-table-container"
                                 hx-swap="innerHTML"
-                                hx-trigger="change"
-                                hx-include="[name='type'],[name='coach_id'],[name='query']"
-                            >
-                                <option value="" disabled selected>همه</option>
-                                <option value="diet">غذایی</option>
-                                <option value="training">ورزشی</option>
-                                <option value="steroid">استروئید</option>
-                            </select>
-                            <span class="label-text">نوع برنامه</span>
+                                hx-trigger="keyup changed delay:500ms, search"
+                            />
+                            <span class="label-text">جستجو (نام شاگرد، نام مربی...)</span>
                         </label>
-                    </div>
 
-                    <button
-                        type="button"
-                        id="clear-filters"
-                        class="btn btn-outline btn-block mt-2"
-                        onclick="clearAllFilters()"
-                    >
-                        پاک کردن فیلترها
-                    </button>
-                </form>
+                        <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                            <label class="form-control floating-label">
+                                <select
+                                    name="type"
+                                    id="type-filter"
+                                    class="select select-bordered w-full peer"
+                                    hx-get="/plans"
+                                    hx-target="#plans-table-container"
+                                    hx-select="#plans-table-container"
+                                    hx-swap="innerHTML"
+                                    hx-trigger="change"
+                                >
+                                    <option value="" disabled selected>همه</option>
+                                    <option value="diet">غذایی</option>
+                                    <option value="training">ورزشی</option>
+                                    <option value="steroid">استروئید</option>
+                                </select>
+                                <span class="label-text">نوع برنامه</span>
+                            </label>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="clear-filters"
+                            class="btn btn-outline btn-block mt-2"
+                            onclick="clearAllFilters()"
+                        >
+                            پاک کردن فیلترها
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
-        <div class="card bg-base-100 border-base-300 border">
-            <div class="card-body p-0">
-                <div class="max-w-150 overflow-x-auto">
-                    <div id="plans-table-container">
-                        <table class="table min-w-max w-full table-zebra">
-                            <thead>
-                                <tr>
-                                    <th class="text-right"></th>
-                                    <th>شاگرد</th>
-                                    <th>نوع</th>
-                                    <th>مربی</th>
-                                    <th>روز در هفته</th>
-                                    <th>تاریخ شروع</th>
-                                    <th>تاریخ پایان</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="plans-table-body">
-                                {# Full list view - show original empty state #}
-                                {% if not is_search_result and plans and plans|length > 0 %}
-                                    {% for plan in plans %}
-                                        <tr>
-                                            <td class="text-right">
-                                                <a href="/plans/{{ plan.id }}" class="btn btn-sm">
-                                                    مشاهده
-                                                </a>
-                                            </td>
-                                            <td>
-                                                {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                                            </td>
-                                            <td>
-                                                {% if plan.type == 'diet' %}
-                                                    غذایی
-                                                {% elif plan.type =='training' %}
-                                                    ورزشی
-                                                {% else %}
-                                                    استروئید
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
-                                            </td>
-                                            <td>{{ plan.days_per_week or '-' }}</td>
-                                            <td>{{ plan.start_date | jalali_date or '-' }}</td>
-                                            <td>{{ plan.end_date | jalali_date or '-' }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    {# Search/filter result view - conditional empty state #}
-                                {% elif is_search_result and plans and plans|length > 0 %}
-                                    {% for plan in plans %}
-                                        <tr>
-                                            <td class="text-right">
-                                                <a href="/plans/{{ plan.id }}" class="btn btn-sm">
-                                                    مشاهده
-                                                </a>
-                                            </td>
-                                            <td>
-                                                {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                                            </td>
-                                            <td>
-                                                {% if plan.type == 'diet' %}
-                                                    غذایی
-                                                {% elif plan.type =='training' %}
-                                                    ورزشی
-                                                {% else %}
-                                                    استروئید
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
-                                            </td>
-                                            <td>{{ plan.days_per_week or '-' }}</td>
-                                            <td>{{ plan.start_date | jalali_date or '-' }}</td>
-                                            <td>{{ plan.end_date | jalali_date or '-' }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    {# Empty state - either initial or search result #}
-                                {% else %}
+        {% if is_template %}
+            <!-- Template Cards View -->
+            <div id="templates-grid" class="grid grid-cols-1">
+                {% include "pages/owner/plan/templates_list.html" %}
+            </div>
+        {% else %}
+            <!-- Regular Plans Table -->
+            <div class="card bg-base-100 border-base-300 border">
+                <div class="card-body p-0">
+                    <div class="max-w-150 overflow-x-auto">
+                        <div id="plans-table-container">
+                            <table class="table min-w-max w-full table-zebra">
+                                <thead>
                                     <tr>
-                                        <td colspan="8" class="text-center py-8 opacity-60">
-                                            <div class="bg-base-200 p-4 text-center card">
-                                                <p class="text-sm opacity-60 p-4">
-                                                    {% if is_search_result and show_empty_state %}
-                                                        <span
-                                                            class="status status-secondary ml-1"
-                                                        ></span>
-                                                        {{ empty_message }}
-                                                    {% else %}
-                                                        <span
-                                                            class="status status-secondary animate-bounce ml-1"
-                                                        ></span>
-                                                        هنوز برنامه‌ای ثبت نکردید!
-                                                    {% endif %}
-                                                </p>
-                                            </div>
-                                        </td>
+                                        <th class="text-right"></th>
+                                        <th>شاگرد</th>
+                                        <th>نوع</th>
+                                        <th>مربی</th>
+                                        <th>روز در هفته</th>
+                                        <th>تاریخ شروع</th>
+                                        <th>تاریخ پایان</th>
                                     </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
+                                </thead>
+
+                                <tbody id="plans-table-body">
+                                    {% if not is_search_result and plans and plans|length > 0 %}
+                                        {% for plan in plans %}
+                                            <tr>
+                                                <td class="text-right">
+                                                    <a
+                                                        href="/plans/{{ plan.id }}"
+                                                        class="btn btn-sm"
+                                                    >
+                                                        مشاهده
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                                                </td>
+                                                <td>
+                                                    {% if plan.type == 'diet' %}
+                                                        غذایی
+                                                    {% elif plan.type =='training' %}
+                                                        ورزشی
+                                                    {% else %}
+                                                        استروئید
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
+                                                </td>
+                                                <td>{{ plan.days_per_week or '-' }}</td>
+                                                <td>{{ plan.start_date | jalali_date or '-' }}</td>
+                                                <td>{{ plan.end_date | jalali_date or '-' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% elif is_search_result and plans and plans|length > 0 %}
+                                        {% for plan in plans %}
+                                            <tr>
+                                                <td class="text-right">
+                                                    <a
+                                                        href="/plans/{{ plan.id }}"
+                                                        class="btn btn-sm"
+                                                    >
+                                                        مشاهده
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                                                </td>
+                                                <td>
+                                                    {% if plan.type == 'diet' %}
+                                                        غذایی
+                                                    {% elif plan.type =='training' %}
+                                                        ورزشی
+                                                    {% else %}
+                                                        استروئید
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
+                                                </td>
+                                                <td>{{ plan.days_per_week or '-' }}</td>
+                                                <td>{{ plan.start_date | jalali_date or '-' }}</td>
+                                                <td>{{ plan.end_date | jalali_date or '-' }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="8" class="text-center py-8 opacity-60">
+                                                <div class="bg-base-200 p-4 text-center card">
+                                                    <p class="text-sm opacity-60 p-4">
+                                                        {% if is_search_result and show_empty_state %}
+                                                            <span
+                                                                class="status status-secondary ml-1"
+                                                            ></span>
+                                                            {{ empty_message }}
+                                                        {% else %}
+                                                            <span
+                                                                class="status status-secondary animate-bounce ml-1"
+                                                            ></span>
+                                                            هنوز برنامه‌ای ثبت نکردید!
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        {# End of plans-table-container #}
+        {% endif %}
 
         <script>
             function clearAllFilters() {
                 document.getElementById('search-input').value = '';
                 document.getElementById('type-filter').value = '';
                 document.getElementById('coach-filter').value = '';
-
-                // Redirect to the main plans page to reload full list
                 window.location.href = '/plans';
             }
         </script>
