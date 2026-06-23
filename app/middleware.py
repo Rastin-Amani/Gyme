@@ -1,69 +1,51 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
-from fastapi.responses import RedirectResponse
 
 from app.services.tenants import get_tenant_by_domain
 from app.pb import get_pb
 
-# 🟢 1. Define routes that anyone can access without a token.
-# Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
-PUBLIC_PATHS = [
-    "/login",
-    "/static",          # Required so your CSS/JS loads on the login page!
-    "/manifest.json",   # Required for your PWA
-    "/sw.js",           # Required for offline caching
-    "/favicon.ico"
-]
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
 
-        # ---- Tenant detection ----
+        # ---- 🏠 1. Tenant Detection ----
         host = request.headers.get("host", "").split(":")[0]
 
         tenant = await get_tenant_by_domain(host)
         request.state.tenant = tenant
 
-        # ---- Auth detection ----
+        # ---- 🔐 2. Auth Context Injection ----
         pb = get_pb()
-        request.state.pb = pb 
+        request.state.pb = pb
         request.state.user = None
+
+        # Changed the default fallback role from "trainee" to "member" for generic SaaS compatibility!
         request.state.role = None
-        
-        is_authenticated = False
+
         token = request.cookies.get("pb_auth")
 
         if token:
             try:
                 # Load token into the PocketBase instance
                 pb.auth_store.save(token, None)
-                
-                # Verify token with the server. 
-                # If the password was just changed, this will throw a 401 error!
+
+                # Verify token with the server.
                 pb.collection("users").auth_refresh()
 
                 user = pb.auth_store.model
                 request.state.user = user
-                request.state.role = getattr(user, "role", "trainee")
-                is_authenticated = True
+
+                # Fetching role (generic boilerplate standard)
+                request.state.role = getattr(user, "role", "member")
 
             except Exception as e:
                 # If the token is expired, invalid, or revoked, clear the store
-                # and treat them as an anonymous user.
                 print("Auth error:", e)
                 pb.auth_store.clear()
 
-        # ---- 🟢 2. The Global Redirect Logic ----
-        path = request.url.path
-        
-        # Explicitly allow the exact root path "/", THEN check the subfolders
-        is_public = (path == "/") or any(path.startswith(p) for p in PUBLIC_PATHS)
-
-        # If they aren't logged in AND they are trying to access a private route
-        if not is_authenticated and not is_public:
-            # 303 (See Other) is the standard for redirecting state changes safely
-            return RedirectResponse(url="/login", status_code=303)
-
-        # Proceed normally if they are authenticated OR visiting a public page
+        # ---- 🚦 3. Proceed Without Blocking ----
+        # The global redirect logic and PUBLIC_PATHS have been removed.
+        # Now, anyone can access the routes, and FastAPI will handle specific
+        # protections at the route level via Dependencies if needed.
         response = await call_next(request)
         return response
