@@ -1,0 +1,184 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <form
+        hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees/new' }}"
+        hx-swap="none"
+        class="bg-base-100 space-y-4"
+    >
+        <div class="grid grid-cols-2 gap-4 items-baseline">
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>نام</span>
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="نام"
+                        value="{{ trainee.expand['user'].first_name if trainee.expand and 'user' in trainee.expand else '' }}"
+                        required
+                        class="input input-bordered w-full validator"
+                    />
+                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>نام خانوادگی</span>
+                    <input
+                        type="text"
+                        name="last_name"
+                        placeholder="نام خانوادگی"
+                        value="{{ trainee.expand['user'].last_name if trainee.expand and 'user' in trainee.expand else '' }}"
+                        required
+                        class="input input-bordered w-full validator"
+                    />
+                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <div class="form-control">
+                <label class="input w-full validator">
+                    <span class="label">ایمیل</span>
+                    {% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
+                    <input
+                        type="email"
+                        name="email"
+                        {{ 'readonly' if current_email else '' }}
+                        value="{{ current_email }}"
+                        required
+                        placeholder="test@gyme.cloud مثل"
+                    />
+                </label>
+                <div class="validator-hint hidden">ایمیل صحیح وارد کنید.</div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="form-control">
+                    <label class="floating-label">
+                        <span class="label-text">شماره موبایل</span>
+                        <input
+                            type="tel"
+                            name="phone"
+                            value="{{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '' }}"
+                            required
+                            placeholder="شماره موبایل"
+                            class="input input-bordered text-right w-full tabular-nums validator"
+                            minlength="11"
+                            maxlength="11"
+                            pattern="[0-9]*"
+                        />
+                    </label>
+                </div>
+                <div>
+                    {% with name="birthdate", label="تاریخ تولد", placeholder="تاریخ تولد", required="required", value=trainee.birthdate %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="form-control">
+                <label class="select">
+                    <span class="label">جنسیت</span>
+                    <select name="gender" class="select-bordered w-full" required>
+                        <option value="male" {{ 'selected' if trainee.gender == 'male' else '' }}>
+                            آقا
+                        </option>
+                        <option
+                            value="female"
+                            {{ 'selected' if trainee.gender == 'female' else '' }}
+                        >
+                            خانم
+                        </option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-control">
+                <label class="select">
+                    <span class="label">وضعیت</span>
+                    <select name="status" class="select select-bordered w-full" required>
+                        <option
+                            value="active"
+                            {{ 'selected' if trainee.status == 'active' else '' }}
+                        >
+                            فعال
+                        </option>
+                        <option
+                            value="inactive"
+                            {{ 'selected' if trainee.status == 'inactive' else '' }}
+                        >
+                            غیرفعال
+                        </option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
+
+        <div class="form-control">
+            {% if trainee.training_history and trainee.training_history.strip() %}
+                <textarea name="training_history" class="textarea textarea-bordered h-6 w-full">
+{{ trainee.training_history.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="training_history"
+                    class="textarea textarea-bordered h-6 w-full"
+                    placeholder="سابقه تمرین"
+                ></textarea>
+            {% endif %}
+        </div>
+
+        <div class="form-control">
+            {% if trainee.steroid_history and trainee.steroid_history.strip() %}
+                <textarea name="steroid_history" class="textarea textarea-bordered h-6 w-full">
+{{ trainee.steroid_history.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="steroid_history"
+                    class="textarea textarea-bordered h-6 w-full"
+                    placeholder="سابقه استروئید"
+                ></textarea>
+            {% endif %}
+        </div>
+
+        <div class="form-control">
+            {% if trainee.supplement_history and trainee.supplement_history.strip() %}
+                <textarea name="supplement_history" class="textarea textarea-bordered h-6 w-full">
+{{ trainee.supplement_history.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="supplement_history"
+                    class="textarea textarea-bordered h-6 w-full"
+                    placeholder="سابقه مکمل"
+                ></textarea>
+            {% endif %}
+        </div>
+
+        <div class="form-control">
+            {% if trainee.notes and trainee.notes.strip() %}
+                <textarea name="notes" class="textarea textarea-bordered !h-6 w-full">
+{{ trainee.notes.strip() }}</textarea
+                >
+            {% else %}
+                <textarea
+                    name="notes"
+                    class="textarea textarea-bordered !h-6 w-full"
+                    placeholder="یادداشت"
+                ></textarea>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col-reverse justify-end gap-2 mt-6">
+            <a href="/trainees" class="btn btn-ghost">انصراف</a>
+            <button type="submit" class="w-full btn btn-primary">
+                {{ 'ثبت و رفتن به فرم ارزیابی' if not trainee else 'ذخیره تغییرات' }}
+            </button>
+        </div>
+    </form>
+{% endblock %}

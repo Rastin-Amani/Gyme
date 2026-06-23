@@ -1,0 +1,183 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block dashboard_content %}
+    <div class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-xl font-bold">برنامه‌های من</h1>
+                <p class="text-sm text-base-content/60 mt-1">
+                    مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما
+                </p>
+            </div>
+        </div>
+
+        {# Safely extract the list depending on if your service uses get_list() or get_full_list() #}
+        {% set plan_list = plans.items if plans.items is defined else plans %}
+
+        {% if plan_list and plan_list | length > 0 %}
+            <div class="flex flex-col gap-4">
+                {% for plan in plan_list %}
+                    <div
+                        class="card bg-base-100  border border-base-200 hover:border-primary/30 transition-all duration-300"
+                    >
+                        <div class="card-body p-4 sm:p-5">
+                            <div class="flex flex-wrap justify-between items-center gap-4">
+                                <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-[200px]">
+                                    <div
+                                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-base-200 rounded-2xl text-2xl"
+                                    >
+                                        {% if plan.type == 'training' %}
+                                            💪🏻
+                                        {% elif plan.type == 'diet' %}
+                                            🥑
+                                        {% elif plan.type == 'steroid' %}
+                                            💊
+                                        {% else %}
+                                            📋
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2 w-full">
+                                        <div class="flex items-center gap-2">
+                                            <h3
+                                                class="font-bold text-base sm:text-lg text-base-content whitespace-nowrap"
+                                            >
+                                                {% if plan.type == 'training' %}
+                                                    برنامه تمرینی
+                                                {% elif plan.type == 'diet' %}
+                                                    برنامه غذایی
+                                                {% elif plan.type == 'steroid' %}
+                                                    برنامه استروئیدی
+                                                {% else %}
+                                                    برنامه نامشخص
+                                                {% endif %}
+                                            </h3>
+
+                                            {% if plan.status == 'active' %}
+                                                <span
+                                                    class="badge badge-success badge-sm badge-soft font-medium"
+                                                >
+                                                    فعال
+                                                </span>
+                                            {% elif plan.status == 'draft' %}
+                                                <span
+                                                    class="badge badge-ghost badge-sm font-medium"
+                                                >
+                                                    پیش‌نویس
+                                                </span>
+                                            {% elif plan.status == 'inactive' %}
+                                                <span
+                                                    class="badge badge-error badge-sm badge-soft font-medium"
+                                                >
+                                                    غیرفعال
+                                                </span>
+                                            {% else %}
+                                                <span class="badge badge-ghost badge-sm">
+                                                    {{ plan.status }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                        <div
+                                            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-base-content/60 font-medium"
+                                        >
+                                            {% if plan.start_date %}
+                                                <div
+                                                    class="flex items-center gap-1 whitespace-nowrap"
+                                                >
+                                                    <svg
+                                                        class="w-3.5 h-3.5 opacity-70"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="1.5"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                                                        />
+                                                    </svg>
+                                                    <span>
+                                                        شروع: {{ plan.start_date | jalali_date }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+
+                                            {% if plan.end_date %}
+                                                <div
+                                                    class="flex items-center gap-1 whitespace-nowrap"
+                                                >
+                                                    <svg
+                                                        class="w-3.5 h-3.5 opacity-70"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="1.5"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            stroke-linecap="round"
+                                                            stroke-linejoin="round"
+                                                            d="M3 3v1.5M3 21v-6m0 0l2.77-.693a15.215 15.215 0 013.111-.306c1.2.03 2.394.3 3.528.816l.16.073a15.216 15.216 0 003.111.306 15.215 15.215 0 003.111-.306V5.624c-3.268.687-6.534-.2-9.636-1.18m0 0C10.189 3.515 7.02 3.227 3 4.42m0 10.58v-6"
+                                                        />
+                                                    </svg>
+                                                    <span>
+                                                        پایان: {{ plan.end_date | jalali_date }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex-shrink-0 mr-auto sm:mr-0">
+                                    <a
+                                        href="/user/plans/{{ plan.id }}"
+                                        class="btn btn-circle btn-ghost bg-base-200 text-base-content hover:bg-primary hover:text-primary-content transition-colors"
+                                    >
+                                        <svg
+                                            class="w-5 h-5"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="2"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15.75 19.5L8.25 12l7.5-7.5"
+                                            />
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div
+                class="card bg-base-100  border border-base-200 p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
+            >
+                <div
+                    class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-4 text-3xl opacity-50"
+                >
+                    📭
+                </div>
+                <h3 class="text-lg font-bold text-base-content">برنامه‌ای ثبت نشده!</h3>
+                <p class="text-sm text-base-content/60 mt-2 max-w-xs mx-auto">
+                    در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد برنامه
+                    جدید، در اینجا نمایش داده می‌شود.
+                </p>
+                <span
+                    class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 px-3 py-1.5 rounded-full"
+                >
+                    <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+                    منتظر دریافت برنامه...
+                </span>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,374 @@
+{% extends "layouts/dashboard.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block dashboard_content %}
+    <div class="max-w-3xl mx-auto space-y-6 pb-24">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="flex flex-col">
+                <span class="text-sm text-base-content/60 font-medium">
+                    لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود.
+                </span>
+            </div>
+        </div>
+        <form
+            hx-post="/trainees/{{ trainee.id }}/progress-log"
+            enctype="multipart/form-data"
+            class="bg-base-100 space-y-6"
+        >
+            <input type="hidden" name="bmi" id="input_bmi" />
+            <input type="hidden" name="bfp" id="input_bfp" />
+            <input type="hidden" name="bmr" id="input_bmr" />
+            <input type="hidden" name="tdee" id="input_tdee" />
+            <input type="hidden" name="lbm" id="input_lbm" />
+            <input type="hidden" name="whr" id="input_whr" />
+
+            <div class="">
+                <div class="">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">قد</span>
+                                <input
+                                    type="number"
+                                    id="val_height"
+                                    name="height"
+                                    value="{{ trainee.height if trainee.height else '' }}"
+                                    class="calc-trigger validator"
+                                    required
+                                />
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">وزن</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    id="val_weight"
+                                    name="weight"
+                                    value="{{ trainee.weight if trainee.weight else '' }}"
+                                    class="w-full calc-trigger validator"
+                                    required
+                                />
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">دور سینه</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    name="chest"
+                                    class="w-full calc-trigger"
+                                />
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">دور کمر</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    id="val_waist"
+                                    name="waist"
+                                    class="w-full calc-trigger"
+                                />
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">دور باسن</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    id="val_hip"
+                                    name="hip"
+                                    class="w-full calc-trigger"
+                                />
+                            </label>
+                        </div>
+                        <div class="form-control">
+                            <label class="input">
+                                <span class="label">دور بازو</span>
+                                <input
+                                    type="number"
+                                    step="0.1"
+                                    name="arms"
+                                    class="w-full calc-trigger"
+                                />
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-control">
+                        <label class="select w-full">
+                            <span class="label">سطح فعالیت</span>
+                            <select id="val_activity" class="select-bordered w-full calc-trigger">
+                                <option value="1.2">بدون تحرک (پشت میز)</option>
+                                <option value="1.375">سبک (۱ تا ۳ روز ورزش)</option>
+                                <option value="1.55" selected>متوسط (۳ تا ۵ روز ورزش)</option>
+                                <option value="1.725">شدید (۶ تا ۷ روز ورزش)</option>
+                                <option value="1.9">بسیار شدید (ورزشکار حرفه‌ای)</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="card bg-base-200 p-4 text-center items-center -sm">
+                    <div class="text-xs font-bold opacity-60 mb-3">شاخص توده بدنی (BMI)</div>
+                    <div
+                        id="bmi-gauge"
+                        class="radial-progress text-base-content/20 transition-all duration-500 font-black"
+                        style="--value:0; --size:4rem; --thickness: 4px;"
+                    >
+                        0
+                    </div>
+                    <div id="bmi-status" class="text-xs mt-3 font-bold">-</div>
+                </div>
+
+                <div class="card bg-base-200 p-4 text-center items-center -sm">
+                    <div class="text-xs font-bold opacity-60 mb-3">درصد چربی (BFP)</div>
+                    <div
+                        id="bfp-gauge"
+                        class="radial-progress text-base-content/20 transition-all duration-500 font-black"
+                        style="--value:0; --size:4rem; --thickness: 4px;"
+                    >
+                        0%
+                    </div>
+                    <div id="bfp-status" class="text-xs mt-3 font-bold">-</div>
+                </div>
+
+                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
+                    <div class="text-xs font-bold opacity-60 mb-2">توده بدون چربی (LBM)</div>
+                    <div id="lbm-display" class="text-xl font-black text-info mt-2">0</div>
+                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
+                </div>
+
+                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
+                    <div class="text-xs font-bold opacity-60 mb-2">وزن چربی</div>
+                    <div id="fat-mass-display" class="text-xl font-black text-warning mt-2">0</div>
+                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
+                </div>
+
+                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
+                    <div class="text-xs font-bold opacity-60 mb-2">متابولیسم (BMR)</div>
+                    <div id="bmr-display" class="text-xl font-black text-accent mt-2">0</div>
+                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
+                        Kcal / Day
+                    </div>
+                </div>
+
+                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
+                    <div class="text-xs font-bold opacity-60 mb-2">کالری نگهداری (TDEE)</div>
+                    <div id="tdee-display" class="text-xl font-black text-success mt-2">0</div>
+                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
+                        Kcal / Day
+                    </div>
+                </div>
+            </div>
+
+            <div class="">
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text opacity-70 mb-2">تصاویر پیشرفت (اختیاری)</span>
+                        </label>
+                        <input
+                            type="file"
+                            name="progress_photos"
+                            class="file-input file-input-bordered w-full"
+                            multiple
+                            accept="image/*"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-control">
+                <textarea
+                    name="notes"
+                    class="textarea textarea-bordered h-12 w-full"
+                    placeholder="یادداشت‌های ارزیابی"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-full">ثبت ارزیابی</button>
+        </form>
+    </div>
+
+    <script>
+        const gender = '{{ trainee.gender }}'; // 'male' or 'female'
+
+        // Calculate approximate age from birthdate
+        let age = 25; // fallback
+        const birthdateStr = '{{ trainee.birthdate }}';
+        if (birthdateStr && birthdateStr.trim() !== '') {
+            const birthYear = new Date(birthdateStr).getFullYear();
+            const currentYear = new Date().getFullYear();
+            if (!isNaN(birthYear)) {
+                age = currentYear - birthYear;
+            }
+        }
+
+        function calculateMetrics() {
+            const weight = parseFloat(document.getElementById('val_weight').value);
+            const heightCm = parseFloat(document.getElementById('val_height').value);
+            const waist = parseFloat(document.getElementById('val_waist').value);
+            const hip = parseFloat(document.getElementById('val_hip').value);
+            const activity = parseFloat(document.getElementById('val_activity').value);
+
+            if (!weight || !heightCm) {
+                // Reset BMI gauge
+                document.getElementById('bmi-gauge').style.setProperty('--value', 0);
+                document.getElementById('bmi-gauge').innerText = '0';
+                document.getElementById('bmi-status').innerText = '-';
+                document.getElementById('bmi-gauge').className =
+                    'radial-progress text-base-content/20 transition-all duration-500 font-black';
+
+                // Reset BFP gauge and status
+                document.getElementById('bfp-gauge').style.setProperty('--value', 0);
+                document.getElementById('bfp-gauge').innerText = '0%';
+                document.getElementById('bfp-status').innerText = '-';
+                document.getElementById('bfp-gauge').className =
+                    'radial-progress text-base-content/20 transition-all duration-500 font-black';
+                document.getElementById('bfp-status').className =
+                    'text-xs mt-3 font-bold text-base-content/20';
+
+                // Reset other fields
+                document.getElementById('lbm-display').innerText = '0';
+                document.getElementById('fat-mass-display').innerText = '0';
+                return;
+            }
+
+            const heightM = heightCm / 100;
+
+            // 1. BMI Calculation
+            let bmi = weight / (heightM * heightM);
+            bmi = parseFloat(bmi.toFixed(1));
+
+            // Update BMI Gauge
+            const bmiGauge = document.getElementById('bmi-gauge');
+            const bmiStatus = document.getElementById('bmi-status');
+            bmiGauge.style.setProperty('--value', Math.min((bmi / 40) * 100, 100));
+            bmiGauge.innerText = bmi;
+
+            if (bmi < 18.5) {
+                bmiGauge.className =
+                    'radial-progress text-info transition-all duration-500 font-black';
+                bmiStatus.innerText = 'کمبود وزن';
+                bmiStatus.className = 'text-xs mt-3 text-info font-bold';
+            } else if (bmi < 25) {
+                bmiGauge.className =
+                    'radial-progress text-success transition-all duration-500 font-black';
+                bmiStatus.innerText = 'نرمال';
+                bmiStatus.className = 'text-xs mt-3 text-success font-bold';
+            } else if (bmi < 30) {
+                bmiGauge.className =
+                    'radial-progress text-warning transition-all duration-500 font-black';
+                bmiStatus.innerText = 'اضافه وزن';
+                bmiStatus.className = 'text-xs mt-3 text-warning font-bold';
+            } else {
+                bmiGauge.className =
+                    'radial-progress text-error transition-all duration-500 font-black';
+                bmiStatus.innerText = 'چاقی';
+                bmiStatus.className = 'text-xs mt-3 text-error font-bold';
+            }
+
+            // 2. BMR (Mifflin-St Jeor) & TDEE
+            let bmr = 0;
+            if (gender === 'male') {
+                bmr = 10 * weight + 6.25 * heightCm - 5 * age + 5;
+            } else {
+                bmr = 10 * weight + 6.25 * heightCm - 5 * age - 161;
+            }
+            let tdee = bmr * activity;
+
+            document.getElementById('bmr-display').innerText = Math.round(bmr);
+            document.getElementById('tdee-display').innerText = Math.round(tdee);
+
+            // 3. Body Fat Percentage (BFP) & Status
+            let bfp = 0;
+            const sexInt = gender === 'male' ? 1 : 0;
+            bfp = 1.2 * bmi + 0.23 * age - 10.8 * sexInt - 5.4;
+            bfp = Math.max(parseFloat(bfp.toFixed(1)), 0);
+
+            const bfpGauge = document.getElementById('bfp-gauge');
+            const bfpStatus = document.getElementById('bfp-status');
+            bfpGauge.style.setProperty('--value', Math.min(bfp, 100));
+            bfpGauge.innerText = bfp + '%';
+
+            // 🟢 Determine BFP Status Categories based on gender
+            let bfpText = '-';
+            let bfpColor = 'text-base-content/20';
+
+            if (gender === 'male') {
+                if (bfp < 6) {
+                    bfpText = 'چربی ضروری';
+                    bfpColor = 'text-info';
+                } else if (bfp < 14) {
+                    bfpText = 'ورزشکار';
+                    bfpColor = 'text-success';
+                } else if (bfp < 18) {
+                    bfpText = 'تناسب اندام';
+                    bfpColor = 'text-success';
+                } else if (bfp < 25) {
+                    bfpText = 'قابل قبول';
+                    bfpColor = 'text-warning';
+                } else {
+                    bfpText = 'چاقی';
+                    bfpColor = 'text-error';
+                }
+            } else {
+                // Female thresholds
+                if (bfp < 14) {
+                    bfpText = 'چربی ضروری';
+                    bfpColor = 'text-info';
+                } else if (bfp < 21) {
+                    bfpText = 'ورزشکار';
+                    bfpColor = 'text-success';
+                } else if (bfp < 25) {
+                    bfpText = 'تناسب اندام';
+                    bfpColor = 'text-success';
+                } else if (bfp < 32) {
+                    bfpText = 'قابل قبول';
+                    bfpColor = 'text-warning';
+                } else {
+                    bfpText = 'چاقی';
+                    bfpColor = 'text-error';
+                }
+            }
+
+            bfpGauge.className = `radial-progress ${bfpColor} transition-all duration-500 font-black`;
+            bfpStatus.innerText = bfpText;
+            bfpStatus.className = `text-xs mt-3 font-bold ${bfpColor}`;
+
+            // 4. Lean Body Mass (LBM) & WHR & Fat Mass (KG)
+            let lbm = weight - weight * (bfp / 100);
+            let fatMass = weight - lbm;
+            let whr = 0;
+            if (waist && hip) {
+                whr = parseFloat((waist / hip).toFixed(2));
+            }
+
+            document.getElementById('lbm-display').innerText = parseFloat(lbm.toFixed(1));
+            document.getElementById('fat-mass-display').innerText = parseFloat(fatMass.toFixed(1));
+
+            // Send to backend
+            document.getElementById('input_bmi').value = bmi;
+            document.getElementById('input_bfp').value = bfp;
+            document.getElementById('input_bmr').value = Math.round(bmr);
+            document.getElementById('input_tdee').value = Math.round(tdee);
+            document.getElementById('input_lbm').value = parseFloat(lbm.toFixed(1));
+            document.getElementById('input_whr').value = whr;
+        }
+
+        document.querySelectorAll('.calc-trigger').forEach((input) => {
+            input.addEventListener('input', calculateMetrics);
+            input.addEventListener('change', calculateMetrics);
+        });
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', calculateMetrics);
+    </script>
+{% endblock %}

@@ -1,0 +1,81 @@
+<dialog
+    id="apply-template-modal"
+    class="modal modal-bottom sm:modal-middle modal-open text-right"
+    hx-boost="false"
+>
+    <div class="modal-box bg-base-100 max-h-[85vh] overflow-y-auto pb-8 border border-base-300">
+        <div class="w-12 h-1.5 bg-base-300 rounded-full mx-auto mb-6 sm:hidden"></div>
+
+        <p class="font-bold text-md my-4">
+            اعمال {{ template.template_name or ('قالب ' ~ template.type) }}
+        </p>
+
+        <form
+            hx-post="/templates/{{ template.id }}/apply"
+            hx-boost="false"
+            hx-swap="none"
+            hx-on:htmx:after-request="if(event.detail.successful) {
+                document.getElementById('modal-container').innerHTML = '';
+            }"
+            class="flex flex-col gap-4 text-right"
+            dir="rtl"
+        >
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>انتخاب شاگرد</span>
+                    <select name="trainee" class="select select-bordered w-full" required>
+                        <option value="" selected disabled>شاگرد را انتخاب کنید...</option>
+                        {% for trainee in trainees %}
+                            <option value="{{ trainee.id }}">
+                                {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '' }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    {% with name='start_date', label='تاریخ شروع', placeholder='تاریخ شروع', required='required' %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+                <div>
+                    {% with name='end_date', label='تاریخ پایان', placeholder='تاریخ پایان', required='required' %}
+                        {% include 'components/datepicker.html' %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>یادداشت (اختیاری)</span>
+                    <textarea
+                        name="notes"
+                        class="textarea textarea-bordered h-16 w-full"
+                        placeholder="یادداشت"
+                    ></textarea>
+                </label>
+            </div>
+
+            <input type="hidden" name="template_id" value="{{ template.id }}" />
+
+            <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+                <button
+                    type="button"
+                    class="btn btn-ghost flex-1"
+                    onclick="document.getElementById('modal-container').innerHTML = ''"
+                >
+                    لغو
+                </button>
+                <button type="submit" class="btn btn-primary flex-[2]">ایجاد برنامه</button>
+            </div>
+        </form>
+    </div>
+
+    <div
+        class="modal-backdrop bg-black/40 backdrop-blur-sm cursor-pointer"
+        hx-on:click="document.getElementById('modal-container').innerHTML = ''"
+        hx-boost="false"
+    ></div>
+</dialog>

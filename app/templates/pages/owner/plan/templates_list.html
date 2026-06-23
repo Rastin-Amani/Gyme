@@ -1,0 +1,52 @@
+{% if plans and plans|length > 0 %}
+    {% for t in plans %}
+        <div class="card bg-base-100 border border-base-300 mb-4">
+            <div class="card-body p-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-semibold">{{ t.template_name or 'قالب ' ~ t.type }}</h3>
+                        <p class="text-xs opacity-60 mt-1">
+                            {% if t.type == 'diet' %}
+                                غذایی
+                            {% elif t.type == 'training' %}
+                                تمرینی
+                            {% else %}
+                                استروئید
+                            {% endif %}
+                            | {{ t.days_per_week or '—' }} روز در هفته
+                        </p>
+                    </div>
+                    <a href="/plans/{{ t.id }}" class="btn btn-xs btn-ghost">مشاهده</a>
+                </div>
+
+                {% if t.notes %}
+                    <p class="text-xs opacity-50 mt-2 line-clamp-2">{{ t.notes }}</p>
+                {% endif %}
+
+                <div class="flex gap- mt-4">
+                    <button
+                        class="btn btn-s btn-primary btn-soft flex-1"
+                        hx-get="/templates/{{ t.id }}/apply"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        hx-boost="false"
+                    >
+                        اعمال برای شاگرد
+                    </button>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="col-span-full">
+        <div class="bg-base-200 p-8 text-center card">
+            <p class="text-sm opacity-60">
+                <span class="status status-secondary animate-bounce ml-1"></span>
+                هنوز قالبی ساخته نشده.
+            </p>
+            <a href="/plans/new?template=true" class="btn btn-sm btn-primary mt-4">
+                ساخت قالب جدید
+            </a>
+        </div>
+    </div>
+{% endif %}
