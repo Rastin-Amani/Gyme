@@ -6,24 +6,24 @@ from app.services.plan import get_plans_by_trainee
 from app.services.progress import get_progress_by_plan
 from app.services.item import get_items_by_plan_seq
 
-
 router = APIRouter()
+
 
 @router.get("/user/dashboard", response_class=HTMLResponse)
 async def trainee_dashboard(request: Request):
     pb = request.state.pb
     # 🟢 Extract the string ID explicitly for your database filters
-    tenant_id = request.state.tenant.id 
+    tenant_id = request.state.tenant.id
     user = request.state.user
-    
+
     trainee = get_trainee_by_user(pb, tenant_id, user.id)
     plans = get_plans_by_trainee(pb, tenant_id, trainee.id)
 
     categorized = {"training": [], "diet": [], "steroid": []}
 
     for p in plans:
-        plan_type = p.type.value if hasattr(p.type, 'value') else str(p.type)
-        
+        plan_type = p.type.value if hasattr(p.type, "value") else str(p.type)
+
         try:
             progress = get_progress_by_plan(pb, tenant_id, p.id)
             current_seq = progress.current_seq if progress else 1
@@ -31,7 +31,7 @@ async def trainee_dashboard(request: Request):
             progress = None
             current_seq = 1
 
-        coll_name = f'{plan_type}_items'
+        coll_name = f"{plan_type}_items"
         try:
             # 🟢 Passing tenant_id (string) and current_seq dynamically!
             items = get_items_by_plan_seq(pb, tenant_id, coll_name, p.id, current_seq)
@@ -40,12 +40,12 @@ async def trainee_dashboard(request: Request):
 
         # 🟢 Map to native dict to keep Jinja2 templates happy
         plan_dict = {
-            "id": getattr(p, 'id', None),
-            "title": getattr(p, 'title', None),
-            "start_date": getattr(p, 'start_date', None),
-            "end_date": getattr(p, 'end_date', None),
+            "id": getattr(p, "id", None),
+            "title": getattr(p, "title", None),
+            "start_date": getattr(p, "start_date", None),
+            "end_date": getattr(p, "end_date", None),
             "progress": progress,
-            "items": items 
+            "items": items,
         }
 
         if plan_type in categorized:
@@ -58,11 +58,12 @@ async def trainee_dashboard(request: Request):
             "request": request,
             "title": "داشبورد کاربر",
             "user": user,
-            "tenant": request.state.tenant, # Frontend might still want the object
+            "tenant": request.state.tenant,  # Frontend might still want the object
             "trainee": trainee,
-            "plans": categorized
-        }
+            "plans": categorized,
+        },
     )
+
 
 @router.post("/user/plans/{plan_id}/done")
 async def mark_plan_done(plan_id: str, request: Request):
@@ -79,27 +80,34 @@ async def mark_plan_done(plan_id: str, request: Request):
         progress = None
 
     # 2. Logic: Update existing OR Create new
+    plan = get_plan_by_id(pb, tenant_id, plan_id)
+    plan_type = plan.type.value if hasattr(plan.type, "value") else str(plan.type)
+    coll = f"{plan_type}_items"
+    all_items = list_items_by_plan(pb, tenant_id, coll, plan=plan_id, per_page=500)
+    seqs = sorted({int(getattr(i, "seq", 1)) for i in all_items}) or [1]
+
+    # 3. Find next seq with wrap
+    current_seq = getattr(progress, "current_seq", seqs[0]) if progress else seqs[0]
+    try:
+        idx = seqs.index(current_seq)
+        next_seq = seqs[(idx + 1) % len(seqs)]
+    except ValueError:
+        next_seq = seqs[0]
+
     if progress:
-        current_seq = getattr(progress, 'current_seq', 1)
-        next_seq = current_seq + 1 if current_seq < 7 else 7
-        
-        pb.collection("plan_progress").update(progress.id, {
-            "current_seq": next_seq
-        })
+        pb.collection("plan_progress").update(progress.id, {"current_seq": next_seq})
     else:
-        pb.collection("plan_progress").create({
-            "tenant": tenant_id,
-            "plan": plan_id,
-            "current_seq": 2
-        })
+        pb.collection("plan_progress").create(
+            {"tenant": tenant_id, "plan": plan_id, "current_seq": next_seq}
+        )
 
     # 3. Return an HTMX response to trigger the UI update ⚡
     response = Response(status_code=200)
-    
+
     # Use HX-Refresh to smoothly reload the current dashboard page
-    response.headers["HX-Refresh"] = "true" 
-    
+    response.headers["HX-Refresh"] = "true"
+
     # OR, if you strictly want to use HX-Redirect to a specific URL:
     # response.headers["HX-Redirect"] = "/user/dashboard"
-    
+
     return response
