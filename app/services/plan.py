@@ -91,6 +91,11 @@ def update_plan(pb, plan_id, data: dict):
     return pb.collection("plans").update(plan_id, data)
 
 
+def delete_plan(pb, tenant, plan_id):
+    """Delete a plan by ID."""
+    return pb.collection("plans").delete(plan_id)
+
+
 def list_templates(pb, tenant, page=1, per_page=50):
     """List all templates for a tenant."""
     # 🟢 FIXED: Queries plans where is_template=true

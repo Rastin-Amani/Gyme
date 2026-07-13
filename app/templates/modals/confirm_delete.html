@@ -1,0 +1,50 @@
+<!-- confirm_delete.html - HTMX Modal -->
+<script>
+    console.log('[DEBUG] confirm_delete.html rendered');
+</script>
+<dialog id="delete-confirmation-modal" class="modal modal-bottom sm:modal-middle text-right">
+    <div class="modal-box bg-base-100 border border-base-300">
+        <h3 class="font-bold text-lg text-error">حذف شاگرد</h3>
+        <p class="py-4">آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست.</p>
+        <div class="modal-action flex justify-end gap-3">
+            <button
+                type="button"
+                class="btn btn-ghost"
+                onclick="console.log('[DEBUG] Cancel button clicked'); document.getElementById('delete-confirmation-modal').remove()"
+            >
+                انصراف
+            </button>
+            <form
+                id="delete-form"
+                hx-delete="{{ delete_url }}"
+                hx-swap="none"
+                hx-on::before-request="console.log('[DEBUG] Delete request starting:', this.action)"
+                hx-on::after-request="console.log('[DEBUG] Delete request completed, removing modal'); document.getElementById('delete-confirmation-modal').remove()"
+                hx-on::response-error="console.error('[DEBUG] Delete request failed')"
+            >
+                <button
+                    type="submit"
+                    class="btn btn-error"
+                    onclick="console.log('[DEBUG] Confirm delete clicked')"
+                >
+                    حذف
+                </button>
+            </form>
+        </div>
+    </div>
+    <div
+        class="modal-backdrop bg-black/40 backdrop-blur-sm cursor-pointer"
+        onclick="console.log('[DEBUG] Backdrop clicked'); document.getElementById('delete-confirmation-modal').remove()"
+    ></div>
+</dialog>
+<script>
+    // Show modal immediately after HTMX swaps content
+    // HTMX 2.x executes <script>s after DOM insertion
+    const modal = document.getElementById('delete-confirmation-modal');
+    if (modal) {
+        console.log('[DEBUG] Modal found immediately, calling showModal()');
+        modal.showModal();
+    } else {
+        console.error('[DEBUG] ERROR: delete-confirmation-modal not found!');
+    }
+</script>

@@ -138,6 +138,17 @@
                     ثبت برنامه
                 {% endif %}
             </button>
+            {% if plan %}
+                <button
+                    type="button"
+                    class="btn btn-error btn-soft w-full"
+                    hx-get="/plans/{{ plan.id }}/confirm-delete"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                >
+                    حذف
+                </button>
+            {% endif %}
         </div>
     </form>
 {% endblock %}

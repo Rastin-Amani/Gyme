@@ -3,7 +3,9 @@
     <div class="max-w-150">
         <!-- Header: Name, Edit button, Avatar placeholder -->
         <div class="items-center justify-between bg-base-200 p-4 mb-6 card flex-row-reverse">
-            <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">ویرایش</a>
+            <div class="flex gap-2">
+                <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">ویرایش</a>
+            </div>
             <div class="text-center">
                 <h1 class="text-m font-bold">
                     {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '-' }}
@@ -68,7 +70,7 @@
         <div>
             <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
             {% if trainee.notes != "" %}
-                <div class="bg-base-200 p-4 rounded-lg">
+                <div class="bg-base-200 p-4 rounded-box">
                     <p class="text-sm opacity-60">{{ trainee.notes }}</p>
                 </div>
             {% endif %}
@@ -312,7 +314,7 @@
                             </label>
                             <img
                                 src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
-                                class="max-w-full max-h-[85vh] object-contain rounded-lg"
+                                class="max-w-full max-h-[85vh] object-contain rounded-box"
                                 alt="Full size progress photo"
                             />
                         </div>

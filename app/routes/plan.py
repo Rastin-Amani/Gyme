@@ -7,11 +7,13 @@ from app.services.plan import (
     list_templates,
     apply_template,
     get_template_by_id,
+    delete_plan,
 )
 from app.services.item import list_items_by_plan
 from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.trainee import list_trainees
+from app.utils import hx_toast
 import json
 
 router = APIRouter(tags=["Plans Management"])
@@ -292,9 +294,7 @@ async def plan_create(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         success_msg = (
-            "قالب جدید با موفقیت ذخیره شد"
-            if is_template_bool
-            else "برنامه جدید با موفقیت ایجاد شد"
+            "قالب جدید با موفقیت ذخیره شد" if is_template_bool else "برنامه جدید با موفقیت ایجاد شد"
         )
         redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
 
@@ -361,3 +361,29 @@ async def plan_update(
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {"show-toast": {"message": "خطا در بروزرسانی اطلاعات.", "type": "error"}}
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
+
+@router.get("/plans/{id}/confirm-delete")
+async def plan_confirm_delete(request: Request, id: str):
+    return templates.TemplateResponse(
+        request=request,
+        name="modals/confirm_delete.html",
+        context={"delete_url": f"/plans/{id}"},
+    )
+
+
+@router.delete("/plans/{id}")
+async def plan_delete(request: Request, id: str):
+    try:
+        pb = request.state.pb
+        tenant_id = request.state.tenant.id
+        delete_plan(pb, tenant_id, id)
+        headers = hx_toast("برنامه با موفقیت حذف شد.", "success")
+        trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
+        trigger_dict["delayed-redirect"] = {"url": "/plans"}
+        headers["HX-Trigger"] = json.dumps(trigger_dict)
+        return HTMLResponse(content="", status_code=200, headers=headers)
+    except Exception as e:
+        print(f"🔥 Server Crash in plan_delete: {e}")
+        headers = hx_toast("خطا در حذف برنامه.", "error")
+        return HTMLResponse(content="", status_code=200, headers=headers)

@@ -156,6 +156,34 @@ async def show_trainee_detail(request: Request, id: str):
     )
 
 
+@router.get("/trainees/{id}/confirm-delete")
+async def trainee_confirm_delete(request: Request, id: str):
+    return templates.TemplateResponse(
+        request=request,
+        name="modals/confirm_delete.html",
+        context={"delete_url": f"/trainees/{id}"},
+    )
+
+
+@router.delete("/trainees/{id}")
+async def trainee_delete(request: Request, id: str):
+    try:
+        pb = request.state.pb
+        tenant_id = request.state.tenant.id
+        from app.services.trainee import delete_trainee
+
+        delete_trainee(pb, tenant_id, id)
+        headers = hx_toast("شاگرد با موفقیت حذف شد.", "success")
+        trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
+        trigger_dict["delayed-redirect"] = {"url": "/trainees"}
+        headers["HX-Trigger"] = json.dumps(trigger_dict)
+        return HTMLResponse(content="", status_code=200, headers=headers)
+    except Exception as e:
+        print(f"🔥 Server Crash in trainee_delete: {e}")
+        headers = hx_toast("خطا در حذف شاگرد.", "error")
+        return HTMLResponse(content="", status_code=200, headers=headers)
+
+
 @router.get("/trainees/{id}/edit")
 async def trainee_edit_form(request: Request, id: str):
     pb = request.state.pb
@@ -191,10 +219,11 @@ async def trainee_create(
     phone: str = Form(None),
     gender: str = Form(None),
     birthdate: str = Form(None),
-    status: str = Form("active"),
+    blood_type: str = Form(None),
     training_history: str = Form(None),
     steroid_history: str = Form(None),
     supplement_history: str = Form(None),
+    limitations: str = Form(None),
     notes: str = Form(None),
 ):
     try:
@@ -223,12 +252,13 @@ async def trainee_create(
         trainee_data = {
             "tenant": tenant_id,
             "user": new_user.id,
-            "status": status,
+            "blood_type": blood_type,
             "gender": gender,
             "birthdate": birthdate,
             "training_history": training_history,
             "steroid_history": steroid_history,
             "supplement_history": supplement_history,
+            "limitations": limitations,
             "notes": notes,
         }
 
@@ -261,10 +291,11 @@ async def trainee_update(
     phone: str = Form(None),
     gender: str = Form(None),
     birthdate: str = Form(None),
-    status: str = Form(None),
+    blood_type: str = Form(None),
     training_history: str = Form(None),
     steroid_history: str = Form(None),
     supplement_history: str = Form(None),
+    limitations: str = Form(None),
     notes: str = Form(None),
 ):
     try:
@@ -292,10 +323,11 @@ async def trainee_update(
         trainee_data = {
             "gender": gender,
             "birthdate": birthdate,
-            "status": status,
+            "blood_type": blood_type,
             "training_history": training_history,
             "steroid_history": steroid_history,
             "supplement_history": supplement_history,
+            "limitations": limitations,
             "notes": notes,
         }
         update_trainee(pb, id, trainee_data)

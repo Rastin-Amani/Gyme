@@ -5,6 +5,13 @@
             {% if plan.is_template | string | lower == 'true' %}
                 <div class="flex gap-2">
                     <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                    <button
+                        hx-get="/plans/{{ plan.id }}/confirm-delete"
+                        hx-target="#modal-container"
+                        class=" btn-error btn-soft btn-sm"
+                    >
+                        حذف
+                    </button>
                 </div>
                 <div class="text-center">
                     <h1 class="text-m font-semibold text-right ml-4">
@@ -13,7 +20,16 @@
                     </h1>
                 </div>
             {% else %}
-                <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                <div class="flex gap-2">
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                    <button
+                        hx-get="/plans/{{ plan.id }}/confirm-delete"
+                        hx-target="#modal-container"
+                        class="btn btn-sm btn-error btn-soft"
+                    >
+                        حذف
+                    </button>
+                </div>
                 <div class="text-center">
                     <h1 class="text-m font-semibold text-right ml-4">
                         برنامه‌ی
@@ -71,7 +87,7 @@
             {% endif %}
 
             {% if plan.notes and plan.notes != "" %}
-                <div class="bg-base-200 p-4 rounded-lg col-span-3 text-right mt-2">
+                <div class="bg-base-200 p-4 rounded-box col-span-3 text-right mt-2">
                     <p class="text-sm opacity-60">{{ plan.notes }}</p>
                 </div>
             {% endif %}
