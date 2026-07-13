@@ -111,168 +111,86 @@
                                         <div class="font-bold">
                                             {{ log.height if log.height else '-' }}
                                         </div>
-                                        {% if not loop.last and log.height is not none and progress_logs[loop.index0+1].height is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.height - prev.height %}
-                                            {% if diff > 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8593; {{ diff }} بیشتر
-                                                </div>
-                                            {% elif diff < 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8595; {{ (diff * -1) }} کمتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- WEIGHT -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">وزن</div>
                                         <div class="font-bold">
                                             {{ log.weight if log.weight else '-' }}
                                         </div>
-                                        {% if not loop.last and log.weight is not none and progress_logs[loop.index0+1].weight is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.weight - prev.weight %}
-                                            {% if diff < 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8595; {{ (diff * -1) | round(1) }} کمتر
-                                                </div>
-                                            {% elif diff > 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8593; {{ diff | round(1) }} بیشتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- BMI -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">BMI</div>
                                         <div class="font-bold">
                                             {{ log.bmi | round(1) if log.bmi else '-' }}
                                         </div>
-                                        {% if not loop.last and log.bmi is not none and progress_logs[loop.index0+1].bmi is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.bmi - prev.bmi %}
-                                            {% if diff < 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8595; {{ (diff * -1) | round(1) }} کمتر
-                                                </div>
-                                            {% elif diff > 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8593; {{ diff | round(1) }} بیشتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- BFP -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">درصد چربی بدن</div>
                                         <div class="font-bold">
                                             {{ log.bfp | round(1) if log.bfp else '-' }}%
                                         </div>
-                                        {% if not loop.last and log.bfp is not none and progress_logs[loop.index0+1].bfp is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.bfp - prev.bfp %}
-                                            {% if diff < 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8595; {{ (diff * -1) | round(1) }} کمتر
-                                                </div>
-                                            {% elif diff > 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8593; {{ diff | round(1) }} بیشتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- LBM -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">جرم عضلانی</div>
                                         <div class="font-bold">
                                             {{ log.lbm | round(1) if log.lbm else '-' }} کیلوگرم
                                         </div>
-                                        {% if not loop.last and log.lbm is not none and progress_logs[loop.index0+1].lbm is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.lbm - prev.lbm %}
-                                            {% if diff > 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8593; {{ diff | round(1) }} بیشتر
-                                                </div>
-                                            {% elif diff < 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8595; {{ (diff * -1) | round(1) }} کمتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- BMR -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">متابولیسم پایه</div>
                                         <div class="font-bold">
                                             {{ log.bmr | int if log.bmr else '-' }} کیلوکالری
                                         </div>
-                                        {% if not loop.last and log.bmr is not none and progress_logs[loop.index0+1].bmr is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.bmr - prev.bmr %}
-                                            {% if diff > 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8593; {{ diff }} بیشتر
-                                                </div>
-                                            {% elif diff < 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8595; {{ (diff * -1) }} کمتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- TDEE -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">متابولیسم با فعالیت</div>
                                         <div class="font-bold">
                                             {{ log.tdee | int if log.tdee else '-' }} کیلوکالری
                                         </div>
-                                        {% if not loop.last and log.tdee is not none and progress_logs[loop.index0+1].tdee is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.tdee - prev.tdee %}
-                                            {% if diff > 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8593; {{ diff }} بیشتر
-                                                </div>
-                                            {% elif diff < 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8595; {{ (diff * -1) }} کمتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
-
                                     <!-- WHR -->
                                     <div class="text-center p-2 bg-base-100 rounded">
                                         <div class="text-xs opacity-60">نسبت کمر به لگن</div>
                                         <div class="font-bold">
                                             {{ log.whr | round(2) if log.whr else '-' }}
                                         </div>
-                                        {% if not loop.last and log.whr is not none and progress_logs[loop.index0+1].whr is not none %}
-                                            {% set prev = progress_logs[loop.index0+1] %}
-                                            {% set diff = log.whr - prev.whr %}
-                                            {% if diff < 0 %}
-                                                <div class="text-success text-xs">
-                                                    &#8595; {{ (diff * -1) | round(2) }} کمتر
-                                                </div>
-                                            {% elif diff > 0 %}
-                                                <div class="text-error text-xs">
-                                                    &#8593; {{ diff | round(2) }} بیشتر
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
                                     </div>
                                 </div>
+
+                                <!-- 📸 THUMBNAILS ONLY (NO MODALS HERE) 📸 -->
+                                {% if log.progress_photos and log.progress_photos | length > 0 %}
+                                    <div class="mt-3">
+                                        <div class="text-xs opacity-60 mb-2">
+                                            تصاویر پیشرفت ({{ log.progress_photos | length }})
+                                        </div>
+                                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 relative">
+                                            {% for photo in log.progress_photos %}
+                                                <div
+                                                    class="relative rounded border border-base-300 overflow-hidden cursor-pointer group"
+                                                >
+                                                    <label
+                                                        for="modal-{{ log.id }}-{{ loop.index0 }}"
+                                                        class="cursor-pointer block w-full h-full"
+                                                    >
+                                                        <img
+                                                            src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
+                                                            alt="Progress photo"
+                                                            class="w-full h-24 object-cover transition-transform duration-300 group-hover:scale-110"
+                                                            loading="lazy"
+                                                        />
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <!-- 📸 END THUMBNAILS 📸 -->
 
                                 {% if log.notes %}
                                     <div class="mt-3 p-4 bg-base-100 rounded">
@@ -297,7 +215,6 @@
         <div class="mt-4">
             <div class="divider text-xs opacity-50">برنامه‌ها</div>
 
-            {# Safely extract the list depending on if your service uses get_list() or get_full_list() #}
             {% set plan_list = plans.items if plans.items is defined else plans %}
 
             {% if plan_list and plan_list | length > 0 %}
@@ -349,7 +266,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div>
                                     <a
                                         href="/plans/{{ plan.id }}"
@@ -372,4 +288,43 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- 🌟 RENDER ALL MODALS AT THE VERY BOTTOM OF THE LAYOUT 🌟 -->
+    <!-- This completely avoids the accordion's hidden overflow and z-index traps! -->
+    {% if progress_logs and progress_logs | length > 0 %}
+        {% for log in progress_logs %}
+            {% if log.progress_photos and log.progress_photos | length > 0 %}
+                {% for photo in log.progress_photos %}
+                    <input
+                        type="checkbox"
+                        id="modal-{{ log.id }}-{{ loop.index0 }}"
+                        class="modal-toggle"
+                    />
+                    <div class="modal z-[9999]" role="dialog">
+                        <div
+                            class="modal-box p-0 bg-transparent shadow-none w-auto max-w-[95vw] flex flex-col items-center justify-center overflow-hidden"
+                        >
+                            <label
+                                for="modal-{{ log.id }}-{{ loop.index0 }}"
+                                class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white bg-black/50 hover:bg-black/80 z-[10000]"
+                            >
+                                ✕
+                            </label>
+                            <img
+                                src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
+                                class="max-w-full max-h-[85vh] object-contain rounded-lg"
+                                alt="Full size progress photo"
+                            />
+                        </div>
+                        <label
+                            class="modal-backdrop bg-black/50"
+                            for="modal-{{ log.id }}-{{ loop.index0 }}"
+                        >
+                            Close
+                        </label>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 {% endblock %}

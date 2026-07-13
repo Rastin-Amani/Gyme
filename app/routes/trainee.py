@@ -139,6 +139,8 @@ async def show_trainee_detail(request: Request, id: str):
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
+    from app.pb import PB_URL
+
     return templates.TemplateResponse(
         request=request,
         name="pages/owner/trainee/trainee_detail.html",
@@ -149,6 +151,7 @@ async def show_trainee_detail(request: Request, id: str):
             "trainee": trainee_data,
             "plans": plans,
             "progress_logs": progress_logs,
+            "pb_files_url": f"{PB_URL}/api/files/",
         },
     )
 
