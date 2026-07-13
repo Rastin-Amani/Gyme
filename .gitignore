@@ -71,3 +71,6 @@ Thumbs.db
 app/routes/__pycache__/dashboard.cpython-313.pyc
 app/__pycache__/main.cpython-313.pyc
 .prettierrc
+
+# Uploads
+app/static/uploads/

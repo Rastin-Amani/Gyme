@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, UploadFile, File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ..templates import templates
 from app.utils import hx_toast
 from app.services.trainee import get_trainee_by_id, update_trainee
 from app.services.progress_logs import create_progress_log
-import json
+from typing import List
+import json, os, uuid
 
 router = APIRouter(tags=["Progress Logs"])
 
@@ -55,6 +56,7 @@ async def save_progress_log(
     tdee: str = Form(""),
     lbm: str = Form(""),
     whr: str = Form(""),
+    progress_photos: List[UploadFile] = File(None),
 ):
     try:
         pb = request.state.pb
@@ -89,8 +91,17 @@ async def save_progress_log(
             "whr": safe_float(whr),
         }
 
+        # 🖼️ Collect files for PocketBase
+        file_uploads = None
+        if progress_photos:
+            file_uploads = [
+                (photo.filename, await photo.read(), photo.content_type)
+                for photo in progress_photos
+                if photo.filename
+            ]
+
         # 1. Save the new log
-        create_progress_log(pb, log_data)
+        create_progress_log(pb, log_data, file_uploads=file_uploads)
 
         # 2. Update the Trainee's main profile
         update_trainee(pb, trainee_id, {"height": parsed_height, "weight": parsed_weight})
