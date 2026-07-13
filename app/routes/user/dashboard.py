@@ -2,9 +2,9 @@ from fastapi import APIRouter, Request, Depends, Response
 from ...templates import templates
 from fastapi.responses import HTMLResponse
 from app.services.trainee import get_trainee_by_user
-from app.services.plan import get_plans_by_trainee
+from app.services.plan import get_plans_by_trainee, get_plan_by_id
 from app.services.progress import get_progress_by_plan
-from app.services.item import get_items_by_plan_seq
+from app.services.item import get_items_by_plan_seq, list_items_by_plan
 
 router = APIRouter()
 
@@ -84,7 +84,7 @@ async def mark_plan_done(plan_id: str, request: Request):
     plan_type = plan.type.value if hasattr(plan.type, "value") else str(plan.type)
     coll = f"{plan_type}_items"
     all_items = list_items_by_plan(pb, tenant_id, coll, plan=plan_id, per_page=500)
-    seqs = sorted({int(getattr(i, "seq", 1)) for i in all_items}) or [1]
+    seqs = sorted({int(getattr(item, "seq", 1)) for item in all_items.items}) or [1]
 
     # 3. Find next seq with wrap
     current_seq = getattr(progress, "current_seq", seqs[0]) if progress else seqs[0]
