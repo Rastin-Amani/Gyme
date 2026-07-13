@@ -177,10 +177,17 @@
                         <input
                             type="file"
                             name="progress_photos"
+                            id="progress-photos-input"
                             class="file-input file-input-bordered w-full"
                             multiple
                             accept="image/*"
                         />
+                        <!-- Image preview grid -->
+                        <div
+                            id="photo-previews"
+                            class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3"
+                        ></div>
+                        <div id="photo-validation" class="text-xs mt-1"></div>
                     </div>
                 </div>
             </div>
@@ -370,5 +377,92 @@
 
         // Run on load
         document.addEventListener('DOMContentLoaded', calculateMetrics);
+
+        // --- Multi-image upload: preview + validation ---
+        (function () {
+            const MAX_FILES = 5;
+            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+            const VALID_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            const fileInput = document.getElementById('progress-photos-input');
+            const previewsContainer = document.getElementById('photo-previews');
+            const validationEl = document.getElementById('photo-validation');
+            let selectedFiles = [];
+
+            function showValidation(msg, isError = true) {
+                validationEl.textContent = msg;
+                validationEl.className =
+                    'text-xs mt-1 ' + (isError ? 'text-error' : 'text-success');
+            }
+
+            function clearValidation() {
+                validationEl.textContent = '';
+                validationEl.className = 'text-xs mt-1';
+            }
+
+            function renderPreviews() {
+                previewsContainer.innerHTML = '';
+                selectedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border border-base-300" />
+                            <button type="button" data-index="${index}"
+                                class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                            >✕</button>
+                        `;
+                        div.querySelector('button').addEventListener('click', function () {
+                            selectedFiles.splice(index, 1);
+                            syncFileInput();
+                            renderPreviews();
+                            clearValidation();
+                        });
+                        previewsContainer.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function syncFileInput() {
+                // Replace FileList with current selectedFiles via DataTransfer
+                const dt = new DataTransfer();
+                selectedFiles.forEach((f) => dt.items.add(f));
+                fileInput.files = dt.files;
+            }
+
+            fileInput.addEventListener('change', function () {
+                const incoming = Array.from(this.files);
+
+                // Reset if total would exceed max
+                if (selectedFiles.length + incoming.length > MAX_FILES) {
+                    showValidation(
+                        `حداکثر ${MAX_FILES} فایل مجاز است (${selectedFiles.length} انتخاب شده)`
+                    );
+                    this.value = '';
+                    return;
+                }
+
+                // Validate each incoming file
+                for (const file of incoming) {
+                    if (!VALID_TYPES.includes(file.type)) {
+                        showValidation('فقط JPEG, PNG, WebP, GIF مجاز هستند');
+                        this.value = '';
+                        return;
+                    }
+                    if (file.size > MAX_FILE_SIZE) {
+                        showValidation(
+                            `هر فایل حداکثر ۵MB (${file.name} ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+                        );
+                        this.value = '';
+                        return;
+                    }
+                }
+
+                clearValidation();
+                selectedFiles = selectedFiles.concat(incoming);
+                renderPreviews();
+            });
+        })();
     </script>
 {% endblock %}

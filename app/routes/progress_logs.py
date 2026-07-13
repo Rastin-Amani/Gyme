@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, UploadFile, File
+from fastapi import APIRouter, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ..templates import templates
 from app.utils import hx_toast
@@ -91,14 +91,29 @@ async def save_progress_log(
             "whr": safe_float(whr),
         }
 
-        # 🖼️ Collect files for PocketBase
+        # 🖼️ Validate + collect files for PocketBase
+        MAX_FILES = 5
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+        VALID_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+
         file_uploads = None
         if progress_photos:
-            file_uploads = [
-                (photo.filename, await photo.read(), photo.content_type)
-                for photo in progress_photos
-                if photo.filename
-            ]
+            valid_files = [f for f in progress_photos if f.filename]
+            if len(valid_files) > MAX_FILES:
+                raise HTTPException(status_code=400, detail=f"حداکثر {MAX_FILES} فایل مجاز است")
+            file_uploads = []
+            for photo in valid_files:
+                if photo.content_type not in VALID_TYPES:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"فرمت {photo.filename} مجاز نیست (JPEG, PNG, WebP, GIF)",
+                    )
+                contents = await photo.read()
+                if len(contents) > MAX_FILE_SIZE:
+                    raise HTTPException(
+                        status_code=400, detail=f"{photo.filename} بزرگتر از ۵MB است"
+                    )
+                file_uploads.append((photo.filename, contents, photo.content_type))
 
         # 1. Save the new log
         create_progress_log(pb, log_data, file_uploads=file_uploads)
