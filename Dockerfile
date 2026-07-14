@@ -8,7 +8,7 @@ WORKDIR /code
 COPY ./app/requirements.txt .
 
 # Use Chabokan's PyPI mirror
-RUN pip install --no-cache-dir -i https://mirror2.chabokan.net/pypi/simple/ -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the entire app folder
 COPY ./app ./app
