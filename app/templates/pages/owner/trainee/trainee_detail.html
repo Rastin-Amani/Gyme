@@ -53,16 +53,8 @@
                 <span class="font-medium">{{ trainee.weight or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">وضعیت</span>
-                <span class="font-medium">
-                    {% if trainee.status == 'active' %}
-                        فعال
-                    {% elif trainee.status == 'inactive' %}
-                        غیرفعال
-                    {% else %}
-                        -
-                    {% endif %}
-                </span>
+                <span class="opacity-60 block">گروه خونی</span>
+                <span class="font-medium">{{ trainee.blood_type or '-' }}</span>
             </div>
         </div>
 
@@ -88,6 +80,10 @@
                 <div class="flex flex-row gap-3 items-center">
                     <span class="opacity-60 block">مصرف مکمل</span>
                     <span class="font-medium">{{ trainee.supplement_history or '-' }}</span>
+                </div>
+                <div class="flex flex-row gap-3 items-center">
+                    <span class="opacity-60 block">ناهنجاری‌ها و بیماری‌ها</span>
+                    <span class="font-medium">{{ trainee.limitations or '-' }}</span>
                 </div>
             </div>
         </div>
@@ -205,7 +201,7 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <div class="bg-base-200 p-4 text-center card">
+                <div class="bg-base-200 p-4 text-center card border border-base-300">
                     <p class="text-sm opacity-60 p-4 flex items-center justify-center">
                         <span class="status status-secondary animate-bounce ml-2"></span>
                         لاگی ثبت نشده!
