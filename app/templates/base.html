@@ -32,6 +32,7 @@
     </head>
 
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
+        {% block body_start %}{% endblock %}
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content">
             
             <div
@@ -49,6 +50,8 @@
                 ></div>
             </main>
         </div>
+
+        {% block body_end %}{% endblock %}
 
         <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
 

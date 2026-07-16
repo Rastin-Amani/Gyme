@@ -1,18 +1,108 @@
 {% extends "base.html" %}
 
+{% block body_start %}
+    <!-- iOS install overlay — shown once for first-time iOS non-standalone users -->
+    <div
+        id="ios-overlay"
+        class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral/70 backdrop-blur-sm p-6"
+    >
+        <div
+            class="bg-base-100 rounded-box w-full max-w-sm p-6 pb-8 shadow-2xl border border-base-200 transform transition-all duration-300 animate-slide-up"
+        >
+            <div class="flex flex-col items-center text-center gap-3">
+                <img
+                    src="/apple-touch-icon-180x180.png"
+                    alt=""
+                    class="w-20 h-20 rounded-box shadow-md"
+                    onerror="this.style.display='none'"
+                />
+                <div>
+                    <p class="text-xl font-black text-base-content">نصب اپلیکیشن</p>
+                    <p class="text-sm text-base-content/60 mt-1 leading-relaxed">
+                        وب اپلیکیشن را به صفحه اصلی خود اضافه کنید.
+                    </p>
+                </div>
+                <div
+                    class="text-right w-full space-y-3 bg-base-200/70 rounded-box p-4 text-sm mt-2"
+                >
+                    <div class="flex items-start gap-3">
+                        <span
+                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                        >
+                            ۱
+                        </span>
+                        <span>
+                            در نوار پایین دکمه
+                            <strong>Share</strong>
+                            <span class="inline-block align-middle text-lg leading-none">⎋</span>
+                            را انتخاب کنید.
+                        </span>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span
+                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                        >
+                            ۲
+                        </span>
+                        <span>
+                            در منوی باز شده، گزینه
+                            <strong>Add to Home Screen</strong>
+                            را انتخاب کنید.
+                        </span>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <span
+                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                        >
+                            ۳
+                        </span>
+                        <span>
+                            در مرحله بعد، روی
+                            <strong>Add</strong>
+                            کلیک کنید.
+                        </span>
+                    </div>
+                </div>
+                <button onclick="dismissInstallOverlay()" class="btn btn-primary w-full mt-1">
+                    متوجه شدم
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+            var isStandalone = window.navigator.standalone === true;
+            var hasSeen = localStorage.getItem('ios-install-overlay-dismissed');
+
+            if (isIOS && !isStandalone && !hasSeen) {
+                var overlay = document.getElementById('ios-overlay');
+                if (overlay) overlay.classList.remove('hidden');
+            }
+
+            window.dismissInstallOverlay = function () {
+                var overlay = document.getElementById('ios-overlay');
+                if (overlay) overlay.classList.add('hidden');
+                localStorage.setItem('ios-install-overlay-dismissed', '1');
+            };
+        })();
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8">
         <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-0">
             <div
-                class="w-64 h-64 bg-primary/20 rounded-full blur-[60px] absolute -top-10 -right-10 mix-blend-multiply"
+                class="w-64 h-64 bg-primary/20 rounded-box blur-[60px] absolute -top-10 -right-10 mix-blend-multiply"
             ></div>
             <div
-                class="w-64 h-64 bg-secondary/20 rounded-full blur-[60px] absolute -bottom-10 -left-10 mix-blend-multiply"
+                class="w-64 h-64 bg-secondary/20 rounded-box blur-[60px] absolute -bottom-10 -left-10 mix-blend-multiply"
             ></div>
         </div>
 
         <div
-            class="card bg-base-100/90 backdrop-blur-xl shadow-2xl border border-base-200 w-full max-w-sm rounded-[2rem] z-10"
+            class="card bg-base-100/90 backdrop-blur-xl shadow-2xl border border-base-200 w-full max-w-sm rounded-box z-10"
         >
             <div class="card-body p-6 sm:p-8">
                 <div class="text-center mb-5 flex flex-col items-center">
@@ -22,19 +112,19 @@
                             class="avatar drop-shadow-sm mb-5 transition-transform hover:scale-105 duration-300"
                         >
                             <div
-                                class="w-20 h-20 rounded-2xl border border-base-200 bg-base-100 p-1"
+                                class="w-20 h-20 rounded-box border border-base-200 bg-base-100 p-1"
                             >
                                 <img
                                     src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
                                     alt="{{ tenant.name }}"
-                                    class="rounded-xl object-cover"
+                                    class="rounded-box object-cover"
                                 />
                             </div>
                         </div>
                     {% else %}
                         <div class="avatar placeholder drop-shadow-sm mb-5">
                             <div
-                                class="bg-primary/10 text-primary rounded-2xl w-20 h-20 border border-primary/20 flex items-center justify-center text-3xl font-black"
+                                class="bg-primary/10 text-primary rounded-box w-20 h-20 border border-primary/20 flex items-center justify-center text-3xl font-black"
                             >
                                 {{ tenant.name[:1] if tenant else "G" }}
                             </div>
