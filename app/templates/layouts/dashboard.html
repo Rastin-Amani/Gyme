@@ -51,7 +51,10 @@
 
     {% if user %}
         <!-- Persistent Navigation -->
-        <nav class="dock text-xs max-w-150 mx-auto bg-base-100">
+        <nav
+            id="bottom-dock"
+            class="dock text-xs max-w-150 mx-auto bg-base-100 border-t-2 border-base-200 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16"
+        >
             {% if user and user.role in ['coach', 'owner'] %}
                 <a href="/dashboard">
                     <svg
@@ -202,5 +205,31 @@
                 </a>
             {% endif %}
         </nav>
+        <script>
+            (function () {
+                function setActiveDock() {
+                    var path = window.location.pathname;
+                    document.querySelectorAll('#bottom-dock a').forEach(function (link) {
+                        link.classList.remove('text-primary');
+                        var href = link.getAttribute('href');
+                        var active =
+                            (href === '/dashboard' && path === '/dashboard') ||
+                            (href === '/plans' && path.startsWith('/plans')) ||
+                            (href === '/trainees/new' && path === '/trainees/new') ||
+                            (href === '/trainees' &&
+                                path.startsWith('/trainees') &&
+                                path !== '/trainees/new') ||
+                            (href === '/profile' && path.startsWith('/profile')) ||
+                            (href === '/user/plans' && path.startsWith('/user/plans')) ||
+                            (href === '/user/dashboard' && path === '/user/dashboard') ||
+                            (href === '/user/profile' && path.startsWith('/user/profile'));
+                        if (active) link.classList.add('text-primary');
+                    });
+                }
+                setActiveDock();
+                document.addEventListener('htmx:afterSettle', setActiveDock);
+                document.addEventListener('htmx:afterSwap', setActiveDock);
+            })();
+        </script>
     {% endif %}
 {% endblock %}
