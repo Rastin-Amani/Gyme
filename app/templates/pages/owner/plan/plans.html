@@ -191,7 +191,7 @@
             <div class="join flex justify-center mt-4">
                 <a
                     href="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
-                    class="join-item btn btn-sm {% if page <= 1 %}btn-disabled{% endif %}"
+                    class="join-item btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled{% endif %}"
                     hx-get="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
                     hx-target="#plans-content"
                     hx-select="#plans-content"
@@ -205,7 +205,7 @@
                 </button>
                 <a
                     href="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
-                    class="join-item btn btn-sm {% if page >= total_pages %}btn-disabled{% endif %}"
+                    class="join-item btn btn-sm btn-primary btn-soft{% if page >= total_pages %}btn-disabled{% endif %}"
                     hx-get="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
                     hx-target="#plans-content"
                     hx-select="#plans-content"

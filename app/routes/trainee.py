@@ -15,35 +15,94 @@ router = APIRouter(tags=["Trainees Management"])
 #  GET Requests
 # ──────────────────────────────────────────────
 @router.get("/trainees")
-async def trainees_list(request: Request):
+async def trainees_list(
+    request: Request,
+    page: int = Query(1, ge=1),
+    query: str = Query(""),
+    gender: str = Query(None),
+    status: str = Query(None),
+    min_birthdate: str = Query(None),
+    max_birthdate: str = Query(None),
+):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
-    trainees = list_trainees(pb, tenant)
-    tenant_name = request.state.tenant
+
+    per_page = 5
+    trainees = list_trainees(
+        pb,
+        tenant,
+        page=page,
+        per_page=per_page,
+        query=query,
+        gender=gender,
+        status=status,
+        min_birthdate=min_birthdate,
+        max_birthdate=max_birthdate,
+    )
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
+
+    total = trainees.total_items if hasattr(trainees, "total_items") else 0
+    total_pages = max(1, (total + per_page - 1) // per_page)
 
     return templates.TemplateResponse(
         request=request,
         name="pages/owner/trainee/trainees.html",
         context={
             "title": "لیست شاگردان",
-            "tenant": tenant_name,
+            "tenant": request.state.tenant,
             "user": user,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
+            "is_search_result": bool(query or gender or status or min_birthdate or max_birthdate),
+            "search_query": request.query_params.get("query", query),
+            "filter_params": {
+                "gender": gender,
+                "status": status,
+                "min_birthdate": request.query_params.get("min_birthdate"),
+                "max_birthdate": request.query_params.get("max_birthdate"),
+            },
+            "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
+            == 0,
+            "empty_message": "هیچ شاگردی با این مشخصات پیدا نشد",
+            "page": page,
+            "total_pages": total_pages,
+            "total": total,
         },
     )
 
 
 @router.get("/trainees/search")
-async def search_trainees(request: Request, query: str = ""):
+async def search_trainees(
+    request: Request,
+    query: str = "",
+    page: int = Query(1, ge=1),
+    gender: str = Query(None),
+    status: str = Query(None),
+    min_birthdate: str = Query(None),
+    max_birthdate: str = Query(None),
+):
     """Search trainees by name, phone, or email"""
     pb = request.state.pb
     tenant = request.state.tenant.id
 
-    trainees = list_trainees(pb, tenant, query=query)
+    per_page = 5
+    trainees = list_trainees(
+        pb,
+        tenant,
+        page=page,
+        per_page=per_page,
+        query=query,
+        gender=gender,
+        status=status,
+        min_birthdate=min_birthdate,
+        max_birthdate=max_birthdate,
+    )
+
+    total = trainees.total_items if hasattr(trainees, "total_items") else 0
+    total_pages = max(1, (total + per_page - 1) // per_page)
+    has_more_pages = page < total_pages
 
     return templates.TemplateResponse(
         request=request,
@@ -55,9 +114,20 @@ async def search_trainees(request: Request, query: str = ""):
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
             "is_search_result": True,
             "search_query": query,
+            "filter_params": {
+                "gender": gender,
+                "status": status,
+                "min_birthdate": min_birthdate,
+                "max_birthdate": max_birthdate,
+            },
+            "search_query": query,
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees) == 0
             and len(query) > 0,
             "empty_message": "هیچ شاگردی با این مشخصات پیدا نشد",
+            "page": page,
+            "total_pages": total_pages,
+            "has_more_pages": has_more_pages,
+            "total": total,
         },
     )
 
@@ -69,19 +139,27 @@ async def filter_trainees(
     status: str = None,
     min_birthdate: str = None,
     max_birthdate: str = None,
+    page: int = Query(1, ge=1),
 ):
     """Filter trainees by criteria"""
     pb = request.state.pb
     tenant = request.state.tenant.id
 
+    per_page = 5
     trainees = list_trainees(
         pb,
         tenant,
+        page=page,
+        per_page=per_page,
         gender=gender,
         status=status,
         min_birthdate=min_birthdate,
         max_birthdate=max_birthdate,
     )
+
+    total = trainees.total_items if hasattr(trainees, "total_items") else 0
+    total_pages = max(1, (total + per_page - 1) // per_page)
+    has_more_pages = page < total_pages
 
     return templates.TemplateResponse(
         request=request,
@@ -99,9 +177,14 @@ async def filter_trainees(
                 "min_birthdate": min_birthdate,
                 "max_birthdate": max_birthdate,
             },
+            "search_query": request.query_params.get("query", ""),
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
             == 0,
             "empty_message": "هیچ شاگردی با این فیلتر پیدا نشد",
+            "page": page,
+            "total_pages": total_pages,
+            "has_more_pages": has_more_pages,
+            "total": total,
         },
     )
 
