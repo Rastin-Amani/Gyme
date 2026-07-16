@@ -31,7 +31,7 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-APP_VERSION = "0.6.0"
+APP_VERSION = "0.8.0"
 templates.env.globals["app_version"] = APP_VERSION
 
 # static folder
