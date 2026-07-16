@@ -15,7 +15,7 @@
             class="card bg-base-100/90 backdrop-blur-xl shadow-2xl border border-base-200 w-full max-w-sm rounded-[2rem] z-10"
         >
             <div class="card-body p-6 sm:p-8">
-                <div class="text-center mb-8 flex flex-col items-center">
+                <div class="text-center mb-5 flex flex-col items-center">
                     {% if tenant and tenant.logo %}
                         {% set pb_url = request.state.pb.base_url.rstrip("/") %}
                         <div
@@ -42,11 +42,9 @@
                     {% endif %}
 
                     <h1 class="text-2xl font-black text-base-content tracking-tight">
-                        {{ tenant.name if tenant else "Gyme" }}
+                        {{ tenant.name if tenant else "جیمی" }}
                     </h1>
-                    <p
-                        class="text-xs font-medium text-base-content/50 mt-1.5 uppercase tracking-widest"
-                    >
+                    <p class="text-xs font-medium text-base-content/50 mt-1.5  tracking-widest">
                         پورتال مدیریت
                     </p>
                 </div>
@@ -54,11 +52,11 @@
                 <form method="post" action="/login" class="space-y-4">
                     <div class="form-control">
                         <label class="floating-label">
-                            <span>پست الکترونیک</span>
+                            <span>ایمیل</span>
                             <input
                                 name="identity"
-                                class="input input-bordered w-full validator rounded-xl focus:border-primary/50 transition-colors"
-                                placeholder="ایمیل خود را وارد کنید"
+                                class="input input-bordered w-full validator transition-colors"
+                                placeholder="ایمیل"
                                 type="email"
                                 required
                                 autofocus
@@ -73,7 +71,7 @@
                                 <span>رمز عبور</span>
                                 <input
                                     name="password"
-                                    class="input input-bordered w-full validator rounded-xl pl-12 focus:border-primary/50 transition-colors"
+                                    class="input input-bordered w-full validator pl-12 transition-colors"
                                     placeholder="رمز عبور"
                                     type="password"
                                     required

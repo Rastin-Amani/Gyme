@@ -1,7 +1,7 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
     <div class="max-w-150">
-        <div class="items-center justify-between bg-base-200 p-4 mb-4 card flex-row-reverse">
+        <div class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-4 card flex-row-reverse">
             {% if plan.is_template | string | lower == 'true' %}
                 <div class="flex gap-2">
                     <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
