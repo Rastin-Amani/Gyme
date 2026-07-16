@@ -15,22 +15,20 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/static/icons/gyme.webp" />
+        <link rel="icon" href="/favicon.ico" />
         
         <title>{% block title %}Gyme{% endblock %}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
         
-        {% if tenant.theme == 'custom' and tenant.brand_colors %}
-            <style>        
+        {% if tenant.theme == 'custom' and tenant.brand_theme %}
+            <style>
             :root {
-                --color-primary: {{ tenant.brand_colors.primary }};
-                --color-primary-content: {{ tenant.brand_colors.primary_content or '#ffffff' }};
-                --color-secondary: {{ tenant.brand_colors.secondary }};
-                --color-accent: {{ tenant.brand_colors.accent }};
-                --color-neutral: {{ tenant.brand_colors.neutral }};
-                --color-base-100: {{ tenant.brand_colors.base_100 }};
+                {% for key, value in tenant.brand_theme.items() %}
+                --{{ key | replace('_', '-') }}: {{ value }};
+                {% endfor %}
             }
             </style>
+
         {% endif %}
     </head>
 
