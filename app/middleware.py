@@ -9,11 +9,12 @@ from app.pb import get_pb
 # Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
 PUBLIC_PATHS = [
     "/login",
-    "/static",          # Required so your CSS/JS loads on the login page!
-    "/manifest.json",   # Required for your PWA
-    "/sw.js",           # Required for offline caching
-    "/favicon.ico"
+    "/static",  # Required so your CSS/JS loads on the login page!
+    "/manifest.json",  # Required for your PWA
+    "/sw.js",  # Required for offline caching
+    "/favicon.ico",
 ]
+
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -26,10 +27,10 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
         # ---- Auth detection ----
         pb = get_pb()
-        request.state.pb = pb 
+        request.state.pb = pb
         request.state.user = None
         request.state.role = None
-        
+
         is_authenticated = False
         token = request.cookies.get("pb_auth")
 
@@ -37,8 +38,8 @@ class TenantMiddleware(BaseHTTPMiddleware):
             try:
                 # Load token into the PocketBase instance
                 pb.auth_store.save(token, None)
-                
-                # Verify token with the server. 
+
+                # Verify token with the server.
                 # If the password was just changed, this will throw a 401 error!
                 pb.collection("users").auth_refresh()
 
@@ -55,7 +56,18 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
         # ---- 🟢 2. The Global Redirect Logic ----
         path = request.url.path
-        
+
+        # Root path: main-tenant → public landing; sub-tenant → redirect
+        if path == "/":
+            is_main = (
+                getattr(request.state.tenant, "is_main", False) if request.state.tenant else False
+            )
+            if not is_main:
+                return RedirectResponse(
+                    url="/dashboard" if is_authenticated else "/login",
+                    status_code=303,
+                )
+
         # Explicitly allow the exact root path "/", THEN check the subfolders
         is_public = (path == "/") or any(path.startswith(p) for p in PUBLIC_PATHS)
 
