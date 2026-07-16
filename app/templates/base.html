@@ -15,7 +15,7 @@
         
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
-        
+
         <title>{{ title or 'جیمی' }}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
         
@@ -32,6 +32,24 @@
     </head>
 
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
+        <!-- Offline banner — fixed, zero layout shift -->
+        <div
+            id="offline-banner"
+            class="hidden fixed top-0 inset-x-0 z-[99999] text-center text-sm py-2 font-bold text-error-content bg-error/80 backdrop-blur-sm max-w-150 mx-auto rounded-b-box"
+        >
+            ⚠️ شما آفلاین هستید — داده‌های ذخیره‌شده نمایش داده می‌شود
+        </div>
+        <script>
+            if (window.navigator) {
+                const ob = document.getElementById('offline-banner');
+                if (ob) {
+                    window.addEventListener('offline', () => ob.classList.remove('hidden'));
+                    window.addEventListener('online', () => ob.classList.add('hidden'));
+                    if (!navigator.onLine) ob.classList.remove('hidden');
+                }
+            }
+        </script>
+
         {% block body_start %}{% endblock %}
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content">
             
@@ -154,6 +172,34 @@
                 });
 
                 window.toastListenerAttached = true;
+            }
+        </script>
+
+        <!-- Service Worker Registration -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', async () => {
+                    try {
+                        const reg = await navigator.serviceWorker.register('/sw.js?v=0.8.1', { scope: '/' });
+                        console.log('SW registered:', reg.scope);
+
+                        reg.addEventListener('updatefound', () => {
+                            const newSW = reg.installing;
+                            newSW.addEventListener('statechange', () => {
+                                if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                                    document.dispatchEvent(new CustomEvent('show-toast', {
+                                        detail: {
+                                            message: 'نسخه جدید در دسترس است. برای بروزرسانی کلیک کنید.',
+                                            type: 'info',
+                                        },
+                                    }));
+                                }
+                            });
+                        });
+                    } catch (err) {
+                        console.error('SW registration failed:', err);
+                    }
+                });
             }
         </script>
 <script>
