@@ -17,7 +17,7 @@
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
         
-        <title>{% block title %}Gyme{% endblock %}</title>
+        <title>{{ title or 'جیمی' }}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
         
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
