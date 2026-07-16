@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div>
+    <div id="trainees-content">
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-xl font-bold">شاگردها</h1>
@@ -22,12 +22,12 @@
                             id="search-input"
                             placeholder="جستجو (نام، ایمیل...)"
                             class="input input-bordered w-full peer"
-                            hx-get="/trainees/search"
-                            hx-target="#trainees-table-container"
-                            hx-select="#trainees-table-container"
-                            hx-swap="innerHTML"
+                            value="{{ search_query or '' }}"
+                            hx-get="/trainees/search?page=1"
+                            hx-target="#trainees-content"
+                            hx-select="#trainees-content"
+                            hx-swap="outerHTML"
                             hx-trigger="keyup changed delay:500ms, search"
-                            hx-include="[name='query']"
                         />
                         <span class="label-text">جستجو (نام، ایمیل...)</span>
                     </label>
@@ -38,16 +38,31 @@
                                 name="gender"
                                 id="gender-filter"
                                 class="select select-bordered w-full peer"
-                                hx-get="/trainees/filter"
-                                hx-target="#trainees-table-container"
-                                hx-select="#trainees-table-container"
-                                hx-swap="innerHTML"
+                                hx-get="/trainees/filter?page=1"
+                                hx-target="#trainees-content"
+                                hx-select="#trainees-content"
+                                hx-swap="outerHTML"
                                 hx-trigger="change"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']"
                             >
-                                <option value="" disabled selected>همه</option>
-                                <option value="male">آقا</option>
-                                <option value="female">خانم</option>
+                                <option
+                                    value=""
+                                    {% if not filter_params.gender %}selected{% endif %}
+                                >
+                                    همه
+                                </option>
+                                <option
+                                    value="male"
+                                    {% if filter_params.gender == 'male' %}selected{% endif %}
+                                >
+                                    آقا
+                                </option>
+                                <option
+                                    value="female"
+                                    {% if filter_params.gender == 'female' %}selected{% endif %}
+                                >
+                                    خانم
+                                </option>
                             </select>
                             <span class="label-text">جنسیت</span>
                         </label>
@@ -57,16 +72,31 @@
                                 name="status"
                                 id="status-filter"
                                 class="select select-bordered w-full peer"
-                                hx-get="/trainees/filter"
-                                hx-target="#trainees-table-container"
-                                hx-select="#trainees-table-container"
-                                hx-swap="innerHTML"
+                                hx-get="/trainees/filter?page=1"
+                                hx-target="#trainees-content"
+                                hx-select="#trainees-content"
+                                hx-swap="outerHTML"
                                 hx-trigger="change"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']"
                             >
-                                <option value="" disabled selected>همه</option>
-                                <option value="active">فعال</option>
-                                <option value="inactive">غیرفعال</option>
+                                <option
+                                    value=""
+                                    {% if not filter_params.status %}selected{% endif %}
+                                >
+                                    همه
+                                </option>
+                                <option
+                                    value="active"
+                                    {% if filter_params.status == 'active' %}selected{% endif %}
+                                >
+                                    فعال
+                                </option>
+                                <option
+                                    value="inactive"
+                                    {% if filter_params.status == 'inactive' %}selected{% endif %}
+                                >
+                                    غیرفعال
+                                </option>
                             </select>
                             <span class="label-text">وضعیت</span>
                         </label>
@@ -88,7 +118,7 @@
         <div id="trainees-table-container">
             <div class="card bg-base-100 border border-base-300">
                 <div class="card-body p-0">
-                    {% if trainees and trainees|length > 0 %}
+                    {% if trainees is defined and trainees|length > 0 %}
                         <ul class="divide-y divide-base-300">
                             {% for trainee in trainees %}
                                 <li
@@ -131,14 +161,14 @@
                                 class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
                             >
                                 <p class="text-base opacity-70">
-                                    {% if is_search_result and show_empty_state %}
+                                    {% if is_search_result or show_empty_state %}
                                         <span class="status status-secondary mr-2"></span>
                                         {{ empty_message }}
                                     {% else %}
                                         <span
                                             class="status status-secondary mr-2 animate-bounce"
                                         ></span>
-                                        هنوز هیچ شاگردی ثبت نکردید!
+                                        هنوز شاگردی ثبت نکردید!
                                     {% endif %}
                                 </p>
                             </div>
@@ -146,8 +176,8 @@
                     {% endif %}
                 </div>
             </div>
-            {# End of card #}
-            {% if total_pages > 1 %}
+
+            {% if total_pages is defined and total_pages > 1 %}
                 <div class="mt-6">
                     <!-- Pagination -->
                     <div class="join flex justify-center">
@@ -155,8 +185,8 @@
                             href="/trainees?page={{ page - 1 }}&query={{ search_query or '' }}&gender={{ filter_params.gender or '' }}&status={{ filter_params.status or '' }}&min_birthdate={{ filter_params.min_birthdate or '' }}&max_birthdate={{ filter_params.max_birthdate or '' }}"
                             class="join-item btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled{% endif %}"
                             hx-get="/trainees?page={{ page - 1 }}&query={{ search_query or '' }}&gender={{ filter_params.gender or '' }}&status={{ filter_params.status or '' }}&min_birthdate={{ filter_params.min_birthdate or '' }}&max_birthdate={{ filter_params.max_birthdate or '' }}"
-                            hx-target="#trainees-table-container"
-                            hx-select="#trainees-table-container"
+                            hx-target="#trainees-content"
+                            hx-select="#trainees-content"
                             hx-swap="outerHTML"
                             hx-push-url="true"
                         >
@@ -169,8 +199,8 @@
                             href="/trainees?page={{ page + 1 }}&query={{ search_query or '' }}&gender={{ filter_params.gender or '' }}&status={{ filter_params.status or '' }}&min_birthdate={{ filter_params.min_birthdate or '' }}&max_birthdate={{ filter_params.max_birthdate or '' }}"
                             class="join-item btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled{% endif %}"
                             hx-get="/trainees?page={{ page + 1 }}&query={{ search_query or '' }}&gender={{ filter_params.gender or '' }}&status={{ filter_params.status or '' }}&min_birthdate={{ filter_params.min_birthdate or '' }}&max_birthdate={{ filter_params.max_birthdate or '' }}"
-                            hx-target="#trainees-table-container"
-                            hx-select="#trainees-table-container"
+                            hx-target="#trainees-content"
+                            hx-select="#trainees-content"
                             hx-swap="outerHTML"
                             hx-push-url="true"
                         >
@@ -183,10 +213,16 @@
 
         <script>
             function clearAllFilters() {
-                document.getElementById('search-input').value = '';
-                document.getElementById('gender-filter').value = '';
-                document.getElementById('status-filter').value = '';
-                window.location.href = '/trainees';
+                const el = (id) => document.getElementById(id);
+                if (el('search-input')) el('search-input').value = '';
+                if (el('gender-filter')) el('gender-filter').value = '';
+                if (el('status-filter')) el('status-filter').value = '';
+                htmx.ajax('GET', '/trainees', {
+                    target: '#trainees-content',
+                    swap: 'outerHTML',
+                    select: '#trainees-content',
+                    pushUrl: true,
+                });
             }
         </script>
     </div>

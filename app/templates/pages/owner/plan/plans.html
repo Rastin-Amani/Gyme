@@ -59,10 +59,12 @@
                                 id="search-input"
                                 placeholder="جستجو (نام شاگرد، نام مربی...)"
                                 class="input input-bordered w-full peer"
-                                hx-get="/plans"
-                                hx-target="#plans-table-container"
-                                hx-select="#plans-table-container"
-                                hx-swap="innerHTML"
+                                value="{{ search_query or '' }}"
+                                hx-get="/plans?page=1"
+                                hx-target="#plans-content"
+                                hx-select="#plans-content"
+                                hx-swap="outerHTML"
+                                hx-push-url="true"
                                 hx-trigger="keyup changed delay:500ms, search"
                             />
                             <span class="label-text">جستجو (نام شاگرد، نام مربی...)</span>
@@ -74,16 +76,37 @@
                                     name="type"
                                     id="type-filter"
                                     class="select select-bordered w-full peer"
-                                    hx-get="/plans"
-                                    hx-target="#plans-table-container"
-                                    hx-select="#plans-table-container"
-                                    hx-swap="innerHTML"
+                                    hx-get="/plans?page=1"
+                                    hx-target="#plans-content"
+                                    hx-select="#plans-content"
+                                    hx-swap="outerHTML"
+                                    hx-push-url="true"
                                     hx-trigger="change"
                                 >
-                                    <option value="" disabled selected>همه</option>
-                                    <option value="diet">غذایی</option>
-                                    <option value="training">ورزشی</option>
-                                    <option value="steroid">استروئید</option>
+                                    <option
+                                        value=""
+                                        {% if not filter_params.type %}selected{% endif %}
+                                    >
+                                        همه
+                                    </option>
+                                    <option
+                                        value="diet"
+                                        {% if filter_params.type == 'diet' %}selected{% endif %}
+                                    >
+                                        غذایی
+                                    </option>
+                                    <option
+                                        value="training"
+                                        {% if filter_params.type == 'training' %}selected{% endif %}
+                                    >
+                                        ورزشی
+                                    </option>
+                                    <option
+                                        value="steroid"
+                                        {% if filter_params.type == 'steroid' %}selected{% endif %}
+                                    >
+                                        استروئید
+                                    </option>
                                 </select>
                                 <span class="label-text">نوع برنامه</span>
                             </label>
@@ -112,7 +135,7 @@
             <div class="card bg-base-100 border border-base-300">
                 <div class="card-body p-0">
                     <div id="plans-table-container">
-                        {% if plans and plans|length > 0 %}
+                        {% if plans|length > 0 %}
                             <ul class="divide-y divide-base-300">
                                 {% for plan in plans %}
                                     <li
@@ -136,7 +159,7 @@
                                             <span class="text-xs opacity-60 block">
                                                 {% if plan.type == 'diet' %}
                                                     غذایی
-                                                {% elif plan.type =='training' %}
+                                                {% elif plan.type == 'training' %}
                                                     ورزشی
                                                 {% else %}
                                                     استروئید
@@ -144,6 +167,7 @@
                                                 · {{ plan.days_per_week or '-' }} روز/هفته
                                             </span>
                                         </div>
+
                                         <a
                                             href="/plans/{{ plan.id }}"
                                             class="flex-shrink-0 btn btn-sm btn-square"
@@ -170,7 +194,7 @@
                                     class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
                                 >
                                     <p class="text-base opacity-70">
-                                        {% if is_search_result and show_empty_state %}
+                                        {% if is_search_result or show_empty_state %}
                                             <span class="status status-secondary ml-1"></span>
                                             {{ empty_message }}
                                         {% else %}
@@ -188,7 +212,6 @@
             </div>
             {% if total_pages > 1 %}
                 <!-- Pagination -->
-
                 <div class="join flex justify-center mt-4">
                     <a
                         href="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
@@ -221,10 +244,17 @@
 
         <script>
             function clearAllFilters() {
-                document.getElementById('search-input').value = '';
-                document.getElementById('type-filter').value = '';
-                document.getElementById('coach-filter').value = '';
-                window.location.href = '/plans';
+                const el = (id) => document.getElementById(id);
+                if (el('search-input')) el('search-input').value = '';
+                if (el('type-filter')) el('type-filter').value = '';
+                if (el('coach-filter')) el('coach-filter').value = '';
+                // HTMX nav — keeps SPA feel, re-renders filters via server
+                htmx.ajax('GET', '/plans', {
+                    target: '#plans-content',
+                    swap: 'outerHTML',
+                    select: '#plans-content',
+                    pushUrl: true,
+                });
             }
         </script>
     </div>
