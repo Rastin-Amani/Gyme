@@ -33,13 +33,7 @@
                 <h1 class="text-xl font-bold">
                     {% if is_template %}قالب‌ها{% else %}برنامه‌ها{% endif %}
                 </h1>
-                <p class="text-sm opacity-70">
-                    {% if is_template %}
-
-                    {% else %}
-
-                    {% endif %}
-                </p>
+                <p class="text-sm opacity-70"></p>
             </div>
 
             {% if is_template %}
@@ -52,7 +46,7 @@
         <!-- Search / Filter (only for active plans) -->
         {% if not is_template %}
             <div
-                class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-6"
+                class="collapse collapse-arrow border border-base-300 bg-base-200 rounded-box mb-6"
             >
                 <input type="checkbox" />
                 <div class="collapse-title text-md font-medium">جستجو و فیلتر</div>
@@ -98,7 +92,7 @@
                         <button
                             type="button"
                             id="clear-filters"
-                            class="btn btn-outline btn-block mt-2"
+                            class="btn btn-primary btn-soft btn-block mt-2"
                             onclick="clearAllFilters()"
                         >
                             پاک کردن فیلترها
@@ -114,113 +108,112 @@
                 {% include "pages/owner/plan/templates_list.html" %}
             </div>
         {% else %}
-            <!-- Regular Plans Table -->
-            <div class="card bg-base-100 border-base-300 border">
+            <!-- Regular Plans List -->
+            <div class="card bg-base-100 border border-base-300">
                 <div class="card-body p-0">
-                    <div class="max-w-150 overflow-x-auto">
-                        <div id="plans-table-container">
-                            <table class="table min-w-max w-full table-zebra">
-                                <thead>
-                                    <tr>
-                                        <th class="text-right"></th>
-                                        <th>شاگرد</th>
-                                        <th>نوع</th>
-                                        <th>مربی</th>
-                                        <th>روز در هفته</th>
-                                        <th>تاریخ شروع</th>
-                                        <th>تاریخ پایان</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody id="plans-table-body">
-                                    {% if not is_search_result and plans and plans|length > 0 %}
-                                        {% for plan in plans %}
-                                            <tr>
-                                                <td class="text-right">
-                                                    <a
-                                                        href="/plans/{{ plan.id }}"
-                                                        class="btn btn-sm"
-                                                    >
-                                                        مشاهده
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                                                </td>
-                                                <td>
-                                                    {% if plan.type == 'diet' %}
-                                                        غذایی
-                                                    {% elif plan.type =='training' %}
-                                                        ورزشی
-                                                    {% else %}
-                                                        استروئید
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
-                                                </td>
-                                                <td>{{ plan.days_per_week or '-' }}</td>
-                                                <td>{{ plan.start_date | jalali_date or '-' }}</td>
-                                                <td>{{ plan.end_date | jalali_date or '-' }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% elif is_search_result and plans and plans|length > 0 %}
-                                        {% for plan in plans %}
-                                            <tr>
-                                                <td class="text-right">
-                                                    <a
-                                                        href="/plans/{{ plan.id }}"
-                                                        class="btn btn-sm"
-                                                    >
-                                                        مشاهده
-                                                    </a>
-                                                </td>
-                                                <td>
-                                                    {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                                                </td>
-                                                <td>
-                                                    {% if plan.type == 'diet' %}
-                                                        غذایی
-                                                    {% elif plan.type =='training' %}
-                                                        ورزشی
-                                                    {% else %}
-                                                        استروئید
-                                                    {% endif %}
-                                                </td>
-                                                <td>
-                                                    {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
-                                                </td>
-                                                <td>{{ plan.days_per_week or '-' }}</td>
-                                                <td>{{ plan.start_date | jalali_date or '-' }}</td>
-                                                <td>{{ plan.end_date | jalali_date or '-' }}</td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="8" class="text-center py-8 opacity-60">
-                                                <div class="bg-base-200 p-4 text-center card">
-                                                    <p class="text-sm opacity-60 p-4">
-                                                        {% if is_search_result and show_empty_state %}
-                                                            <span
-                                                                class="status status-secondary ml-1"
-                                                            ></span>
-                                                            {{ empty_message }}
-                                                        {% else %}
-                                                            <span
-                                                                class="status status-secondary animate-bounce ml-1"
-                                                            ></span>
-                                                            هنوز برنامه‌ای ثبت نکردید!
-                                                        {% endif %}
-                                                    </p>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                </tbody>
-                            </table>
-                        </div>
+                    <div id="plans-table-container">
+                        {% if plans and plans|length > 0 %}
+                            <ul class="divide-y divide-base-300">
+                                {% for plan in plans %}
+                                    <li
+                                        class="flex items-center gap-3 px-4 py-3 active:bg-base-200 transition-colors duration-150"
+                                    >
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary"
+                                        >
+                                            {% if plan.type == 'diet' %}
+                                                🥑
+                                            {% elif plan.type == 'training' %}
+                                                💪
+                                            {% else %}
+                                                💊
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <span class="font-medium text-sm">
+                                                {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                                            </span>
+                                            <span class="text-xs opacity-60 block">
+                                                {% if plan.type == 'diet' %}
+                                                    غذایی
+                                                {% elif plan.type =='training' %}
+                                                    ورزشی
+                                                {% else %}
+                                                    استروئید
+                                                {% endif %}
+                                                · {{ plan.days_per_week or '-' }} روز/هفته
+                                            </span>
+                                        </div>
+                                        <a
+                                            href="/plans/{{ plan.id }}"
+                                            class="flex-shrink-0 btn btn-sm btn-square"
+                                        >
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 opacity-40"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fill-rule="evenodd"
+                                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                                    clip-rule="evenodd"
+                                                />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <div class="text-center py-12 px-4">
+                                <div
+                                    class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
+                                >
+                                    <p class="text-base opacity-70">
+                                        {% if is_search_result and show_empty_state %}
+                                            <span class="status status-secondary ml-1"></span>
+                                            {{ empty_message }}
+                                        {% else %}
+                                            <span
+                                                class="status status-secondary animate-bounce ml-1"
+                                            ></span>
+                                            هنوز برنامه‌ای ثبت نکردید!
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
+            </div>
+            <!-- Pagination -->
+
+            <div class="join flex justify-center mt-4">
+                <a
+                    href="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
+                    class="join-item btn btn-sm {% if page <= 1 %}btn-disabled{% endif %}"
+                    hx-get="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
+                    hx-target="#plans-content"
+                    hx-select="#plans-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
+                    «
+                </a>
+                <button class="join-item btn btn-sm btn-disabled pointer-events-none">
+                    صفحه {{ page }} از {{ total_pages }}
+                </button>
+                <a
+                    href="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
+                    class="join-item btn btn-sm {% if page >= total_pages %}btn-disabled{% endif %}"
+                    hx-get="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
+                    hx-target="#plans-content"
+                    hx-select="#plans-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
+                    »
+                </a>
             </div>
         {% endif %}
 

@@ -25,6 +25,7 @@ router = APIRouter(tags=["Plans Management"])
 @router.get("/plans")
 async def plan_list(
     request: Request,
+    page: int = Query(1, ge=1),
     query: str = Query(""),
     type: str = Query(None),
     coach_id: str = Query(None),
@@ -36,8 +37,16 @@ async def plan_list(
 
     is_template_bool = str(is_template).lower() in ["true", "1", "yes"]
 
+    per_page = 5
     plans = list_plans(
-        pb, tenant, query=query, type=type, coach_id=coach_id, is_template=is_template_bool
+        pb,
+        tenant,
+        page=page,
+        per_page=per_page,
+        query=query,
+        type=type,
+        coach_id=coach_id,
+        is_template=is_template_bool,
     )
 
     tenant_name = request.state.tenant
@@ -61,6 +70,12 @@ async def plan_list(
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
+    total = plans.total_items if hasattr(plans, "total_items") else 0
+    total_pages = max(1, (total + per_page - 1) // per_page)
+    print(
+        f"DEBUG PAGINATION: total={total}, per_page={per_page}, page={page}, total_pages={total_pages}"
+    )
+
     return templates.TemplateResponse(
         request=request,
         name="pages/owner/plan/plans.html",
@@ -80,6 +95,10 @@ async def plan_list(
             and bool(query or type or coach_id),
             "empty_message": "هیچ برنامه‌ای با این مشخصات پیدا نشد",
             "is_template": is_template_bool,
+            "page": page,
+            "total_pages": total_pages,
+            "total": total,
+            "per_page": per_page,
         },
     )
 

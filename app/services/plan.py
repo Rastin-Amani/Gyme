@@ -13,7 +13,7 @@ def list_plans(
     pb,
     tenant,
     page=1,
-    per_page=50,
+    per_page=5,  # 🟢 Bump from 10 → 5
     query=None,
     type=None,
     coach_id=None,
@@ -96,7 +96,7 @@ def delete_plan(pb, tenant, plan_id):
     return pb.collection("plans").delete(plan_id)
 
 
-def list_templates(pb, tenant, page=1, per_page=50):
+def list_templates(pb, tenant, page=1, per_page=5):
     """List all templates for a tenant."""
     # 🟢 FIXED: Queries plans where is_template=true
     return pb.collection("plans").get_list(
