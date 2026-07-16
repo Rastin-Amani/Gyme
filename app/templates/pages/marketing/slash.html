@@ -1,21 +1,228 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+        .max-w-150,
+        #main-content,
+        #main-content > .px-4 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* ── Keyframes ── */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeInUpSm {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes pulseBadge {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.85;
+                transform: scale(1.04);
+            }
+        }
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-46%) rotate(2deg);
+            }
+        }
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ── Scroll-reveal base ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition:
+                opacity 0.6s ease-out,
+                transform 0.6s ease-out;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* stagger children */
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(16px);
+            transition:
+                opacity 0.5s ease-out,
+                transform 0.5s ease-out;
+        }
+        .reveal-stagger.visible > *:nth-child(1) {
+            transition-delay: 0.05s;
+        }
+        .reveal-stagger.visible > *:nth-child(2) {
+            transition-delay: 0.12s;
+        }
+        .reveal-stagger.visible > *:nth-child(3) {
+            transition-delay: 0.19s;
+        }
+        .reveal-stagger.visible > *:nth-child(4) {
+            transition-delay: 0.26s;
+        }
+        .reveal-stagger.visible > *:nth-child(5) {
+            transition-delay: 0.33s;
+        }
+        .reveal-stagger.visible > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* hero ring float */
+        .ring-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* hero badge pulse */
+        .badge-pulse {
+            animation: pulseBadge 2.8s ease-in-out infinite;
+        }
+
+        /* CTA shimmer button */
+        .btn-shimmer {
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        /* hero content entrance */
+        .hero-entrance > * {
+            animation: fadeInUp 0.7s ease-out both;
+        }
+        .hero-entrance > *:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .hero-entrance > *:nth-child(2) {
+            animation-delay: 0.25s;
+        }
+        .hero-entrance > *:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        .hero-entrance > *:nth-child(4) {
+            animation-delay: 0.55s;
+        }
+
+        /* form slide-in */
+        .form-slide > * {
+            animation: slideInRight 0.5s ease-out both;
+        }
+        .form-slide > *:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .form-slide > *:nth-child(2) {
+            animation-delay: 0.06s;
+        }
+        .form-slide > *:nth-child(3) {
+            animation-delay: 0.12s;
+        }
+        .form-slide > *:nth-child(4) {
+            animation-delay: 0.18s;
+        }
+        .form-slide > *:nth-child(5) {
+            animation-delay: 0.24s;
+        }
+        .form-slide > *:nth-child(6) {
+            animation-delay: 0.3s;
+        }
+        .form-slide > *:nth-child(7) {
+            animation-delay: 0.36s;
+        }
+        .form-slide > *:nth-child(8) {
+            animation-delay: 0.42s;
+        }
+        .form-slide > *:nth-child(9) {
+            animation-delay: 0.48s;
+        }
+        .form-slide > *:nth-child(10) {
+            animation-delay: 0.54s;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const io = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((e) => {
+                        if (e.isIntersecting) {
+                            e.target.classList.add('visible');
+                            io.unobserve(e.target);
+                        }
+                    });
+                },
+                { threshold: 0.15 }
+            );
+            document.querySelectorAll('.reveal, .reveal-stagger').forEach((el) => io.observe(el));
+        });
+    </script>
+
     <div class="overflow-hidden">
         <!-- ═══════════════ HERO ═══════════════ -->
         <section
-            class="hero min-h-screen bg-gradient-to-b !min-w-full from-primary/8 via-base-100 to-base-100 relative"
+            class="hero min-h-screen bg-gradient-to-b from-primary/8 via-base-100 to-base-100 relative"
         >
-            <!-- Decorative top ring -->
+            <!-- Decorative top ring (floating) -->
             <div
                 class="absolute top-0 inset-x-0 flex justify-center -translate-y-1/2 pointer-events-none"
             >
-                <div class="w-[600px] h-[600px] rounded-full border border-primary/10"></div>
+                <div
+                    class="w-[600px] h-[600px] rounded-full border border-primary/10 ring-float"
+                ></div>
             </div>
 
-            <div class="hero-content text-center flex-col px-6 relative z-10">
+            <div class="hero-content text-center flex-col px-6 relative z-10 hero-entrance">
                 <div
-                    class="badge badge-primary badge-outline badge-lg px-5 py-4 text-xs font-bold uppercase tracking-widest bg-primary/5 border-primary/20 mb-8"
+                    class="badge badge-primary badge-outline badge-lg px-5 py-4 text-xs font-bold tracking-widest bg-primary/5 border-primary/20 mb-8 badge-pulse rounded-box"
                 >
                     پلتفرم انحصاری مربیان الیت 🏆
                 </div>
@@ -49,7 +256,7 @@
                             viewBox="0 0 24 24"
                             stroke-width="2.5"
                             stroke="currentColor"
-                            class="w-5 h-5 ml-2"
+                            class="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-y-[-2px]"
                         >
                             <path
                                 stroke-linecap="round"
@@ -73,13 +280,17 @@
         <!-- ═══════════════ THE PROBLEM ═══════════════ -->
         <section class="py-16 px-5 bg-base-200/50">
             <div class="max-w-2xl mx-auto text-center">
-                <h2 class="text-2xl sm:text-3xl font-bold mb-10 text-base-content leading-relaxed">
+                <h2
+                    class="reveal text-2xl sm:text-3xl font-bold mb-10 text-base-content leading-relaxed"
+                >
                     چرا سیستم فعلی شما جلوی رشدتان را گرفته است؟
                 </h2>
 
-                <div class="flex flex-col gap-4 text-right">
+                <div class="flex flex-col gap-4 text-right reveal-stagger">
                     <!-- Problem Card 1 -->
-                    <div class="card border-2 border-error/20 bg-error/5 rounded-3xl">
+                    <div
+                        class="card border-2 border-error/20 bg-error/5 rounded-3xl transition-all duration-300 hover:border-error/40"
+                    >
                         <div class="card-body p-5 sm:p-6 gap-2">
                             <div class="flex items-center gap-3">
                                 <div
@@ -99,7 +310,9 @@
                     </div>
 
                     <!-- Problem Card 2 -->
-                    <div class="card border-2 border-error/20 bg-error/5 rounded-3xl">
+                    <div
+                        class="card border-2 border-error/20 bg-error/5 rounded-3xl transition-all duration-300 hover:border-error/40"
+                    >
                         <div class="card-body p-5 sm:p-6 gap-2">
                             <div class="flex items-center gap-3">
                                 <div
@@ -121,7 +334,9 @@
                     </div>
 
                     <!-- Problem Card 3 -->
-                    <div class="card border-2 border-error/20 bg-error/5 rounded-3xl">
+                    <div
+                        class="card border-2 border-error/20 bg-error/5 rounded-3xl transition-all duration-300 hover:border-error/40"
+                    >
                         <div class="card-body p-5 sm:p-6 gap-2">
                             <div class="flex items-center gap-3">
                                 <div
@@ -144,7 +359,7 @@
         </section>
 
         <!-- Decorative divider -->
-        <div class="flex items-center justify-center py-2">
+        <div class="reveal flex items-center justify-center py-2">
             <div class="h-px flex-1 bg-gradient-to-l from-transparent to-primary/15"></div>
             <div class="badge badge-primary badge-sm rounded-full mx-4 border-primary/20">✦</div>
             <div class="h-px flex-1 bg-gradient-to-r from-transparent to-primary/15"></div>
@@ -153,18 +368,18 @@
         <!-- ═══════════════ THE SOLUTION ═══════════════ -->
         <section class="py-14 px-5 max-w-5xl mx-auto">
             <div class="text-center mb-12">
-                <h2 class="text-3xl sm:text-4xl font-black text-base-content mb-3">
+                <h2 class="reveal text-3xl sm:text-4xl font-black text-base-content mb-3">
                     راه‌حل؟ جیمی. 🚀
                 </h2>
-                <p class="text-base-content/50 text-base font-medium">
+                <p class="reveal text-base-content/50 text-base font-medium">
                     نرم‌افزاری که پشت پرده، شما را یک قهرمان نشان می‌دهد.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 reveal-stagger">
                 <!-- Feature 1: White-label -->
                 <div
-                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-primary/40 transition-colors duration-300"
+                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-primary/40 transition-all duration-300"
                 >
                     <div class="card-body p-6 sm:p-7">
                         <div
@@ -186,7 +401,7 @@
 
                 <!-- Feature 2: CRM & Workflow -->
                 <div
-                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-secondary/40 transition-colors duration-300"
+                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-secondary/40 transition-all duration-300"
                 >
                     <div class="card-body p-6 sm:p-7">
                         <div
@@ -207,7 +422,7 @@
 
                 <!-- Feature 3: GIFs & Remote Coaching -->
                 <div
-                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-accent/40 transition-colors duration-300"
+                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-accent/40 transition-all duration-300"
                 >
                     <div class="card-body p-6 sm:p-7">
                         <div
@@ -228,7 +443,7 @@
 
                 <!-- Feature 4: Availability (APK & PWA) -->
                 <div
-                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-info/40 transition-colors duration-300"
+                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-info/40 transition-all duration-300"
                 >
                     <div class="card-body p-6 sm:p-7">
                         <div
@@ -248,7 +463,7 @@
 
                 <!-- Feature 5: Speed & Tech (full-width) -->
                 <div
-                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-success/40 transition-colors duration-300 md:col-span-2"
+                    class="card bg-base-100 border-2 border-base-200 rounded-3xl hover:border-success/40 transition-all duration-300 md:col-span-2"
                 >
                     <div class="card-body p-6 sm:p-7 md:flex-row md:items-center gap-5">
                         <div
@@ -275,16 +490,16 @@
         <section id="contact-form" class="pb-8 px-5">
             <div class="max-w-lg mx-auto">
                 <!-- Decorative top accent -->
-                <div class="flex justify-center mb-6">
+                <div class="reveal flex justify-center mb-6">
                     <div class="w-16 h-1 rounded-full bg-primary/30"></div>
                 </div>
 
                 <div
-                    class="card bg-primary text-primary-content border-2 border-primary/30 rounded-[2rem]"
+                    class="reveal card bg-primary text-primary-content border-2 border-primary/30 rounded-[2rem]"
                 >
                     <div class="card-body p-6 sm:p-8">
                         <div
-                            class="badge badge-ghost badge-sm text-primary-content/70 bg-primary-content/10 border-primary-content/20 font-bold px-3 py-3 w-max mb-2"
+                            class="badge badge-ghost badge-sm text-primary-content/70 bg-primary-content/10 border-primary-content/20 font-bold px-3 py-3 w-max mb-2 rounded-box"
                         >
                             🔥 ظرفیت مشاوره محدود
                         </div>
@@ -298,7 +513,7 @@
                         <form
                             hx-post="/lead/submit"
                             hx-swap="none"
-                            class="flex flex-col gap-5"
+                            class="flex flex-col gap-5 form-slide"
                             hx-on::after-request="if(event.detail.successful) this.reset()"
                         >
                             <!-- 1. Name -->
@@ -429,7 +644,6 @@
                                         انتخاب این فیلد الزامی است
                                     </p>
                                 </div>
-
                                 <div class="flex flex-col gap-1 w-full">
                                     <label class="label p-0">
                                         <span class="label-text text-primary-content/70 font-bold">
@@ -502,11 +716,10 @@
                             <div class="flex flex-col gap-3 mt-1">
                                 <button
                                     type="submit"
-                                    class="btn btn-secondary w-full h-14 text-lg font-black rounded-xl border-2 border-secondary"
+                                    class="btn btn-secondary w-full h-14 text-lg font-black rounded-xl border-2 border-secondary transition-transform duration-200 active:scale-[0.97]"
                                 >
                                     ارسال درخواست دمو 🚀
                                 </button>
-
                                 <div
                                     class="flex items-center justify-center gap-2 text-xs text-primary-content/50 font-medium"
                                 >
