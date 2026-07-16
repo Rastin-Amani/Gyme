@@ -29,27 +29,53 @@
             </style>
 
         {% endif %}
+
+        <script>
+            (function() {
+                var BANNER_ID = 'offline-banner';
+                var BANNER_TEXT = '\u26A0\uFE0F \u0634\u0645\u0627 \u0622\u0641\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F \u2014 \u062F\u0627\u062F\u0647\u200C\u0647\u0627\u06CC \u0630\u062E\u06CC\u0631\u0647\u200C\u0634\u062F\u0647 \u0646\u0645\u0627\u06CC\u0634 \u062F\u0627\u062F\u0647 \u0645\u06CC\u200C\u0634\u0648\u062F';
+                function createBanner() {
+                    var el = document.createElement('div');
+                    el.id = BANNER_ID;
+                    el.textContent = BANNER_TEXT;
+                    el.style.cssText = 'position:fixed;top:0;left:50%;translate:-50%;z-index:99999;background:#ffedd5;color:#9a3412;text-align:center;font-size:0.875rem;font-weight:700;padding:0.5rem 1rem;border-radius:0 0 0.5rem 0.5rem;max-width:600px;width:100%';
+                    el.style.display = navigator.onLine ? 'none' : '';
+                    document.body.prepend(el);
+                }
+                function updateBanner() {
+                    var el = document.getElementById(BANNER_ID);
+                    if (el) {
+                        el.style.display = navigator.onLine ? 'none' : '';
+                    } else if (!navigator.onLine) {
+                        createBanner();
+                    }
+                }
+                window.addEventListener('offline', createBanner);
+                window.addEventListener('online', function() {
+                    var el = document.getElementById(BANNER_ID);
+                    if (el) el.style.display = 'none';
+                });
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (!navigator.onLine) createBanner();
+                });
+                // MutationObserver — recreates banner immediately after HTMX body swap, no polling gap
+                var observer = new MutationObserver(function() {
+                    if (!navigator.onLine && !document.getElementById(BANNER_ID)) {
+                        createBanner();
+                    }
+                });
+                if (document.body) {
+                    observer.observe(document.body, { childList: true, subtree: false });
+                } else {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        observer.observe(document.body, { childList: true, subtree: false });
+                    });
+                }
+            })();
+        </script>
     </head>
 
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
-        <!-- Offline banner — fixed, zero layout shift -->
-        <div
-            id="offline-banner"
-            class="hidden fixed top-0 inset-x-0 z-[99999] text-center text-sm py-2 font-bold text-error-content bg-error/80 backdrop-blur-sm max-w-150 mx-auto rounded-b-box"
-        >
-            ⚠️ شما آفلاین هستید — داده‌های ذخیره‌شده نمایش داده می‌شود
-        </div>
-        <script>
-            if (window.navigator) {
-                const ob = document.getElementById('offline-banner');
-                if (ob) {
-                    window.addEventListener('offline', () => ob.classList.remove('hidden'));
-                    window.addEventListener('online', () => ob.classList.add('hidden'));
-                    if (!navigator.onLine) ob.classList.remove('hidden');
-                }
-            }
-        </script>
-
         {% block body_start %}{% endblock %}
         <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content">
             
