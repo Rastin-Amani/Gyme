@@ -11,7 +11,12 @@ SW_PATH = Path(__file__).resolve().parent.parent / "static" / "sw.js"
 
 @router.get("/sw.js", include_in_schema=False)
 async def service_worker():
+    # Lazy import avoids circular import: main.py imports pwa before APP_VERSION is defined
+    from app.main import APP_VERSION
+
     content = SW_PATH.read_text(encoding="utf-8")
+    # Inject app version into CACHE_VERSION so caches auto-purge on deploy
+    content = content.replace("__CACHE_VERSION__", APP_VERSION)
     return Response(
         content=content,
         media_type="application/javascript",

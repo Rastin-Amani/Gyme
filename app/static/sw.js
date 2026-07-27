@@ -7,17 +7,20 @@ workbox.setConfig({
 });
 
 // ---- Cache names (bumped on app version change) ----
-const CACHE_VERSION = '0.8.0';
+// __CACHE_VERSION__ is replaced at runtime by app/routes/pwa.py with APP_VERSION from main.py
+const CACHE_VERSION = '__CACHE_VERSION__';
 const CACHE_PREFIX = `gyme-${CACHE_VERSION}`;
 const PAGE_CACHE = `${CACHE_PREFIX}-pages`;
 const STATIC_CACHE = `${CACHE_PREFIX}-static`;
 const IMAGE_CACHE = `${CACHE_PREFIX}-images`;
 const OFFLINE_CACHE = `${CACHE_PREFIX}-offline`;
 
-// ---- Static assets (CSS, JS, fonts): CacheFirst + expiry ----
+// ---- Static assets (CSS, JS, fonts): StaleWhileRevalidate + expiry ----
+// StaleWhileRevalidate: serve cached instantly, fetch fresh in background.
+// Fixes "old CSS after deploy" — next page load gets updated styles.
 workbox.routing.registerRoute(
     /\.(css|js|woff2?|json)(\?.*)?$/,
-    new workbox.strategies.CacheFirst({
+    new workbox.strategies.StaleWhileRevalidate({
         cacheName: STATIC_CACHE,
         plugins: [
             new workbox.expiration.ExpirationPlugin({
