@@ -15,6 +15,7 @@
             hx-post="/trainees/{{ trainee.id }}/progress-log"
             enctype="multipart/form-data"
             class="bg-base-100 space-y-6"
+            hx-swap="none"
         >
             <input type="hidden" name="bmi" id="input_bmi" />
             <input type="hidden" name="bfp" id="input_bfp" />
@@ -209,8 +210,8 @@
 
         // Calculate approximate age from birthdate
         let age = 25; // fallback
-        const birthdateStr = '{{ trainee.birthdate }}';
-        if (birthdateStr && birthdateStr.trim() !== '') {
+        const birthdateStr = '{{ trainee.birthdate or "" }}';
+        if (birthdateStr && birthdateStr.trim() !== '' && birthdateStr !== 'None') {
             const birthYear = new Date(birthdateStr).getFullYear();
             const currentYear = new Date().getFullYear();
             if (!isNaN(birthYear)) {
@@ -375,8 +376,8 @@
             input.addEventListener('change', calculateMetrics);
         });
 
-        // Run on load
-        document.addEventListener('DOMContentLoaded', calculateMetrics);
+        // Run immediately (DOMContentLoaded already fired for HTMX-loaded content)
+        calculateMetrics();
 
         // --- Multi-image upload: preview + validation ---
         (function () {

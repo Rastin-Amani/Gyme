@@ -1,0 +1,170 @@
+{% extends "layouts/modal.html" %}
+
+{% block modal_title %}ویرایش ارزیابی{% endblock %}
+
+{% block modal_body %}
+    <form
+        hx-post="/progress-log/{{ log.id }}"
+        enctype="multipart/form-data"
+        class="flex flex-col gap-4 text-right"
+        dir="rtl"
+        hx-swap="none"
+        hx-on:htmx:after-request="if(event.detail.successful) {
+                    document.getElementById('item-modal').remove();
+                }"
+    >
+        <input type="hidden" name="bmi" id="input_bmi" value="{{ log.bmi }}" />
+        <input type="hidden" name="bfp" id="input_bfp" value="{{ log.bfp }}" />
+        <input type="hidden" name="bmr" id="input_bmr" value="{{ log.bmr }}" />
+        <input type="hidden" name="tdee" id="input_tdee" value="{{ log.tdee }}" />
+        <input type="hidden" name="lbm" id="input_lbm" value="{{ log.lbm }}" />
+        <input type="hidden" name="whr" id="input_whr" value="{{ log.whr }}" />
+
+        <div class="grid grid-cols-2 gap-4">
+            <label class="floating-label">
+                <span>قد</span>
+                <input
+                    type="number"
+                    id="val_height"
+                    name="height"
+                    value="{{ log.height }}"
+                    class="input input-bordered w-full calc-trigger"
+                    required
+                />
+            </label>
+            <label class="floating-label">
+                <span>وزن</span>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="val_weight"
+                    name="weight"
+                    value="{{ log.weight }}"
+                    class="input input-bordered w-full calc-trigger"
+                    required
+                />
+            </label>
+            <label class="floating-label">
+                <span>دور سینه</span>
+                <input
+                    type="number"
+                    step="0.1"
+                    name="chest"
+                    value="{{ log.chest or '' }}"
+                    class="input input-bordered w-full calc-trigger"
+                />
+            </label>
+            <label class="floating-label">
+                <span>دور کمر</span>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="val_waist"
+                    name="waist"
+                    value="{{ log.waist or '' }}"
+                    class="input input-bordered w-full calc-trigger"
+                />
+            </label>
+            <label class="floating-label">
+                <span>دور باسن</span>
+                <input
+                    type="number"
+                    step="0.1"
+                    id="val_hip"
+                    name="hip"
+                    value="{{ log.hip or '' }}"
+                    class="input input-bordered w-full calc-trigger"
+                />
+            </label>
+            <label class="floating-label">
+                <span>دور بازو</span>
+                <input
+                    type="number"
+                    step="0.1"
+                    name="arms"
+                    value="{{ log.arms or '' }}"
+                    class="input input-bordered w-full calc-trigger"
+                />
+            </label>
+        </div>
+
+        <label class="floating-label w-full">
+            <span>سطح فعالیت</span>
+            <select id="val_activity" class="select select-bordered w-full calc-trigger">
+                <option value="1.2">بدون تحرک</option>
+                <option value="1.375">سبک</option>
+                <option value="1.55" selected>متوسط</option>
+                <option value="1.725">شدید</option>
+                <option value="1.9">بسیار شدید</option>
+            </select>
+        </label>
+
+        <label class="floating-label w-full">
+            <span>یادداشت‌ها</span>
+            <textarea name="notes" class="textarea textarea-bordered w-full h-24">
+{{ log.notes }}</textarea
+            >
+        </label>
+
+        <div class="flex justify-between items-center mt-4">
+            <button type="submit" class="btn btn-primary w-1/2">ذخیره تغییرات</button>
+            <button
+                type="button"
+                class="btn btn-ghost"
+                hx-on:click="document.getElementById('item-modal').remove()"
+            >
+                لغو
+            </button>
+        </div>
+    </form>
+
+    <script>
+        // Re-calculate to sync display if needed
+        const gender = '{{ trainee.gender }}';
+        const birthdateStr = '{{ trainee.birthdate or "" }}';
+        let age = 25;
+        if (birthdateStr && birthdateStr.trim() !== '' && birthdateStr !== 'None') {
+            age = new Date().getFullYear() - new Date(birthdateStr).getFullYear();
+        }
+
+        function calculateMetrics() {
+            const weight = parseFloat(document.getElementById('val_weight').value);
+            const heightCm = parseFloat(document.getElementById('val_height').value);
+            const waist = parseFloat(document.getElementById('val_waist').value);
+            const hip = parseFloat(document.getElementById('val_hip').value);
+            const activity = parseFloat(document.getElementById('val_activity').value);
+            if (!weight || !heightCm) return;
+
+            const heightM = heightCm / 100;
+            const bmi = parseFloat((weight / (heightM * heightM)).toFixed(1));
+
+            let bmr =
+                gender === 'male'
+                    ? 10 * weight + 6.25 * heightCm - 5 * age + 5
+                    : 10 * weight + 6.25 * heightCm - 5 * age - 161;
+            let tdee = bmr * activity;
+            let bfp = Math.max(
+                parseFloat(
+                    (1.2 * bmi + 0.23 * age - (gender === 'male' ? 10.8 : 0) - 5.4).toFixed(1)
+                ),
+                0
+            );
+            let lbm = weight - weight * (bfp / 100);
+            let whr = waist && hip ? parseFloat((waist / hip).toFixed(2)) : 0;
+
+            document.getElementById('input_bmi').value = bmi;
+            document.getElementById('input_bfp').value = bfp;
+            document.getElementById('input_bmr').value = Math.round(bmr);
+            document.getElementById('input_tdee').value = Math.round(tdee);
+            document.getElementById('input_lbm').value = parseFloat(lbm.toFixed(1));
+            document.getElementById('input_whr').value = whr;
+        }
+
+        document
+            .querySelectorAll('.calc-trigger')
+            .forEach((el) => el.addEventListener('input', calculateMetrics));
+
+        // 🟢 Run on open to initialize hidden fields from pre-filled values
+        calculateMetrics();
+    </script>
+{% endblock %}

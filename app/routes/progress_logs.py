@@ -3,7 +3,11 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from ..templates import templates
 from app.utils import hx_toast
 from app.services.trainee import get_trainee_by_id, update_trainee
-from app.services.progress_logs import create_progress_log
+from app.services.progress_logs import (
+    create_progress_log,
+    get_progress_log_by_id,
+    update_progress_log,
+)
 from typing import List
 import json, os, uuid
 
@@ -133,4 +137,142 @@ async def save_progress_log(
     except Exception as e:
         print(f"🔥 Server Crash in save_progress_log: {e}")
         headers = hx_toast("خطا در ثبت اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید.", "error")
+        return HTMLResponse(content="", status_code=200, headers=headers)
+
+
+# ──────────────────────────────────────────────
+#  GET /progress-log/{log_id}/edit  –  Edit Form
+# ──────────────────────────────────────────────
+@router.get("/progress-log/{log_id}/edit")
+async def edit_progress_log_form(request: Request, log_id: str):
+    pb = request.state.pb
+    tenant = request.state.tenant
+    user = request.state.user
+
+    # Only coaches/owners can edit logs
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+
+    try:
+        log = get_progress_log_by_id(pb, log_id)
+        trainee = get_trainee_by_id(pb, tenant.id, log.trainee)
+    except Exception as e:
+        print(f"🔥 Error fetching progress log: {e}")
+        headers = hx_toast("خطا در بارگذاری اطلاعات ارزیابی.", "error")
+        return HTMLResponse(content="", status_code=200, headers=headers)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="modals/progress_log_edit.html",
+        context={
+            "title": "ویرایش ارزیابی",
+            "tenant": tenant,
+            "user": user,
+            "trainee": trainee,
+            "log": log,
+        },
+    )
+
+
+# ──────────────────────────────────────────────
+#  POST /progress-log/{log_id}  –  Update Log
+# ──────────────────────────────────────────────
+@router.post("/progress-log/{log_id}")
+async def save_progress_log_edit(
+    request: Request,
+    log_id: str,
+    # 🟢 Accept everything as strings first to prevent 422 crashes!
+    height: str = Form(""),
+    weight: str = Form(""),
+    chest: str = Form(""),
+    waist: str = Form(""),
+    hip: str = Form(""),
+    arms: str = Form(""),
+    notes: str = Form(""),
+    bmi: str = Form(""),
+    bfp: str = Form(""),
+    bmr: str = Form(""),
+    tdee: str = Form(""),
+    lbm: str = Form(""),
+    whr: str = Form(""),
+    progress_photos: List[UploadFile] = File(None),
+):
+    try:
+        pb = request.state.pb
+        tenant_id = request.state.tenant.id
+
+        # 🟢 Helper function to safely convert strings to floats
+        def safe_float(val: str):
+            try:
+                return float(val) if val and val.strip() else None
+            except ValueError:
+                return None
+
+        # Safely parse the required ones, fallback to 0 if they bypassed HTML validation
+        parsed_height = safe_float(height) or 0.0
+        parsed_weight = safe_float(weight) or 0.0
+
+        log_data = {
+            "tenant": tenant_id,
+            "height": parsed_height,
+            "weight": parsed_weight,
+            "chest": safe_float(chest),
+            "waist": safe_float(waist),
+            "hip": safe_float(hip),
+            "arms": safe_float(arms),
+            "notes": notes,
+            "bmi": safe_float(bmi),
+            "bfp": safe_float(bfp),
+            "bmr": safe_float(bmr),
+            "tdee": safe_float(tdee),
+            "lbm": safe_float(lbm),
+            "whr": safe_float(whr),
+        }
+
+        # 🖼️ Validate + collect files for PocketBase
+        MAX_FILES = 5
+        MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+        VALID_TYPES = {"image/jpeg", "image/png", "image/webp", "image/gif"}
+
+        file_uploads = None
+        if progress_photos:
+            valid_files = [f for f in progress_photos if f.filename]
+            if len(valid_files) > MAX_FILES:
+                raise HTTPException(status_code=400, detail=f"حداکثر {MAX_FILES} فایل مجاز است")
+            file_uploads = []
+            for photo in valid_files:
+                if photo.content_type not in VALID_TYPES:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"فرمت {photo.filename} مجاز نیست (JPEG, PNG, WebP, GIF)",
+                    )
+                contents = await photo.read()
+                if len(contents) > MAX_FILE_SIZE:
+                    raise HTTPException(
+                        status_code=400, detail=f"{photo.filename} بزرگتر از ۵MB است"
+                    )
+                file_uploads.append((photo.filename, contents, photo.content_type))
+
+        # 1. Update the log
+        update_progress_log(pb, log_id, log_data, file_uploads=file_uploads)
+
+        # 2. Update the Trainee's main profile if height/weight changed
+        log = get_progress_log_by_id(pb, log_id)
+        update_trainee(pb, log.trainee, {"height": parsed_height, "weight": parsed_weight})
+
+        # 3. Success! Close modal and refresh
+        headers = hx_toast("ارزیابی با موفقیت به‌روزرسانی شد.", "success")
+
+        trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
+        trigger_dict["closeModal"] = True
+        trigger_dict["performListRefresh"] = True
+        headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)
+
+        return HTMLResponse(content="", status_code=200, headers=headers)
+
+    except Exception as e:
+        print(f"🔥 Server Crash in update_progress_log: {e}")
+        headers = hx_toast(
+            "خطا در به‌روزرسانی اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید.", "error"
+        )
         return HTMLResponse(content="", status_code=200, headers=headers)
