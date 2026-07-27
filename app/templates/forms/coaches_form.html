@@ -1,0 +1,92 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <form
+        hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
+        hx-swap="none"
+        class="bg-base-100 space-y-4"
+    >
+        <div class="grid grid-cols-2 gap-4 items-baseline">
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>نام</span>
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="نام"
+                        value="{{ coach.first_name if coach else '' }}"
+                        required
+                        class="input input-bordered w-full validator"
+                    />
+                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="floating-label">
+                    <span>نام خانوادگی</span>
+                    <input
+                        type="text"
+                        name="last_name"
+                        placeholder="نام خانوادگی"
+                        value="{{ coach.last_name if coach else '' }}"
+                        required
+                        class="input input-bordered w-full validator"
+                    />
+                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label class="input w-full validator">
+                <span class="label">ایمیل</span>
+                <input
+                    type="email"
+                    name="email"
+                    value="{{ coach.email if coach else '' }}"
+                    {{ 'readonly' if coach else '' }}
+                    placeholder="test@gyme.cloud"
+                    required
+                />
+            </label>
+            <div class="validator-hint hidden">ایمیل صحیح وارد کنید.</div>
+        </div>
+
+        <div class="form-control">
+            <label class="floating-label">
+                <span>شماره موبایل</span>
+                <input
+                    type="tel"
+                    name="phone"
+                    placeholder="شماره موبایل"
+                    value="{{ coach.phone if coach else '' }}"
+                    required
+                    class="input input-bordered w-full text-right tabular-nums validator"
+                    minlength="11"
+                    maxlength="11"
+                    pattern="[0-9]*"
+                />
+            </label>
+        </div>
+
+        <div class="flex flex-col gap-2 mt-6">
+            {% if coach %}
+                <button
+                    type="button"
+                    class="btn btn-error btn-soft w-full"
+                    hx-get="/coaches/{{ coach.id }}/confirm-delete"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                >
+                    حذف مربی
+                </button>
+            {% endif %}
+            <div class="flex justify-end gap-2">
+                <a href="/coaches" class="btn btn-ghost">انصراف</a>
+                <button type="submit" class="btn btn-primary flex-1">
+                    {{ 'ذخیره تغییرات' if coach else 'ثبت مربی' }}
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

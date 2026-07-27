@@ -12,6 +12,7 @@ from .routes import trainee
 from .routes import debug
 from .routes import plan
 from .routes import item
+from .routes import coach
 from app.routes import progress_logs
 from .routes import profile
 from .routes.user import dashboard as user_dashboard
@@ -47,6 +48,7 @@ app.include_router(auth.router)
 app.include_router(trainee.router)
 app.include_router(plan.router)
 app.include_router(item.router)
+app.include_router(coach.router)
 app.include_router(progress_logs.router)
 app.include_router(profile.router)
 app.include_router(user_dashboard.router)

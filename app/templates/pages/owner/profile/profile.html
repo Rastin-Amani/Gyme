@@ -1,7 +1,9 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
     <div class="max-w-150">
-        <div class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-4 card flex-row-reverse">
+        <div
+            class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-4 card flex-row-reverse"
+        >
             <a href="/plans/edit" class="btn btn-sm">ویرایش حساب</a>
             <div class="text-center">
                 <h1 class="text-m font-semibold text-right ml-4">
@@ -46,5 +48,20 @@
                 </div>
             </div>
         </div>
+
+        {% if user.role == "owner" %}
+            <div class="divider text-xs opacity-50">مدیریت</div>
+            <div class="card bg-base-200 border border-base-300">
+                <div class="card-body p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold">مربی‌ها</h3>
+                            <p class="text-sm opacity-70">مدیریت مربی‌های مجموعه</p>
+                        </div>
+                        <a href="/coaches" class="btn btn-primary btn-sm">مشاهده</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

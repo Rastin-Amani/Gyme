@@ -1,0 +1,38 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <div class="max-w-150">
+        <!-- Header: Name, Edit button, Avatar placeholder -->
+        <div
+            class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-6 card flex-row-reverse"
+        >
+            <div class="flex gap-2">
+                <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm">ویرایش</a>
+            </div>
+            <div class="text-center">
+                <h1 class="text-m font-bold">
+                    {{ coach.first_name ~ ' ' ~ coach.last_name if coach.first_name else '-' }}
+                </h1>
+                <div><span class="text-sm opacity-50">{{ coach.email }}</span></div>
+            </div>
+            <div class="avatar avatar-placeholder">
+                <div class="bg-base-100 text-neutral-content w-10 h-10 rounded-full text-center">
+                    <span class="text-xs">
+                        {{ coach.first_name[0] if coach.first_name else '?' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
+            <div>
+                <span class="opacity-60 block">تلفن</span>
+                <span class="font-medium">{{ coach.phone if coach.phone else '-' }}</span>
+            </div>
+            <div>
+                <span class="opacity-60 block">ایمیل</span>
+                <span class="font-medium">{{ coach.email }}</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

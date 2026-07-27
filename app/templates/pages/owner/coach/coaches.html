@@ -1,0 +1,104 @@
+{% extends "layouts/dashboard.html" %}
+{% block dashboard_content %}
+    <div id="coaches-content">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold">مربی‌ها</h1>
+                <p class="text-sm opacity-70">مدیریت مربی‌های ثبت‌شده</p>
+            </div>
+            <a href="/coaches/new" class="btn btn-primary">مربی جدید</a>
+        </div>
+
+        <div id="coaches-table-container">
+            <div class="card bg-base-100 border border-base-300">
+                <div class="card-body p-0">
+                    {% if coaches is defined and coaches|length > 0 %}
+                        <ul class="divide-y divide-base-300">
+                            {% for coach in coaches %}
+                                <li
+                                    class="flex items-center gap-3 px-4 py-3 active:bg-base-200 transition-colors duration-150"
+                                >
+                                    <div
+                                        class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary"
+                                    >
+                                        {{ (coach.first_name[0] if coach.first_name else '?') }}
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-medium text-sm">
+                                            {{ (coach.first_name ~ ' ' ~ coach.last_name) if coach.first_name else '-' }}
+                                        </span>
+                                        <span class="text-xs opacity-50 block">
+                                            {{ coach.email }}
+                                        </span>
+                                    </div>
+                                    <a
+                                        href="/coaches/{{ coach.id }}"
+                                        class="flex-shrink-0 btn btn-sm btn-square"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 opacity-40"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="text-center py-12 px-4">
+                            <div
+                                class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
+                            >
+                                <p class="text-base opacity-70">
+                                    <span
+                                        class="status status-secondary mr-2 animate-bounce"
+                                    ></span>
+                                    هنوز مربی‌ای ثبت نکردید!
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if total_pages is defined and total_pages > 1 %}
+                <div class="mt-6">
+                    <div class="join flex justify-center">
+                        <a
+                            href="/coaches?page={{ page - 1 }}"
+                            class="join-item btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled{% endif %}"
+                            hx-get="/coaches?page={{ page - 1 }}"
+                            hx-target="#coaches-content"
+                            hx-select="#coaches-content"
+                            hx-swap="outerHTML"
+                            hx-push-url="true"
+                        >
+                            «
+                        </a>
+                        <button class="join-item btn btn-sm btn-disabled pointer-events-none">
+                            صفحه {{ page }} از {{ total_pages }}
+                        </button>
+                        <a
+                            href="/coaches?page={{ page + 1 }}"
+                            class="join-item btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled{% endif %}"
+                            hx-get="/coaches?page={{ page + 1 }}"
+                            hx-target="#coaches-content"
+                            hx-select="#coaches-content"
+                            hx-swap="outerHTML"
+                            hx-push-url="true"
+                        >
+                            »
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
