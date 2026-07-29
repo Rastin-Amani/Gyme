@@ -1,9 +1,13 @@
+import time
+import uuid
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
 from fastapi.responses import RedirectResponse
+from structlog import get_logger
 
 from app.services.tenants import get_tenant_by_domain
 from app.pb import get_pb
+from app.logging_config import bind_request_context, clear_request_context
 
 # 🟢 1. Define routes that anyone can access without a token.
 # Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
@@ -15,15 +19,25 @@ PUBLIC_PATHS = [
     "/favicon.ico",
 ]
 
+logger = get_logger(__name__)
+
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+
+        # ---- Request ID for correlation ----
+        req_id = str(uuid.uuid4())[:8]
+        request.state.req_id = req_id
 
         # ---- Tenant detection ----
         host = request.headers.get("host", "").split(":")[0]
 
         tenant = await get_tenant_by_domain(host)
         request.state.tenant = tenant
+        tenant_id = getattr(tenant, "id", None)
+
+        # Bind request context for all logs in this request
+        bind_request_context(req_id=req_id, tenant_id=tenant_id)
 
         # ---- Auth detection ----
         pb = get_pb()
@@ -51,7 +65,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
             except Exception as e:
                 # If the token is expired, invalid, or revoked, clear the store
                 # and treat them as an anonymous user.
-                print("Auth error:", e)
+                logger.warning("auth_refresh_failed", error=str(e))
                 pb.auth_store.clear()
 
         # ---- 🟢 2. The Global Redirect Logic ----
@@ -76,6 +90,37 @@ class TenantMiddleware(BaseHTTPMiddleware):
             # 303 (See Other) is the standard for redirecting state changes safely
             return RedirectResponse(url="/login", status_code=303)
 
-        # Proceed normally if they are authenticated OR visiting a public page
-        response = await call_next(request)
+        # ---- Request lifecycle log ----
+        start = time.time()
+        method = request.method
+        url = str(request.url.path)
+        role = request.state.role
+
+        logger.info("request.started", method=method, path=url, role=role)
+
+        try:
+            response = await call_next(request)
+        except Exception as e:
+            elapsed = time.time() - start
+            logger.exception(
+                "request.error",
+                method=method,
+                path=url,
+                role=role,
+                duration_ms=round(elapsed * 1000),
+            )
+            raise
+
+        elapsed = time.time() - start
+        status = response.status_code
+        logger.info(
+            "request.completed",
+            method=method,
+            path=url,
+            role=role,
+            status=status,
+            duration_ms=round(elapsed * 1000),
+        )
+
+        clear_request_context()
         return response

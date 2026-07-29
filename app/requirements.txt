@@ -10,3 +10,4 @@ jdatetime
 jalali_core
 pandas
 openpyxl
+structlog

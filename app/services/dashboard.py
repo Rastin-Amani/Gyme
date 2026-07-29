@@ -1,5 +1,8 @@
 from datetime import datetime, timedelta, timezone
 from app.services.coach import list_coaches
+from structlog import get_logger
+
+logger = get_logger(__name__)
 
 
 def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
@@ -31,7 +34,7 @@ def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
             # Depending on your python sdk version, it might be total_items or totalItems
             return getattr(result, "total_items", getattr(result, "totalItems", 0))
         except Exception as e:
-            print(f"Error fetching count for {collection}: {e}")
+            logger.error("dashboard.count_error", collection=collection, error=str(e))
             return 0
 
     return {
@@ -57,15 +60,14 @@ def _time_filter(timeframe: str) -> str:
 
 def _coach_stats_single(pb, tenant_id: str, coach_id: str, coach_name: str, timeframe: str = "all"):
     """Compute stats for one coach."""
-    print(f"🔍 _coach_stats_single — coach_id={coach_id} name={coach_name} timeframe={timeframe}")
     tf = _time_filter(timeframe)
     try:
         plans = pb.collection("plans").get_full_list(
             query_params={"filter": f'tenant="{tenant_id}" && coach="{coach_id}"{tf}'}
         )
-        print(f"🔍   plans found: {len(plans)}")
+        logger.debug("coach_stats.plans_fetched", coach_id=coach_id, count=len(plans))
     except Exception as e:
-        print(f"🔍   plans fetch failed: {e}")
+        logger.warning("coach_stats.plans_fetch_failed", coach_id=coach_id, error=str(e))
         plans = []
 
     trainee_ids = set()
@@ -128,14 +130,12 @@ def get_coach_stats(
     Otherwise returns all coaches' stats.
     timeframe filters plans by creation date.
     """
-    print(f"🔍 get_coach_stats — coach_id={coach_id} owner_id={owner_id} timeframe={timeframe}")
-
     # Single coach mode
     if coach_id:
         try:
             coach = pb.collection("users").get_one(coach_id)
         except Exception as e:
-            print(f"🔍 get_coach_stats: coach fetch failed {e}")
+            logger.warning("get_coach_stats.coach_fetch_failed", coach_id=coach_id, error=str(e))
             return []
         name = (
             f"{getattr(coach, 'first_name', '')} {getattr(coach, 'last_name', '')}".strip()
@@ -148,12 +148,9 @@ def get_coach_stats(
 
     # Add all coaches (users with role="coach")
     coaches = list_coaches(pb, tenant_id, per_page=200)
-    # PocketBase result has .items; fallback to whole result if not
-    print(f"🔍 get_coach_stats: coaches type={type(coaches).__name__}")
     raw = getattr(coaches, "items", coaches)
-    print(f"🔍 get_coach_stats: raw type={type(raw).__name__} has_len={hasattr(raw, '__len__')}")
     coach_list = list(raw) if raw else []
-    print(f"🔍 list_coaches found: {len(coach_list)}")
+    logger.info("get_coach_stats.coaches_fetched", count=len(coach_list))
 
     for coach in coach_list:
         coach_id = getattr(coach, "id", None)
@@ -173,9 +170,7 @@ def get_coach_stats(
                 owner_coach, "email", "?"
             )
             result.append(_coach_stats_single(pb, tenant_id, owner_id, name, timeframe))
-            print(f"🔍 Added owner as coach: {name}")
         except Exception as e:
-            print(f"🔍 Owner fetch failed: {e}")
+            logger.warning("get_coach_stats.owner_fetch_failed", owner_id=owner_id, error=str(e))
 
-    print(f"🔍 get_coach_stats returning: {len(result)} coaches")
     return result

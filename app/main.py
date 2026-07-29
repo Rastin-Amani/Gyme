@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+import structlog
 
 from app.routes import marketing
 
@@ -20,6 +21,15 @@ from .routes.user import profile as user_profile
 from .routes.user import plan as user_plan
 from .routes import pwa
 from .templates import templates
+
+# logging config
+try:
+    from app.logging_config import logger
+except ImportError:
+    import logging
+
+    logger = logging.getLogger(__name__)
+    logger.warning("structlog not available — falling back to stdlib logging")
 
 # middleware import
 from app.middleware import TenantMiddleware

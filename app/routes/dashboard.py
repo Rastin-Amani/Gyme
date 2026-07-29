@@ -3,6 +3,9 @@ from fastapi.responses import HTMLResponse
 from app.services.dashboard import get_owner_dashboard_stats, get_coach_stats
 from ..templates import templates
 from fastapi.responses import RedirectResponse
+from structlog import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(tags=["Dashboard"])
 
@@ -13,7 +16,7 @@ async def owner_dashboard(request: Request, timeframe: str = "all"):
     tenant = request.state.tenant
     user = request.state.user
     tenant_id = request.state.tenant.id
-    print(f"🔴 /dashboard route hit — user.role={user.role} tenant={tenant_id}")
+    logger.info("dashboard.hit", role=user.role, tenant=tenant_id)
 
     # Fetch the stats based on the selected timeframe
     stats = get_owner_dashboard_stats(pb, tenant_id, timeframe)
@@ -23,13 +26,11 @@ async def owner_dashboard(request: Request, timeframe: str = "all"):
     # Determine if we should show coach section
     is_owner_coach = user.role == "coach"
     coach_id = user.id if is_owner_coach else None
-    print(f"🔴 is_owner_coach={is_owner_coach} coach_id={coach_id}")
 
     # Always include owner's stats if they have plans, even if not a coach
     coach_stats = get_coach_stats(
         pb, tenant_id, coach_id=coach_id, owner_id=user.id, timeframe=timeframe
     )
-    print(f"🔴 coach_stats count={len(coach_stats)}")
 
     context = {
         "title": "داشبورد مدیریت",
@@ -60,11 +61,11 @@ async def debug_coach_stats(request: Request):
     tenant_id = request.state.tenant.id
     user = request.state.user
 
-    print(f"🔴 DEBUG: /dashboard/debug-coach-stats called — tenant={tenant_id}")
+    logger.info("debug.coach_stats_hit", tenant=tenant_id)
 
     # RAW DB DUMP: all plans for owner/coach
     for coach_id, label in [(user.id, "owner")]:
-        print(f"\n🔴 Raw plans for {label} (id={coach_id}):")
+        logger.info("debug.raw_plans", label=label, coach_id=coach_id)
         try:
             raw_plans = pb.collection("plans").get_full_list(
                 query_params={"filter": f'tenant="{tenant_id}" && coach="{coach_id}"'}
@@ -74,7 +75,6 @@ async def debug_coach_stats(request: Request):
                 pstatus = getattr(p, "status", "?")
                 ptype = getattr(p, "type", "?")
                 ptrainee = getattr(p, "trainee", "?")
-                # check progress
                 prog = None
                 try:
                     prog = pb.collection("plan_progress").get_first_list_item(
@@ -83,34 +83,54 @@ async def debug_coach_stats(request: Request):
                     prog = "HAS_PROGRESS"
                 except:
                     prog = "NO_PROGRESS"
-                print(
-                    f"    plan={pid} status={pstatus} type={ptype} trainee={ptrainee} progress={prog}"
+                logger.info(
+                    "debug.plan_row",
+                    id=pid,
+                    status=pstatus,
+                    type=ptype,
+                    trainee=ptrainee,
+                    progress=prog,
                 )
         except Exception as e:
-            print(f"    ERROR: {e}")
+            logger.error("debug.raw_plans_error", label=label, error=str(e))
 
     # Test all coaches (without owner)
     all_stats = get_coach_stats(pb, tenant_id, coach_id=None, owner_id=None)
-    print(f"🔴 All coaches (role='coach' only): {len(all_stats)}")
+    logger.info("debug.all_coaches_only", count=len(all_stats))
     for s in all_stats:
-        print(
-            f"  → {s['name']} (id={s['id']}) plans={s['plan_count']} active={s.get('active_plans','?')} in_progress={s.get('in_progress','?')}"
+        logger.info(
+            "debug.coach_row",
+            name=s["name"],
+            id=s["id"],
+            plans=s["plan_count"],
+            active=s.get("active_plans", "?"),
+            in_progress=s.get("in_progress", "?"),
         )
 
     # Test all coaches + owner
     all_with_owner = get_coach_stats(pb, tenant_id, coach_id=None, owner_id=user.id)
-    print(f"🔴 All coaches + owner: {len(all_with_owner)}")
+    logger.info("debug.all_with_owner", count=len(all_with_owner))
     for s in all_with_owner:
-        print(
-            f"  → {s['name']} (id={s['id']}) plans={s['plan_count']} active={s.get('active_plans','?')} in_progress={s.get('in_progress','?')}"
+        logger.info(
+            "debug.coach_owner_row",
+            name=s["name"],
+            id=s["id"],
+            plans=s["plan_count"],
+            active=s.get("active_plans", "?"),
+            in_progress=s.get("in_progress", "?"),
         )
 
     # Test single coach (owner)
     single_stats = get_coach_stats(pb, tenant_id, coach_id=user.id, owner_id=None)
-    print(f"🔴 Owner only: {len(single_stats)}")
+    logger.info("debug.owner_only", count=len(single_stats))
     for s in single_stats:
-        print(
-            f"  → {s['name']} (id={s['id']}) plans={s['plan_count']} active={s.get('active_plans','?')} in_progress={s.get('in_progress','?')}"
+        logger.info(
+            "debug.owner_row",
+            name=s["name"],
+            id=s["id"],
+            plans=s["plan_count"],
+            active=s.get("active_plans", "?"),
+            in_progress=s.get("in_progress", "?"),
         )
 
     return {
@@ -126,18 +146,10 @@ async def coach_stats_fragment(request: Request):
     tenant_id = request.state.tenant.id
     user = request.state.user
 
-    print(f"🔍 /dashboard/coach-stats called — user.role={user.role}, tenant={tenant_id}")
-
     # If owner is also a coach, only show their own stats
     coach_id = user.id if user.role == "coach" else None
-    print(f"🔍 coach_id filter: {coach_id}")
 
     stats = get_coach_stats(pb, tenant_id, coach_id=coach_id, owner_id=user.id)
-    print(f"🔍 coach_stats result count: {len(stats)}")
-    for s in stats:
-        print(
-            f"  → coach={s['name']} trainees={s['trainee_count']} plans={s['plan_count']} active={s.get('active_plans','?')}"
-        )
 
     is_owner_coach = user.role == "coach"
 

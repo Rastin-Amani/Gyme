@@ -274,7 +274,10 @@ async def trainee_delete(request: Request, id: str):
         headers["HX-Trigger"] = json.dumps(trigger_dict)
         return HTMLResponse(content="", status_code=200, headers=headers)
     except Exception as e:
-        print(f"🔥 Server Crash in trainee_delete: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("trainee.delete_failed", error=str(e), trainee_id=id)
         headers = hx_toast("خطا در حذف شاگرد.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -370,8 +373,10 @@ async def trainee_create(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        # 🟢 BULLETPROOF ERROR CATCHING: Shows exact error in a toast!
-        print(f"🔥 Server Crash in trainee_create: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("trainee.create_failed", error=str(e), tenant=tenant_id)
         headers = hx_toast("خطای سرور: اطلاعات وارد شده را بررسی کنید.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -437,7 +442,9 @@ async def trainee_update(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        # 🟢 BULLETPROOF ERROR CATCHING
-        print(f"🔥 Server Crash in trainee_update: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("trainee.update_failed", error=str(e), trainee_id=id)
         headers = hx_toast("خطا در بروزرسانی اطلاعات.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

@@ -15,6 +15,9 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.trainee import list_trainees
 from app.utils import hx_toast
 import json
+from structlog import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(tags=["Plans Management"])
 
@@ -76,8 +79,8 @@ async def plan_list(
 
     total = plans.total_items if hasattr(plans, "total_items") else 0
     total_pages = max(1, (total + per_page - 1) // per_page)
-    print(
-        f"DEBUG PAGINATION: total={total}, per_page={per_page}, page={page}, total_pages={total_pages}"
+    logger.info(
+        "plan.list_pagination", total=total, per_page=per_page, page=page, total_pages=total_pages
     )
 
     return templates.TemplateResponse(
@@ -324,6 +327,7 @@ async def template_apply(
 
     except Exception as e:
         error_msg = str(e)
+        logger.error("template.apply_failed", error=error_msg, template_id=id, tenant=tenant)
         user_message = "خطا در برقراری ارتباط با پایگاه داده."
         if "404" in error_msg:
             user_message = "قالب یا شاگرد مورد نظر یافت نشد!"
@@ -385,7 +389,9 @@ async def plan_create(
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     except Exception as e:
-        print(f"❌ Error creating plan/template: {e}")
+        logger.error(
+            "plan.create_failed", error=str(e), tenant=tenant, is_template=is_template_bool
+        )
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {
             "show-toast": {"message": "خطا در ایجاد. لطفا فیلدها را بررسی کنید.", "type": "error"}
@@ -439,7 +445,7 @@ async def plan_update(
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     except Exception as e:
-        print(f"❌ Error updating plan/template: {e}")
+        logger.error("plan.update_failed", error=str(e), plan_id=id, tenant=tenant)
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {"show-toast": {"message": "خطا در بروزرسانی اطلاعات.", "type": "error"}}
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -466,6 +472,6 @@ async def plan_delete(request: Request, id: str):
         headers["HX-Trigger"] = json.dumps(trigger_dict)
         return HTMLResponse(content="", status_code=200, headers=headers)
     except Exception as e:
-        print(f"🔥 Server Crash in plan_delete: {e}")
+        logger.error("plan.delete_failed", error=str(e), plan_id=id)
         headers = hx_toast("خطا در حذف برنامه.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

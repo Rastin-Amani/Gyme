@@ -128,7 +128,10 @@ async def coach_delete(request: Request, id: str):
         headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)
         return HTMLResponse(content="", status_code=200, headers=headers)
     except Exception as e:
-        print(f"🔥 Server Crash in coach_delete: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("coach.delete_failed", error=str(e), coach_id=id)
         headers = hx_toast("خطا در حذف مربی.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -171,7 +174,10 @@ async def coach_create(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        print(f"🔥 Server Crash in coach_create: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("coach.create_failed", error=str(e), tenant=tenant_id)
         headers = hx_toast("خطای سرور: اطلاعات وارد شده را بررسی کنید.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -211,6 +217,9 @@ async def coach_update(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        print(f"🔥 Server Crash in coach_update: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("coach.update_failed", error=str(e), coach_id=id)
         headers = hx_toast("خطا در بروزرسانی اطلاعات.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

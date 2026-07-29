@@ -135,7 +135,10 @@ async def save_progress_log(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        print(f"🔥 Server Crash in save_progress_log: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("progress_log.create_failed", error=str(e), trainee_id=trainee_id)
         headers = hx_toast("خطا در ثبت اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -157,7 +160,10 @@ async def edit_progress_log_form(request: Request, log_id: str):
         log = get_progress_log_by_id(pb, log_id)
         trainee = get_trainee_by_id(pb, tenant.id, log.trainee)
     except Exception as e:
-        print(f"🔥 Error fetching progress log: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("progress_log.fetch_failed", error=str(e), log_id=log_id)
         headers = hx_toast("خطا در بارگذاری اطلاعات ارزیابی.", "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
@@ -271,7 +277,10 @@ async def save_progress_log_edit(
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
-        print(f"🔥 Server Crash in update_progress_log: {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("progress_log.update_failed", error=str(e), log_id=log_id)
         headers = hx_toast(
             "خطا در به‌روزرسانی اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید.", "error"
         )

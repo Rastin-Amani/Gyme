@@ -161,9 +161,25 @@ def apply_template(
             try:
                 pb.collection(collection_name).create(item_data)
             except Exception as e:
-                print(f"Warning: failed to copy item {getattr(item, 'id', '?')}: {e}")
+                from structlog import get_logger
+
+                logger = get_logger(__name__)
+                logger.warning(
+                    "template.item_copy_failed",
+                    error=str(e),
+                    item_id=getattr(item, "id", "?"),
+                    template_id=template_id,
+                )
 
     except Exception as e:
-        print(f"Warning: could not fetch template items from '{collection_name}': {e}")
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.warning(
+            "template.items_fetch_failed",
+            error=str(e),
+            collection=collection_name,
+            template_id=template_id,
+        )
 
     return new_plan

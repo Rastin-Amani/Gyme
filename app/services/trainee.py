@@ -62,7 +62,10 @@ def list_trainees(
                     f"({filter_str}) && ({trainee_ids_str})" if filter_str else f"{trainee_ids_str}"
                 )
         except Exception as e:
-            print(f"Error fetching plans for coach {coach_id}: {e}")
+            from structlog import get_logger
+
+            logger = get_logger(__name__)
+            logger.warning("trainee.plans_fetch_failed", coach_id=coach_id, error=str(e))
 
     # Build query params
     query_params = {"sort": "-created", "expand": "user"}
