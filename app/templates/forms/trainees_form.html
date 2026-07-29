@@ -193,16 +193,13 @@
                     hx-get="/trainees/{{ trainee.id }}/confirm-delete"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
-                    hx-on::before-request="console.log('[DEBUG] Delete button clicked on edit form, trainee ID:', '{{ trainee.id }}')"
-                    hx-on::after-request="console.log('[DEBUG] Delete modal response received on edit form')"
-                    hx-on::response-error="console.error('[DEBUG] Delete modal request failed on edit form')"
-                    onclick="console.log('[DEBUG] Delete button clicked on edit form')"
+                    hx-boost="false"
                 >
                     حذف شاگرد
                 </button>
             {% endif %}
             <div class="flex justify-end gap-2">
-                <a href="/trainees" class="btn btn-ghost">انصراف</a>
+                <a href="/trainees" class="btn btn-ghost" hx-boost="false">انصراف</a>
                 <button type="submit" class="btn btn-primary flex-1">
                     {{ 'ثبت و رفتن به فرم ارزیابی' if not trainee else 'ذخیره تغییرات' }}
                 </button>

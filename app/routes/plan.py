@@ -387,7 +387,7 @@ async def plan_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
-        context={"delete_url": f"/plans/{id}"},
+        context={"delete_url": f"/plans/{id}", "title": "حذف برنامه"},
     )
 
 

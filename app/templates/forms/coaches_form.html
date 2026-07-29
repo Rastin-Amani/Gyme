@@ -77,12 +77,13 @@
                     hx-get="/coaches/{{ coach.id }}/confirm-delete"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
+                    hx-boost="false"
                 >
                     حذف مربی
                 </button>
             {% endif %}
             <div class="flex justify-end gap-2">
-                <a href="/coaches" class="btn btn-ghost">انصراف</a>
+                <a href="/coaches" class="btn btn-ghost" hx-boost="false">انصراف</a>
                 <button type="submit" class="btn btn-primary flex-1">
                     {{ 'ذخیره تغییرات' if coach else 'ثبت مربی' }}
                 </button>

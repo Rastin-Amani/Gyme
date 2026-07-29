@@ -126,6 +126,7 @@
             <a
                 href="{{ '/plans?is_template=true' if is_template else '/plans' }}"
                 class="btn btn-ghost"
+                hx-boost="false"
             >
                 انصراف
             </a>
@@ -145,6 +146,7 @@
                     hx-get="/plans/{{ plan.id }}/confirm-delete"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
+                    hx-boost="false"
                 >
                     حذف
                 </button>
