@@ -117,6 +117,23 @@ async def plan_new_form(request: Request, template: str = Query("false")):
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
+    # Fetch coaches (users with role="coach") for this tenant
+    try:
+        coaches = (
+            pb.collection("users")
+            .get_list(
+                page=1,
+                per_page=100,
+                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+            )
+            .items
+        )
+    except Exception:
+        coaches = []
+
+    # Prepend current user as first option, deduplicate
+    coach_list = [user] + [c for c in coaches if c.id != user.id]
+
     return templates.TemplateResponse(
         request=request,
         name="forms/plans_form.html",
@@ -126,6 +143,7 @@ async def plan_new_form(request: Request, template: str = Query("false")):
             "user": user,
             "plan": None,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
+            "coaches": coach_list,
             "is_template": is_template,
         },
     )
@@ -187,6 +205,23 @@ async def plan_edit_form(request: Request, id: str):
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
+    # Fetch coaches (users with role="coach") for this tenant
+    try:
+        coaches = (
+            pb.collection("users")
+            .get_list(
+                page=1,
+                per_page=100,
+                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+            )
+            .items
+        )
+    except Exception:
+        coaches = []
+
+    # Prepend current user as first option, deduplicate
+    coach_list = [user] + [c for c in coaches if c.id != user.id]
+
     return templates.TemplateResponse(
         request=request,
         name="forms/plans_form.html",
@@ -196,6 +231,7 @@ async def plan_edit_form(request: Request, id: str):
             "user": user,
             "plan": plan_data,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
+            "coaches": coach_list,
             "is_template": getattr(plan_data, "is_template", False),
         },
     )
@@ -216,6 +252,23 @@ async def template_apply_form(request: Request, id: str):
     template = get_template_by_id(pb, tenant, id)
     trainees = list_trainees(pb, tenant)
 
+    # Fetch coaches (users with role="coach") for this tenant
+    try:
+        coaches = (
+            pb.collection("users")
+            .get_list(
+                page=1,
+                per_page=100,
+                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+            )
+            .items
+        )
+    except Exception:
+        coaches = []
+
+    # Prepend current user as first option, deduplicate
+    coach_list = [user] + [c for c in coaches if c.id != user.id]
+
     return templates.TemplateResponse(
         request=request,
         name="modals/apply_template.html",
@@ -223,6 +276,7 @@ async def template_apply_form(request: Request, id: str):
             "template": template,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
             "user": user,
+            "coaches": coach_list,
         },
     )
 
@@ -238,6 +292,7 @@ async def template_apply(
     start_date: str = Form(None),
     end_date: str = Form(None),
     notes: str = Form(None),
+    coach: str = Form(None),
 ):
     pb = request.state.pb
     tenant = request.state.tenant.id
@@ -249,7 +304,7 @@ async def template_apply(
             tenant,
             id,
             trainee_id=trainee,
-            coach_id=user.id,
+            coach_id=coach or user.id,
             start_date=start_date,
             end_date=end_date,
             notes=notes,
@@ -291,6 +346,7 @@ async def plan_create(
     notes: str = Form(None),
     is_template: str = Form("false"),
     template_name: str = Form(None),
+    coach: str = Form(None),
 ):
     is_template_bool = str(is_template).lower() in ["true", "on", "1", "yes"]
     pb = request.state.pb
@@ -306,6 +362,7 @@ async def plan_create(
         "notes": notes,
         "is_template": is_template_bool,
         "template_name": template_name if is_template_bool else None,
+        "coach": coach,
     }
 
     try:
@@ -348,6 +405,7 @@ async def plan_update(
     notes: str = Form(None),
     is_template: str = Form("false"),
     template_name: str = Form(None),
+    coach: str = Form(None),
 ):
     is_template_bool = str(is_template).lower() in ["true", "on", "1", "yes"]
     pb = request.state.pb
@@ -363,6 +421,7 @@ async def plan_update(
         "notes": notes,
         "is_template": is_template_bool,
         "template_name": template_name if is_template_bool else None,
+        "coach": coach,
     }
 
     try:

@@ -22,6 +22,19 @@
         >
             <div class="form-control">
                 <label class="floating-label">
+                    <span>مربی</span>
+                    <select name="coach" class="select select-bordered w-full">
+                        {% for coach in coaches %}
+                            <option value="{{ coach.id }}" {{ 'selected' if loop.first else '' }}>
+                                {{ coach.first_name ~ ' ' ~ coach.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+
+            <div class="form-control">
+                <label class="floating-label">
                     <span>انتخاب شاگرد</span>
                     <select name="trainee" class="select select-bordered w-full" required>
                         <option value="" selected disabled>شاگرد را انتخاب کنید...</option>

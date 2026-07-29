@@ -4,7 +4,7 @@ def get_plans_by_trainee(pb, tenant, trainee_id):
         query_params={
             "filter": f'tenant="{tenant}" && trainee="{trainee_id}"',
             "sort": "-created",
-            "expand": "trainee,coach,trainee.user,coach.user",
+            "expand": "trainee,coach,trainee.user",
         }
     )
 
@@ -57,7 +57,7 @@ def list_plans(
     return pb.collection("plans").get_list(
         page=page,
         per_page=per_page,
-        query_params={**query_params, "expand": "trainee,coach,trainee.user,coach.user"},
+        query_params={**query_params, "expand": "trainee,coach,trainee.user"},
     )
 
 
@@ -65,7 +65,7 @@ def get_plan_by_id(pb, tenant, id):
     """Get a single plan by ID."""
     return pb.collection("plans").get_first_list_item(
         f'tenant="{tenant}" && id="{id}"',
-        query_params={"expand": "trainee,coach,trainee.user,coach.user", "fields": "*,expand.*"},
+        query_params={"expand": "trainee,coach,trainee.user", "fields": "*,expand.*"},
     )
 
 
@@ -73,7 +73,7 @@ def get_template_by_id(pb, tenant, id):
     """Get a single template by ID (templates are stored in plans collection with is_template=true)."""
     return pb.collection("plans").get_first_list_item(
         f'tenant="{tenant}" && id="{id}" && is_template=true',  # 🟢 NO QUOTES
-        query_params={"expand": "trainee,coach,trainee.user,coach.user"},
+        query_params={"expand": "trainee,coach,trainee.user"},
     )
 
 

@@ -40,6 +40,23 @@
                 </label>
             </div>
 
+            <!-- Coach selector -->
+            <div class="form-control">
+                <label class="select w-full">
+                    <span class="label">مربی</span>
+                    <select name="coach" class="select select-bordered w-full">
+                        {% for coach in coaches %}
+                            <option
+                                value="{{ coach.id }}"
+                                {{ 'selected' if (plan and plan.coach == coach.id) or (not plan and loop.first) else '' }}
+                            >
+                                {{ coach.first_name ~ ' ' ~ coach.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+
             <!-- Trainee selector – hidden for templates -->
             {% if not is_template %}
                 <div class="form-control">
