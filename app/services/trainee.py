@@ -12,6 +12,7 @@ def list_trainees(
     status=None,
     min_birthdate=None,
     max_birthdate=None,
+    coach_id=None,
 ):
     # Build the base filter
     filters = [f'tenant="{tenant}"']
@@ -43,6 +44,25 @@ def list_trainees(
 
     # Join all filters
     filter_str = " && ".join(filters)
+
+    # Coach filter: only show trainees assigned to this coach via plans
+    if coach_id:
+        # Get all trainee IDs assigned to this coach via plans
+        try:
+            plans = pb.collection("plans").get_full_list(
+                query_params={
+                    "filter": f'tenant="{tenant}" && coach="{coach_id}"',
+                    "fields": "trainee",
+                }
+            )
+            trainee_ids = [p.trainee for p in plans if hasattr(p, "trainee") and p.trainee]
+            if trainee_ids:
+                trainee_ids_str = " || ".join([f'id="{tid}"' for tid in trainee_ids])
+                filter_str = (
+                    f"({filter_str}) && ({trainee_ids_str})" if filter_str else f"{trainee_ids_str}"
+                )
+        except Exception as e:
+            print(f"Error fetching plans for coach {coach_id}: {e}")
 
     # Build query params
     query_params = {"sort": "-created", "expand": "user"}

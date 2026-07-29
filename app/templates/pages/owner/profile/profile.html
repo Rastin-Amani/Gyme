@@ -4,7 +4,12 @@
         <div
             class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-4 card flex-row-reverse"
         >
-            <a href="/plans/edit" class="btn btn-sm">ویرایش حساب</a>
+            <a
+                href="{% if user.role == 'owner' %}/plans/edit{% else %}/change-password{% endif %}"
+                class="btn btn-sm"
+            >
+                {% if user.role == 'owner' %}ویرایش حساب{% else %}تغییر رمز عبور{% endif %}
+            </a>
             <div class="text-center">
                 <h1 class="text-m font-semibold text-right ml-4">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
@@ -31,23 +36,25 @@
             </div>
         </div>
 
-        <!-- Items Section -->
-        <div>
-            <div class="mt-4" id="items-list-container">
-                <div class="divider text-xs opacity-50">اطلاعات و تنظیمات اپلیکیشن</div>
-                <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-                    <div>
-                        <span class="opacity-60 block">دامنه</span>
-                        <span class="font-medium">{{ tenant.domain }}</span>
+        <!-- Items Section - Owner only -->
+        {% if user.role == 'owner' %}
+            <div>
+                <div class="mt-4" id="items-list-container">
+                    <div class="divider text-xs opacity-50">اطلاعات و تنظیمات اپلیکیشن</div>
+                    <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
+                        <div>
+                            <span class="opacity-60 block">دامنه</span>
+                            <span class="font-medium">{{ tenant.domain }}</span>
+                        </div>
+                        <div>
+                            <span class="opacity-60 block">تم</span>
+                            <span class="font-medium">{{ tenant.theme or '-' }}</span>
+                        </div>
+                        <div></div>
                     </div>
-                    <div>
-                        <span class="opacity-60 block">تم</span>
-                        <span class="font-medium">{{ tenant.theme or '-' }}</span>
-                    </div>
-                    <div></div>
                 </div>
             </div>
-        </div>
+        {% endif %}
 
         {% if user.role == "owner" %}
             <div class="divider text-xs opacity-50">مدیریت</div>

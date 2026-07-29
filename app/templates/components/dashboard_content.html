@@ -1,5 +1,7 @@
 <div id="dashboard-content" class="flex flex-col gap-6">
-    {% include "components/dashboard_stats.html" %}
+    {% if user.role == 'owner' %}
+        {% include "components/dashboard_stats.html" %}
+    {% endif %}
 
     {% if show_coach_stats %}
         <details

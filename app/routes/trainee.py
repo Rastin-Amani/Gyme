@@ -28,6 +28,9 @@ async def trainees_list(
     tenant = request.state.tenant.id
     user = request.state.user
 
+    # Coach sees only their assigned trainees
+    coach_id = user.id if user.role == "coach" else None
+
     per_page = 5
     trainees = list_trainees(
         pb,
@@ -39,6 +42,7 @@ async def trainees_list(
         status=status,
         min_birthdate=min_birthdate,
         max_birthdate=max_birthdate,
+        coach_id=coach_id,
     )
 
     if user.role == "trainee":
@@ -86,6 +90,9 @@ async def search_trainees(
     """Search trainees by name, phone, or email"""
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+
+    coach_id = user.id if user.role == "coach" else None
 
     per_page = 5
     trainees = list_trainees(
@@ -98,6 +105,7 @@ async def search_trainees(
         status=status,
         min_birthdate=min_birthdate,
         max_birthdate=max_birthdate,
+        coach_id=coach_id,
     )
 
     total = trainees.total_items if hasattr(trainees, "total_items") else 0
@@ -144,6 +152,9 @@ async def filter_trainees(
     """Filter trainees by criteria"""
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+
+    coach_id = user.id if user.role == "coach" else None
 
     per_page = 5
     trainees = list_trainees(
@@ -155,6 +166,7 @@ async def filter_trainees(
         status=status,
         min_birthdate=min_birthdate,
         max_birthdate=max_birthdate,
+        coach_id=coach_id,
     )
 
     total = trainees.total_items if hasattr(trainees, "total_items") else 0

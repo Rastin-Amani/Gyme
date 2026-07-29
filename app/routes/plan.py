@@ -37,6 +37,10 @@ async def plan_list(
 
     is_template_bool = str(is_template).lower() in ["true", "1", "yes"]
 
+    # Force coach filter: coach sees only their assigned plans
+    if user.role == "coach":
+        coach_id = user.id
+
     per_page = 5
     plans = list_plans(
         pb,
