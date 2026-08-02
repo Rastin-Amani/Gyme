@@ -1,3 +1,5 @@
+import os
+import os
 from fastapi import APIRouter, Request
 from app.services.plan import list_plans, get_plan_by_id, get_plans_by_trainee
 from app.services.item import list_items_by_plan, get_items_by_plan_seq
@@ -148,3 +150,6 @@ def debug_expand(request: Request):
         "user": user,
         "plans": plans    
         }
+
+if os.getenv("ENV", "dev").lower() == "production":
+    router.routes.clear()

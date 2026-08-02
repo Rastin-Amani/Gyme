@@ -1,4 +1,5 @@
 # fast api imports
+import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
@@ -34,12 +35,14 @@ except ImportError:
 # middleware import
 from app.middleware import TenantMiddleware
 
-###disable default swagger ui
+# swagger/docs only in dev
+IS_PROD = os.getenv("ENV", "dev").lower() == "production"
+
 app = FastAPI(
     title="Gyme",
     docs_url=None,
     redoc_url=None,
-    openapi_url="/openapi.json",
+    openapi_url="/openapi.json" if not IS_PROD else None,
 )
 
 APP_VERSION = "0.8.0"
@@ -53,7 +56,8 @@ app.add_middleware(TenantMiddleware)
 
 # include routers
 app.include_router(dashboard.router)
-app.include_router(debug.router)
+if not IS_PROD:
+    app.include_router(debug.router)
 app.include_router(auth.router)
 app.include_router(trainee.router)
 app.include_router(plan.router)
@@ -69,33 +73,35 @@ app.include_router(marketing.router)
 
 
 # swagger ui
-@app.get("/docs", include_in_schema=False)
-def custom_docs():
-    return HTMLResponse("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>Gyme API Docs</title>
-        <link rel="stylesheet" type="text/css" href="/static/swagger/swagger-ui.css">
-    </head>
-    <body>
-        <div id="swagger-ui"></div>
+if not IS_PROD:
 
-        <script src="/static/swagger/swagger-ui-bundle.js"></script>
-        <script src="/static/swagger/swagger-ui-standalone-preset.js"></script>
-        <script>
-        window.onload = function() {
-            SwaggerUIBundle({
-                url: '/openapi.json',
-                dom_id: '#swagger-ui',
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIStandalonePreset
-                ],
-                layout: "StandaloneLayout"
-            });
-        };
-        </script>
-    </body>
-    </html>
-    """)
+    @app.get("/docs", include_in_schema=False)
+    def custom_docs():
+        return HTMLResponse("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Gyme API Docs</title>
+            <link rel="stylesheet" type="text/css" href="/static/swagger/swagger-ui.css">
+        </head>
+        <body>
+            <div id="swagger-ui"></div>
+
+            <script src="/static/swagger/swagger-ui-bundle.js"></script>
+            <script src="/static/swagger/swagger-ui-standalone-preset.js"></script>
+            <script>
+            window.onload = function() {
+                SwaggerUIBundle({
+                    url: '/openapi.json',
+                    dom_id: '#swagger-ui',
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    layout: "StandaloneLayout"
+                });
+            };
+            </script>
+        </body>
+        </html>
+        """)
