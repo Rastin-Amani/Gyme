@@ -68,6 +68,49 @@ async def item_edit_form(request: Request, id: str, plan_type: str = Query(...))
     )
 
 
+# Delete requests
+@router.delete("/items/{id}")
+async def item_delete(request: Request, id: str, plan_type: str = Query(...)):
+    pb = request.state.pb
+    tenant = request.state.tenant.id
+    collection_name = f"{plan_type}_items"
+
+    try:
+        delete_item(pb, id, collection_name)
+        
+        # 🟢 SUCCESS: Close modal, refresh the list, and show success toast!
+        trigger_data = {
+            "closeModal": True,
+            "refreshList": True,
+            "show-toast": {"message": "آیتم با موفقیت حذف شد.", "type": "success"},
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
+    except Exception as e:
+        from structlog import get_logger
+
+        logger = get_logger(__name__)
+        logger.error("item.delete_failed", error=str(e), item_id=id, plan_type=plan_type)
+        # 🔴 ERROR: Keep modal open and show error toast!
+        trigger_data = {
+            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+        }
+        return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
+
+
+# Confirm delete modal
+@router.get("/items/{id}/confirm-delete")
+async def item_confirm_delete(request: Request, id: str, plan_type: str = Query(...)):
+    return templates.TemplateResponse(
+        "modals/confirm_delete.html",
+        {
+            "request": request,
+            "title": "حذف آیتم",
+            "delete_url": f"/items/{id}?plan_type={plan_type}",
+        },
+    )
+
+
 # Post requests
 @router.post("/items")
 async def item_create(

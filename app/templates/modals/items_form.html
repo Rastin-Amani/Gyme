@@ -254,6 +254,18 @@
             >
                 لغو
             </button>
+            {% if item %}
+                <button
+                    type="button"
+                    class="btn btn-error btn-soft flex-1"
+                    hx-get="/items/{{ item.id }}/confirm-delete"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    hx-boost="false"
+                >
+                    حذف
+                </button>
+            {% endif %}
             <button type="submit" class="btn btn-primary flex-3">
                 <span class="text-center"></span>
                 {% if item %}بروزرسانی{% else %}افزودن به لیست{% endif %}

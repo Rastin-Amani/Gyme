@@ -49,5 +49,5 @@ def update_item(pb, id, collection, data: dict):
     return pb.collection(collection).update(id, data)
 
 
-def delete_item(pb, id):
-    return pb.collection("plan_items").delete(id)
+def delete_item(pb, id, collection: str = "plan_items"):
+    return pb.collection(collection).delete(id)
