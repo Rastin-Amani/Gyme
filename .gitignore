@@ -73,7 +73,5 @@ app/__pycache__/main.cpython-313.pyc
 .prettierrc
 
 
-docs/
-
 # Uploads
 app/static/uploads/
