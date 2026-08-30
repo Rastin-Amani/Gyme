@@ -59,6 +59,13 @@ def _host_matches(header_value: str, host_header: str) -> bool:
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
 
+        # Liveness probe: must never touch PocketBase, so container healthchecks
+        # report the APP's state, not PocketBase's. During a PB outage this keeps
+        # the container from being flagged unhealthy and restart-looped.
+        path = request.url.path
+        if path == "/healthz":
+            return JSONResponse({"status": "ok"})
+
         # ---- Request ID for correlation ----
         req_id = str(uuid.uuid4())[:8]
         request.state.req_id = req_id
@@ -72,6 +79,10 @@ class TenantMiddleware(BaseHTTPMiddleware):
             # Do not attempt tenant lookup for clearly invalid hosts
             logger.warning("invalid_host", host=raw_host)
             host = ""
+            tenant = None
+        elif path.startswith("/static"):
+            # StaticFiles never reads the tenant; skip the PB lookup so asset
+            # requests stay instant even while PocketBase is degraded.
             tenant = None
         else:
             tenant = await get_tenant_by_domain(host)
@@ -88,7 +99,6 @@ class TenantMiddleware(BaseHTTPMiddleware):
         request.state.role = None
 
         is_authenticated = False
-        path = request.url.path
         token = request.cookies.get("pb_auth")
 
         # Only spend the PB auth roundtrip where auth state is actually used:
