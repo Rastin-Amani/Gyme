@@ -1,13 +1,18 @@
 from datetime import datetime, timedelta, timezone
 from app.services.coach import list_coaches
 from structlog import get_logger
+from app.security import pb_escape
 
 logger = get_logger(__name__)
 
+ALLOWED_TIMEFRAMES = {"all", "week", "month"}
 
 def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
+    # Validate timeframe against allowlist
+    if timeframe not in ALLOWED_TIMEFRAMES:
+        timeframe = "all"
     # Base filter ensures we only get this specific owner's data
-    base_filter = f'tenant="{tenant_id}"'
+    base_filter = f'tenant="{pb_escape(tenant_id)}"'
 
     # Calculate timeframes based on PocketBase's required UTC format
     if timeframe == "week":
@@ -49,12 +54,14 @@ def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
 def _time_filter(timeframe: str) -> str:
     """Return a PocketBase date filter snippet for the given timeframe."""
     if timeframe and timeframe != "all":
+        if timeframe not in ALLOWED_TIMEFRAMES:
+            return ""
         days = 7 if timeframe == "week" else 30 if timeframe == "month" else 0
         if days:
             start = (datetime.now(timezone.utc) - timedelta(days=days)).strftime(
                 "%Y-%m-%d %H:%M:%S.000Z"
             )
-            return f' && created >= "{start}"'
+            return f' && created >= "{pb_escape(start)}"'
     return ""
 
 
@@ -63,7 +70,7 @@ def _coach_stats_single(pb, tenant_id: str, coach_id: str, coach_name: str, time
     tf = _time_filter(timeframe)
     try:
         plans = pb.collection("plans").get_full_list(
-            query_params={"filter": f'tenant="{tenant_id}" && coach="{coach_id}"{tf}'}
+            query_params={"filter": f'tenant="{pb_escape(tenant_id)}" && coach="{pb_escape(coach_id)}"{tf}'}
         )
         logger.debug("coach_stats.plans_fetched", coach_id=coach_id, count=len(plans))
     except Exception as e:
@@ -100,7 +107,7 @@ def _coach_stats_single(pb, tenant_id: str, coach_id: str, coach_name: str, time
             continue
         try:
             progress = pb.collection("plan_progress").get_first_list_item(
-                f'tenant="{tenant_id}" && plan="{pid}"'
+                f'tenant="{pb_escape(tenant_id)}" && plan="{pb_escape(pid)}"'
             )
             if progress:
                 in_progress += 1
@@ -133,7 +140,12 @@ def get_coach_stats(
     # Single coach mode
     if coach_id:
         try:
-            coach = pb.collection("users").get_one(coach_id)
+            coach = pb.collection("users").get_one(pb_escape(coach_id))
+            # Verify coach belongs to tenant if role is coach
+            rec_tenant = getattr(coach, "tenant", None)
+            if rec_tenant and str(rec_tenant) != str(tenant_id):
+                logger.warning("get_coach_stats.tenant_mismatch", coach_id=coach_id, tenant=tenant_id)
+                return []
         except Exception as e:
             logger.warning("get_coach_stats.coach_fetch_failed", coach_id=coach_id, error=str(e))
             return []
@@ -165,11 +177,15 @@ def get_coach_stats(
     # Add owner's stats if requested and not already included
     if owner_id and owner_id not in [c["id"] for c in result]:
         try:
-            owner_coach = pb.collection("users").get_one(owner_id)
-            name = f"{getattr(owner_coach, 'first_name', '')} {getattr(owner_coach, 'last_name', '')}".strip() or getattr(
-                owner_coach, "email", "?"
-            )
-            result.append(_coach_stats_single(pb, tenant_id, owner_id, name, timeframe))
+            owner_coach = pb.collection("users").get_one(pb_escape(owner_id))
+            rec_tenant = getattr(owner_coach, "tenant", None)
+            if rec_tenant and str(rec_tenant) != str(tenant_id):
+                logger.warning("get_coach_stats.owner_tenant_mismatch", owner_id=owner_id)
+            else:
+                name = f"{getattr(owner_coach, 'first_name', '')} {getattr(owner_coach, 'last_name', '')}".strip() or getattr(
+                    owner_coach, "email", "?"
+                )
+                result.append(_coach_stats_single(pb, tenant_id, owner_id, name, timeframe))
         except Exception as e:
             logger.warning("get_coach_stats.owner_fetch_failed", owner_id=owner_id, error=str(e))
 

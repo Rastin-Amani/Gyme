@@ -26,14 +26,31 @@ def login_user(identity: str, password: str, tenant: str):
 def create_user(
     pb, tenant_id: str, email: str, first_name: str, last_name: str, phone: str, role: str
 ):
+    import secrets
+    import string
+    from app.security import validate_email, validate_phone
 
-    # 🟢 Using email as the password and adding phone to the payload
+    # Validate inputs
+    try:
+        email = validate_email(email)
+        phone = validate_phone(phone) or ""
+    except ValueError as e:
+        return {"ok": False, "error": str(e)}
+
+    if role not in {"trainee", "coach"}:
+        return {"ok": False, "error": "Invalid role"}
+
+    # Generate strong random password instead of using email
+    alphabet = string.ascii_letters + string.digits
+    random_pwd = "".join(secrets.choice(alphabet) for _ in range(12)) + "A1!"
+    # Ensure at least 12 chars with complexity; email not used as password
+
     payload = {
         "email": email,
-        "password": email,
-        "passwordConfirm": email,
-        "first_name": first_name,
-        "last_name": last_name,
+        "password": random_pwd,
+        "passwordConfirm": random_pwd,
+        "first_name": str(first_name)[:50].strip(),
+        "last_name": str(last_name)[:50].strip(),
         "phone": phone,
         "tenant": tenant_id,
         "role": role,
@@ -53,7 +70,29 @@ def create_user(
 
 
 def update_user(pb, user_id: str, data: dict):
-    return pb.collection("users").update(user_id, data)
+    from app.security import pb_escape, validate_email, validate_phone
+    safe_id = pb_escape(user_id)
+    # Sanitize allowed fields only
+    allowed = {"first_name", "last_name", "email", "phone"}
+    safe_data = {}
+    for k, v in (data or {}).items():
+        if k not in allowed:
+            continue
+        if k == "email":
+            try:
+                safe_data[k] = validate_email(str(v))
+            except ValueError:
+                continue
+        elif k == "phone":
+            try:
+                safe_data[k] = validate_phone(str(v)) or ""
+            except ValueError:
+                continue
+        else:
+            safe_data[k] = str(v)[:100].strip()
+    if not safe_data:
+        return pb.collection("users").get_one(safe_id)
+    return pb.collection("users").update(safe_id, safe_data)
 
 
 def load_auth_from_cookie(request: Request):
@@ -73,9 +112,13 @@ def update_user_password(
     new_password: str,
     confirm_password: str,
 ) -> dict:
+    from app.security import pb_escape
+    # Validate collection name allowlist
+    if collection_name not in {"users", "tenants"}:
+        collection_name = "users"
     try:
         pb.collection(collection_name).update(
-            user_id,
+            pb_escape(user_id),
             {
                 "oldPassword": old_password,
                 "password": new_password,

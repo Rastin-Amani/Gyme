@@ -1,10 +1,14 @@
 from fastapi import APIRouter, Request, Form, Query
 import json
 from app.services.item import list_items, get_item_by_id, create_item, update_item
+from app.services.plan import get_plan_by_id
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
 import pandas as pd
+from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES, pb_escape
+from structlog import get_logger
+logger = get_logger(__name__)
 
 router = APIRouter(tags=["items Management"])
 
@@ -19,11 +23,19 @@ FOOD_NAMES = df["نام غذا/ماده (Persian Name)"].dropna().unique().tolis
 @router.get("/items/new")
 async def item_edit_form(request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
     tenant = request.state.tenant.id
-    collection_name = f"{plan_type}_items"
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        return HTMLResponse(content="Invalid plan_type", status_code=400)
     user = request.state.user
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
+    # Verify plan belongs to tenant
+    try:
+        get_plan_by_id(request.state.pb, tenant, plan_id)
+    except Exception:
+        return HTMLResponse(content="Plan not found", status_code=404)
 
     return templates.TemplateResponse(
         request=request,
@@ -46,8 +58,14 @@ async def item_edit_form(request: Request, id: str, plan_type: str = Query(...))
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
-    collection_name = f"{plan_type}_items"
-    item = get_item_by_id(pb, tenant, collection_name, id)
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        return HTMLResponse(content="Invalid plan_type", status_code=400)
+    try:
+        item = get_item_by_id(pb, tenant, collection_name, id)
+    except Exception:
+        return HTMLResponse(content="Item not found", status_code=404)
     tenant_name = request.state.tenant
 
     if user.role == "trainee":
@@ -73,9 +91,15 @@ async def item_edit_form(request: Request, id: str, plan_type: str = Query(...))
 async def item_delete(request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
-    collection_name = f"{plan_type}_items"
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        return HTMLResponse(content="Invalid plan_type", status_code=400)
 
     try:
+        # Verify item ownership before delete
+        get_item_by_id(pb, tenant, collection_name, id)
+        from app.services.item import delete_item
         delete_item(pb, id, collection_name)
         
         # 🟢 SUCCESS: Close modal, refresh the list, and show success toast!
@@ -135,8 +159,29 @@ async def item_create(
 ):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    # Verify plan belongs to tenant and type matches
+    try:
+        plan_obj = get_plan_by_id(pb, tenant, plan)
+        if str(getattr(plan_obj, "type", "")) != plan_type:
+            raise ValueError("type mismatch")
+        # Coach can only add to own plans
+        user = request.state.user
+        if getattr(user, "role", None) == "coach" and str(getattr(plan_obj, "coach", "")) != str(user.id):
+            trigger_data = {"show-toast": {"message": "دسترسی غیرمجاز", "type": "error"}}
+            return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
+    except Exception as e:
+        logger.warning("item.create_plan_check_failed", error=str(e), plan=plan)
+        trigger_data = {"show-toast": {"message": "برنامه یافت نشد", "type": "error"}}
+        return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
+    # Input length validation
+    if notes:
+        notes = str(notes)[:1000]
     data = {"plan": plan, "notes": notes}
-    collection_name = f"{plan_type}_items"
 
     # Mapping logic per collection
     if plan_type == "training":
@@ -218,7 +263,23 @@ async def item_update(
     notes: str = Form(None),
 ):
     pb = request.state.pb
-    collection_name = f"{plan_type}_items"
+    tenant = request.state.tenant.id
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    # Verify existing item tenant ownership
+    try:
+        existing = get_item_by_id(pb, tenant, collection_name, id)
+        # If plan change requested, verify new plan belongs to tenant
+        if plan:
+            plan_obj = get_plan_by_id(pb, tenant, plan)
+            if str(getattr(plan_obj, "type", "")) != plan_type:
+                raise ValueError("type mismatch")
+    except Exception as e:
+        trigger_data = {"show-toast": {"message": "آیتم یافت نشد", "type": "error"}}
+        return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     # Base data
     data = {"notes": notes}

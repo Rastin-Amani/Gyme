@@ -5,6 +5,7 @@ from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 import json
 from app.utils import hx_toast
+from app.security import validate_email, validate_phone, validate_length
 
 router = APIRouter(tags=["Coaches Management"])
 
@@ -18,8 +19,9 @@ async def coaches_list(request: Request, page: int = Query(1, ge=1)):
     tenant = request.state.tenant.id
     user = request.state.user
 
-    if user.role == "trainee":
-        return RedirectResponse(url="/user/dashboard")
+    if user.role in ("trainee", "coach"):
+        # Coaches should not manage other coaches
+        return RedirectResponse(url="/dashboard" if user.role == "coach" else "/user/dashboard")
 
     per_page = 20
     coaches = list_coaches(pb, tenant, page=page, per_page=per_page)
@@ -47,8 +49,8 @@ async def coaches_new_form(request: Request):
     user = request.state.user
     tenant = request.state.tenant
 
-    if user.role == "trainee":
-        return RedirectResponse(url="/user/dashboard")
+    if user.role in ("trainee", "coach"):
+        return RedirectResponse(url="/dashboard" if user.role == "coach" else "/user/dashboard")
 
     return templates.TemplateResponse(
         request=request,
@@ -70,8 +72,13 @@ async def coach_detail(request: Request, id: str):
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
+    if user.role == "coach" and user.id != id:
+        return RedirectResponse(url="/dashboard")
 
-    coach = get_coach_by_id(pb, tenant, id)
+    try:
+        coach = get_coach_by_id(pb, tenant, id)
+    except Exception:
+        return RedirectResponse(url="/coaches")
 
     return templates.TemplateResponse(
         request=request,
@@ -91,10 +98,13 @@ async def coach_edit_form(request: Request, id: str):
     tenant = request.state.tenant.id
     user = request.state.user
 
-    if user.role == "trainee":
-        return RedirectResponse(url="/user/dashboard")
+    if user.role in ("trainee", "coach"):
+        return RedirectResponse(url="/dashboard" if user.role == "coach" else "/user/dashboard")
 
-    coach = get_coach_by_id(pb, tenant, id)
+    try:
+        coach = get_coach_by_id(pb, tenant, id)
+    except Exception:
+        return RedirectResponse(url="/coaches")
 
     return templates.TemplateResponse(
         request=request,
@@ -119,9 +129,15 @@ async def coach_confirm_delete(request: Request, id: str):
 
 @router.delete("/coaches/{id}")
 async def coach_delete(request: Request, id: str):
+    # Only owner can delete coaches
+    user = request.state.user
+    if getattr(user, "role", None) in ("trainee", "coach"):
+        headers = hx_toast("دسترسی غیرمجاز", "error")
+        return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         pb = request.state.pb
-        delete_coach(pb, id)
+        tenant_id = request.state.tenant.id
+        delete_coach(pb, tenant_id, id)
         headers = hx_toast("مربی با موفقیت حذف شد.", "success")
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/coaches"}
@@ -147,7 +163,21 @@ async def coach_create(
     email: str = Form(...),
     phone: str = Form(""),
 ):
+    user = request.state.user
+    if getattr(user, "role", None) in ("trainee", "coach"):
+        headers = hx_toast("دسترسی غیرمجاز", "error")
+        return HTMLResponse(content="", status_code=403, headers=headers)
     try:
+        # Validate inputs
+        try:
+            email = validate_email(email)
+            if phone:
+                phone = validate_phone(phone)
+            first_name = validate_length(first_name, "first_name", 1, 50)
+            last_name = validate_length(last_name, "last_name", 1, 50)
+        except ValueError as ve:
+            headers = hx_toast(str(ve), "error")
+            return HTMLResponse(content="", status_code=400, headers=headers)
         pb = request.state.pb
         tenant_id = request.state.tenant.id
 
@@ -157,7 +187,7 @@ async def coach_create(
             email=email,
             first_name=first_name,
             last_name=last_name,
-            phone=phone,
+            phone=phone or "",
             role="coach",
         )
 
@@ -191,7 +221,20 @@ async def coach_update(
     email: str = Form(...),
     phone: str = Form(""),
 ):
+    user = request.state.user
+    if getattr(user, "role", None) in ("trainee", "coach"):
+        headers = hx_toast("دسترسی غیرمجاز", "error")
+        return HTMLResponse(content="", status_code=403, headers=headers)
     try:
+        try:
+            email = validate_email(email)
+            if phone:
+                phone = validate_phone(phone)
+            first_name = validate_length(first_name, "first_name", 1, 50)
+            last_name = validate_length(last_name, "last_name", 1, 50)
+        except ValueError as ve:
+            headers = hx_toast(str(ve), "error")
+            return HTMLResponse(content="", status_code=400, headers=headers)
         pb = request.state.pb
         tenant_id = request.state.tenant.id
 
@@ -205,7 +248,7 @@ async def coach_update(
                 "first_name": first_name,
                 "last_name": last_name,
                 "email": email,
-                "phone": phone,
+                "phone": phone or "",
             },
         )
 

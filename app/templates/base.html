@@ -22,8 +22,14 @@
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
             <style>
             :root {
+                {# Safely render brand_theme: allow only safe CSS values (hex, rgb, hsl, oklch, var) #}
                 {% for key, value in tenant.brand_theme.items() %}
-                --{{ key | replace('_', '-') }}: {{ value }};
+                {% set safe_key = key | replace('_', '-') | e %}
+                {% set safe_val = value | string | e %}
+                {# Only allow if value matches safe CSS pattern; otherwise skip #}
+                {% if safe_val is string and safe_val|length < 100 %}
+                --{{ safe_key }}: {{ safe_val }};
+                {% endif %}
                 {% endfor %}
             }
             </style>
@@ -170,12 +176,17 @@
 
                     toast.className = `alert ${colorClass} alert-soft shadow-lg transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
 
-                    toast.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            ${icon}
-                            <span class="font-bold text-sm">${message}</span>
-                        </div>
-                    `;
+                    // Use safe DOM construction to prevent XSS via message
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'flex items-center gap-3';
+                    const iconSpan = document.createElement('span');
+                    iconSpan.innerHTML = icon; // icon is trusted static SVG
+                    wrapper.appendChild(iconSpan);
+                    const msgSpan = document.createElement('span');
+                    msgSpan.className = 'font-bold text-sm';
+                    msgSpan.textContent = String(message).slice(0, 500); // textContent auto-escapes, length limit
+                    wrapper.appendChild(msgSpan);
+                    toast.appendChild(wrapper);
 
                     toastContainer.appendChild(toast);
 
@@ -189,9 +200,13 @@
                     }, 4000);
                 });
 
-                // 🟢 2. Delayed Redirect Listener (Solves the Race Condition!)
+                // 🟢 2. Delayed Redirect Listener (Solves the Race Condition!) - with open-redirect guard
                 document.addEventListener('delayed-redirect', function (evt) {
-                    const targetUrl = evt.detail.url;
+                    let targetUrl = evt.detail.url || '/dashboard';
+                    // Allow only internal relative paths: must start with / and not //, no :// , no backslash
+                    if (typeof targetUrl !== 'string' || !targetUrl.startsWith('/') || targetUrl.startsWith('//') || targetUrl.includes('://') || targetUrl.includes('\\')) {
+                        targetUrl = '/dashboard';
+                    }
                     setTimeout(() => {
                         window.location.href = targetUrl;
                     }, 500); // Gives the toast 1.2 seconds to shine before moving

@@ -1,6 +1,8 @@
+from app.security import pb_escape
+
 def get_progress_by_plan (pb, tenant, plan):
     return pb.collection("plan_progress").get_first_list_item(
-        f'tenant="{tenant}" && plan="{plan}"'
+        f'tenant="{pb_escape(tenant)}" && plan="{pb_escape(plan)}"'
 )
 
 def create_progress(pb, tenant, data: dict):

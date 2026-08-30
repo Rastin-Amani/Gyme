@@ -12,10 +12,11 @@ from app.services.plan import (
 from app.services.item import list_items_by_plan
 from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
-from app.services.trainee import list_trainees
+from app.services.trainee import list_trainees, get_trainee_by_id
 from app.utils import hx_toast
 import json
 from structlog import get_logger
+from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name, ALLOWED_PLAN_STATUS
 
 logger = get_logger(__name__)
 
@@ -65,7 +66,7 @@ async def plan_list(
                 page=1,
                 per_page=100,
                 query_params={
-                    "filter": f'tenant="{tenant}"',
+                    "filter": f'tenant="{pb_escape(tenant)}"',
                     "sort": "-created",
                 },
             )
@@ -131,7 +132,7 @@ async def plan_new_form(request: Request, template: str = Query("false")):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
             )
             .items
         )
@@ -176,8 +177,14 @@ async def show_plan_detail(request: Request, id: str):
     if not hasattr(plan_data, "is_template") or plan_data.is_template is None:
         plan_data.is_template = False
 
-    plan_type = plan_data.type
-    collection_name = f"{plan_type}_items"
+    plan_type = str(getattr(plan_data, "type", ""))
+    if plan_type not in ALLOWED_PLAN_TYPES:
+        logger.warning("plan.invalid_type", plan_id=id, plan_type=plan_type)
+        return RedirectResponse(url="/plans")
+    try:
+        collection_name = sanitize_collection_name(plan_type)
+    except ValueError:
+        return RedirectResponse(url="/plans")
 
     try:
         item_data = list_items_by_plan(pb, tenant, collection_name, plan=id)
@@ -205,12 +212,16 @@ async def plan_edit_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
-    trainees = list_trainees(pb, tenant)
+    # Enforce ownership; get_plan_by_id will raise if not in tenant
     plan_data = get_plan_by_id(pb, tenant, id)
+    trainees = list_trainees(pb, tenant)
     tenant_name = request.state.tenant
 
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
+    # Coach can only edit own plans
+    if user.role == "coach" and getattr(plan_data, "coach", None) != user.id:
+        return RedirectResponse(url="/plans")
 
     # Fetch coaches (users with role="coach") for this tenant
     try:
@@ -219,7 +230,7 @@ async def plan_edit_form(request: Request, id: str):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
             )
             .items
         )
@@ -266,7 +277,7 @@ async def template_apply_form(request: Request, id: str):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{tenant}" && role="coach"', "sort": "first_name"},
+                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
             )
             .items
         )
@@ -359,6 +370,39 @@ async def plan_create(
     is_template_bool = str(is_template).lower() in ["true", "on", "1", "yes"]
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+
+    # --- Input validation ---
+    if type not in ALLOWED_PLAN_TYPES:
+        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر است", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if status and status not in ALLOWED_PLAN_STATUS:
+        status = "active"
+    if days_per_week is not None and not (1 <= days_per_week <= 7):
+        trigger_data = {"show-toast": {"message": "تعداد روزهای هفته باید بین ۱ تا ۷ باشد", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if trainee and not is_template_bool:
+        try:
+            get_trainee_by_id(pb, tenant, trainee)
+        except Exception:
+            trigger_data = {"show-toast": {"message": "شاگرد یافت نشد", "type": "error"}}
+            return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if coach:
+        # Verify coach belongs to tenant
+        try:
+            from app.services.coach import get_coach_by_id
+            get_coach_by_id(pb, tenant, coach)
+        except Exception:
+            coach = user.id  # fallback to self
+    else:
+        coach = user.id
+    # Enforce coach isolation: coach role can only create plans with themselves as coach
+    if getattr(user, "role", None) == "coach":
+        coach = user.id
+    if notes:
+        notes = str(notes)[:1000]
+    if template_name:
+        template_name = str(template_name)[:100]
 
     data = {
         "type": type,
@@ -420,6 +464,43 @@ async def plan_update(
     is_template_bool = str(is_template).lower() in ["true", "on", "1", "yes"]
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+
+    # Verify ownership and role before update
+    try:
+        existing = get_plan_by_id(pb, tenant, id)
+    except Exception:
+        trigger_data = {"show-toast": {"message": "برنامه یافت نشد", "type": "error"}}
+        return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if getattr(user, "role", None) == "coach" and getattr(existing, "coach", None) != user.id:
+        trigger_data = {"show-toast": {"message": "دسترسی غیرمجاز", "type": "error"}}
+        return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if type not in ALLOWED_PLAN_TYPES:
+        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if status and status not in ALLOWED_PLAN_STATUS:
+        status = getattr(existing, "status", "active")
+    if days_per_week is not None and not (1 <= days_per_week <= 7):
+        trigger_data = {"show-toast": {"message": "تعداد روزهای هفته نامعتبر", "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if trainee and not is_template_bool:
+        try:
+            get_trainee_by_id(pb, tenant, trainee)
+        except Exception:
+            trigger_data = {"show-toast": {"message": "شاگرد یافت نشد", "type": "error"}}
+            return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if coach:
+        try:
+            from app.services.coach import get_coach_by_id
+            get_coach_by_id(pb, tenant, coach)
+        except Exception:
+            coach = getattr(existing, "coach", user.id)
+    if getattr(user, "role", None) == "coach":
+        coach = user.id
+    if notes:
+        notes = str(notes)[:1000]
+    if template_name:
+        template_name = str(template_name)[:100]
 
     data = {
         "type": type,
@@ -435,7 +516,7 @@ async def plan_update(
     }
 
     try:
-        update_plan(pb, id, data)
+        update_plan(pb, tenant, id, data)
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {

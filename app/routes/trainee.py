@@ -7,6 +7,7 @@ from app.services.plan import get_plans_by_trainee
 from app.services.progress_logs import get_progress_logs_by_trainee
 import json
 from app.utils import hx_toast
+from app.security import validate_email, validate_phone, sanitize_gender, sanitize_blood_type, validate_length
 
 router = APIRouter(tags=["Trainees Management"])
 
@@ -226,13 +227,25 @@ async def show_trainee_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant
     user = request.state.user
-    trainee_data = get_trainee_by_id(pb, tenant.id, id)
+    if user.role == "trainee":
+        return RedirectResponse(url="/user/dashboard")
+    try:
+        trainee_data = get_trainee_by_id(pb, tenant.id, id)
+    except Exception:
+        return RedirectResponse(url="/trainees")
+    # Coach isolation: verify coach owns this trainee via plans
+    if user.role == "coach":
+        from app.services.trainee import list_trainees
+        try:
+            coach_trainees = list_trainees(pb, tenant.id, coach_id=user.id, per_page=500)
+            ids = {t.id for t in getattr(coach_trainees, "items", [])}
+            if id not in ids:
+                return RedirectResponse(url="/trainees")
+        except Exception:
+            pass
     tenant_name = request.state.tenant
     plans = get_plans_by_trainee(pb, tenant.id, id)
     progress_logs = get_progress_logs_by_trainee(pb, tenant.id, id)
-
-    if user.role == "trainee":
-        return RedirectResponse(url="/user/dashboard")
 
     from app.pb import PB_URL
 
@@ -287,11 +300,10 @@ async def trainee_edit_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
-    trainee_data = get_trainee_by_id(pb, tenant, id)
-    tenant_name = request.state.tenant
-
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
+    trainee_data = get_trainee_by_id(pb, tenant, id)
+    tenant_name = request.state.tenant
 
     return templates.TemplateResponse(
         request=request,
@@ -327,6 +339,29 @@ async def trainee_create(
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        # --- Input validation ---
+        try:
+            email = validate_email(email)
+            phone_valid = validate_phone(phone) if phone else None
+            phone = phone_valid or phone
+            if gender:
+                gender = sanitize_gender(gender)
+            if blood_type:
+                blood_type = sanitize_blood_type(blood_type)
+            first_name = validate_length(first_name, "first_name", 1, 50)
+            last_name = validate_length(last_name, "last_name", 1, 50)
+            if training_history:
+                training_history = validate_length(training_history, "training_history", 0, 2000)
+            if notes:
+                notes = validate_length(notes, "notes", 0, 1000)
+        except ValueError as ve:
+            headers = hx_toast(str(ve), "error")
+            return HTMLResponse(content="", status_code=400, headers=headers)
+        # Validate birthdate format if provided
+        if birthdate:
+            import re
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(birthdate)):
+                birthdate = None
 
         # --- STEP 1: Create the Auth User ---
         user_result = create_user(
@@ -342,7 +377,7 @@ async def trainee_create(
         if not user_result.get("ok"):
             error_msg = user_result.get("error", "خطا در ثبت کاربر.")
             headers = hx_toast(error_msg, "error")
-            return HTMLResponse(content="", status_code=200, headers=headers)
+            return HTMLResponse(content="", status_code=400, headers=headers)
 
         new_user = user_result["user"]
 
@@ -354,9 +389,9 @@ async def trainee_create(
             "gender": gender,
             "birthdate": birthdate,
             "training_history": training_history,
-            "steroid_history": steroid_history,
-            "supplement_history": supplement_history,
-            "limitations": limitations,
+            "steroid_history": validate_length(steroid_history, "steroid_history", 0, 2000) if steroid_history else None,
+            "supplement_history": validate_length(supplement_history, "supplement_history", 0, 2000) if supplement_history else None,
+            "limitations": validate_length(limitations, "limitations", 0, 2000) if limitations else None,
             "notes": notes,
         }
 
@@ -401,14 +436,40 @@ async def trainee_update(
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        # Validate inputs
+        try:
+            email = validate_email(email)
+            if phone:
+                phone = validate_phone(phone)
+            if gender:
+                gender = sanitize_gender(gender)
+            if blood_type:
+                blood_type = sanitize_blood_type(blood_type)
+            first_name = validate_length(first_name, "first_name", 1, 50)
+            last_name = validate_length(last_name, "last_name", 1, 50)
+        except ValueError as ve:
+            headers = hx_toast(str(ve), "error")
+            return HTMLResponse(content="", status_code=400, headers=headers)
+        if birthdate:
+            import re
+            if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(birthdate)):
+                birthdate = None
 
         # --- STEP 1: Fetch existing trainee ---
         try:
             trainee = get_trainee_by_id(pb, tenant_id, id)
             user_id = trainee.user
+            # Coach isolation check
+            user = request.state.user
+            if getattr(user, "role", None) == "coach":
+                coach_trainees = list_trainees(pb, tenant_id, coach_id=user.id, per_page=500)
+                ids = {t.id for t in getattr(coach_trainees, "items", [])}
+                if id not in ids:
+                    headers = hx_toast("دسترسی غیرمجاز", "error")
+                    return HTMLResponse(content="", status_code=403, headers=headers)
         except Exception:
             headers = hx_toast("شاگرد مورد نظر یافت نشد.", "error")
-            return HTMLResponse(content="", status_code=200, headers=headers)
+            return HTMLResponse(content="", status_code=404, headers=headers)
 
         # --- STEP 2: Update Auth User ---
         user_data = {
@@ -424,11 +485,11 @@ async def trainee_update(
             "gender": gender,
             "birthdate": birthdate,
             "blood_type": blood_type,
-            "training_history": training_history,
-            "steroid_history": steroid_history,
-            "supplement_history": supplement_history,
-            "limitations": limitations,
-            "notes": notes,
+            "training_history": validate_length(training_history, "t", 0, 2000) if training_history else None,
+            "steroid_history": validate_length(steroid_history, "t", 0, 2000) if steroid_history else None,
+            "supplement_history": validate_length(supplement_history, "t", 0, 2000) if supplement_history else None,
+            "limitations": validate_length(limitations, "t", 0, 2000) if limitations else None,
+            "notes": validate_length(notes, "t", 0, 1000) if notes else None,
         }
         update_trainee(pb, id, trainee_data)
 

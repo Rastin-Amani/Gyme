@@ -5,6 +5,7 @@ from app.services.trainee import get_trainee_by_user
 from app.services.plan import get_plans_by_trainee, get_plan_by_id
 from app.services.progress import get_progress_by_plan
 from app.services.item import get_items_by_plan_seq, list_items_by_plan
+from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name
 
 router = APIRouter()
 
@@ -15,14 +16,22 @@ async def trainee_dashboard(request: Request):
     # 🟢 Extract the string ID explicitly for your database filters
     tenant_id = request.state.tenant.id
     user = request.state.user
+    if getattr(user, "role", None) != "trainee":
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/dashboard")
 
     trainee = get_trainee_by_user(pb, tenant_id, user.id)
+    if not trainee:
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url="/login")
     plans = get_plans_by_trainee(pb, tenant_id, trainee.id)
 
     categorized = {"training": [], "diet": [], "steroid": []}
 
     for p in plans:
         plan_type = p.type.value if hasattr(p.type, "value") else str(p.type)
+        if plan_type not in ALLOWED_PLAN_TYPES:
+            continue
 
         try:
             progress = get_progress_by_plan(pb, tenant_id, p.id)
@@ -31,7 +40,10 @@ async def trainee_dashboard(request: Request):
             progress = None
             current_seq = 1
 
-        coll_name = f"{plan_type}_items"
+        try:
+            coll_name = sanitize_collection_name(plan_type)
+        except ValueError:
+            continue
         try:
             # 🟢 Passing tenant_id (string) and current_seq dynamically!
             items = get_items_by_plan_seq(pb, tenant_id, coll_name, p.id, current_seq)
@@ -69,11 +81,22 @@ async def trainee_dashboard(request: Request):
 async def mark_plan_done(plan_id: str, request: Request):
     pb = request.state.pb
     tenant_id = request.state.tenant.id
+    user = request.state.user
+    if getattr(user, "role", None) != "trainee":
+        return Response(status_code=403)
+    # Verify plan belongs to this trainee
+    trainee = get_trainee_by_user(pb, tenant_id, user.id)
+    if not trainee:
+        return Response(status_code=403)
+    # Ensure plan is assigned to this trainee and tenant
+    plan_check = get_plan_by_id(pb, tenant_id, plan_id)
+    if str(getattr(plan_check, "trainee", "")) != str(trainee.id):
+        return Response(status_code=403)
 
     # 1. Try to fetch existing progress
     try:
         records = pb.collection("plan_progress").get_full_list(
-            query_params={"filter": f'plan="{plan_id}" && tenant="{tenant_id}"'}
+            query_params={"filter": f'plan="{pb_escape(plan_id)}" && tenant="{pb_escape(tenant_id)}"'}
         )
         progress = records[0] if records else None
     except Exception:
@@ -82,7 +105,9 @@ async def mark_plan_done(plan_id: str, request: Request):
     # 2. Logic: Update existing OR Create new
     plan = get_plan_by_id(pb, tenant_id, plan_id)
     plan_type = plan.type.value if hasattr(plan.type, "value") else str(plan.type)
-    coll = f"{plan_type}_items"
+    if plan_type not in ALLOWED_PLAN_TYPES:
+        return Response(status_code=400)
+    coll = sanitize_collection_name(plan_type)
     all_items = list_items_by_plan(pb, tenant_id, coll, plan=plan_id, per_page=500)
     seqs = sorted({int(getattr(item, "seq", 1)) for item in all_items.items}) or [1]
 

@@ -3,6 +3,25 @@ from fastapi.responses import RedirectResponse, HTMLResponse
 from ..templates import templates
 from app.services.auth import login_user, update_user_password
 from app.utils import hx_toast
+from app.security import set_auth_cookie, clear_auth_cookie, validate_email
+import time
+from collections import defaultdict
+import re
+
+# Simple in-memory rate limiter for login (per IP + identity)
+_login_attempts = defaultdict(list)  # key -> list[timestamps]
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_WINDOW_SEC = 300  # 5 min
+
+def _is_rate_limited(key: str) -> bool:
+    now = time.time()
+    attempts = _login_attempts[key]
+    # prune old
+    _login_attempts[key] = [t for t in attempts if now - t < LOGIN_WINDOW_SEC]
+    return len(_login_attempts[key]) >= LOGIN_MAX_ATTEMPTS
+
+def _record_attempt(key: str):
+    _login_attempts[key].append(time.time())
 
 router = APIRouter(
     tags=["Authentication"]
@@ -14,7 +33,9 @@ def login_page(request: Request):
     user = request.state.user
 
     if user:
-        return RedirectResponse(url="/dashboard")
+        # Use role-based redirect, trainee goes to user dashboard
+        target = "/user/dashboard" if getattr(user, "role", None) == "trainee" else "/dashboard"
+        return RedirectResponse(url=target)
 
     return templates.TemplateResponse(
         request=request,
@@ -23,6 +44,23 @@ def login_page(request: Request):
         "tenant": tenant,
         }
     )
+
+@router.get("/logout")
+@router.post("/logout")
+def logout(request: Request):
+    # Clear server-side auth_store if present
+    pb = getattr(request.state, "pb", None)
+    if pb:
+        try:
+            pb.auth_store.clear()
+        except Exception:
+            pass
+    # Build redirect response and clear cookie hardened
+    resp = RedirectResponse(url="/login", status_code=303)
+    clear_auth_cookie(resp)
+    # Also instruct HTMX clients
+    resp.headers["HX-Redirect"] = "/login"
+    return resp
 
 @router.get("/change-password")
 def change_password_page(request: Request):
@@ -50,7 +88,29 @@ async def login(request: Request, identity: str = Form(...), password: str = For
     tenant = getattr(request.state, 'tenant', None)
     if not tenant:
         headers = hx_toast("خطای سیستم: باشگاه یافت نشد!", "error")
-        return HTMLResponse(content="", headers=headers)
+        return HTMLResponse(content="", headers=headers, status_code=400)
+
+    # Rate limiting per IP + identity
+    client_ip = request.client.host if request.client else "unknown"
+    rate_key = f"{client_ip}:{identity}:{tenant.id}"
+    if _is_rate_limited(rate_key):
+        headers = hx_toast("تعداد تلاش‌های ورود بیش از حد مجاز است. لطفاً چند دقیقه صبر کنید.", "error")
+        return HTMLResponse(content="", headers=headers, status_code=429)
+    _record_attempt(rate_key)
+
+    # Input trimming and basic validation
+    identity = str(identity).strip()[:254]
+    password = str(password)[:128]
+    if not identity or not password:
+        headers = hx_toast("ایمیل و رمز عبور الزامی است", "error")
+        return HTMLResponse(content="", headers=headers, status_code=400)
+    # Optional email format check, but allow username if needed
+    if "@" in identity:
+        try:
+            identity = validate_email(identity)
+        except ValueError:
+            headers = hx_toast("فرمت ایمیل نامعتبر است", "error")
+            return HTMLResponse(content="", headers=headers, status_code=400)
 
     # 2. Attempt Authentication 🔐
     result = login_user(identity, password, tenant.id)
@@ -80,16 +140,9 @@ async def login(request: Request, identity: str = Form(...), password: str = For
 
     # 5. Execute Redirect & Issue Cookie 🍪
     response = RedirectResponse(url=target_url, status_code=303)
-    
-    # WARNING: secure=True will silently fail on http://127.0.0.1!
-    # Keep it False for local dev, and switch to True in production (HTTPS).
-    response.set_cookie(
-        key="pb_auth", 
-        value=result["token"], 
-        httponly=True, 
-        secure=False, 
-        samesite="lax"
-    )
+    # Clear rate limit on success
+    _login_attempts.pop(rate_key, None)
+    set_auth_cookie(response, result["token"], request)
     
     return response
 
@@ -111,11 +164,19 @@ async def handle_change_password(
 
     if new_password != confirm_password:
         headers = hx_toast("پسورد جدید و تکرار آن یکسان نیستند.", "warning")
-        return HTMLResponse(content="", headers=headers)
+        return HTMLResponse(content="", headers=headers, status_code=400)
         
     if len(new_password) < 8:
         headers = hx_toast("پسورد باید حداقل ۸ کاراکتر باشد.", "warning")
-        return HTMLResponse(content="", headers=headers)
+        return HTMLResponse(content="", headers=headers, status_code=400)
+    if len(new_password) > 72:
+        headers = hx_toast("پسورد خیلی طولانی است", "warning")
+        return HTMLResponse(content="", headers=headers, status_code=400)
+    # Password complexity: at least one upper/lower/digit optional but enforce not common
+    # Prevent reusing same as old is handled by PB; also prevent identity reuse
+    if new_password.lower() in str(getattr(user, 'email', '')).lower():
+        headers = hx_toast("پسورد نباید مشابه ایمیل باشد", "warning")
+        return HTMLResponse(content="", headers=headers, status_code=400)
 
     collection_name = getattr(user, 'collectionName', 'users') 
     
@@ -147,12 +208,10 @@ async def handle_change_password(
 
     # 🟢 4. Inject the new cookie so they don't get kicked out!
     if login_result.get("ok"):
-        response.set_cookie(
-            key="pb_auth", 
-            value=login_result["token"], 
-            httponly=True, 
-            secure=False, # Set to True in production!
-            samesite="lax"
-        )
+        set_auth_cookie(response, login_result["token"], request)
+    else:
+        # If re-auth fails, clear stale cookie and force login
+        clear_auth_cookie(response)
+        headers["HX-Redirect"] = "/login"
         
     return response
