@@ -16,7 +16,7 @@ router = APIRouter(tags=["Trainees Management"])
 #  GET Requests
 # ──────────────────────────────────────────────
 @router.get("/trainees")
-async def trainees_list(
+def trainees_list(
     request: Request,
     page: int = Query(1, ge=1),
     query: str = Query(""),
@@ -79,7 +79,7 @@ async def trainees_list(
 
 
 @router.get("/trainees/search")
-async def search_trainees(
+def search_trainees(
     request: Request,
     query: str = "",
     page: int = Query(1, ge=1),
@@ -142,7 +142,7 @@ async def search_trainees(
 
 
 @router.get("/trainees/filter")
-async def filter_trainees(
+def filter_trainees(
     request: Request,
     gender: str = None,
     status: str = None,
@@ -203,7 +203,7 @@ async def filter_trainees(
 
 
 @router.get("/trainees/new")
-async def trainees_new_form(request: Request):
+def trainees_new_form(request: Request):
     user = request.state.user
     tenant = request.state.tenant
 
@@ -223,7 +223,7 @@ async def trainees_new_form(request: Request):
 
 
 @router.get("/trainees/{id}")
-async def show_trainee_detail(request: Request, id: str):
+def show_trainee_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant
     user = request.state.user
@@ -265,7 +265,7 @@ async def show_trainee_detail(request: Request, id: str):
 
 
 @router.get("/trainees/{id}/confirm-delete")
-async def trainee_confirm_delete(request: Request, id: str):
+def trainee_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
@@ -274,7 +274,7 @@ async def trainee_confirm_delete(request: Request, id: str):
 
 
 @router.delete("/trainees/{id}")
-async def trainee_delete(request: Request, id: str):
+def trainee_delete(request: Request, id: str):
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
@@ -296,7 +296,7 @@ async def trainee_delete(request: Request, id: str):
 
 
 @router.get("/trainees/{id}/edit")
-async def trainee_edit_form(request: Request, id: str):
+def trainee_edit_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -321,7 +321,7 @@ async def trainee_edit_form(request: Request, id: str):
 #  POST Requests (Mutations)
 # ──────────────────────────────────────────────
 @router.post("/trainees/new")
-async def trainee_create(
+def trainee_create(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
@@ -417,7 +417,7 @@ async def trainee_create(
 
 
 @router.post("/trainees/{id}")
-async def trainee_update(
+def trainee_update(
     request: Request,
     id: str,
     first_name: str = Form(...),

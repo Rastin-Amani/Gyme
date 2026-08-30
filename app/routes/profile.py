@@ -6,7 +6,7 @@ router = APIRouter(tags=["Profile"])
 
 
 @router.get("/profile")
-async def plan_list(request: Request):
+def plan_list(request: Request):
     tenant = request.state.tenant
     user = request.state.user
 

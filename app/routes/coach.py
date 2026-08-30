@@ -14,7 +14,7 @@ router = APIRouter(tags=["Coaches Management"])
 #  GET Requests
 # ──────────────────────────────────────────────
 @router.get("/coaches")
-async def coaches_list(request: Request, page: int = Query(1, ge=1)):
+def coaches_list(request: Request, page: int = Query(1, ge=1)):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -45,7 +45,7 @@ async def coaches_list(request: Request, page: int = Query(1, ge=1)):
 
 
 @router.get("/coaches/new")
-async def coaches_new_form(request: Request):
+def coaches_new_form(request: Request):
     user = request.state.user
     tenant = request.state.tenant
 
@@ -65,7 +65,7 @@ async def coaches_new_form(request: Request):
 
 
 @router.get("/coaches/{id}")
-async def coach_detail(request: Request, id: str):
+def coach_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -93,7 +93,7 @@ async def coach_detail(request: Request, id: str):
 
 
 @router.get("/coaches/{id}/edit")
-async def coach_edit_form(request: Request, id: str):
+def coach_edit_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -119,7 +119,7 @@ async def coach_edit_form(request: Request, id: str):
 
 
 @router.get("/coaches/{id}/confirm-delete")
-async def coach_confirm_delete(request: Request, id: str):
+def coach_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
@@ -128,7 +128,7 @@ async def coach_confirm_delete(request: Request, id: str):
 
 
 @router.delete("/coaches/{id}")
-async def coach_delete(request: Request, id: str):
+def coach_delete(request: Request, id: str):
     # Only owner can delete coaches
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
@@ -156,7 +156,7 @@ async def coach_delete(request: Request, id: str):
 #  POST Requests (Mutations)
 # ──────────────────────────────────────────────
 @router.post("/coaches/new")
-async def coach_create(
+def coach_create(
     request: Request,
     first_name: str = Form(...),
     last_name: str = Form(...),
@@ -213,7 +213,7 @@ async def coach_create(
 
 
 @router.post("/coaches/{id}")
-async def coach_update(
+def coach_update(
     request: Request,
     id: str,
     first_name: str = Form(...),

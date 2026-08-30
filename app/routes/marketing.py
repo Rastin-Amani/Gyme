@@ -14,7 +14,7 @@ router = APIRouter(tags=["Marketing"])
 
 
 @router.get("/")
-async def slash(request: Request):
+def slash(request: Request):
     tenant = request.state.tenant
     return templates.TemplateResponse(
         request=request,
@@ -24,7 +24,7 @@ async def slash(request: Request):
 
 
 @router.post("/lead/submit")
-async def submit_lead(
+def submit_lead(
     request: Request,
     name: str = Form(...),
     phone: str = Form(...),

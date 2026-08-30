@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Get Requests
 @router.get("/user/plans")
-async def plan_list (request: Request):
+def plan_list (request: Request):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -41,7 +41,7 @@ async def plan_list (request: Request):
 
 
 @router.get("/user/plans/{id}")
-async def show_plan_detail (request: Request, id: str):
+def show_plan_detail (request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user

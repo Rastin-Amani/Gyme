@@ -10,7 +10,7 @@ SW_PATH = Path(__file__).resolve().parent.parent / "static" / "sw.js"
 
 
 @router.get("/sw.js", include_in_schema=False)
-async def service_worker():
+def service_worker():
     # Lazy import avoids circular import: main.py imports pwa before APP_VERSION is defined
     from app.main import APP_VERSION
 
@@ -28,7 +28,7 @@ async def service_worker():
 
 
 @router.get("/offline/", include_in_schema=False, response_class=HTMLResponse)
-async def offline_page():
+def offline_page():
     return """<!doctype html>
 <html dir="rtl">
   <head>
@@ -83,7 +83,7 @@ async def offline_page():
 
 
 @router.get("/manifest.json", response_class=JSONResponse)
-async def dynamic_manifest(request: Request):
+def dynamic_manifest(request: Request):
     pb = request.state.pb
     pb_base_url = pb.base_url.rstrip("/")
     tenant = getattr(request.state, "tenant", None)
@@ -131,7 +131,7 @@ from fastapi.responses import RedirectResponse
 
 
 @router.get("/favicon.ico", include_in_schema=False)
-async def dynamic_favicon(request: Request):
+def dynamic_favicon(request: Request):
     # Grab the pb instance to get its base URL dynamically
     pb = request.state.pb
     pb_base_url = pb.base_url.rstrip("/")

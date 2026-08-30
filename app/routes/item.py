@@ -1,27 +1,38 @@
 from fastapi import APIRouter, Request, Form, Query
+import csv
+import functools
 import json
 from app.services.item import list_items, get_item_by_id, create_item, update_item
 from app.services.plan import get_plan_by_id
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
-import pandas as pd
 from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES, pb_escape
 from structlog import get_logger
 logger = get_logger(__name__)
 
 router = APIRouter(tags=["items Management"])
 
-df = pd.read_csv("data/Persian_Fitness_Exercises_Dataset.csv")
-EXERCISE_NAMES = df["نام حرکت (Exercise Name)"].dropna().unique().tolist()
 
-df = pd.read_csv("data/Persian_Diet_Foods_Dataset.csv")
-FOOD_NAMES = df["نام غذا/ماده (Persian Name)"].dropna().unique().tolist()
+# ponytail: whole-file read + unique in memory; datasets are small (~thousands rows).
+# Swap to DB-backed suggestions if the CSVs ever become a data source of record.
+@functools.lru_cache(maxsize=None)
+def _unique_names(path: str, column: str) -> tuple:
+    with open(path, newline="", encoding="utf-8-sig") as f:
+        return tuple({row[column].strip() for row in csv.DictReader(f) if row.get(column) and row[column].strip()})
+
+
+def _exercise_names():
+    return list(_unique_names("data/Persian_Fitness_Exercises_Dataset.csv", "نام حرکت (Exercise Name)"))
+
+
+def _food_names():
+    return list(_unique_names("data/Persian_Diet_Foods_Dataset.csv", "نام غذا/ماده (Persian Name)"))
 
 
 # Get Requests
 @router.get("/items/new")
-async def item_edit_form(request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
+def item_edit_form(request: Request, plan_type: str = Query(...), plan_id: str = Query(...)):
     tenant = request.state.tenant.id
     try:
         collection_name = sanitize_collection_name(plan_type)
@@ -47,14 +58,14 @@ async def item_edit_form(request: Request, plan_type: str = Query(...), plan_id:
             "plan_id": plan_id,
             "collection_name": collection_name,
             "item": None,
-            "exercise_names": EXERCISE_NAMES,
-            "food_names": FOOD_NAMES,
+            "exercise_names": _exercise_names(),
+            "food_names": _food_names(),
         },
     )
 
 
 @router.get("/items/{id}/edit")
-async def item_edit_form(request: Request, id: str, plan_type: str = Query(...)):
+def item_edit_form(request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -80,15 +91,15 @@ async def item_edit_form(request: Request, id: str, plan_type: str = Query(...))
             "item": item,
             "plan_type": plan_type,
             "collection_name": collection_name,
-            "exercise_names": EXERCISE_NAMES,
-            "food_names": FOOD_NAMES,
+            "exercise_names": _exercise_names(),
+            "food_names": _food_names(),
         },
     )
 
 
 # Delete requests
 @router.delete("/items/{id}")
-async def item_delete(request: Request, id: str, plan_type: str = Query(...)):
+def item_delete(request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
     try:
@@ -124,7 +135,7 @@ async def item_delete(request: Request, id: str, plan_type: str = Query(...)):
 
 # Confirm delete modal
 @router.get("/items/{id}/confirm-delete")
-async def item_confirm_delete(request: Request, id: str, plan_type: str = Query(...)):
+def item_confirm_delete(request: Request, id: str, plan_type: str = Query(...)):
     return templates.TemplateResponse(
         "modals/confirm_delete.html",
         {
@@ -137,7 +148,7 @@ async def item_confirm_delete(request: Request, id: str, plan_type: str = Query(
 
 # Post requests
 @router.post("/items")
-async def item_create(
+def item_create(
     request: Request,
     plan_type: str = Form(...),
     plan: str = Form(...),
@@ -241,7 +252,7 @@ async def item_create(
 
 
 @router.post("/items/{id}")
-async def item_update(
+def item_update(
     request: Request,
     id: str,
     plan_type: str = Form(...),

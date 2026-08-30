@@ -162,11 +162,13 @@ def test_dashboard_timeframe_allowlist():
     assert "pb_escape" in src
 
 def test_tenant_domain_escaping():
-    from app.services.tenants import get_tenant_by_domain
+    from app.services import tenants
     import inspect
-    src = inspect.getsource(get_tenant_by_domain)
+    # Escaping may live in a private lookup helper; check module source
+    src = inspect.getsource(tenants)
     assert "pb_escape" in src
     assert "is_valid_host" in src
+    assert "pb_escape" in inspect.getsource(tenants._lookup_tenant)
 
 def test_middleware_has_csrf_and_security_headers():
     import inspect

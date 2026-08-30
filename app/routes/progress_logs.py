@@ -19,7 +19,7 @@ router = APIRouter(tags=["Progress Logs"])
 #  GET /progress-log/new/{trainee_id}  –  Show Form
 # ──────────────────────────────────────────────
 @router.get("/progress-log/new/{trainee_id}")
-async def new_progress_log_form(request: Request, trainee_id: str):
+def new_progress_log_form(request: Request, trainee_id: str):
     pb = request.state.pb
     tenant = request.state.tenant
     user = request.state.user
@@ -196,7 +196,7 @@ async def save_progress_log(
 #  GET /progress-log/{log_id}/edit  –  Edit Form
 # ──────────────────────────────────────────────
 @router.get("/progress-log/{log_id}/edit")
-async def edit_progress_log_form(request: Request, log_id: str):
+def edit_progress_log_form(request: Request, log_id: str):
     pb = request.state.pb
     tenant = request.state.tenant
     user = request.state.user

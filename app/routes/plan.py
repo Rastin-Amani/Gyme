@@ -27,7 +27,7 @@ router = APIRouter(tags=["Plans Management"])
 #  GET /plans  –  list plans (owner / coach view)
 # ──────────────────────────────────────────────
 @router.get("/plans")
-async def plan_list(
+def plan_list(
     request: Request,
     page: int = Query(1, ge=1),
     query: str = Query(""),
@@ -115,7 +115,7 @@ async def plan_list(
 #  GET /plans/new  –  create plan form
 # ──────────────────────────────────────────────
 @router.get("/plans/new")
-async def plan_new_form(request: Request, template: str = Query("false")):
+def plan_new_form(request: Request, template: str = Query("false")):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -161,7 +161,7 @@ async def plan_new_form(request: Request, template: str = Query("false")):
 #  GET /plans/{id}  –  plan detail
 # ──────────────────────────────────────────────
 @router.get("/plans/{id}")
-async def show_plan_detail(request: Request, id: str):
+def show_plan_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -208,7 +208,7 @@ async def show_plan_detail(request: Request, id: str):
 #  GET /plans/{id}/edit  –  edit plan form
 # ──────────────────────────────────────────────
 @router.get("/plans/{id}/edit")
-async def plan_edit_form(request: Request, id: str):
+def plan_edit_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -259,7 +259,7 @@ async def plan_edit_form(request: Request, id: str):
 #  GET /templates/{id}/apply  –  show apply form (modal)
 # ──────────────────────────────────────────────
 @router.get("/templates/{id}/apply")
-async def template_apply_form(request: Request, id: str):
+def template_apply_form(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -303,7 +303,7 @@ async def template_apply_form(request: Request, id: str):
 #  POST /templates/{id}/apply  –  apply template
 # ──────────────────────────────────────────────
 @router.post("/templates/{id}/apply")
-async def template_apply(
+def template_apply(
     request: Request,
     id: str,
     trainee: str = Form(...),
@@ -354,7 +354,7 @@ async def template_apply(
 #  POST /plans  –  create plan / template
 # ──────────────────────────────────────────────
 @router.post("/plans")
-async def plan_create(
+def plan_create(
     request: Request,
     type: str = Form(...),
     trainee: str = Form(None),
@@ -447,7 +447,7 @@ async def plan_create(
 #  POST /plans/{id}  –  update plan / template
 # ──────────────────────────────────────────────
 @router.post("/plans/{id}")
-async def plan_update(
+def plan_update(
     request: Request,
     id: str,
     trainee: str = Form(None),
@@ -533,7 +533,7 @@ async def plan_update(
 
 
 @router.get("/plans/{id}/confirm-delete")
-async def plan_confirm_delete(request: Request, id: str):
+def plan_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
@@ -542,7 +542,7 @@ async def plan_confirm_delete(request: Request, id: str):
 
 
 @router.delete("/plans/{id}")
-async def plan_delete(request: Request, id: str):
+def plan_delete(request: Request, id: str):
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id

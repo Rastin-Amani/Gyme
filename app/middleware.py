@@ -1,7 +1,10 @@
 import time
 import uuid
 import os
+from urllib.parse import urlparse
+
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.concurrency import run_in_threadpool
 from fastapi import Request
 from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
 from structlog import get_logger
@@ -32,6 +35,25 @@ CSRF_EXEMPT_PATHS = [
 ]
 
 logger = get_logger(__name__)
+
+
+def _load_auth(pb, token: str):
+    """Blocking PocketBase token verification. Runs in threadpool."""
+    # Load token into the PocketBase instance
+    pb.auth_store.save(token, None)
+
+    # Verify token with the server.
+    # If the password was just changed, this will throw a 401 error!
+    pb.collection("users").auth_refresh()
+
+    return pb.auth_store.model
+
+
+def _host_matches(header_value: str, host_header: str) -> bool:
+    try:
+        return (urlparse(header_value).hostname or "").lower() == host_header
+    except Exception:
+        return False
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
@@ -66,23 +88,26 @@ class TenantMiddleware(BaseHTTPMiddleware):
         request.state.role = None
 
         is_authenticated = False
+        path = request.url.path
         token = request.cookies.get("pb_auth")
 
-        if token:
+        # Only spend the PB auth roundtrip where auth state is actually used:
+        # private routes, "/" (redirect decision) and "/login" (redirect-if-authed).
+        # Static assets / manifest / sw.js / logout / lead form never read request.state.user.
+        needs_auth = (
+            not (path == "/" or any(path.startswith(p) for p in PUBLIC_PATHS))
+            or path == "/"
+            or path == "/login"
+        )
+
+        if token and needs_auth:
             # Basic token hygiene: limit length to prevent DoS on auth_refresh
             if len(token) > 8192:
                 logger.warning("auth_token_too_long")
                 pb.auth_store.clear()
             else:
                 try:
-                    # Load token into the PocketBase instance
-                    pb.auth_store.save(token, None)
-
-                    # Verify token with the server.
-                    # If the password was just changed, this will throw a 401 error!
-                    pb.collection("users").auth_refresh()
-
-                    user = pb.auth_store.model
+                    user = await run_in_threadpool(_load_auth, pb, token)
                     request.state.user = user
                     request.state.role = getattr(user, "role", "trainee")
                     is_authenticated = True
@@ -94,7 +119,6 @@ class TenantMiddleware(BaseHTTPMiddleware):
                     pb.auth_store.clear()
 
         # ---- CSRF defense for state-changing authenticated requests ----
-        path = request.url.path
         method = request.method
         if is_authenticated and method in ("POST", "PUT", "PATCH", "DELETE"):
             is_exempt = any(path == p or path.startswith(p) for p in CSRF_EXEMPT_PATHS)
@@ -112,19 +136,9 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 origin_ok = True
                 referer_ok = True
                 if origin:
-                    try:
-                        from urllib.parse import urlparse
-                        origin_host = urlparse(origin).hostname or ""
-                        origin_ok = origin_host.lower() == host_header
-                    except Exception:
-                        origin_ok = False
+                    origin_ok = _host_matches(origin, host_header)
                 elif referer:
-                    try:
-                        from urllib.parse import urlparse
-                        referer_host = urlparse(referer).hostname or ""
-                        referer_ok = referer_host.lower() == host_header
-                    except Exception:
-                        referer_ok = False
+                    referer_ok = _host_matches(referer, host_header)
                 # Block if neither custom header nor valid origin/referer
                 # Allow if either custom header present OR origin/referer matches
                 if not has_custom_header and not (origin_ok and referer_ok):

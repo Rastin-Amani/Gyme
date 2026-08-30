@@ -11,7 +11,7 @@ router = APIRouter(tags=["Dashboard"])
 
 
 @router.get("/dashboard")
-async def owner_dashboard(request: Request, timeframe: str = "all"):
+def owner_dashboard(request: Request, timeframe: str = "all"):
     pb = request.state.pb
     tenant = request.state.tenant
     user = request.state.user
@@ -56,7 +56,7 @@ async def owner_dashboard(request: Request, timeframe: str = "all"):
 
 
 @router.get("/dashboard/debug-coach-stats")
-async def debug_coach_stats(request: Request):
+def debug_coach_stats(request: Request):
     pb = request.state.pb
     tenant_id = request.state.tenant.id
     user = request.state.user
@@ -141,7 +141,7 @@ async def debug_coach_stats(request: Request):
 
 
 @router.get("/dashboard/coach-stats")
-async def coach_stats_fragment(request: Request):
+def coach_stats_fragment(request: Request):
     pb = request.state.pb
     tenant_id = request.state.tenant.id
     user = request.state.user

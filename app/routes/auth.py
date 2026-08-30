@@ -82,7 +82,7 @@ def change_password_page(request: Request):
     )
 
 @router.post("/login")
-async def login(request: Request, identity: str = Form(...), password: str = Form(...)):
+def login(request: Request, identity: str = Form(...), password: str = Form(...)):
     
     # 1. Safe Tenant Extraction 🏢
     tenant = getattr(request.state, 'tenant', None)
@@ -147,7 +147,7 @@ async def login(request: Request, identity: str = Form(...), password: str = For
     return response
 
 @router.post("/change-password")
-async def handle_change_password(
+def handle_change_password(
     request: Request,
     old_password: str = Form(...),
     new_password: str = Form(...),

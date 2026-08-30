@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/user/dashboard", response_class=HTMLResponse)
-async def trainee_dashboard(request: Request):
+def trainee_dashboard(request: Request):
     pb = request.state.pb
     # 🟢 Extract the string ID explicitly for your database filters
     tenant_id = request.state.tenant.id
@@ -78,7 +78,7 @@ async def trainee_dashboard(request: Request):
 
 
 @router.post("/user/plans/{plan_id}/done")
-async def mark_plan_done(plan_id: str, request: Request):
+def mark_plan_done(plan_id: str, request: Request):
     pb = request.state.pb
     tenant_id = request.state.tenant.id
     user = request.state.user

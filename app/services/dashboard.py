@@ -100,17 +100,20 @@ def _coach_stats_single(pb, tenant_id: str, coach_id: str, coach_name: str, time
         elif ptype == "steroid":
             steroid += 1
 
+    # Count plans with progress records in ONE query instead of one per plan.
+    plan_ids = [p.id for p in plans if getattr(p, "id", None)]
     in_progress = 0
-    for p in plans:
-        pid = getattr(p, "id", None)
-        if not pid:
-            continue
+    if plan_ids:
+        plan_filter = " || ".join(f'plan="{pb_escape(pid)}"' for pid in plan_ids)
         try:
-            progress = pb.collection("plan_progress").get_first_list_item(
-                f'tenant="{pb_escape(tenant_id)}" && plan="{pb_escape(pid)}"'
+            rows = pb.collection("plan_progress").get_full_list(
+                query_params={
+                    "filter": f'tenant="{pb_escape(tenant_id)}" && ({plan_filter})',
+                    "fields": "id,plan",
+                }
             )
-            if progress:
-                in_progress += 1
+            # distinct plans having a progress record
+            in_progress = len({getattr(r, "plan", None) for r in rows} - {None})
         except Exception:
             pass
 
