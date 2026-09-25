@@ -1,6 +1,8 @@
 from pocketbase.errors import ClientResponseError
-from datetime import datetime
+from structlog import get_logger
 from app.security import pb_escape, ALLOWED_GENDERS, ALLOWED_TRAINEE_STATUS
+
+logger = get_logger(__name__)
 
 
 def _valid_date(s):
@@ -8,7 +10,9 @@ def _valid_date(s):
         return False
     # Allow YYYY-MM-DD only
     import re
+
     return bool(re.match(r"^\d{4}-\d{2}-\d{2}$", str(s)))
+
 
 def list_trainees(
     pb,
@@ -74,13 +78,17 @@ def list_trainees(
             trainee_ids = [p.trainee for p in plans if hasattr(p, "trainee") and p.trainee]
             if trainee_ids:
                 # Escape each id
-                trainee_ids_str = " || ".join([f'id="{pb_escape(tid)}"' for tid in trainee_ids[:200]])
+                trainee_ids_str = " || ".join(
+                    [f'id="{pb_escape(tid)}"' for tid in trainee_ids[:200]]
+                )
                 filter_str = (
                     f"({filter_str}) && ({trainee_ids_str})" if filter_str else f"{trainee_ids_str}"
                 )
             else:
                 # No trainees for coach -> force empty result
-                filter_str = f'({filter_str}) && id="__no_match__"' if filter_str else 'id="__no_match__"'
+                filter_str = (
+                    f'({filter_str}) && id="__no_match__"' if filter_str else 'id="__no_match__"'
+                )
         except Exception as e:
             from structlog import get_logger
 
@@ -101,6 +109,7 @@ def list_trainees(
 
 def get_trainee_by_id(pb, tenant, id):
     from app.security import pb_escape
+
     return pb.collection("trainees").get_first_list_item(
         f'tenant="{pb_escape(tenant)}" && id="{pb_escape(id)}"', query_params={"expand": "user"}
     )
@@ -108,9 +117,11 @@ def get_trainee_by_id(pb, tenant, id):
 
 def get_trainee_by_user(pb, tenant, user):
     from app.security import pb_escape
+
     try:
         return pb.collection("trainees").get_first_list_item(
-            f'tenant="{pb_escape(tenant)}" && user="{pb_escape(user)}"', query_params={"expand": "user"}
+            f'tenant="{pb_escape(tenant)}" && user="{pb_escape(user)}"',
+            query_params={"expand": "user"},
         )
     except ClientResponseError as e:
         if e.status == 404:
@@ -129,10 +140,23 @@ def create_trainee(pb, tenant, data: dict):
 
 def update_trainee(pb, trainee_id, data: dict):
     from app.security import pb_escape
+
     # Allow only safe fields, strip tenant/user changes
     safe_data = {}
-    allowed = {"gender","birthdate","blood_type","training_history","steroid_history","supplement_history","limitations","notes","height","weight","status"}
-    for k,v in (data or {}).items():
+    allowed = {
+        "gender",
+        "birthdate",
+        "blood_type",
+        "training_history",
+        "steroid_history",
+        "supplement_history",
+        "limitations",
+        "notes",
+        "height",
+        "weight",
+        "status",
+    }
+    for k, v in (data or {}).items():
         if k not in allowed:
             continue
         safe_data[k] = v
@@ -141,9 +165,21 @@ def update_trainee(pb, trainee_id, data: dict):
 
 def delete_trainee(pb, tenant, trainee_id):
     # Enforce tenant ownership before delete to prevent IDOR
-    get_trainee_by_id(pb, tenant, trainee_id)
+    trainee = get_trainee_by_id(pb, tenant, trainee_id)
     from app.security import pb_escape
-    return pb.collection("trainees").delete(pb_escape(trainee_id))
+
+    # Resolve the linked auth user (id string or expanded record) before removal
+    user_id = getattr(trainee, "user", None)
+    if not isinstance(user_id, str):
+        user_id = getattr(user_id, "id", None)
+    result = pb.collection("trainees").delete(pb_escape(trainee_id))
+    # Cascade: remove the auth user too, matching coach deletion semantics
+    if user_id:
+        try:
+            pb.collection("users").delete(pb_escape(user_id))
+        except Exception:
+            logger.warning("trainee_user_cascade_failed", trainee_id=trainee_id, user_id=user_id)
+    return result
 
 
 def verify_trainee_in_tenant(pb, tenant, trainee_id):

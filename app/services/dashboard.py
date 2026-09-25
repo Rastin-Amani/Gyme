@@ -7,6 +7,7 @@ logger = get_logger(__name__)
 
 ALLOWED_TIMEFRAMES = {"all", "week", "month"}
 
+
 def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
     # Validate timeframe against allowlist
     if timeframe not in ALLOWED_TIMEFRAMES:
@@ -70,7 +71,9 @@ def _coach_stats_single(pb, tenant_id: str, coach_id: str, coach_name: str, time
     tf = _time_filter(timeframe)
     try:
         plans = pb.collection("plans").get_full_list(
-            query_params={"filter": f'tenant="{pb_escape(tenant_id)}" && coach="{pb_escape(coach_id)}"{tf}'}
+            query_params={
+                "filter": f'tenant="{pb_escape(tenant_id)}" && coach="{pb_escape(coach_id)}"{tf}'
+            }
         )
         logger.debug("coach_stats.plans_fetched", coach_id=coach_id, count=len(plans))
     except Exception as e:
@@ -147,7 +150,9 @@ def get_coach_stats(
             # Verify coach belongs to tenant if role is coach
             rec_tenant = getattr(coach, "tenant", None)
             if rec_tenant and str(rec_tenant) != str(tenant_id):
-                logger.warning("get_coach_stats.tenant_mismatch", coach_id=coach_id, tenant=tenant_id)
+                logger.warning(
+                    "get_coach_stats.tenant_mismatch", coach_id=coach_id, tenant=tenant_id
+                )
                 return []
         except Exception as e:
             logger.warning("get_coach_stats.coach_fetch_failed", coach_id=coach_id, error=str(e))

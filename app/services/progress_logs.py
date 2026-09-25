@@ -30,11 +30,13 @@ def get_progress_logs_by_trainee(pb, tenant_id: str, trainee_id: str):
         }
     )
 
+
 def get_progress_log_with_tenant_check(pb, tenant_id: str, log_id: str):
     """Fetch log and verify tenant ownership, preventing IDOR."""
     log = get_progress_log_by_id(pb, log_id)
     rec_tenant = getattr(log, "tenant", None)
     if str(rec_tenant) != str(tenant_id):
         from pocketbase.errors import ClientResponseError
+
         raise ClientResponseError({"status": 404, "message": "Not found"}, 404, "Not found")
     return log

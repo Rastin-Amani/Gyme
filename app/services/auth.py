@@ -1,4 +1,4 @@
-from app.pb import pb
+from app.pb import get_pb
 from fastapi import Request
 from structlog import get_logger
 from app.i18n import _
@@ -6,7 +6,9 @@ from app.i18n import _
 logger = get_logger(__name__)
 
 
-def login_user(identity: str, password: str, tenant: str):
+def login_user(identity: str, password: str, tenant: str, pb=None):
+    if pb is None:
+        pb = get_pb()
     try:
         auth_data = pb.collection("users").auth_with_password(identity, password)
         user = auth_data.record
@@ -66,12 +68,15 @@ def create_user(
         logger.error("user_creation_failed", email=email, role=role, tenant=tenant_id, error=str(e))
         return {
             "ok": False,
-            "error": _("ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر دارد)"),
+            "error": _(
+                "ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر دارد)"
+            ),
         }
 
 
 def update_user(pb, user_id: str, data: dict):
     from app.security import pb_escape, validate_email, validate_phone
+
     safe_id = pb_escape(user_id)
     # Sanitize allowed fields only
     allowed = {"first_name", "last_name", "email", "phone"}
@@ -97,12 +102,13 @@ def update_user(pb, user_id: str, data: dict):
 
 
 def load_auth_from_cookie(request: Request):
+    client = get_pb()
     token = request.cookies.get("pb_auth")
     if token:
         # This tells the SDK who we are for THIS request
-        pb.auth_store.save(token, None)
+        client.auth_store.save(token, None)
     else:
-        pb.auth_store.clear()
+        client.auth_store.clear()
 
 
 def update_user_password(
@@ -114,6 +120,7 @@ def update_user_password(
     confirm_password: str,
 ) -> dict:
     from app.security import pb_escape
+
     # Validate collection name allowlist
     if collection_name not in {"users", "tenants"}:
         collection_name = "users"

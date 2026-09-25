@@ -1,5 +1,6 @@
 from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name
 
+
 def get_plans_by_trainee(pb, tenant, trainee_id):
     """Fetch all plans for a specific trainee within a tenant."""
     return pb.collection("plans").get_full_list(
@@ -25,6 +26,7 @@ def list_plans(
 ):
     """List plans with optional filters."""
     from app.security import ALLOWED_PLAN_STATUS
+
     filters = [f'tenant="{pb_escape(tenant)}"']
 
     if query:
@@ -36,7 +38,9 @@ def list_plans(
     if type and type in ALLOWED_PLAN_TYPES:
         filters.append(f'type="{pb_escape(type)}"')
     if coach_id:
-        filters.append(f'coach="{pb_escape(coach_id)}"')  # Make sure this matches your DB relation name
+        filters.append(
+            f'coach="{pb_escape(coach_id)}"'
+        )  # Make sure this matches your DB relation name
 
     # 🟢 PocketBase Boolean Fields: NO QUOTES
     if is_template is True:
@@ -96,14 +100,26 @@ def update_plan(pb, tenant, plan_id, data: dict):
     get_plan_by_id(pb, tenant, plan_id)
     # Sanitize data: only allow safe fields, tenant/is_template not overwriteable arbitrarily
     safe_data = {}
-    allowed = {"type","trainee","start_date","end_date","days_per_week","status","notes","is_template","template_name","coach"}
-    for k,v in (data or {}).items():
+    allowed = {
+        "type",
+        "trainee",
+        "start_date",
+        "end_date",
+        "days_per_week",
+        "status",
+        "notes",
+        "is_template",
+        "template_name",
+        "coach",
+    }
+    for k, v in (data or {}).items():
         if k not in allowed:
             continue
         if k == "type" and v not in ALLOWED_PLAN_TYPES:
             continue
         if k == "status":
             from app.security import ALLOWED_PLAN_STATUS
+
             if v not in ALLOWED_PLAN_STATUS:
                 continue
         safe_data[k] = v
@@ -145,6 +161,7 @@ def apply_template(
         raise ValueError("Invalid template type")
     # Validate trainee belongs to same tenant (defense in depth)
     from app.services.trainee import get_trainee_by_id
+
     try:
         get_trainee_by_id(pb, tenant, trainee_id)
     except Exception as e:

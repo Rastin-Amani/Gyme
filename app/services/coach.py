@@ -32,5 +32,5 @@ def get_coach_by_id(pb, tenant, id):
 
 def delete_coach(pb, tenant, coach_id):
     # Verify tenant ownership before delete
-    coach = get_coach_by_id(pb, tenant, coach_id)
+    get_coach_by_id(pb, tenant, coach_id)
     return pb.collection("users").delete(pb_escape(coach_id))
