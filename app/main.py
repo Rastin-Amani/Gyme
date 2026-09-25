@@ -32,8 +32,7 @@ except ImportError:
 # middleware import
 from app.middleware import TenantMiddleware
 
-# i18n: locale switch endpoint (cookie + redirect, Seoz pattern)
-from fastapi.responses import RedirectResponse, JSONResponse
+# i18n: locale switch endpoint (cookie + redirect)
 from app.i18n import ENABLED_LOCALES, LOCALE_COOKIE
 
 # swagger/docs only in dev

@@ -1,4 +1,4 @@
-"""Locale registry + translation plumbing (Seoz pattern).
+"""Locale registry + translation plumbing.
 
 - ``LOCALES``      — one registry of BCP 47 locale metadata (direction, names,
                      enabled state). Adding a language = add an entry + a
