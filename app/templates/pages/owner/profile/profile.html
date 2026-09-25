@@ -5,10 +5,10 @@
             class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex-row-reverse rounded-[2rem]"
         >
             <a
-                href="{% if user.role == 'owner' %}/plans/edit{% else %}/change-password{% endif %}"
+                href="/change-password"
                 class="btn btn-sm border-2 border-base-content"
             >
-                {% if user.role == 'owner' %}{{ _('ویرایش حساب') }}{% else %}{{ _('تغییر رمز عبور') }}{% endif %}
+                {{ _('تغییر رمز عبور') }}
             </a>
             <div class="text-center">
                 <h1 class="font-display font-normal text-2xl leading-tight text-right ml-4">
