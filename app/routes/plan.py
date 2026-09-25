@@ -4,7 +4,6 @@ from app.services.plan import (
     list_plans,
     get_plan_by_id,
     update_plan,
-    list_templates,
     apply_template,
     get_template_by_id,
     delete_plan,
@@ -16,7 +15,12 @@ from app.services.trainee import list_trainees, get_trainee_by_id
 from app.utils import hx_toast
 import json
 from structlog import get_logger
-from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name, ALLOWED_PLAN_STATUS
+from app.security import (
+    pb_escape,
+    ALLOWED_PLAN_TYPES,
+    sanitize_collection_name,
+    ALLOWED_PLAN_STATUS,
+)
 from app.i18n import _
 
 logger = get_logger(__name__)
@@ -62,13 +66,13 @@ def plan_list(
 
     try:
         coaches = (
-            pb.collection("coaches")
+            pb.collection("users")
             .get_list(
                 page=1,
                 per_page=100,
                 query_params={
-                    "filter": f'tenant="{pb_escape(tenant)}"',
-                    "sort": "-created",
+                    "filter": f'tenant="{pb_escape(tenant)}" && role="coach"',
+                    "sort": "first_name",
                 },
             )
             .items
@@ -133,7 +137,10 @@ def plan_new_form(request: Request, template: str = Query("false")):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
+                query_params={
+                    "filter": f'tenant="{pb_escape(tenant)}" && role="coach"',
+                    "sort": "first_name",
+                },
             )
             .items
         )
@@ -231,7 +238,10 @@ def plan_edit_form(request: Request, id: str):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
+                query_params={
+                    "filter": f'tenant="{pb_escape(tenant)}" && role="coach"',
+                    "sort": "first_name",
+                },
             )
             .items
         )
@@ -278,7 +288,10 @@ def template_apply_form(request: Request, id: str):
             .get_list(
                 page=1,
                 per_page=100,
-                query_params={"filter": f'tenant="{pb_escape(tenant)}" && role="coach"', "sort": "first_name"},
+                query_params={
+                    "filter": f'tenant="{pb_escape(tenant)}" && role="coach"',
+                    "sort": "first_name",
+                },
             )
             .items
         )
@@ -380,7 +393,9 @@ def plan_create(
     if status and status not in ALLOWED_PLAN_STATUS:
         status = "active"
     if days_per_week is not None and not (1 <= days_per_week <= 7):
-        trigger_data = {"show-toast": {"message": _("تعداد روزهای هفته باید بین ۱ تا ۷ باشد"), "type": "error"}}
+        trigger_data = {
+            "show-toast": {"message": _("تعداد روزهای هفته باید بین ۱ تا ۷ باشد"), "type": "error"}
+        }
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if trainee and not is_template_bool:
         try:
@@ -392,6 +407,7 @@ def plan_create(
         # Verify coach belongs to tenant
         try:
             from app.services.coach import get_coach_by_id
+
             get_coach_by_id(pb, tenant, coach)
         except Exception:
             coach = user.id  # fallback to self
@@ -423,7 +439,9 @@ def plan_create(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         success_msg = (
-            _("قالب جدید با موفقیت ذخیره شد") if is_template_bool else _("برنامه جدید با موفقیت ایجاد شد")
+            _("قالب جدید با موفقیت ذخیره شد")
+            if is_template_bool
+            else _("برنامه جدید با موفقیت ایجاد شد")
         )
         redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
 
@@ -439,7 +457,10 @@ def plan_create(
         )
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {
-            "show-toast": {"message": _("خطا در ایجاد. لطفا فیلدها را بررسی کنید."), "type": "error"}
+            "show-toast": {
+                "message": _("خطا در ایجاد. لطفا فیلدها را بررسی کنید."),
+                "type": "error",
+            }
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -493,6 +514,7 @@ def plan_update(
     if coach:
         try:
             from app.services.coach import get_coach_by_id
+
             get_coach_by_id(pb, tenant, coach)
         except Exception:
             coach = getattr(existing, "coach", user.id)
