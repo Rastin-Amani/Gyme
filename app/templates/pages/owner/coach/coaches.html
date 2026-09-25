@@ -3,10 +3,10 @@
     <div id="coaches-content">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-xl font-bold">مربی‌ها</h1>
-                <p class="text-sm opacity-70">مدیریت مربی‌های ثبت‌شده</p>
+                <h1 class="text-xl font-bold">{{ _('مربی‌ها') }}</h1>
+                <p class="text-sm opacity-70">{{ _('مدیریت مربی‌های ثبت‌شده') }}</p>
             </div>
-            <a href="/coaches/new" class="btn btn-primary">مربی جدید</a>
+            <a href="/coaches/new" class="btn btn-primary">{{ _('مربی جدید') }}</a>
         </div>
 
         <div id="coaches-table-container">
@@ -60,7 +60,7 @@
                                     <span
                                         class="status status-secondary mr-2 animate-bounce"
                                     ></span>
-                                    هنوز مربی‌ای ثبت نکردید!
+                                    {{ _('هنوز مربی‌ای ثبت نکردید!') }}
                                 </p>
                             </div>
                         </div>
@@ -83,7 +83,7 @@
                             «
                         </a>
                         <button class="join-item btn btn-sm btn-disabled pointer-events-none">
-                            صفحه {{ page }} از {{ total_pages }}
+                            {{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}
                         </button>
                         <a
                             href="/coaches?page={{ page + 1 }}"

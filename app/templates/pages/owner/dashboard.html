@@ -3,7 +3,7 @@
 {% block dashboard_content %}
     <div class="bg-base-100 pb-24">
         <div class="flex justify-between text-right flex-col gap-3 mb-8">
-            <h1 class="text-xl font-black">آمار کلی 📊</h1>
+            <h1 class="text-xl font-black">{{ _('آمار کلی') }} 📊</h1>
 
             <select
                 name="timeframe"
@@ -13,13 +13,13 @@
                 hx-swap="outerHTML"
             >
                 <option value="all" {% if timeframe == 'all' %}selected{% endif %}>
-                    همه زمان‌ها
+                    {{ _('همه زمان‌ها') }}
                 </option>
                 <option value="month" {% if timeframe == 'month' %}selected{% endif %}>
-                    این ماه
+                    {{ _('این ماه') }}
                 </option>
                 <option value="week" {% if timeframe == 'week' %}selected{% endif %}>
-                    این هفته
+                    {{ _('این هفته') }}
                 </option>
             </select>
         </div>

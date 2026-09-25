@@ -2,7 +2,7 @@
 {% block dashboard_content %}
     <div class="max-w-150">
         <div class="items-center justify-between bg-base-200 p-4 mb-4 card flex-row-reverse">
-            <a href="/change-password" class="btn btn-sm">تغییر پسورد</a>
+            <a href="/change-password" class="btn btn-sm">{{ _('تغییر پسورد') }}</a>
             <div class="text-center">
                 <h1 class="text-m font-semibold text-right ml-4">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
@@ -12,19 +12,19 @@
         <!-- Info Grid -->
         <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
             <div>
-                <span class="opacity-60 block">ایمیل</span>
+                <span class="opacity-60 block">{{ _('ایمیل') }}</span>
                 <span class="font-medium">{{ user.email }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">وضعیت</span>
-                <span class="font-medium">فعال</span>
+                <span class="opacity-60 block">{{ _('وضعیت') }}</span>
+                <span class="font-medium">{{ _('فعال') }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">تاریخ ساخت حساب</span>
+                <span class="opacity-60 block">{{ _('تاریخ ساخت حساب') }}</span>
                 <span class="font-medium">{{ tenant.created | jalali_date or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">تاریخ آخرین آپدیت</span>
+                <span class="opacity-60 block">{{ _('تاریخ آخرین آپدیت') }}</span>
                 <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
             </div>
         </div>
@@ -32,7 +32,9 @@
         <!-- Items Section -->
         <div class="hidden">
             <div class="mt-4" id="items-list-container">
-                <div class="divider text-xs opacity-50">اطلاعات و تنظیمات اپلیکیشن</div>
+                <div class="divider text-xs opacity-50">
+                    {{ _('اطلاعات و تنظیمات اپلیکیشن') }}
+                </div>
                 <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
                     <div></div>
                 </div>

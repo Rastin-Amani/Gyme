@@ -12,7 +12,7 @@
                 hx-select="#plans-content"
                 hx-push-url="true"
             >
-                برنامه‌ها
+                {{ _('برنامه‌ها') }}
             </a>
             <a
                 href="/plans?is_template=true"
@@ -23,7 +23,7 @@
                 hx-select="#plans-content"
                 hx-push-url="true"
             >
-                قالب‌ها
+                {{ _('قالب‌ها') }}
             </a>
         </div>
 
@@ -31,15 +31,15 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="text-xl font-bold">
-                    {% if is_template %}قالب‌ها{% else %}برنامه‌ها{% endif %}
+                    {% if is_template %}{{ _('قالب‌ها') }}{% else %}{{ _('برنامه‌ها') }}{% endif %}
                 </h1>
                 <p class="text-sm opacity-70"></p>
             </div>
 
             {% if is_template %}
-                <a href="/plans/new?template=true" class="btn btn-primary">قالب جدید</a>
+                <a href="/plans/new?template=true" class="btn btn-primary">{{ _('قالب جدید') }}</a>
             {% else %}
-                <a href="/plans/new" class="btn btn-primary">برنامه جدید</a>
+                <a href="/plans/new" class="btn btn-primary">{{ _('برنامه جدید') }}</a>
             {% endif %}
         </div>
 
@@ -49,7 +49,7 @@
                 class="collapse collapse-arrow border border-base-300 bg-base-200 rounded-box mb-6"
             >
                 <input type="checkbox" />
-                <div class="collapse-title text-md font-medium">جستجو و فیلتر</div>
+                <div class="collapse-title text-md font-medium">{{ _('جستجو و فیلتر') }}</div>
                 <div class="collapse-content">
                     <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                         <label class="form-control floating-label">
@@ -57,7 +57,7 @@
                                 type="text"
                                 name="query"
                                 id="search-input"
-                                placeholder="جستجو (نام شاگرد، نام مربی...)"
+                                placeholder="{{ _('جستجو (نام شاگرد، نام مربی...)') }}"
                                 class="input input-bordered w-full peer"
                                 value="{{ search_query or '' }}"
                                 hx-get="/plans?page=1"
@@ -67,7 +67,7 @@
                                 hx-push-url="true"
                                 hx-trigger="keyup changed delay:500ms, search"
                             />
-                            <span class="label-text">جستجو (نام شاگرد، نام مربی...)</span>
+                            <span class="label-text">{{ _('جستجو (نام شاگرد، نام مربی...)') }}</span>
                         </label>
 
                         <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
@@ -87,28 +87,28 @@
                                         value=""
                                         {% if not filter_params.type %}selected{% endif %}
                                     >
-                                        همه
+                                        {{ _('همه') }}
                                     </option>
                                     <option
                                         value="diet"
                                         {% if filter_params.type == 'diet' %}selected{% endif %}
                                     >
-                                        غذایی
+                                        {{ _('غذایی') }}
                                     </option>
                                     <option
                                         value="training"
                                         {% if filter_params.type == 'training' %}selected{% endif %}
                                     >
-                                        ورزشی
+                                        {{ _('ورزشی') }}
                                     </option>
                                     <option
                                         value="steroid"
                                         {% if filter_params.type == 'steroid' %}selected{% endif %}
                                     >
-                                        استروئید
+                                        {{ _('استروئید') }}
                                     </option>
                                 </select>
-                                <span class="label-text">نوع برنامه</span>
+                                <span class="label-text">{{ _('نوع برنامه') }}</span>
                             </label>
                         </div>
 
@@ -118,7 +118,7 @@
                             class="btn btn-primary btn-soft btn-block mt-2"
                             onclick="clearAllFilters()"
                         >
-                            پاک کردن فیلترها
+                            {{ _('پاک کردن فیلترها') }}
                         </button>
                     </form>
                 </div>
@@ -158,13 +158,13 @@
                                             </span>
                                             <span class="text-xs opacity-60 block">
                                                 {% if plan.type == 'diet' %}
-                                                    غذایی
+                                                    {{ _('غذایی') }}
                                                 {% elif plan.type == 'training' %}
-                                                    ورزشی
+                                                    {{ _('ورزشی') }}
                                                 {% else %}
-                                                    استروئید
+                                                    {{ _('استروئید') }}
                                                 {% endif %}
-                                                · {{ plan.days_per_week or '-' }} روز/هفته
+                                                · {{ plan.days_per_week or '-' }} {{ _('روز/هفته') }}
                                             </span>
                                         </div>
 
@@ -201,7 +201,7 @@
                                             <span
                                                 class="status status-secondary animate-bounce ml-1"
                                             ></span>
-                                            هنوز برنامه‌ای ثبت نکردید!
+                                            {{ _('هنوز برنامه‌ای ثبت نکردید!') }}
                                         {% endif %}
                                     </p>
                                 </div>
@@ -225,7 +225,7 @@
                         «
                     </a>
                     <button class="join-item btn btn-sm btn-disabled pointer-events-none">
-                        صفحه {{ page }} از {{ total_pages }}
+                        {{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}
                     </button>
                     <a
                         href="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"

@@ -63,3 +63,26 @@
 @utility animate-slide-up {
     animation: slide-up 0.3s ease-out both;
 }
+
+/* Unlayered: language switcher <details class="dropdown"> — daisyUI hides
+   .dropdown-content behind opacity:0 unless :focus-within/.dropdown-open;
+   native details[open] needs an explicit open state. */
+.dropdown > .dropdown-content,
+details.dropdown > .dropdown-content {
+    /* base may set opacity 0; open state below wins via higher specificity */
+}
+details.dropdown[open] > .dropdown-content {
+    opacity: 1;
+    scale: 1;
+    display: block;
+    position: absolute;
+    z-index: 999;
+}
+/* summary marker hidden + button reset */
+details.dropdown > summary {
+    list-style: none;
+    cursor: pointer;
+}
+details.dropdown > summary::-webkit-details-marker {
+    display: none;
+}

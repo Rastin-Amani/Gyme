@@ -1,11 +1,11 @@
 {% set input_name = name | default("date") %}
 {% set input_label = label | default("") %}
-{% set placeholder = placeholder | default("انتخاب تاریخ") %}
+{% set placeholder = placeholder | default(_("انتخاب تاریخ")) %}
 {% set min_year = min_year | default(1330) %}
 {% set max_year = max_year | default(1407) %}
-{% set modal_title = modal_title | default("انتخاب تاریخ") %}
-{% set confirm_text = confirm_text | default("تایید") %}
-{% set cancel_text = cancel_text | default("بستن") %}
+{% set modal_title = modal_title | default(_("انتخاب تاریخ")) %}
+{% set confirm_text = confirm_text | default(_("تایید")) %}
+{% set cancel_text = cancel_text | default(_("بستن")) %}
 {% set required = required | default("-") %}
 
 <div
@@ -28,7 +28,7 @@
                 @click="openModal()"
                 {{ required }}
             />
-            <div class="validator-hint hidden">این فیلد اجباریه.</div>
+            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
         </label>
     {% endif %}
 
@@ -66,7 +66,7 @@
 
         <!-- Changed from <form method="dialog"> to <div> -->
         <div class="modal-backdrop" @click="closeModal()">
-            <button class="cursor-default">close</button>
+            <button class="cursor-default">{{ _('close') }}</button>
         </div>
     </dialog>
 </div>

@@ -1,7 +1,8 @@
 <!doctype html>
 <html
+    lang="{{ locale.code }}"
+    dir="{{ locale.direction }}"
     data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'gyme') }}"
-    dir="rtl"
 >
     <head>
         <meta charset="UTF-8" />
@@ -16,8 +17,8 @@
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
 
-        <title>{{ title or 'جیمی' }}</title>
-        <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}" />
+        <title>{{ title or _('جیمی') }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v={{ app_version }}" />
         
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
             <style>
@@ -39,7 +40,7 @@
         <script>
             (function() {
                 var BANNER_ID = 'offline-banner';
-                var BANNER_TEXT = '\u26A0\uFE0F \u0634\u0645\u0627 \u0622\u0641\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F \u2014 \u062F\u0627\u062F\u0647\u200C\u0647\u0627\u06CC \u0630\u062E\u06CC\u0631\u0647\u200C\u0634\u062F\u0647 \u0646\u0645\u0627\u06CC\u0634 \u062F\u0627\u062F\u0647 \u0645\u06CC\u200C\u0634\u0648\u062F';
+                var BANNER_TEXT = {{ _('⚠️ شما آفلاین هستید — داده‌های ذخیره‌شده نمایش داده می‌شود') | tojson }};
                 function createBanner() {
                     var el = document.createElement('div');
                     el.id = BANNER_ID;
@@ -96,7 +97,7 @@
                 <div id="modal-container"></div>
                 <div
                     id="toast-container"
-                    class="fixed top-5 right-5 z-50 flex flex-col gap-2"
+                    class="fixed top-5 end-5 z-50 flex flex-col gap-2"
                 ></div>
             </main>
         </div>
@@ -230,7 +231,7 @@
                                 if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
                                     document.dispatchEvent(new CustomEvent('show-toast', {
                                         detail: {
-                                            message: 'نسخه جدید در دسترس است. برای بروزرسانی کلیک کنید.',
+                                            message: {{ _('نسخه جدید در دسترس است. برای بروزرسانی کلیک کنید.') | tojson }},
                                             type: 'info',
                                         },
                                     }));

@@ -10,7 +10,7 @@
         >
             <summary class="collapse-title font-bold text-sm flex items-center gap-2">
                 <span class="text-base">🏋️</span>
-                <span>عملکرد مربیان</span>
+                <span>{{ _('عملکرد مربیان') }}</span>
                 <span class="badge badge-sm badge-ghost">{{ coach_stats|length }}</span>
             </summary>
             <div class="collapse-content">{% include "components/coach_stats.html" %}</div>
@@ -21,7 +21,7 @@
         <div class="border border-base-300 rounded-box bg-primary/5 p-4">
             <div class="flex items-center gap-2 mb-3">
                 <span class="text-base">🏋️</span>
-                <span class="font-bold text-sm">عملکرد شما</span>
+                <span class="font-bold text-sm">{{ _('عملکرد شما') }}</span>
             </div>
             {% include "components/coach_stats.html" %}
         </div>

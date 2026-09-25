@@ -21,7 +21,9 @@
 
                     <!-- Action Buttons -->
                     <div class="flex justify-between items-center mt-6">
-                        <button type="submit" class="btn btn-primary w-1/2">ذخیره تغییرات</button>
+                        <button type="submit" class="btn btn-primary w-1/2">
+                            {{ _('ذخیره تغییرات') }}
+                        </button>
 
                         <!-- Cancel button simply removes the modal from the DOM -->
                         <button
@@ -29,7 +31,7 @@
                             class="btn btn-ghost"
                             hx-on:click="document.getElementById('item-modal').remove()"
                         >
-                            لغو
+                            {{ _('لغو') }}
                         </button>
                     </div>
                 </form>

@@ -6,35 +6,35 @@
         >
             {% if plan.is_template | string | lower == 'true' %}
                 <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
                         class=" btn-error btn-soft btn-sm"
                     >
-                        حذف
+                        {{ _('حذف') }}
                     </button>
                 </div>
                 <div class="text-center">
                     <h1 class="text-m font-semibold text-right ml-4">
-                        <span class="opacity-60 font-extrabold">قالب:</span>
-                        {{ plan.template_name or 'بدون نام' }}
+                        <span class="opacity-60 font-extrabold">{{ _('قالب:') }}</span>
+                        {{ plan.template_name or _('بدون نام') }}
                     </h1>
                 </div>
             {% else %}
                 <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">ویرایش</a>
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
                         class="btn btn-sm btn-error btn-soft"
                     >
-                        حذف
+                        {{ _('حذف') }}
                     </button>
                 </div>
                 <div class="text-center">
                     <h1 class="text-m font-semibold text-right ml-4">
-                        برنامه‌ی
+                        {{ _('برنامه‌ی') }}
                         {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                     </h1>
                 </div>
@@ -43,28 +43,28 @@
 
         <div class="grid grid-cols-3 gap-4 text-sm mb-4 text-center">
             <div>
-                <span class="opacity-60 block">نوع</span>
+                <span class="opacity-60 block">{{ _('نوع') }}</span>
                 <span class="font-medium">
                     {% if plan.type == 'diet' %}
-                        غذایی
+                        {{ _('غذایی') }}
                     {% elif plan.type =='training' %}
-                        ورزشی
+                        {{ _('ورزشی') }}
                     {% else %}
-                        استروئید
+                        {{ _('استروئید') }}
                     {% endif %}
                 </span>
             </div>
             <div>
-                <span class="opacity-60 block">روز در هفته</span>
+                <span class="opacity-60 block">{{ _('روز در هفته') }}</span>
                 <span class="font-medium">{{ plan.days_per_week or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">وضعیت</span>
+                <span class="opacity-60 block">{{ _('وضعیت') }}</span>
                 <span class="font-medium">
                     {% if plan.status == 'active' %}
-                        فعال
+                        {{ _('فعال') }}
                     {% elif plan.status == 'inactive' %}
-                        غیرفعال
+                        {{ _('غیرفعال') }}
                     {% else %}
                         -
                     {% endif %}
@@ -73,17 +73,17 @@
 
             {% if plan.is_template | string | lower != 'true' %}
                 <div>
-                    <span class="opacity-60 block">مربی</span>
+                    <span class="opacity-60 block">{{ _('مربی') }}</span>
                     <span class="font-medium">
                         {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
                     </span>
                 </div>
                 <div>
-                    <span class="opacity-60 block">تاریخ شروع</span>
+                    <span class="opacity-60 block">{{ _('تاریخ شروع') }}</span>
                     <span class="font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
                 </div>
                 <div>
-                    <span class="opacity-60 block">تاریخ پایان</span>
+                    <span class="opacity-60 block">{{ _('تاریخ پایان') }}</span>
                     <span class="font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
                 </div>
             {% endif %}
@@ -104,13 +104,13 @@
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
-                اعمال برای شاگرد
+                {{ _('اعمال برای شاگرد') }}
             </button>
         {% endif %}
 
         <div>
             <div class="mt-4">
-                <div class="divider text-xs opacity-50">آیتم‌های برنامه</div>
+                <div class="divider text-xs opacity-50">{{ _('آیتم‌های برنامه') }}</div>
                 <button
                     class="btn btn-primary btn-soft btn-s w-full mb-4"
                     type="button"
@@ -119,7 +119,7 @@
                     hx-swap="innerHTML"
                     hx-boost="false"
                 >
-                    افزودن آیتم
+                    {{ _('افزودن آیتم') }}
                 </button>
                 <div
                     id="items-list-content"
@@ -136,7 +136,7 @@
                                     <div class="max-w-3/4">
                                         <h3 class="font-bold text-sm">{{ item.meal_name }}</h3>
                                         <p class="text-sm opacity-80 mt-1">
-                                            غذا: {{ item.name }} | مقدار: {{ item.quantity }}
+                                            {{ _('غذا:') }} {{ item.name }} | {{ _('مقدار:') }} {{ item.quantity }}
                                         </p>
                                     </div>
                                     <button
@@ -148,18 +148,18 @@
                                         hx-boost="false"
                                         hx-select="unset"
                                     >
-                                        ویرایش
+                                        {{ _('ویرایش') }}
                                     </button>
                                 </div>
                                 {% if item.notes %}
-                                    <p class="text-xs opacity-60 mt-2">توضیحات: {{ item.notes }}</p>
+                                    <p class="text-xs opacity-60 mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
                                 {% endif %}
                             {% elif plan.type == 'steroid' %}
                                 <div class="flex justify-between items-center">
                                     <div>
                                         <h3 class="font-bold text-sm">{{ item.name }}</h3>
                                         <p class="text-sm opacity-80 mt-1">
-                                            روز مصرف: {{ item.seq or '-' }}
+                                            {{ _('روز مصرف:') }} {{ item.seq or '-' }}
                                         </p>
                                     </div>
                                     <button
@@ -171,21 +171,21 @@
                                         hx-boost="false"
                                         hx-select="unset"
                                     >
-                                        ویرایش
+                                        {{ _('ویرایش') }}
                                     </button>
                                 </div>
                                 {% if item.notes %}
-                                    <p class="text-xs opacity-60 mt-2">توضیحات: {{ item.notes }}</p>
+                                    <p class="text-xs opacity-60 mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
                                 {% endif %}
                             {% elif plan.type == 'training' %}
                                 <div class="flex justify-between items-center gap-2">
                                     <div>
                                         <span class="badge badge-accent badge-sm">
-                                            روز {{ item.seq }}
+                                            {{ _('روز') }} {{ item.seq }}
                                         </span>
                                         <h3 class="font-bold text-sm mt-1">{{ item.name }}</h3>
                                         <p class="text-sm opacity-80 mt-1">
-                                            ست: {{ item.sets }} | تکرار: {{ item.reps }} | وزن:
+                                            {{ _('ست:') }} {{ item.sets }} | {{ _('تکرار:') }} {{ item.reps }} | {{ _('وزن:') }}
                                             {{ item.weight }}kg
                                         </p>
                                     </div>
@@ -198,7 +198,7 @@
                                         hx-boost="false"
                                         hx-select="unset"
                                     >
-                                        ویرایش
+                                        {{ _('ویرایش') }}
                                     </button>
                                 </div>
                             {% else %}
@@ -209,7 +209,7 @@
                         <div class="bg-base-200 p-4 text-center card border border-base-300">
                             <p class="text-sm opacity-60 p-4">
                                 <span class="status status-secondary animate-bounce ml-1"></span>
-                                هیچ آیتمی ثبت نشده.
+                                {{ _('هیچ آیتمی ثبت نشده.') }}
                             </p>
                         </div>
                     {% endfor %}

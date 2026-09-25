@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <div class="fixed top-2 end-2 z-50">
+        {% include "components/locale_switcher.html" %}
+    </div>
     <style>
         .max-w-150,
         #main-content,
@@ -224,24 +227,22 @@
                 <div
                     class="badge badge-primary badge-outline badge-lg px-5 py-4 text-xs font-bold bg-primary/5 border-primary/20 mb-8 badge-pulse rounded-box"
                 >
-                    پلتفرم انحصاری مربیان الیت 🏆
+                    {{ _('پلتفرم انحصاری مربیان الیت') }} 🏆
                 </div>
 
                 <h1
                     class="text-3xl sm:text-4xl md:text-5xl font-medium leading-[1.4] text-base-content max-w-2xl"
                 >
-                    دوران برنامه‌های کاغذی و PDF تمام شده!
+                    {{ _('دوران برنامه‌های کاغذی و PDF تمام شده!') }}
                     <br />
-                    <span class="text-primary font-black">اپلیکیشن اختصاصی</span>
-                    شما آماده است.
+                    <span class="text-primary font-black">{{ _('اپلیکیشن اختصاصی') }}</span>
+                    {{ _('شما آماده است.') }}
                 </h1>
 
                 <p
                     class="text-base-content/60 text-sm sm:text-base md:text-lg mb-3 max-w-xl leading-relaxed font-medium"
                 >
-                    شاگردان شما در باشگاه با واتس‌اپ و فایل‌های PDF سردرگم می‌شوند. با یک پلتفرم
-                    فوق‌سریع و اختصاصی، جریان کاری خود را سیستماتیک کنید، خطای شاگرد را به صفر
-                    برسانید و درآمدتان را چند برابر کنید.
+                    {{ _('شاگردان شما در باشگاه با واتس‌اپ و فایل‌های PDF سردرگم می‌شوند. با یک پلتفرم فوق‌سریع و اختصاصی، جریان کاری خود را سیستماتیک کنید، خطای شاگرد را به صفر برسانید و درآمدتان را چند برابر کنید.') }}
                 </p>
 
                 <div class="flex flex-col items-center w-full max-w-xs gap-3">
@@ -249,7 +250,7 @@
                         href="#contact-form"
                         class="btn btn-primary btn-lg w-full h-14 text-base font-bold rounded-2xl border-2 border-primary"
                     >
-                        ساخت اپلیکیشن شما
+                        {{ _('ساخت اپلیکیشن شما') }}
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
@@ -266,7 +267,7 @@
                         </svg>
                     </a>
                     <p class="text-xs text-base-content/40 font-medium">
-                        بدون نیاز به دانش فنی ⚡ راه‌اندازی در کمتر از ۱۵ دقیقه
+                        {{ _('بدون نیاز به دانش فنی') }} ⚡ {{ _('راه‌اندازی در کمتر از ۱۵ دقیقه') }}
                     </p>
                 </div>
             </div>
@@ -283,7 +284,7 @@
                 <h2
                     class="reveal text-2xl sm:text-3xl font-bold mb-6 text-base-content leading-relaxed"
                 >
-                    چرا سیستم فعلی شما جلوی رشدتان را گرفته است؟
+                    {{ _('چرا سیستم فعلی شما جلوی رشدتان را گرفته است؟') }}
                 </h2>
 
                 <div class="flex flex-col gap-4 text-right reveal-stagger">
@@ -298,13 +299,12 @@
                                 >
                                     <span class="text-error font-black text-sm">۱</span>
                                 </div>
-                                <span class="font-black text-lg text-error">📄 کاغذ و PDF</span>
+                                <span class="font-black text-lg text-error">📄 {{ _('کاغذ و PDF') }}</span>
                             </div>
                             <p
                                 class="text-sm font-medium text-error/70 leading-relaxed pr-0 sm:pr-13"
                             >
-                                در محیط باشگاه خوانا نیستند، پاره یا پاک می‌شوند و شاگرد نمی‌تواند
-                                پیشرفت وزنه‌هایش را ثبت کند.
+                                {{ _('در محیط باشگاه خوانا نیستند، پاره یا پاک می‌شوند و شاگرد نمی‌تواند پیشرفت وزنه‌هایش را ثبت کند.') }}
                             </p>
                         </div>
                     </div>
@@ -321,14 +321,13 @@
                                     <span class="text-error font-black text-sm">۲</span>
                                 </div>
                                 <span class="font-black text-lg text-error">
-                                    💬 هرج و مرج واتس‌اپ
+                                    💬 {{ _('هرج و مرج واتس‌اپ') }}
                                 </span>
                             </div>
                             <p
                                 class="text-sm font-medium text-error/70 leading-relaxed pr-0 sm:pr-13"
                             >
-                                پیام‌ها در شلوغی گم می‌شوند. برای پیدا کردن سابقه یک شاگرد باید
-                                ساعت‌ها چت‌ها را اسکرول کنید.
+                                {{ _('پیام‌ها در شلوغی گم می‌شوند. برای پیدا کردن سابقه یک شاگرد باید ساعت‌ها چت‌ها را اسکرول کنید.') }}
                             </p>
                         </div>
                     </div>
@@ -344,13 +343,12 @@
                                 >
                                     <span class="text-error font-black text-sm">۳</span>
                                 </div>
-                                <span class="font-black text-lg text-error">خستگی مربی</span>
+                                <span class="font-black text-lg text-error">{{ _('خستگی مربی') }}</span>
                             </div>
                             <p
                                 class="text-sm font-medium text-error/70 leading-relaxed pr-0 sm:pr-13"
                             >
-                                توضیح دادن نحوه اجرای یک حرکت تکراری برای صدها نفر، انرژی و زمان
-                                طلایی شما را می‌بلعد.
+                                {{ _('توضیح دادن نحوه اجرای یک حرکت تکراری برای صدها نفر، انرژی و زمان طلایی شما را می‌بلعد.') }}
                             </p>
                         </div>
                     </div>
@@ -369,10 +367,10 @@
         <section class="py-14 px-5 max-w-5xl mx-auto">
             <div class="text-center mb-12">
                 <h2 class="reveal text-3xl sm:text-4xl font-black text-base-content mb-3">
-                    راه‌حل؟ جیمی. 🚀
+                    {{ _('راه‌حل؟ جیمی.') }} 🚀
                 </h2>
                 <p class="reveal text-base-content/50 text-base font-medium">
-                    نرم‌افزاری که پشت پرده، شما را یک قهرمان نشان می‌دهد.
+                    {{ _('نرم‌افزاری که پشت پرده، شما را یک قهرمان نشان می‌دهد.') }}
                 </p>
             </div>
 
@@ -388,13 +386,12 @@
                             <span class="text-xl">✨</span>
                         </div>
                         <h3 class="card-title text-lg sm:text-xl font-black mb-2">
-                            اپلیکیشن با نام و برند شما
+                            {{ _('اپلیکیشن با نام و برند شما') }}
                         </h3>
                         <p class="text-sm text-base-content/60 leading-relaxed font-medium">
-                            نام جیمی را فراموش کنید. شاگردان شما اپلیکیشنی را باز می‌کنند که لوگو،
-                            رنگ‌بندی و اسم باشگاه
-                            <strong>شما</strong>
-                            را دارد. این یعنی بالاترین سطح کلاس کاری در بین رقبا.
+                            {{ _('نام جیمی را فراموش کنید. شاگردان شما اپلیکیشنی را باز می‌کنند که لوگو، رنگ‌بندی و اسم باشگاه') }}
+                            <strong>{{ _('شما') }}</strong>
+                            {{ _('را دارد. این یعنی بالاترین سطح کلاس کاری در بین رقبا.') }}
                         </p>
                     </div>
                 </div>
@@ -410,12 +407,10 @@
                             <span class="text-xl">📊</span>
                         </div>
                         <h3 class="card-title text-lg sm:text-xl font-black mb-2">
-                            سیستم CRM قدرتمند مربیان
+                            {{ _('سیستم CRM قدرتمند مربیان') }}
                         </h3>
                         <p class="text-sm text-base-content/60 leading-relaxed font-medium">
-                            جریان کاری (Workflow) تیمتان را با تصمیم‌گیری مبتنی بر داده بهینه‌سازی
-                            کنید. به جای جستجو در چت‌ها، پرونده کامل پرداختی‌ها، برنامه‌ها و پیشرفت
-                            صدها شاگرد را در یک داشبورد تمیز مدیریت کنید.
+                            {{ _('جریان کاری (Workflow) تیمتان را با تصمیم‌گیری مبتنی بر داده بهینه‌سازی کنید. به جای جستجو در چت‌ها، پرونده کامل پرداختی‌ها، برنامه‌ها و پیشرفت صدها شاگرد را در یک داشبورد تمیز مدیریت کنید.') }}
                         </p>
                     </div>
                 </div>
@@ -431,12 +426,10 @@
                             <span class="text-xl">🎥</span>
                         </div>
                         <h3 class="card-title text-lg sm:text-xl font-black mb-2">
-                            حضور مجازی شما با GIF حرکات
+                            {{ _('حضور مجازی شما با GIF حرکات') }}
                         </h3>
                         <p class="text-sm text-base-content/60 leading-relaxed font-medium">
-                            نیازی نیست همیشه بالای سر شاگرد باشید! با گیف‌های آموزشی اختصاصی روی هر
-                            آیتم تمرینی، شاگرد دقیقاً می‌داند حرکت را چطور بزند. کاهش آسیب‌ها و
-                            افزایش رضایت.
+                            {{ _('نیازی نیست همیشه بالای سر شاگرد باشید! با گیف‌های آموزشی اختصاصی روی هر آیتم تمرینی، شاگرد دقیقاً می‌داند حرکت را چطور بزند. کاهش آسیب‌ها و افزایش رضایت.') }}
                         </p>
                     </div>
                 </div>
@@ -452,11 +445,10 @@
                             <span class="text-xl">📱</span>
                         </div>
                         <h3 class="card-title text-lg sm:text-xl font-black mb-2">
-                            نصب روی تمام گوشی‌های دنیا
+                            {{ _('نصب روی تمام گوشی‌های دنیا') }}
                         </h3>
                         <p class="text-sm text-base-content/60 leading-relaxed font-medium">
-                            بدون تحریم و دردسرهای اپل استور. جیمی هم به صورت فایل APK برای اندروید و
-                            هم به عنوان PWA برای آیفون در دسترس است. یک نصب بی‌نقص و سریع برای همه.
+                            {{ _('بدون تحریم و دردسرهای اپل استور. جیمی هم به صورت فایل APK برای اندروید و هم به عنوان PWA برای آیفون در دسترس است. یک نصب بی‌نقص و سریع برای همه.') }}
                         </p>
                     </div>
                 </div>
@@ -473,12 +465,10 @@
                         </div>
                         <div>
                             <h3 class="card-title text-lg sm:text-xl font-black mb-2">
-                                سرعت نور با سرورهای اختصاصی
+                                {{ _('سرعت نور با سرورهای اختصاصی') }}
                             </h3>
                             <p class="text-sm text-base-content/60 leading-relaxed font-medium">
-                                اینترنت ضعیف باشگاه‌ها کابوس شاگردان است. ما اپلیکیشن شما را روی
-                                قدرتمندترین سرورهای بهینه‌سازی شده مستقر می‌کنیم تا اطلاعات و گیف‌ها
-                                بدون یک ثانیه مکث لود شوند!
+                                {{ _('اینترنت ضعیف باشگاه‌ها کابوس شاگردان است. ما اپلیکیشن شما را روی قدرتمندترین سرورهای بهینه‌سازی شده مستقر می‌کنیم تا اطلاعات و گیف‌ها بدون یک ثانیه مکث لود شوند!') }}
                             </p>
                         </div>
                     </div>
@@ -501,12 +491,11 @@
                         <div
                             class="badge badge-ghost badge-sm text-primary-content/70 bg-primary-content/10 border-primary-content/20 font-bold px-3 py-3 w-max mb-2 rounded-box"
                         >
-                            🔥 ظرفیت مشاوره محدود
+                            🔥 {{ _('ظرفیت مشاوره محدود') }}
                         </div>
-                        <h2 class="text-2xl sm:text-3xl font-black mb-3">آماده ارتقا هستید؟ 📈</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black mb-3">{{ _('آماده ارتقا هستید؟') }} 📈</h2>
                         <p class="text-sm text-primary-content/70 mb-8 leading-relaxed font-medium">
-                            ما فقط با مربیانی کار می‌کنیم که به دنبال کیفیت پریمیوم هستند. فرم زیر
-                            را پر کنید تا دموی رایگان و شرایط راه‌اندازی را برایتان ارسال کنیم.
+                            {{ _('ما فقط با مربیانی کار می‌کنیم که به دنبال کیفیت پریمیوم هستند. فرم زیر را پر کنید تا دموی رایگان و شرایط راه‌اندازی را برایتان ارسال کنیم.') }}
                         </p>
 
                         <!-- HTMX Form -->
@@ -520,7 +509,7 @@
                             <div class="flex flex-col gap-1 w-full">
                                 <label class="label p-0">
                                     <span class="label-text text-primary-content/70 font-bold">
-                                        نام شما (مربی / مدیر)
+                                        {{ _('نام شما (مربی / مدیر)') }}
                                     </span>
                                 </label>
                                 <label
@@ -548,12 +537,12 @@
                                         type="text"
                                         name="name"
                                         class="grow placeholder-white/30 bg-transparent border-none focus:outline-none"
-                                        placeholder="مثال: راستین امانی"
+                                        placeholder="{{ _('مثال: راستین امانی') }}"
                                         required
                                     />
                                 </label>
                                 <p class="validator-hint hidden text-error text-xs">
-                                    وارد کردن نام الزامی است
+                                    {{ _('وارد کردن نام الزامی است') }}
                                 </p>
                             </div>
 
@@ -561,7 +550,7 @@
                             <div class="flex flex-col gap-1 w-full">
                                 <label class="label p-0">
                                     <span class="label-text text-primary-content/70 font-bold">
-                                        شماره تماس
+                                        {{ _('شماره تماس') }}
                                     </span>
                                 </label>
                                 <label
@@ -589,13 +578,13 @@
                                         type="tel"
                                         name="phone"
                                         class="grow tabular-nums placeholder-white/30 bg-transparent border-none focus:outline-none"
-                                        placeholder="مثال: ۰۹۱۲۲۲۷۹۵۷۷"
+                                        placeholder="{{ _('مثال: ۰۹۱۲۲۲۷۹۵۷۷') }}"
                                         pattern="^09\d{9}$"
                                         required
                                     />
                                 </label>
                                 <p class="validator-hint hidden text-error text-xs">
-                                    شماره موبایل معتبر نیست (مثال: 09123456789)
+                                    {{ _('شماره موبایل معتبر نیست (مثال: 09123456789)') }}
                                 </p>
                             </div>
 
@@ -603,7 +592,7 @@
                             <div class="flex flex-col gap-1 w-full">
                                 <label class="label p-0">
                                     <span class="label-text text-primary-content/70 font-bold">
-                                        سمت شما
+                                        {{ _('سمت شما') }}
                                     </span>
                                 </label>
                                 <select
@@ -611,13 +600,13 @@
                                     class="select select-bordered validator bg-primary-content/10 text-white border-primary-content/20 w-full focus:outline-white focus:border-white rounded-xl"
                                     required
                                 >
-                                    <option value="" disabled selected>انتخاب کنید...</option>
-                                    <option value="موسس / مدیر">موسس / مدیر باشگاه</option>
-                                    <option value="مربی خصوصی">مربی خصوصی</option>
-                                    <option value="سایر">سایر</option>
+                                    <option value="" disabled selected>{{ _('انتخاب کنید...') }}</option>
+                                    <option value="موسس / مدیر">{{ _('موسس / مدیر باشگاه') }}</option>
+                                    <option value="مربی خصوصی">{{ _('مربی خصوصی') }}</option>
+                                    <option value="سایر">{{ _('سایر') }}</option>
                                 </select>
                                 <p class="validator-hint hidden text-error text-xs">
-                                    لطفاً سمت خود را انتخاب کنید
+                                    {{ _('لطفاً سمت خود را انتخاب کنید') }}
                                 </p>
                             </div>
 
@@ -626,7 +615,7 @@
                                 <div class="flex flex-col gap-1 w-full">
                                     <label class="label p-0">
                                         <span class="label-text text-primary-content/70 font-bold">
-                                            تعداد مربیان مجموعه
+                                            {{ _('تعداد مربیان مجموعه') }}
                                         </span>
                                     </label>
                                     <select
@@ -634,20 +623,20 @@
                                         class="select select-bordered validator bg-primary-content/10 text-white border-primary-content/20 w-full focus:outline-white focus:border-white rounded-xl"
                                         required
                                     >
-                                        <option value="" disabled selected>تعداد...</option>
-                                        <option value="فقط خودم">فقط خودم</option>
-                                        <option value="۲ تا ۵">۲ تا ۵ مربی</option>
-                                        <option value="۶ تا ۱۰">۶ تا ۱۰ مربی</option>
-                                        <option value="بیش از ۱۰">بیش از ۱۰ مربی</option>
+                                        <option value="" disabled selected>{{ _('تعداد...') }}</option>
+                                        <option value="فقط خودم">{{ _('فقط خودم') }}</option>
+                                        <option value="۲ تا ۵">{{ _('۲ تا ۵ مربی') }}</option>
+                                        <option value="۶ تا ۱۰">{{ _('۶ تا ۱۰ مربی') }}</option>
+                                        <option value="بیش از ۱۰">{{ _('بیش از ۱۰ مربی') }}</option>
                                     </select>
                                     <p class="validator-hint hidden text-error text-xs">
-                                        انتخاب این فیلد الزامی است
+                                        {{ _('انتخاب این فیلد الزامی است') }}
                                     </p>
                                 </div>
                                 <div class="flex flex-col gap-1 w-full">
                                     <label class="label p-0">
                                         <span class="label-text text-primary-content/70 font-bold">
-                                            تعداد شاگردان فعال
+                                            {{ _('تعداد شاگردان فعال') }}
                                         </span>
                                     </label>
                                     <select
@@ -655,14 +644,14 @@
                                         class="select select-bordered validator bg-primary-content/10 text-white border-primary-content/20 w-full focus:outline-white focus:border-white rounded-xl"
                                         required
                                     >
-                                        <option value="" disabled selected>تعداد...</option>
-                                        <option value="کمتر از ۵۰">کمتر از ۵۰ شاگرد</option>
-                                        <option value="۵۰ تا ۲۰۰">۵۰ تا ۲۰۰ شاگرد</option>
-                                        <option value="۲۰۰ تا ۵۰۰">۲۰۰ تا ۵۰۰ شاگرد</option>
-                                        <option value="بیش از ۵۰۰">بیش از ۵۰۰ شاگرد</option>
+                                        <option value="" disabled selected>{{ _('تعداد...') }}</option>
+                                        <option value="کمتر از ۵۰">{{ _('کمتر از ۵۰ شاگرد') }}</option>
+                                        <option value="۵۰ تا ۲۰۰">{{ _('۵۰ تا ۲۰۰ شاگرد') }}</option>
+                                        <option value="۲۰۰ تا ۵۰۰">{{ _('۲۰۰ تا ۵۰۰ شاگرد') }}</option>
+                                        <option value="بیش از ۵۰۰">{{ _('بیش از ۵۰۰ شاگرد') }}</option>
                                     </select>
                                     <p class="validator-hint hidden text-error text-xs">
-                                        انتخاب این فیلد الزامی است
+                                        {{ _('انتخاب این فیلد الزامی است') }}
                                     </p>
                                 </div>
                             </div>
@@ -671,7 +660,7 @@
                             <div class="flex flex-col gap-1 w-full">
                                 <label class="label p-0">
                                     <span class="label-text text-primary-content/70 font-bold">
-                                        نام باشگاه یا تیم (اختیاری)
+                                        {{ _('نام باشگاه یا تیم (اختیاری)') }}
                                     </span>
                                 </label>
                                 <label
@@ -693,7 +682,7 @@
                                         type="text"
                                         name="gym_name"
                                         class="grow placeholder-white/30 bg-transparent border-none focus:outline-none"
-                                        placeholder="باشگاه اکسیژن"
+                                        placeholder="{{ _('باشگاه اکسیژن') }}"
                                     />
                                 </label>
                             </div>
@@ -702,12 +691,12 @@
                             <div class="flex flex-col gap-1 w-full">
                                 <label class="label p-0">
                                     <span class="label-text text-primary-content/70 font-bold">
-                                        توضیحات تکمیلی (اختیاری)
+                                        {{ _('توضیحات تکمیلی (اختیاری)') }}
                                     </span>
                                 </label>
                                 <textarea
                                     name="note"
-                                    placeholder="آیا نیاز خاصی دارید که می‌خواهید قبل از تماس بدانیم؟"
+                                    placeholder="{{ _('آیا نیاز خاصی دارید که می‌خواهید قبل از تماس بدانیم؟') }}"
                                     class="textarea textarea-bordered bg-primary-content/10 text-white border-primary-content/20 w-full focus:outline-white focus:border-white placeholder-white/30 min-h-[100px] rounded-xl"
                                 ></textarea>
                             </div>
@@ -718,12 +707,12 @@
                                     type="submit"
                                     class="btn btn-secondary w-full h-14 text-lg font-black rounded-xl border-2 border-secondary transition-transform duration-200 active:scale-[0.97]"
                                 >
-                                    ارسال درخواست دمو 🚀
+                                    {{ _('ارسال درخواست دمو') }} 🚀
                                 </button>
                                 <div
                                     class="flex items-center justify-center gap-2 text-xs text-primary-content/50 font-medium"
                                 >
-                                    🔒 اطلاعات شما نزد ما کاملاً محفوظ است.
+                                    🔒 {{ _('اطلاعات شما نزد ما کاملاً محفوظ است.') }}
                                 </div>
                             </div>
                         </form>
@@ -735,8 +724,8 @@
         <!-- ═══════════════ FOOTER ═══════════════ -->
         <footer class="footer footer-center p-6 pb-10 text-base-content/30 text-xs font-medium">
             <aside>
-                <p>طراحی شده با دقت و داده‌محوری برای مربیان پیشرو 🧠</p>
-                <p class="mt-1">جیمی &copy; {{ now().year if now else '2026' }}</p>
+                <p>{{ _('طراحی شده با دقت و داده‌محوری برای مربیان پیشرو') }} 🧠</p>
+                <p class="mt-1">{{ _('جیمی') }} &copy; {{ now().year if now else '2026' }}</p>
             </aside>
         </footer>
     </div>

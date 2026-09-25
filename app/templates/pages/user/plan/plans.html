@@ -6,9 +6,9 @@
     <div class="max-w-3xl mx-auto">
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-xl font-bold">برنامه‌های من</h1>
+                <h1 class="text-xl font-bold">{{ _('برنامه‌های من') }}</h1>
                 <p class="text-sm text-base-content/60 mt-1">
-                    مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما
+                    {{ _('مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما') }}
                 </p>
             </div>
         </div>
@@ -45,13 +45,13 @@
                                                 class="font-bold text-base sm:text-lg text-base-content whitespace-nowrap"
                                             >
                                                 {% if plan.type == 'training' %}
-                                                    برنامه تمرینی
+                                                    {{ _('برنامه تمرینی') }}
                                                 {% elif plan.type == 'diet' %}
-                                                    برنامه غذایی
+                                                    {{ _('برنامه غذایی') }}
                                                 {% elif plan.type == 'steroid' %}
-                                                    برنامه استروئیدی
+                                                    {{ _('برنامه استروئیدی') }}
                                                 {% else %}
-                                                    برنامه نامشخص
+                                                    {{ _('برنامه نامشخص') }}
                                                 {% endif %}
                                             </h3>
 
@@ -59,19 +59,19 @@
                                                 <span
                                                     class="badge badge-success badge-sm badge-soft rounded-box font-medium"
                                                 >
-                                                    فعال
+                                                    {{ _('فعال') }}
                                                 </span>
                                             {% elif plan.status == 'draft' %}
                                                 <span
                                                     class="badge badge-ghost badge-sm rounded-box font-medium"
                                                 >
-                                                    پیش‌نویس
+                                                    {{ _('پیش‌نویس') }}
                                                 </span>
                                             {% elif plan.status == 'inactive' %}
                                                 <span
                                                     class="badge badge-error badge-sm badge-soft rounded-box font-medium"
                                                 >
-                                                    غیرفعال
+                                                    {{ _('غیرفعال') }}
                                                 </span>
                                             {% else %}
                                                 <span
@@ -103,7 +103,8 @@
                                                         />
                                                     </svg>
                                                     <span>
-                                                        شروع: {{ plan.start_date | jalali_date }}
+                                                        {{ _('شروع') }}:
+                                                        {{ plan.start_date | jalali_date }}
                                                     </span>
                                                 </div>
                                             {% endif %}
@@ -126,7 +127,8 @@
                                                         />
                                                     </svg>
                                                     <span>
-                                                        پایان: {{ plan.end_date | jalali_date }}
+                                                        {{ _('پایان') }}:
+                                                        {{ plan.end_date | jalali_date }}
                                                     </span>
                                                 </div>
                                             {% endif %}
@@ -168,16 +170,21 @@
                 >
                     📭
                 </div>
-                <h3 class="text-lg font-bold text-base-content">برنامه‌ای ثبت نشده!</h3>
+                <h3 class="text-lg font-bold text-base-content">
+                    {{ _('برنامه‌ای ثبت نشده!') }}
+                </h3>
                 <p class="text-sm text-base-content/60 mt-2 max-w-xs mx-auto">
-                    در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد برنامه
-                    جدید، در اینجا نمایش داده می‌شود.
+                    {{
+                        _(
+                            'در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد برنامه جدید، در اینجا نمایش داده می‌شود.'
+                        )
+                    }}
                 </p>
                 <span
                     class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 px-3 py-1.5 rounded-full"
                 >
                     <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
-                    منتظر دریافت برنامه...
+                    {{ _('منتظر دریافت برنامه...') }}
                 </span>
             </div>
         {% endif %}

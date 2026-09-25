@@ -6,7 +6,7 @@
             class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-6 card flex-row-reverse"
         >
             <div class="flex gap-2">
-                <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">ویرایش</a>
+                <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
             </div>
             <div class="text-center">
                 <h1 class="text-m font-bold">
@@ -30,39 +30,39 @@
         <!-- Info Grid -->
         <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
             <div>
-                <span class="opacity-60 block">تلفن</span>
+                <span class="opacity-60 block">{{ _('تلفن') }}</span>
                 <span class="font-medium">
                     {{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '-' }}
                 </span>
             </div>
             <div>
-                <span class="opacity-60 block">جنسیت</span>
+                <span class="opacity-60 block">{{ _('جنسیت') }}</span>
                 <span class="font-medium">
-                    {% set gender_map = {'male': 'آقا', 'female': 'خانم'} %}
+                    {% set gender_map = {'male': _('آقا'), 'female': _('خانم')} %}
                     {{ gender_map.get(trainee.gender, '-') }}
                 </span>
             </div>
             <div>
-                <span class="opacity-60 block">تاریخ تولد</span>
+                <span class="opacity-60 block">{{ _('تاریخ تولد') }}</span>
                 <span class="font-medium">{{ trainee.birthdate | jalali_date or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">قد</span>
+                <span class="opacity-60 block">{{ _('قد') }}</span>
                 <span class="font-medium">{{ trainee.height or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">وزن</span>
+                <span class="opacity-60 block">{{ _('وزن') }}</span>
                 <span class="font-medium">{{ trainee.weight or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">گروه خونی</span>
+                <span class="opacity-60 block">{{ _('گروه خونی') }}</span>
                 <span class="font-medium">{{ trainee.blood_type or '-' }}</span>
             </div>
         </div>
 
         <!-- Info / Records Section -->
         <div>
-            <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
+            <div class="divider text-xs opacity-50">{{ _('اطلاعات تکمیلی') }}</div>
             {% if trainee.notes != "" %}
                 <div class="bg-base-200 p-4 rounded-box">
                     <p class="text-sm opacity-60">{{ trainee.notes }}</p>
@@ -70,21 +70,21 @@
             {% endif %}
             <div class="grid grid-cols-1 gap-4 text-sm my-4">
                 <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">سابقه تمرینی</span>
+                    <span class="opacity-60 block">{{ _('سابقه تمرینی') }}</span>
                     <span class="font-medium">
                         {{ trainee.training_history | jalali_year or '-' }}
                     </span>
                 </div>
                 <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">مصرف استروئید</span>
+                    <span class="opacity-60 block">{{ _('مصرف استروئید') }}</span>
                     <span class="font-medium">{{ trainee.steroid_history or '-' }}</span>
                 </div>
                 <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">مصرف مکمل</span>
+                    <span class="opacity-60 block">{{ _('مصرف مکمل') }}</span>
                     <span class="font-medium">{{ trainee.supplement_history or '-' }}</span>
                 </div>
                 <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">ناهنجاری‌ها و بیماری‌ها</span>
+                    <span class="opacity-60 block">{{ _('ناهنجاری‌ها و بیماری‌ها') }}</span>
                     <span class="font-medium">{{ trainee.limitations or '-' }}</span>
                 </div>
             </div>
@@ -92,7 +92,7 @@
 
         <!-- History Accordion -->
         <div class="mt-4">
-            <div class="divider text-xs opacity-50">تاریخچه</div>
+            <div class="divider text-xs opacity-50">{{ _('تاریخچه') }}</div>
             {% if progress_logs and progress_logs | length > 0 %}
                 <div class="flex flex-col gap-3">
                     {% for log in progress_logs %}
@@ -105,14 +105,14 @@
                                 <div class="grid grid-cols-2 gap-4 mt-2">
                                     <!-- HEIGHT -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">قد</div>
+                                        <div class="text-xs opacity-60">{{ _('قد') }}</div>
                                         <div class="font-bold">
                                             {{ log.height if log.height else '-' }}
                                         </div>
                                     </div>
                                     <!-- WEIGHT -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">وزن</div>
+                                        <div class="text-xs opacity-60">{{ _('وزن') }}</div>
                                         <div class="font-bold">
                                             {{ log.weight if log.weight else '-' }}
                                         </div>
@@ -126,35 +126,35 @@
                                     </div>
                                     <!-- BFP -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">درصد چربی بدن</div>
+                                        <div class="text-xs opacity-60">{{ _('درصد چربی بدن') }}</div>
                                         <div class="font-bold">
                                             {{ log.bfp | round(1) if log.bfp != None else '-' }}%
                                         </div>
                                     </div>
                                     <!-- LBM -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">جرم عضلانی</div>
+                                        <div class="text-xs opacity-60">{{ _('جرم عضلانی') }}</div>
                                         <div class="font-bold">
-                                            {{ log.lbm | round(1) if log.lbm else '-' }} کیلوگرم
+                                            {{ log.lbm | round(1) if log.lbm else '-' }} {{ _('کیلوگرم') }}
                                         </div>
                                     </div>
                                     <!-- BMR -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">متابولیسم پایه</div>
+                                        <div class="text-xs opacity-60">{{ _('متابولیسم پایه') }}</div>
                                         <div class="font-bold">
-                                            {{ log.bmr | int if log.bmr else '-' }} کیلوکالری
+                                            {{ log.bmr | int if log.bmr else '-' }} {{ _('کیلوکالری') }}
                                         </div>
                                     </div>
                                     <!-- TDEE -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">متابولیسم با فعالیت</div>
+                                        <div class="text-xs opacity-60">{{ _('متابولیسم با فعالیت') }}</div>
                                         <div class="font-bold">
-                                            {{ log.tdee | int if log.tdee else '-' }} کیلوکالری
+                                            {{ log.tdee | int if log.tdee else '-' }} {{ _('کیلوکالری') }}
                                         </div>
                                     </div>
                                     <!-- WHR -->
                                     <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">نسبت کمر به لگن</div>
+                                        <div class="text-xs opacity-60">{{ _('نسبت کمر به لگن') }}</div>
                                         <div class="font-bold">
                                             {{ log.whr | round(2) if log.whr else '-' }}
                                         </div>
@@ -165,7 +165,7 @@
                                 {% if log.progress_photos and log.progress_photos | length > 0 %}
                                     <div class="mt-3">
                                         <div class="text-xs opacity-60 mb-2">
-                                            تصاویر پیشرفت ({{ log.progress_photos | length }})
+                                            {{ _('تصاویر پیشرفت') }} ({{ log.progress_photos | length }})
                                         </div>
                                         <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 relative">
                                             {% for photo in log.progress_photos %}
@@ -178,7 +178,7 @@
                                                     >
                                                         <img
                                                             src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
-                                                            alt="Progress photo"
+                                                            alt="{{ _('Progress photo') }}"
                                                             class="w-full h-24 object-cover transition-transform duration-300 group-hover:scale-110"
                                                             loading="lazy"
                                                         />
@@ -192,7 +192,7 @@
 
                                 {% if log.notes %}
                                     <div class="mt-3 p-4 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">یادداشت‌ها</div>
+                                        <div class="text-xs opacity-60">{{ _('یادداشت‌ها') }}</div>
                                         <div class="text-sm">{{ log.notes }}</div>
                                     </div>
                                 {% endif %}
@@ -218,7 +218,7 @@
                                                 d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
                                             />
                                         </svg>
-                                        ویرایش
+                                        {{ _('ویرایش') }}
                                     </button>
                                 </div>
                             </div>
@@ -229,7 +229,7 @@
                 <div class="bg-base-200 p-4 text-center card border border-base-300">
                     <p class="text-sm opacity-60 p-4 flex items-center justify-center">
                         <span class="status status-secondary animate-bounce ml-2"></span>
-                        لاگی ثبت نشده!
+                        {{ _('لاگی ثبت نشده!') }}
                     </p>
                 </div>
             {% endif %}
@@ -255,12 +255,12 @@
                         d="M12 4.5v15m7.5-7.5h-15"
                     />
                 </svg>
-                ثبت لاگ پیشرفت
+                {{ _('ثبت لاگ پیشرفت') }}
             </a>
         </div>
 
         <div class="mt-4">
-            <div class="divider text-xs opacity-50">برنامه‌ها</div>
+            <div class="divider text-xs opacity-50">{{ _('برنامه‌ها') }}</div>
 
             {% set plan_list = plans.items if plans.items is defined else plans %}
 
@@ -273,11 +273,11 @@
                                     <div class="flex items-center gap-2">
                                         <h3 class="font-bold text-sm truncate">
                                             {% if plan.type == 'training' %}
-                                                برنامه تمرینی
+                                                {{ _('برنامه تمرینی') }}
                                             {% elif plan.type == 'diet' %}
-                                                برنامه غذایی
+                                                {{ _('برنامه غذایی') }}
                                             {% elif plan.type == 'steroid' %}
-                                                برنامه استروئیدی
+                                                {{ _('برنامه استروئیدی') }}
                                             {% endif %}
                                         </h3>
                                         {% if plan.type == 'training' %}
@@ -290,25 +290,25 @@
                                     </div>
                                     <div class="text-xs opacity-60 mt-2 flex flex-col gap-1">
                                         <div>
-                                            وضعیت:
+                                            {{ _('وضعیت:') }}
                                             {% if plan.status == 'active' %}
-                                                فعال
+                                                {{ _('فعال') }}
                                             {% elif plan.status == 'draft' %}
-                                                پیش‌نویس
+                                                {{ _('پیش‌نویس') }}
                                             {% elif plan.status == 'inactive' %}
-                                                غیرفعال
+                                                {{ _('غیرفعال') }}
                                             {% else %}
                                                 {{ plan.status }}
                                             {% endif %}
                                         </div>
                                         <div>
                                             {% if plan.start_date %}
-                                                شروع: {{ plan.start_date | jalali_date }}
+                                                {{ _('شروع:') }} {{ plan.start_date | jalali_date }}
                                             {% endif %}
                                         </div>
                                         <div>
                                             {% if plan.end_date %}
-                                                پایان: {{ plan.end_date | jalali_date }}
+                                                {{ _('پایان:') }} {{ plan.end_date | jalali_date }}
                                             {% endif %}
                                         </div>
                                     </div>
@@ -318,7 +318,7 @@
                                         href="/plans/{{ plan.id }}"
                                         class="btn btn-sm btn-ghost text-primary"
                                     >
-                                        مشاهده
+                                        {{ _('مشاهده') }}
                                     </a>
                                 </div>
                             </div>
@@ -329,7 +329,7 @@
                 <div class="bg-base-200 p-4 text-center card border border-base-300">
                     <p class="text-sm opacity-60 p-4 flex items-center justify-center">
                         <span class="status status-secondary animate-bounce ml-2"></span>
-                        برنامه‌ای ثبت نشده!
+                        {{ _('برنامه‌ای ثبت نشده!') }}
                     </p>
                 </div>
             {% endif %}
@@ -360,14 +360,14 @@
                             <img
                                 src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
                                 class="max-w-full max-h-[85vh] object-contain rounded-box"
-                                alt="Full size progress photo"
+                                alt="{{ _('Full size progress photo') }}"
                             />
                         </div>
                         <label
                             class="modal-backdrop bg-black/50"
                             for="modal-{{ log.id }}-{{ loop.index0 }}"
                         >
-                            Close
+                            {{ _('Close') }}
                         </label>
                     </div>
                 {% endfor %}

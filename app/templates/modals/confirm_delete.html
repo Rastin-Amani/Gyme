@@ -5,10 +5,12 @@
 >
     <div class="modal-box bg-base-100 border border-base-300">
         <h3 class="font-bold text-lg text-error">{{ title }}</h3>
-        <p class="py-4">آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست.</p>
+        <p class="py-4">
+            {{ _('آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست.') }}
+        </p>
         <div class="modal-action flex justify-end gap-3">
             <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').remove()">
-                انصراف
+                {{ _('انصراف') }}
             </button>
             <form
                 id="delete-form"
@@ -17,7 +19,7 @@
                 hx-boost="false"
                 hx-on::after-request="this.closest('dialog').remove()"
             >
-                <button type="submit" class="btn btn-error">حذف</button>
+                <button type="submit" class="btn btn-error">{{ _('حذف') }}</button>
             </form>
         </div>
     </div>

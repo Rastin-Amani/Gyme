@@ -8,31 +8,31 @@
         <div class="grid grid-cols-2 gap-4 items-baseline">
             <div class="form-control">
                 <label class="floating-label">
-                    <span>نام</span>
+                    <span>{{ _('نام') }}</span>
                     <input
                         type="text"
                         name="first_name"
-                        placeholder="نام"
+                        placeholder="{{ _('نام') }}"
                         value="{{ trainee.expand['user'].first_name if trainee.expand and 'user' in trainee.expand else '' }}"
                         required
                         class="input input-bordered w-full validator"
                     />
-                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
                 </label>
             </div>
 
             <div class="form-control">
                 <label class="floating-label">
-                    <span>نام خانوادگی</span>
+                    <span>{{ _('نام خانوادگی') }}</span>
                     <input
                         type="text"
                         name="last_name"
-                        placeholder="نام خانوادگی"
+                        placeholder="{{ _('نام خانوادگی') }}"
                         value="{{ trainee.expand['user'].last_name if trainee.expand and 'user' in trainee.expand else '' }}"
                         required
                         class="input input-bordered w-full validator"
                     />
-                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
                 </label>
             </div>
         </div>
@@ -40,7 +40,7 @@
         <div class="grid grid-cols-1 gap-4">
             <div class="form-control">
                 <label class="input w-full validator">
-                    <span class="label">ایمیل</span>
+                    <span class="label">{{ _('ایمیل') }}</span>
                     {% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
                     <input
                         type="email"
@@ -48,22 +48,22 @@
                         {{ 'readonly' if current_email else '' }}
                         value="{{ current_email }}"
                         required
-                        placeholder="test@gyme.cloud مثل"
+                        placeholder="test@gyme.cloud {{ _('مثل') }}"
                     />
                 </label>
-                <div class="validator-hint hidden">ایمیل صحیح وارد کنید.</div>
+                <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-control">
                     <label class="floating-label">
-                        <span class="label-text">شماره موبایل</span>
+                        <span class="label-text">{{ _('شماره موبایل') }}</span>
                         <input
                             type="tel"
                             name="phone"
                             value="{{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '' }}"
                             required
-                            placeholder="شماره موبایل"
+                            placeholder="{{ _('شماره موبایل') }}"
                             class="input input-bordered text-right w-full tabular-nums validator"
                             minlength="11"
                             maxlength="11"
@@ -72,7 +72,7 @@
                     </label>
                 </div>
                 <div>
-                    {% with name="birthdate", label="تاریخ تولد", placeholder="تاریخ تولد", required="required", value=trainee.birthdate %}
+                    {% with name="birthdate", label=_("تاریخ تولد"), placeholder=_("تاریخ تولد"), required="required", value=trainee.birthdate %}
                         {% include 'components/datepicker.html' %}
                     {% endwith %}
                 </div>
@@ -82,25 +82,25 @@
         <div class="grid grid-cols-2 gap-4">
             <div class="form-control">
                 <label class="select">
-                    <span class="label">جنسیت</span>
+                    <span class="label">{{ _('جنسیت') }}</span>
                     <select name="gender" class="select-bordered w-full" required>
                         <option value="male" {{ 'selected' if trainee.gender == 'male' else '' }}>
-                            آقا
+                            {{ _('آقا') }}
                         </option>
                         <option
                             value="female"
                             {{ 'selected' if trainee.gender == 'female' else '' }}
                         >
-                            خانم
+                            {{ _('خانم') }}
                         </option>
                     </select>
                 </label>
             </div>
             <div class="form-control">
                 <label class="select">
-                    <span class="label">گروه خونی</span>
+                    <span class="label">{{ _('گروه خونی') }}</span>
                     <select name="blood_type" class="select select-bordered w-full">
-                        <option value="">نامشخص</option>
+                        <option value="">{{ _('نامشخص') }}</option>
                         {% for bt in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
                             <option
                                 value="{{ bt }}"
@@ -113,7 +113,7 @@
                 </label>
             </div>
         </div>
-        <div class="divider text-xs opacity-50">اطلاعات تکمیلی</div>
+        <div class="divider text-xs opacity-50">{{ _('اطلاعات تکمیلی') }}</div>
 
         <div class="form-control">
             {% if trainee.limitations and trainee.limitations.strip() %}
@@ -124,7 +124,7 @@
                 <textarea
                     name="limitations"
                     class="textarea textarea-bordered h-6 w-full"
-                    placeholder="ناهنجاری‌ها و بیماری‌ها"
+                    placeholder="{{ _('ناهنجاری‌ها و بیماری‌ها') }}"
                 ></textarea>
             {% endif %}
         </div>
@@ -138,7 +138,7 @@
                 <textarea
                     name="training_history"
                     class="textarea textarea-bordered h-6 w-full"
-                    placeholder="سابقه تمرین"
+                    placeholder="{{ _('سابقه تمرین') }}"
                 ></textarea>
             {% endif %}
         </div>
@@ -152,7 +152,7 @@
                 <textarea
                     name="steroid_history"
                     class="textarea textarea-bordered h-6 w-full"
-                    placeholder="سابقه استروئید"
+                    placeholder="{{ _('سابقه استروئید') }}"
                 ></textarea>
             {% endif %}
         </div>
@@ -166,7 +166,7 @@
                 <textarea
                     name="supplement_history"
                     class="textarea textarea-bordered h-6 w-full"
-                    placeholder="سابقه مکمل"
+                    placeholder="{{ _('سابقه مکمل') }}"
                 ></textarea>
             {% endif %}
         </div>
@@ -180,7 +180,7 @@
                 <textarea
                     name="notes"
                     class="textarea textarea-bordered !h-6 w-full"
-                    placeholder="یادداشت"
+                    placeholder="{{ _('یادداشت') }}"
                 ></textarea>
             {% endif %}
         </div>
@@ -195,13 +195,13 @@
                     hx-swap="innerHTML"
                     hx-boost="false"
                 >
-                    حذف شاگرد
+                    {{ _('حذف شاگرد') }}
                 </button>
             {% endif %}
             <div class="flex justify-end gap-2">
-                <a href="/trainees" class="btn btn-ghost" hx-boost="false">انصراف</a>
+                <a href="/trainees" class="btn btn-ghost" hx-boost="false">{{ _('انصراف') }}</a>
                 <button type="submit" class="btn btn-primary flex-1">
-                    {{ 'ثبت و رفتن به فرم ارزیابی' if not trainee else 'ذخیره تغییرات' }}
+                    {{ _('ثبت و رفتن به فرم ارزیابی') if not trainee else _('ذخیره تغییرات') }}
                 </button>
             </div>
         </div>

@@ -8,38 +8,38 @@
         <div class="grid grid-cols-2 gap-4 items-baseline">
             <div class="form-control">
                 <label class="floating-label">
-                    <span>نام</span>
+                    <span>{{ _('نام') }}</span>
                     <input
                         type="text"
                         name="first_name"
-                        placeholder="نام"
+                        placeholder="{{ _('نام') }}"
                         value="{{ coach.first_name if coach else '' }}"
                         required
                         class="input input-bordered w-full validator"
                     />
-                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
                 </label>
             </div>
 
             <div class="form-control">
                 <label class="floating-label">
-                    <span>نام خانوادگی</span>
+                    <span>{{ _('نام خانوادگی') }}</span>
                     <input
                         type="text"
                         name="last_name"
-                        placeholder="نام خانوادگی"
+                        placeholder="{{ _('نام خانوادگی') }}"
                         value="{{ coach.last_name if coach else '' }}"
                         required
                         class="input input-bordered w-full validator"
                     />
-                    <div class="validator-hint hidden">این فیلد اجباریه.</div>
+                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
                 </label>
             </div>
         </div>
 
         <div class="form-control">
             <label class="input w-full validator">
-                <span class="label">ایمیل</span>
+                <span class="label">{{ _('ایمیل') }}</span>
                 <input
                     type="email"
                     name="email"
@@ -49,16 +49,16 @@
                     required
                 />
             </label>
-            <div class="validator-hint hidden">ایمیل صحیح وارد کنید.</div>
+            <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
         </div>
 
         <div class="form-control">
             <label class="floating-label">
-                <span>شماره موبایل</span>
+                <span>{{ _('شماره موبایل') }}</span>
                 <input
                     type="tel"
                     name="phone"
-                    placeholder="شماره موبایل"
+                    placeholder="{{ _('شماره موبایل') }}"
                     value="{{ coach.phone if coach else '' }}"
                     required
                     class="input input-bordered w-full text-right tabular-nums validator"
@@ -79,13 +79,13 @@
                     hx-swap="innerHTML"
                     hx-boost="false"
                 >
-                    حذف مربی
+                    {{ _('حذف مربی') }}
                 </button>
             {% endif %}
             <div class="flex justify-end gap-2">
-                <a href="/coaches" class="btn btn-ghost" hx-boost="false">انصراف</a>
+                <a href="/coaches" class="btn btn-ghost" hx-boost="false">{{ _('انصراف') }}</a>
                 <button type="submit" class="btn btn-primary flex-1">
-                    {{ 'ذخیره تغییرات' if coach else 'ثبت مربی' }}
+                    {{ _('ذخیره تغییرات') if coach else _('ثبت مربی') }}
                 </button>
             </div>
         </div>

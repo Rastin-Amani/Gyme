@@ -1,5 +1,5 @@
 <div class="w-full">
-    <h2 class="text-sm font-bold opacity-50 mb-4">شاگردان 👥</h2>
+    <h2 class="text-sm font-bold opacity-50 mb-4">{{ _('شاگردان') }} 👥</h2>
     <div class="stats stats-vertical lg:stats-horizontal border border-base-300 bg-base-200 w-full">
         <div class="stat">
             <div class="stat-figure text-success w-6">
@@ -17,7 +17,7 @@
                     ></path>
                 </svg>
             </div>
-            <div class="stat-title">شاگردهای فعال</div>
+            <div class="stat-title">{{ _('شاگردهای فعال') }}</div>
             <div class="stat-value text-success">{{ stats.active_trainees }}</div>
         </div>
 
@@ -37,30 +37,30 @@
                     ></path>
                 </svg>
             </div>
-            <div class="stat-title">شاگردهای غیرفعال</div>
+            <div class="stat-title">{{ _('شاگردهای غیرفعال') }}</div>
             <div class="stat-value text-base-content/50">{{ stats.inactive_trainees }}</div>
         </div>
     </div>
 </div>
 
 <div class="w-full">
-    <h2 class="text-sm font-bold opacity-50 mb-4">برنامه‌های ثبت شده 📋</h2>
+    <h2 class="text-sm font-bold opacity-50 mb-4">{{ _('برنامه‌های ثبت شده') }} 📋</h2>
     <div class="stats stats-vertical border border-base-300 bg-base-200 w-full">
         <div class="stat">
             <div class="stat-figure text-primary text-2xl">💪🏻</div>
-            <div class="stat-title">تمرینی</div>
+            <div class="stat-title">{{ _('تمرینی') }}</div>
             <div class="stat-value">{{ stats.training_plans }}</div>
         </div>
 
         <div class="stat">
             <div class="stat-figure text-secondary text-2xl">🥑</div>
-            <div class="stat-title">غذایی</div>
+            <div class="stat-title">{{ _('غذایی') }}</div>
             <div class="stat-value">{{ stats.diet_plans }}</div>
         </div>
 
         <div class="stat">
             <div class="stat-figure text-accent text-2xl">💊</div>
-            <div class="stat-title">استروئیدی</div>
+            <div class="stat-title">{{ _('استروئیدی') }}</div>
             <div class="stat-value">{{ stats.steroid_plans }}</div>
         </div>
     </div>

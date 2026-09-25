@@ -4,19 +4,19 @@
             <div class="card-body p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="font-semibold">{{ t.template_name or 'قالب ' ~ t.type }}</h3>
+                        <h3 class="font-semibold">{{ t.template_name or (_('قالب') ~ ' ' ~ t.type) }}</h3>
                         <p class="text-xs opacity-60 mt-1">
                             {% if t.type == 'diet' %}
-                                غذایی
+                                {{ _('غذایی') }}
                             {% elif t.type == 'training' %}
-                                تمرینی
+                                {{ _('تمرینی') }}
                             {% else %}
-                                استروئید
+                                {{ _('استروئید') }}
                             {% endif %}
-                            | {{ t.days_per_week or '—' }} روز در هفته
+                            | {{ t.days_per_week or '—' }} {{ _('روز در هفته') }}
                         </p>
                     </div>
-                    <a href="/plans/{{ t.id }}" class="btn btn-xs btn-ghost">مشاهده</a>
+                    <a href="/plans/{{ t.id }}" class="btn btn-xs btn-ghost">{{ _('مشاهده') }}</a>
                 </div>
 
                 {% if t.notes %}
@@ -31,7 +31,7 @@
                         hx-swap="innerHTML"
                         hx-boost="false"
                     >
-                        اعمال برای شاگرد
+                        {{ _('اعمال برای شاگرد') }}
                     </button>
                 </div>
             </div>
@@ -42,10 +42,10 @@
         <div class="bg-base-200 p-8 text-center card border border-base-300">
             <p class="text-sm opacity-60">
                 <span class="status status-secondary animate-bounce ml-1"></span>
-                هنوز قالبی ساخته نشده.
+                {{ _('هنوز قالبی ساخته نشده.') }}
             </p>
             <a href="/plans/new?template=true" class="btn btn-sm btn-primary mt-4">
-                ساخت قالب جدید
+                {{ _('ساخت قالب جدید') }}
             </a>
         </div>
     </div>

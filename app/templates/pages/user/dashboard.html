@@ -5,9 +5,9 @@
         <div class="flex flex-col gap-4 pb-6">
             <h1 class="text-2xl md:text-3xl font-light">
                 <span class="font-black text-primary">
-                    {{ user.first_name if user else 'قهرمان' }}
+                    {{ user.first_name if user else _('قهرمان') }}
                 </span>
-                خوش اومدی 👋🏻
+                {{ _('خوش اومدی') }} 👋🏻
             </h1>
             <div role="alert" class="alert alert-warning alert-soft">
                 <svg
@@ -24,7 +24,7 @@
                     />
                 </svg>
                 <span class="text-sm">
-                    برای کارکرد صحیح اپ، بعد از پایان هر روز حتما تیک انجام شد را بزنید!
+                    {{ _('برای کارکرد صحیح اپ، بعد از پایان هر روز حتما تیک انجام شد را بزنید!') }}
                 </span>
             </div>
         </div>
@@ -51,7 +51,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'diet' %}tab-active{% endif %}"
                         onclick="showTab('diet')"
                     >
-                        تغذیه 🥑
+                        {{ _('تغذیه') }} 🥑
                     </a>
                 {% endif %}
 
@@ -62,7 +62,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'training' %}tab-active{% endif %}"
                         onclick="showTab('training')"
                     >
-                        تمرین 💪🏻
+                        {{ _('تمرین') }} 💪🏻
                     </a>
                 {% endif %}
 
@@ -73,7 +73,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'steroid' %}tab-active{% endif %}"
                         onclick="showTab('steroid')"
                     >
-                        استروئید 💊
+                        {{ _('استروئید') }} 💊
                     </a>
                 {% endif %}
             </div>
@@ -89,14 +89,14 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4"
                         >
-                            انجام شد
+                            {{ _('انجام شد') }}
                         </button>
                         {% for category in meal_categories %}
                             {% set category_items = p['items'] | selectattr('meal_name', 'equalto', category) | list %}
 
                             {% if category_items %}
                                 <div class="divider divider-start text-sm opacity-30">
-                                    {{ category }}
+                                    {{ _(category) }}
                                 </div>
                                 {% for item in category_items %}
                                     <div class="card bg-base-200 border border-base-200 mb-3">
@@ -128,7 +128,9 @@
 
                         {% set other_items = p['items'] | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
-                            <div class="divider divider-start text-sm opacity-30">سایر</div>
+                            <div class="divider divider-start text-sm opacity-30">
+                                {{ _('سایر') }}
+                            </div>
                             {% for item in other_items %}
                                 <div class="card bg-base-200 mb-3">
                                     <div
@@ -155,12 +157,12 @@
                 {% else %}
                     {# This triggers ONLY if all diet plans are empty #}
                     <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
-                        آیتمی وجود ندارد 📭
+                        {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
                 <div class="text-center py-10 text-base-content/50 card bg-base-200">
-                    برنامه غذایی ندارید 📭
+                    {{ _('برنامه غذایی ندارید') }} 📭
                 </div>
             {% endif %}
         </section>
@@ -174,7 +176,7 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4"
                         >
-                            انجام شد
+                            {{ _('انجام شد') }}
                         </button>
 
                         {# Jinja2 logic to group training items chronologically #}
@@ -185,7 +187,7 @@
 
                             {% if category_items %}
                                 <div class="divider divider-start text-sm opacity-30">
-                                    {{ category }}
+                                    {{ _(category) }}
                                 </div>
                                 {% for item in category_items %}
                                     <div class="card bg-base-200 mb-3">
@@ -203,25 +205,25 @@
                                                         <span class="font-bold">
                                                             {{ item.sets }}
                                                         </span>
-                                                        ست ×
+                                                        {{ _('ست') }} ×
                                                         <span class="font-bold">
                                                             {{ item.reps }}
                                                         </span>
-                                                        تکرار
+                                                        {{ _('تکرار') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.weight %}
                                                     <div
                                                         class="badge badge-primary badge-sm badge-soft"
                                                     >
-                                                        {{ item.weight }} کیلوگرم
+                                                        {{ item.weight }} {{ _('کیلوگرم') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.rest_seconds %}
                                                     <div
                                                         class="badge badge-primary badge-sm badge-soft"
                                                     >
-                                                        {{ item.rest_seconds }} ثانیه
+                                                        {{ item.rest_seconds }} {{ _('ثانیه') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -243,7 +245,9 @@
                         {# Catch-all for training items with missing or custom categories #}
                         {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
-                            <div class="divider divider-start text-sm opacity-30">سایر</div>
+                            <div class="divider divider-start text-sm opacity-30">
+                                {{ _('سایر') }}
+                            </div>
                             {% for item in other_training_items %}
                                 <div class="card bg-base-200 mb-3">
                                     <div class="card-body p-4 text-right justify-between gap-4">
@@ -258,23 +262,23 @@
                                             {% if item.sets and item.reps %}
                                                 <div class="badge badge-primary justify-end">
                                                     <span class="font-bold">{{ item.sets }}</span>
-                                                    ست ×
+                                                    {{ _('ست') }} ×
                                                     <span class="font-bold">{{ item.reps }}</span>
-                                                    تکرار
+                                                    {{ _('تکرار') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.weight %}
                                                 <div
                                                     class="badge badge-primary badge-sm badge-soft"
                                                 >
-                                                    {{ item.weight }} کیلوگرم
+                                                    {{ item.weight }} {{ _('کیلوگرم') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.rest_seconds %}
                                                 <div
                                                     class="badge badge-primary badge-sm badge-soft"
                                                 >
-                                                    {{ item.rest_seconds }} ثانیه
+                                                    {{ item.rest_seconds }} {{ _('ثانیه') }}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -295,12 +299,12 @@
                 {% else %}
                     {# This triggers ONLY if all training plans are empty #}
                     <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
-                        آیتمی وجود ندارد 📭
+                        {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
                 <div class="text-center py-10 text-base-content/50 card bg-base-200">
-                    برنامه تمرینی ندارید 📭
+                    {{ _('برنامه تمرینی ندارید') }} 📭
                 </div>
             {% endif %}
         </section>
@@ -314,7 +318,7 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4"
                         >
-                            انجام شد
+                            {{ _('انجام شد') }}
                         </button>
                         {% for item in p['items'] %}
                             <div class="card bg-base-200">
@@ -327,12 +331,12 @@
                 {% else %}
                     {# This triggers ONLY if all steroid plans are empty #}
                     <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
-                        آیتمی وجود ندارد 📭
+                        {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
                 <div class="text-center py-10 text-base-content/50 card bg-base-200">
-                    برنامه استروئیدی ندارید 📭
+                    {{ _('برنامه استروئیدی ندارید') }} 📭
                 </div>
             {% endif %}
         </section>

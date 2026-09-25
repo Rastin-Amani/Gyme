@@ -3,16 +3,16 @@
     <div id="trainees-content">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-xl font-bold">شاگردها</h1>
-                <p class="text-sm opacity-70">مدیریت شاگردهای ثبت‌شده</p>
+                <h1 class="text-xl font-bold">{{ _('شاگردها') }}</h1>
+                <p class="text-sm opacity-70">{{ _('مدیریت شاگردهای ثبت‌شده') }}</p>
             </div>
-            <a href="/trainees/new" class="btn btn-primary">شاگرد جدید</a>
+            <a href="/trainees/new" class="btn btn-primary">{{ _('شاگرد جدید') }}</a>
         </div>
 
         <!-- Search and Filter Panel -->
         <div class="collapse collapse-arrow border border-base-300 bg-base-200 rounded-box mb-6">
             <input type="checkbox" />
-            <div class="collapse-title text-md font-medium">جستجو و فیلتر</div>
+            <div class="collapse-title text-md font-medium">{{ _('جستجو و فیلتر') }}</div>
             <div class="collapse-content">
                 <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                     <label class="form-control floating-label">
@@ -20,7 +20,7 @@
                             type="text"
                             name="query"
                             id="search-input"
-                            placeholder="جستجو (نام، ایمیل...)"
+                            placeholder="{{ _('جستجو (نام، ایمیل...)') }}"
                             class="input input-bordered w-full peer"
                             value="{{ search_query or '' }}"
                             hx-get="/trainees/search?page=1"
@@ -29,7 +29,7 @@
                             hx-swap="outerHTML"
                             hx-trigger="keyup changed delay:500ms, search"
                         />
-                        <span class="label-text">جستجو (نام، ایمیل...)</span>
+                        <span class="label-text">{{ _('جستجو (نام، ایمیل...)') }}</span>
                     </label>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -49,22 +49,22 @@
                                     value=""
                                     {% if not filter_params.gender %}selected{% endif %}
                                 >
-                                    همه
+                                    {{ _('همه') }}
                                 </option>
                                 <option
                                     value="male"
                                     {% if filter_params.gender == 'male' %}selected{% endif %}
                                 >
-                                    آقا
+                                    {{ _('آقا') }}
                                 </option>
                                 <option
                                     value="female"
                                     {% if filter_params.gender == 'female' %}selected{% endif %}
                                 >
-                                    خانم
+                                    {{ _('خانم') }}
                                 </option>
                             </select>
-                            <span class="label-text">جنسیت</span>
+                            <span class="label-text">{{ _('جنسیت') }}</span>
                         </label>
 
                         <label class="form-control floating-label">
@@ -83,22 +83,22 @@
                                     value=""
                                     {% if not filter_params.status %}selected{% endif %}
                                 >
-                                    همه
+                                    {{ _('همه') }}
                                 </option>
                                 <option
                                     value="active"
                                     {% if filter_params.status == 'active' %}selected{% endif %}
                                 >
-                                    فعال
+                                    {{ _('فعال') }}
                                 </option>
                                 <option
                                     value="inactive"
                                     {% if filter_params.status == 'inactive' %}selected{% endif %}
                                 >
-                                    غیرفعال
+                                    {{ _('غیرفعال') }}
                                 </option>
                             </select>
-                            <span class="label-text">وضعیت</span>
+                            <span class="label-text">{{ _('وضعیت') }}</span>
                         </label>
                     </div>
 
@@ -108,7 +108,7 @@
                         class="btn btn-primary btn-soft btn-block mt-2"
                         onclick="clearAllFilters()"
                     >
-                        پاک کردن فیلترها
+                        {{ _('پاک کردن فیلترها') }}
                     </button>
                 </form>
             </div>
@@ -168,7 +168,7 @@
                                         <span
                                             class="status status-secondary mr-2 animate-bounce"
                                         ></span>
-                                        هنوز شاگردی ثبت نکردید!
+                                        {{ _('هنوز شاگردی ثبت نکردید!') }}
                                     {% endif %}
                                 </p>
                             </div>
@@ -193,7 +193,7 @@
                             «
                         </a>
                         <button class="join-item btn btn-sm btn-disabled pointer-events-none">
-                            صفحه {{ page }} از {{ total_pages }}
+                            {{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}
                         </button>
                         <a
                             href="/trainees?page={{ page + 1 }}&query={{ search_query or '' }}&gender={{ filter_params.gender or '' }}&status={{ filter_params.status or '' }}&min_birthdate={{ filter_params.min_birthdate or '' }}&max_birthdate={{ filter_params.max_birthdate or '' }}"

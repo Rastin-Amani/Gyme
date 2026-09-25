@@ -7,7 +7,7 @@
         <div class="flex items-center gap-3 mb-4">
             <div class="flex flex-col">
                 <span class="text-sm text-base-content/60 font-medium">
-                    لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود.
+                    {{ _('لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود.') }}
                 </span>
             </div>
         </div>
@@ -29,7 +29,7 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">قد</span>
+                                <span class="label">{{ _('قد') }}</span>
                                 <input
                                     type="number"
                                     id="val_height"
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">وزن</span>
+                                <span class="label">{{ _('وزن') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">دور سینه</span>
+                                <span class="label">{{ _('دور سینه') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -67,7 +67,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">دور کمر</span>
+                                <span class="label">{{ _('دور کمر') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -79,7 +79,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">دور باسن</span>
+                                <span class="label">{{ _('دور باسن') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -91,7 +91,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">دور بازو</span>
+                                <span class="label">{{ _('دور بازو') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -103,13 +103,13 @@
                     </div>
                     <div class="form-control">
                         <label class="select w-full">
-                            <span class="label">سطح فعالیت</span>
+                            <span class="label">{{ _('سطح فعالیت') }}</span>
                             <select id="val_activity" class="select-bordered w-full calc-trigger">
-                                <option value="1.2">بدون تحرک (پشت میز)</option>
-                                <option value="1.375">سبک (۱ تا ۳ روز ورزش)</option>
-                                <option value="1.55" selected>متوسط (۳ تا ۵ روز ورزش)</option>
-                                <option value="1.725">شدید (۶ تا ۷ روز ورزش)</option>
-                                <option value="1.9">بسیار شدید (ورزشکار حرفه‌ای)</option>
+                                <option value="1.2">{{ _('بدون تحرک (پشت میز)') }}</option>
+                                <option value="1.375">{{ _('سبک (۱ تا ۳ روز ورزش)') }}</option>
+                                <option value="1.55" selected>{{ _('متوسط (۳ تا ۵ روز ورزش)') }}</option>
+                                <option value="1.725">{{ _('شدید (۶ تا ۷ روز ورزش)') }}</option>
+                                <option value="1.9">{{ _('بسیار شدید (ورزشکار حرفه‌ای)') }}</option>
                             </select>
                         </label>
                     </div>
@@ -117,7 +117,7 @@
             </div>
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="card bg-base-200 p-4 text-center items-center -sm">
-                    <div class="text-xs font-bold opacity-60 mb-3">شاخص توده بدنی (BMI)</div>
+                    <div class="text-xs font-bold opacity-60 mb-3">{{ _('شاخص توده بدنی (BMI)') }}</div>
                     <div
                         id="bmi-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -129,7 +129,7 @@
                 </div>
 
                 <div class="card bg-base-200 p-4 text-center items-center -sm">
-                    <div class="text-xs font-bold opacity-60 mb-3">درصد چربی (BFP)</div>
+                    <div class="text-xs font-bold opacity-60 mb-3">{{ _('درصد چربی (BFP)') }}</div>
                     <div
                         id="bfp-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -141,19 +141,19 @@
                 </div>
 
                 <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">توده بدون چربی (LBM)</div>
+                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('توده بدون چربی (LBM)') }}</div>
                     <div id="lbm-display" class="text-xl font-black text-info mt-2">0</div>
                     <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
                 <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">وزن چربی</div>
+                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('وزن چربی') }}</div>
                     <div id="fat-mass-display" class="text-xl font-black text-warning mt-2">0</div>
                     <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
                 <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">متابولیسم (BMR)</div>
+                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('متابولیسم (BMR)') }}</div>
                     <div id="bmr-display" class="text-xl font-black text-accent mt-2">0</div>
                     <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
                         Kcal / Day
@@ -161,7 +161,7 @@
                 </div>
 
                 <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">کالری نگهداری (TDEE)</div>
+                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('کالری نگهداری (TDEE)') }}</div>
                     <div id="tdee-display" class="text-xl font-black text-success mt-2">0</div>
                     <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
                         Kcal / Day
@@ -173,7 +173,7 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text opacity-70 mb-2">تصاویر پیشرفت (اختیاری)</span>
+                            <span class="label-text opacity-70 mb-2">{{ _('تصاویر پیشرفت (اختیاری)') }}</span>
                         </label>
                         <input
                             type="file"
@@ -197,11 +197,11 @@
                 <textarea
                     name="notes"
                     class="textarea textarea-bordered h-12 w-full"
-                    placeholder="یادداشت‌های ارزیابی"
+                    placeholder="{{ _('یادداشت‌های ارزیابی') }}"
                 ></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full">ثبت ارزیابی</button>
+            <button type="submit" class="btn btn-primary w-full">{{ _('ثبت ارزیابی') }}</button>
         </form>
     </div>
 
@@ -264,22 +264,22 @@
             if (bmi < 18.5) {
                 bmiGauge.className =
                     'radial-progress text-info transition-all duration-500 font-black';
-                bmiStatus.innerText = 'کمبود وزن';
+                bmiStatus.innerText = {{ _('کمبود وزن') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-info font-bold';
             } else if (bmi < 25) {
                 bmiGauge.className =
                     'radial-progress text-success transition-all duration-500 font-black';
-                bmiStatus.innerText = 'نرمال';
+                bmiStatus.innerText = {{ _('نرمال') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-success font-bold';
             } else if (bmi < 30) {
                 bmiGauge.className =
                     'radial-progress text-warning transition-all duration-500 font-black';
-                bmiStatus.innerText = 'اضافه وزن';
+                bmiStatus.innerText = {{ _('اضافه وزن') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-warning font-bold';
             } else {
                 bmiGauge.className =
                     'radial-progress text-error transition-all duration-500 font-black';
-                bmiStatus.innerText = 'چاقی';
+                bmiStatus.innerText = {{ _('چاقی') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-error font-bold';
             }
 
@@ -312,37 +312,37 @@
 
             if (gender === 'male') {
                 if (bfp < 6) {
-                    bfpText = 'چربی ضروری';
+                    bfpText = {{ _('چربی ضروری') | tojson }};
                     bfpColor = 'text-info';
                 } else if (bfp < 14) {
-                    bfpText = 'ورزشکار';
+                    bfpText = {{ _('ورزشکار') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 18) {
-                    bfpText = 'تناسب اندام';
+                    bfpText = {{ _('تناسب اندام') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 25) {
-                    bfpText = 'قابل قبول';
+                    bfpText = {{ _('قابل قبول') | tojson }};
                     bfpColor = 'text-warning';
                 } else {
-                    bfpText = 'چاقی';
+                    bfpText = {{ _('چاقی') | tojson }};
                     bfpColor = 'text-error';
                 }
             } else {
                 // Female thresholds
                 if (bfp < 14) {
-                    bfpText = 'چربی ضروری';
+                    bfpText = {{ _('چربی ضروری') | tojson }};
                     bfpColor = 'text-info';
                 } else if (bfp < 21) {
-                    bfpText = 'ورزشکار';
+                    bfpText = {{ _('ورزشکار') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 25) {
-                    bfpText = 'تناسب اندام';
+                    bfpText = {{ _('تناسب اندام') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 32) {
-                    bfpText = 'قابل قبول';
+                    bfpText = {{ _('قابل قبول') | tojson }};
                     bfpColor = 'text-warning';
                 } else {
-                    bfpText = 'چاقی';
+                    bfpText = {{ _('چاقی') | tojson }};
                     bfpColor = 'text-error';
                 }
             }
@@ -438,7 +438,9 @@
                 // Reset if total would exceed max
                 if (selectedFiles.length + incoming.length > MAX_FILES) {
                     showValidation(
-                        `حداکثر ${MAX_FILES} فایل مجاز است (${selectedFiles.length} انتخاب شده)`
+                        {{ _('حداکثر {0} فایل مجاز است ({1} انتخاب شده)') | tojson }}
+                            .replace('{0}', MAX_FILES)
+                            .replace('{1}', selectedFiles.length)
                     );
                     this.value = '';
                     return;
@@ -447,13 +449,15 @@
                 // Validate each incoming file
                 for (const file of incoming) {
                     if (!VALID_TYPES.includes(file.type)) {
-                        showValidation('فقط JPEG, PNG, WebP, GIF مجاز هستند');
+                        showValidation({{ _('فقط JPEG, PNG, WebP, GIF مجاز هستند') | tojson }});
                         this.value = '';
                         return;
                     }
                     if (file.size > MAX_FILE_SIZE) {
                         showValidation(
-                            `هر فایل حداکثر ۵MB (${file.name} ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+                            {{ _('هر فایل حداکثر ۵MB ({0} {1}MB)') | tojson }}
+                                .replace('{0}', file.name)
+                                .replace('{1}', (file.size / 1024 / 1024).toFixed(1))
                         );
                         this.value = '';
                         return;

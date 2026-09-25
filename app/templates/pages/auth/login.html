@@ -17,9 +17,9 @@
                     onerror="this.style.display='none'"
                 />
                 <div>
-                    <p class="text-xl font-black text-base-content">نصب اپلیکیشن</p>
+                    <p class="text-xl font-black text-base-content">{{ _('نصب اپلیکیشن') }}</p>
                     <p class="text-sm text-base-content/60 mt-1 leading-relaxed">
-                        وب اپلیکیشن را به صفحه اصلی خود اضافه کنید.
+                        {{ _('وب اپلیکیشن را به صفحه اصلی خود اضافه کنید.') }}
                     </p>
                 </div>
                 <div
@@ -32,10 +32,10 @@
                             ۱
                         </span>
                         <span>
-                            در نوار پایین دکمه
+                            {{ _('در نوار پایین دکمه') }}
                             <strong>Share</strong>
                             <span class="inline-block align-middle text-lg leading-none">⎋</span>
-                            را انتخاب کنید.
+                            {{ _('را انتخاب کنید.') }}
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
@@ -45,9 +45,9 @@
                             ۲
                         </span>
                         <span>
-                            در منوی باز شده، گزینه
+                            {{ _('در منوی باز شده، گزینه') }}
                             <strong>Add to Home Screen</strong>
-                            را انتخاب کنید.
+                            {{ _('را انتخاب کنید.') }}
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
@@ -57,14 +57,14 @@
                             ۳
                         </span>
                         <span>
-                            در مرحله بعد، روی
+                            {{ _('در مرحله بعد، روی') }}
                             <strong>Add</strong>
-                            کلیک کنید.
+                            {{ _('کلیک کنید.') }}
                         </span>
                     </div>
                 </div>
                 <button onclick="dismissInstallOverlay()" class="btn btn-primary w-full mt-1">
-                    متوجه شدم
+                    {{ _('متوجه شدم') }}
                 </button>
             </div>
         </div>
@@ -91,6 +91,10 @@
 {% endblock %}
 
 {% block content %}
+    <div class="fixed top-2 end-2 z-40">
+        {% include "components/locale_switcher.html" %}
+    </div>
+
     <div class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8">
         <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-0">
             <div
@@ -132,42 +136,44 @@
                     {% endif %}
 
                     <h1 class="text-2xl font-black text-base-content">
-                        {{ tenant.name if tenant else "جیمی" }}
+                        {{ tenant.name if tenant else _("جیمی") }}
                     </h1>
                     <p class="text-xs font-medium text-base-content/50 mt-1.5">
-                        پنل کاربری
+                        {{ _('پنل کاربری') }}
                     </p>
                 </div>
 
                 <form method="post" action="/login" class="space-y-4">
                     <div class="form-control">
                         <label class="floating-label">
-                            <span>ایمیل</span>
+                            <span>{{ _('ایمیل') }}</span>
                             <input
                                 name="identity"
                                 class="input input-bordered w-full validator transition-colors"
-                                placeholder="ایمیل"
+                                placeholder="{{ _('ایمیل') }}"
                                 type="email"
                                 required
                                 autofocus
                             />
-                            <div class="validator-hint hidden text-xs mt-1">ایمیل معتبر نیست.</div>
+                            <div class="validator-hint hidden text-xs mt-1">
+                                {{ _('ایمیل معتبر نیست.') }}
+                            </div>
                         </label>
                     </div>
 
                     <div class="form-control">
                         <div class="relative w-full">
                             <label class="floating-label w-full">
-                                <span>رمز عبور</span>
+                                <span>{{ _('رمز عبور') }}</span>
                                 <input
                                     name="password"
                                     class="input input-bordered w-full validator pl-12 transition-colors"
-                                    placeholder="رمز عبور"
+                                    placeholder="{{ _('رمز عبور') }}"
                                     type="password"
                                     required
                                 />
                                 <div class="validator-hint hidden text-xs mt-1">
-                                    رمز عبور الزامی است.
+                                    {{ _('رمز عبور الزامی است.') }}
                                 </div>
                             </label>
 
@@ -217,7 +223,7 @@
                             href="#"
                             class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
                         >
-                            رمز عبور را فراموش کردید؟
+                            {{ _('رمز عبور را فراموش کردید؟') }}
                         </a>
                     </div>
 
@@ -226,7 +232,7 @@
                             type="submit"
                             class="btn btn-primary w-full text-base shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-[1px] transition-all duration-300"
                         >
-                            ورود
+                            {{ _('ورود') }}
                         </button>
                     </div>
                 </form>
