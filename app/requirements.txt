@@ -11,3 +11,4 @@ jalali_core
 pandas
 openpyxl
 structlog
+Babel>=2.10
