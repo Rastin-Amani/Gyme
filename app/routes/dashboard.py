@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse
 from app.services.dashboard import get_owner_dashboard_stats, get_coach_stats
 from ..templates import templates
 from fastapi.responses import RedirectResponse
@@ -56,7 +55,6 @@ def owner_dashboard(request: Request, timeframe: str = "all"):
     )
 
 
-@router.get("/dashboard/debug-coach-stats")
 def debug_coach_stats(request: Request):
     pb = request.state.pb
     tenant_id = request.state.tenant.id
@@ -82,7 +80,7 @@ def debug_coach_stats(request: Request):
                         f'tenant="{tenant_id}" && plan="{pid}"'
                     )
                     prog = "HAS_PROGRESS"
-                except:
+                except Exception:
                     prog = "NO_PROGRESS"
                 logger.info(
                     "debug.plan_row",

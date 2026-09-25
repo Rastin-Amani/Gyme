@@ -78,6 +78,13 @@ app.add_middleware(TenantMiddleware)
 app.include_router(dashboard.router)
 if not IS_PROD:
     app.include_router(debug.router)
+    # Debug diagnostics are never exposed in production
+    dashboard.router.add_api_route(
+        "/dashboard/debug-coach-stats",
+        dashboard.debug_coach_stats,
+        methods=["GET"],
+        include_in_schema=False,
+    )
 app.include_router(auth.router)
 app.include_router(trainee.router)
 app.include_router(plan.router)
