@@ -1,4 +1,5 @@
 """i18n: locale resolution, catalogs, direction, locale switch endpoint."""
+
 from __future__ import annotations
 
 import pytest
@@ -27,7 +28,7 @@ def client():
 
 
 def test_registry_enabled_languages():
-    assert DEFAULT_LOCALE.code == "fa" and DEFAULT_LOCALE.is_rtl
+    assert DEFAULT_LOCALE.code == "en" and not DEFAULT_LOCALE.is_rtl
     for code in ("fa", "en", "es", "tr", "hy"):
         assert code in ENABLED_LOCALES
     assert not LOCALES["en"].is_rtl
@@ -36,7 +37,7 @@ def test_registry_enabled_languages():
 
 def test_unknown_collapses_to_default():
     set_request_locale("nope")
-    assert get_locale().code == "fa"
+    assert get_locale().code == "en"
 
 
 def test_catalog_translations():
@@ -75,13 +76,13 @@ def test_locale_switch_open_redirect_guard(client):
 
 def test_html_lang_dir_follows_cookie(client):
     r = client.get("/login")
-    assert 'lang="fa"' in r.text and 'dir="rtl"' in r.text
+    assert 'lang="en"' in r.text and 'dir="ltr"' in r.text
     for name in ("فارسی", "English", "Español", "Türkçe", "Հայերեն"):
         assert name in r.text
 
-    r = client.get("/login", cookies={"locale": "en"})
-    assert 'lang="en"' in r.text and 'dir="ltr"' in r.text
-    set_request_locale("en")
+    r = client.get("/login", cookies={"locale": "fa"})
+    assert 'lang="fa"' in r.text and 'dir="rtl"' in r.text
+    set_request_locale("fa")
     assert _("ورود") in r.text
 
 

@@ -38,9 +38,13 @@ class Locale:
 
 # One authoritative registry. Disabled entries are readiness declarations:
 # enabling a language = flip `enabled` + ship app/locales/<code>/LC_MESSAGES/messages.mo
+#
+# English first: the application's default (first-visit) language is English.
+# Persian remains enabled as an explicit user choice and as the *source*
+# language for msgids (see module docstring).
 LOCALES: dict[str, Locale] = {
-    "fa": Locale("fa", "فارسی", "rtl", enabled=True, default=True, flag="🇮🇷"),
-    "en": Locale("en", "English", "ltr", enabled=True, flag="🇬🇧"),
+    "fa": Locale("fa", "فارسی", "rtl", enabled=True, flag="🇮🇷"),
+    "en": Locale("en", "English", "ltr", enabled=True, default=True, flag="🇬🇧"),
     "es": Locale("es", "Español", "ltr", enabled=True, flag="🇪🇸"),
     "tr": Locale("tr", "Türkçe", "ltr", enabled=True, flag="🇹🇷"),
     "hy": Locale("hy", "Հայերեն", "ltr", enabled=True, flag="🇦🇲"),
