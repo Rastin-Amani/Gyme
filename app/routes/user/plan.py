@@ -1,23 +1,18 @@
-from fastapi import APIRouter, Request, Form
-from app.services.plan import (
-      get_plan_by_id, get_plans_by_trainee
-     )
+from fastapi import APIRouter, Request
+from app.services.plan import get_plan_by_id, get_plans_by_trainee
 from app.services.item import list_items_by_plan
 from ...templates import templates
-from fastapi.responses import HTMLResponse
 from app.services.trainee import get_trainee_by_user
 from fastapi.responses import RedirectResponse
 from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES
 from app.i18n import _
 
+router = APIRouter(tags=["Trainee Plans Management"])
 
-router = APIRouter(
-    tags=["Trainee Plans Management"]
-)
 
 # Get Requests
 @router.get("/user/plans")
-def plan_list (request: Request):
+def plan_list(request: Request):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -28,21 +23,16 @@ def plan_list (request: Request):
         return RedirectResponse(url="/login")
     plans = get_plans_by_trainee(pb, tenant, trainee.id)
     tenant_name = request.state.tenant
-    
+
     return templates.TemplateResponse(
         request=request,
         name="pages/user/plan/plans.html",
-        context={
-        "title" : _("لیست برنامه‌ها"),
-        "tenant": tenant_name,
-        "user": user,
-        "plans": plans
-        }
+        context={"title": _("لیست برنامه‌ها"), "tenant": tenant_name, "user": user, "plans": plans},
     )
 
 
 @router.get("/user/plans/{id}")
-def show_plan_detail (request: Request, id: str):
+def show_plan_detail(request: Request, id: str):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -63,15 +53,15 @@ def show_plan_detail (request: Request, id: str):
 
     item_data = list_items_by_plan(pb, tenant, collection_name, plan=id)
     tenant_name = request.state.tenant
-   
+
     return templates.TemplateResponse(
         request=request,
         name="pages/user/plan/plan_detail.html",
         context={
-        "title" : _("جزئیات برنامه"),
-        "tenant": tenant_name,
-        "user": user,
-        "plan": plan_data,
-        "item": item_data
-        }
+            "title": _("جزئیات برنامه"),
+            "tenant": tenant_name,
+            "user": user,
+            "plan": plan_data,
+            "item": item_data,
+        },
     )

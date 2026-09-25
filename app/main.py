@@ -47,7 +47,6 @@ app = FastAPI(
 )
 
 # Trusted hosts & proxy headers are handled in TenantMiddleware + uvicorn proxy_headers; add explicit trusted hosts if configured
-from starlette.middleware.trustedhost import TrustedHostMiddleware
 allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
 if allowed_hosts_env:
     allowed = [h.strip() for h in allowed_hosts_env.split(",") if h.strip()]

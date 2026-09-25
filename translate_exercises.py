@@ -866,7 +866,7 @@ def translate_instruction_sentence(sentence: str) -> str:
         elif "raise" in s or "lift" in s:
             direction = "بالا"
         elif "return" in s:
-            return f"لحظه‌ای در نقطه اوج مکث کنید، سپس به آرامی به وضعیت شروع بازگردید."
+            return "لحظه‌ای در نقطه اوج مکث کنید، سپس به آرامی به وضعیت شروع بازگردید."
         elif "push" in s:
             direction = "بازگشت"
         elif "pull" in s:

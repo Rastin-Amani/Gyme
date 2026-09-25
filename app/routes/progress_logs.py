@@ -10,7 +10,9 @@ from app.services.progress_logs import (
     get_progress_log_with_tenant_check,
 )
 from typing import List
-import json, os, uuid, re
+import json
+import os
+import re
 from app.i18n import _
 
 router = APIRouter(tags=["Progress Logs"])
@@ -37,7 +39,12 @@ def new_progress_log_form(request: Request, trainee_id: str):
     return templates.TemplateResponse(
         request=request,
         name="forms/progress_logs.html",
-        context={"title": _("ثبت ارزیابی اولیه"), "tenant": tenant, "user": user, "trainee": trainee},
+        context={
+            "title": _("ثبت ارزیابی اولیه"),
+            "tenant": tenant,
+            "user": user,
+            "trainee": trainee,
+        },
     )
 
 
@@ -69,12 +76,16 @@ async def save_progress_log(
         tenant_id = request.state.tenant.id
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
-            return HTMLResponse(content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"),"error"))
+            return HTMLResponse(
+                content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"), "error")
+            )
         # Verify trainee belongs to tenant
         try:
             get_trainee_by_id(pb, tenant_id, trainee_id)
         except Exception:
-            return HTMLResponse(content="", status_code=404, headers=hx_toast(_("شاگرد یافت نشد"),"error"))
+            return HTMLResponse(
+                content="", status_code=404, headers=hx_toast(_("شاگرد یافت نشد"), "error")
+            )
 
         # 🟢 Helper function to safely convert strings to floats with bounds
         def safe_float(val: str, min_v=None, max_v=None):
@@ -130,7 +141,10 @@ async def save_progress_log(
         if progress_photos:
             valid_files = [f for f in progress_photos if f.filename and f.filename.strip()]
             if len(valid_files) > MAX_FILES:
-                raise HTTPException(status_code=400, detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES))
+                raise HTTPException(
+                    status_code=400,
+                    detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES),
+                )
             file_uploads = []
             for photo in valid_files:
                 # Validate extension
@@ -140,17 +154,22 @@ async def save_progress_log(
                     raise HTTPException(status_code=400, detail=_("نام فایل نامعتبر"))
                 ext = os.path.splitext(fname)[1].lower()
                 if ext not in VALID_EXTS:
-                    raise HTTPException(status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname))
+                    raise HTTPException(
+                        status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname)
+                    )
                 if photo.content_type not in VALID_TYPES:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(filename=photo.filename),
+                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(
+                            filename=photo.filename
+                        ),
                     )
                 # Read with size limit - stream check
                 contents = await photo.read()
                 if len(contents) > MAX_FILE_SIZE:
                     raise HTTPException(
-                        status_code=400, detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename)
+                        status_code=400,
+                        detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename),
                     )
                 if len(contents) < 10:
                     raise HTTPException(status_code=400, detail=_("فایل خراب است"))
@@ -164,7 +183,9 @@ async def save_progress_log(
                         raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
                 elif not is_image and photo.content_type != "image/webp":
                     # Require magic for others
-                    if not any(contents.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8"]):
+                    if not any(
+                        contents.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8"]
+                    ):
                         raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
                 # Sanitize filename
                 safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", fname)
@@ -259,12 +280,16 @@ async def save_progress_log_edit(
         tenant_id = request.state.tenant.id
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
-            return HTMLResponse(content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"),"error"))
+            return HTMLResponse(
+                content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"), "error")
+            )
         # Verify log belongs to tenant
         try:
-            existing_log = get_progress_log_with_tenant_check(pb, tenant_id, log_id)
+            get_progress_log_with_tenant_check(pb, tenant_id, log_id)
         except Exception:
-            return HTMLResponse(content="", status_code=404, headers=hx_toast(_("ارزیابی یافت نشد"),"error"))
+            return HTMLResponse(
+                content="", status_code=404, headers=hx_toast(_("ارزیابی یافت نشد"), "error")
+            )
 
         # 🟢 Helper function to safely convert strings to floats with bounds
         def safe_float(val: str, min_v=None, max_v=None):
@@ -312,7 +337,10 @@ async def save_progress_log_edit(
         if progress_photos:
             valid_files = [f for f in progress_photos if f.filename and f.filename.strip()]
             if len(valid_files) > MAX_FILES:
-                raise HTTPException(status_code=400, detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES))
+                raise HTTPException(
+                    status_code=400,
+                    detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES),
+                )
             file_uploads = []
             for photo in valid_files:
                 fname = str(photo.filename)[:100]
@@ -320,21 +348,28 @@ async def save_progress_log_edit(
                     raise HTTPException(status_code=400, detail=_("نام فایل نامعتبر"))
                 ext = os.path.splitext(fname)[1].lower()
                 if ext not in VALID_EXTS:
-                    raise HTTPException(status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname))
+                    raise HTTPException(
+                        status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname)
+                    )
                 if photo.content_type not in VALID_TYPES:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(filename=photo.filename),
+                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(
+                            filename=photo.filename
+                        ),
                     )
                 contents = await photo.read()
                 if len(contents) > MAX_FILE_SIZE:
                     raise HTTPException(
-                        status_code=400, detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename)
+                        status_code=400,
+                        detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename),
                     )
                 if len(contents) < 10:
                     raise HTTPException(status_code=400, detail=_("فایل خراب است"))
                 head = contents[:4]
-                if not any(head.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8", b"RIFF"]):
+                if not any(
+                    head.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8", b"RIFF"]
+                ):
                     raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
                 safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", fname)
                 file_uploads.append((safe_name, contents, photo.content_type))

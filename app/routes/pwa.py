@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, Response, RedirectResponse
 from app.i18n import _
 
 router = APIRouter()
@@ -81,14 +81,15 @@ def offline_page():
     <p>__OFFLINE_BODY__</p>
     <button class="btn" onclick="window.location.reload()">__OFFLINE_ACTION__</button>
   </body>
-</html>"""
-    .replace("__OFFLINE_TITLE__", _("قطع ارتباط"))
-    .replace("__OFFLINE_HEADING__", _("شما آفلاین هستید"))
-    .replace(
-        "__OFFLINE_BODY__",
-        _("صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به اینترنت، دوباره امتحان کنید."),
-    )
-    .replace("__OFFLINE_ACTION__", _("تلاش مجدد"))
+</html>""".replace("__OFFLINE_TITLE__", _("قطع ارتباط"))
+        .replace("__OFFLINE_HEADING__", _("شما آفلاین هستید"))
+        .replace(
+            "__OFFLINE_BODY__",
+            _(
+                "صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به اینترنت، دوباره امتحان کنید."
+            ),
+        )
+        .replace("__OFFLINE_ACTION__", _("تلاش مجدد"))
     )
 
 
@@ -135,9 +136,6 @@ def dynamic_manifest(request: Request):
     }
 
     return manifest
-
-
-from fastapi.responses import RedirectResponse
 
 
 @router.get("/favicon.ico", include_in_schema=False)

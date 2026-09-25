@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, Response
+from fastapi import APIRouter, Request, Response
 from ...templates import templates
 from fastapi.responses import HTMLResponse
 from app.services.trainee import get_trainee_by_user
@@ -19,11 +19,13 @@ def trainee_dashboard(request: Request):
     user = request.state.user
     if getattr(user, "role", None) != "trainee":
         from fastapi.responses import RedirectResponse
+
         return RedirectResponse(url="/dashboard")
 
     trainee = get_trainee_by_user(pb, tenant_id, user.id)
     if not trainee:
         from fastapi.responses import RedirectResponse
+
         return RedirectResponse(url="/login")
     plans = get_plans_by_trainee(pb, tenant_id, trainee.id)
 
@@ -37,7 +39,7 @@ def trainee_dashboard(request: Request):
         try:
             progress = get_progress_by_plan(pb, tenant_id, p.id)
             current_seq = progress.current_seq if progress else 1
-        except Exception as e:
+        except Exception:
             progress = None
             current_seq = 1
 
@@ -48,7 +50,7 @@ def trainee_dashboard(request: Request):
         try:
             # 🟢 Passing tenant_id (string) and current_seq dynamically!
             items = get_items_by_plan_seq(pb, tenant_id, coll_name, p.id, current_seq)
-        except Exception as e:
+        except Exception:
             items = []
 
         # 🟢 Map to native dict to keep Jinja2 templates happy
@@ -97,7 +99,9 @@ def mark_plan_done(plan_id: str, request: Request):
     # 1. Try to fetch existing progress
     try:
         records = pb.collection("plan_progress").get_full_list(
-            query_params={"filter": f'plan="{pb_escape(plan_id)}" && tenant="{pb_escape(tenant_id)}"'}
+            query_params={
+                "filter": f'plan="{pb_escape(plan_id)}" && tenant="{pb_escape(tenant_id)}"'
+            }
         )
         progress = records[0] if records else None
     except Exception:

@@ -9,6 +9,7 @@ Defensive controls:
 - Authorization helpers
 - Input sanitization
 """
+
 import os
 import re
 from typing import Optional
@@ -19,6 +20,7 @@ from typing import Optional
 # PB filters use  "value" quoting. Escape \ and " inside values.
 # Reference: https://pocketbase.io/docs/api-rules-and-filters/#filter-syntax
 
+
 def pb_escape(value: Optional[str]) -> str:
     """Escape a string for safe inclusion inside PB filter double quotes."""
     if value is None:
@@ -27,9 +29,11 @@ def pb_escape(value: Optional[str]) -> str:
     # Must escape backslash first, then double-quote
     return s.replace("\\", "\\\\").replace('"', '\\"')
 
+
 def pb_escape_like(value: str) -> str:
     """Escape for ~ (like) filters – same escaping, plus escape % and _ if needed."""
     return pb_escape(value)
+
 
 # ---------------------------------------------------------------------------
 # Allowlists
@@ -45,6 +49,7 @@ ALLOWED_ROLES = {"owner", "coach", "trainee"}  # owner may be absent role
 # Tenant domain validation: allow hostname with port stripped, alphanumeric + hyphen + dot
 _DOMAIN_RE = re.compile(r"^[a-zA-Z0-9.-]{1,253}$")
 
+
 def is_valid_host(host: str) -> bool:
     if not host or len(host) > 253:
         return False
@@ -56,11 +61,13 @@ def is_valid_host(host: str) -> bool:
         return False
     return bool(_DOMAIN_RE.match(host))
 
+
 def sanitize_plan_type(plan_type: str) -> str:
     """Validate and return plan_type or raise ValueError."""
     if plan_type not in ALLOWED_PLAN_TYPES:
         raise ValueError(f"Invalid plan_type: {plan_type}")
     return plan_type
+
 
 def sanitize_collection_name(plan_type: str) -> str:
     """Convert validated plan_type to collection name."""
@@ -70,6 +77,7 @@ def sanitize_collection_name(plan_type: str) -> str:
         raise ValueError("Invalid collection")
     return name
 
+
 def sanitize_gender(gender: Optional[str]) -> Optional[str]:
     if gender is None or gender == "":
         return None
@@ -78,12 +86,14 @@ def sanitize_gender(gender: Optional[str]) -> Optional[str]:
         raise ValueError("Invalid gender")
     return g
 
+
 def sanitize_blood_type(bt: Optional[str]) -> Optional[str]:
     if bt is None or bt == "":
         return None
     if bt not in ALLOWED_BLOOD_TYPES:
         raise ValueError("Invalid blood_type")
     return bt
+
 
 def sanitize_status(status: Optional[str], allowed: set) -> Optional[str]:
     if status is None or status == "":
@@ -93,10 +103,12 @@ def sanitize_status(status: Optional[str], allowed: set) -> Optional[str]:
         raise ValueError(f"Invalid status: {status}")
     return s
 
+
 # ---------------------------------------------------------------------------
 # Cookie helpers
 # ---------------------------------------------------------------------------
 IS_PROD = os.getenv("ENV", "dev").lower() == "production"
+
 
 def cookie_secure_flag(request=None) -> bool:
     """Return True when cookies should be marked Secure.
@@ -114,6 +126,7 @@ def cookie_secure_flag(request=None) -> bool:
             pass
     return False
 
+
 def set_auth_cookie(response, token: str, request=None):
     """Set pb_auth cookie with hardened attributes."""
     secure = cookie_secure_flag(request)
@@ -129,9 +142,11 @@ def set_auth_cookie(response, token: str, request=None):
     )
     return response
 
+
 def clear_auth_cookie(response):
     response.delete_cookie(key="pb_auth", path="/", samesite="lax")
     return response
+
 
 # ---------------------------------------------------------------------------
 # Authorization helpers
@@ -140,13 +155,17 @@ def is_owner_or_coach(user) -> bool:
     role = getattr(user, "role", None)
     return role in ("owner", "coach") or role is None and False  # explicit
 
+
 def is_trainee(user) -> bool:
     return getattr(user, "role", None) == "trainee"
+
 
 def require_owner_or_coach(user):
     if is_trainee(user):
         from fastapi import HTTPException
+
         raise HTTPException(status_code=403, detail="Forbidden")
+
 
 def verify_tenant_ownership(record, tenant_id: str) -> bool:
     """Check record.tenant == tenant_id . Record may have .tenant attribute or dict."""
@@ -155,10 +174,12 @@ def verify_tenant_ownership(record, tenant_id: str) -> bool:
         rec_tenant = record.get("tenant")
     return str(rec_tenant) == str(tenant_id)
 
+
 # ---------------------------------------------------------------------------
 # Input validation helpers
 # ---------------------------------------------------------------------------
 _EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
 
 def validate_email(email: str, max_len: int = 254) -> str:
     email = str(email).strip().lower()
@@ -168,6 +189,7 @@ def validate_email(email: str, max_len: int = 254) -> str:
         raise ValueError("Invalid email")
     return email
 
+
 def validate_phone(phone: Optional[str]) -> Optional[str]:
     if phone is None or phone == "":
         return None
@@ -176,6 +198,7 @@ def validate_phone(phone: Optional[str]) -> Optional[str]:
     if not re.fullmatch(r"\+?[0-9]{10,15}", p):
         raise ValueError("Invalid phone")
     return p
+
 
 def validate_length(value: Optional[str], field: str, min_len=0, max_len=500) -> Optional[str]:
     if value is None:
@@ -189,6 +212,7 @@ def validate_length(value: Optional[str], field: str, min_len=0, max_len=500) ->
         raise ValueError(f"{field} too long")
     return s
 
+
 def sanitize_next_url(url: str) -> str:
     """Prevent open redirect: only allow internal relative paths starting with / and not //"""
     if not url:
@@ -200,14 +224,17 @@ def sanitize_next_url(url: str) -> str:
         return "/dashboard"
     return u
 
+
 # ---------------------------------------------------------------------------
 # PB filter builders (safe)
 # ---------------------------------------------------------------------------
 def build_tenant_filter(tenant_id: str) -> str:
     return f'tenant="{pb_escape(tenant_id)}"'
 
+
 def build_id_filter(record_id: str) -> str:
     return f'id="{pb_escape(record_id)}"'
+
 
 def build_tenant_id_filter(tenant_id: str, record_id: str) -> str:
     return f'tenant="{pb_escape(tenant_id)}" && id="{pb_escape(record_id)}"'

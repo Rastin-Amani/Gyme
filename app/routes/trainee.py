@@ -7,7 +7,13 @@ from app.services.plan import get_plans_by_trainee
 from app.services.progress_logs import get_progress_logs_by_trainee
 import json
 from app.utils import hx_toast
-from app.security import validate_email, validate_phone, sanitize_gender, sanitize_blood_type, validate_length
+from app.security import (
+    validate_email,
+    validate_phone,
+    sanitize_gender,
+    sanitize_blood_type,
+    validate_length,
+)
 from app.i18n import _
 
 router = APIRouter(tags=["Trainees Management"])
@@ -235,6 +241,7 @@ def show_trainee_detail(request: Request, id: str):
     # Coach isolation: verify coach owns this trainee via plans
     if user.role == "coach":
         from app.services.trainee import list_trainees
+
         try:
             coach_trainees = list_trainees(pb, tenant.id, coach_id=user.id, per_page=500)
             ids = {t.id for t in getattr(coach_trainees, "items", [])}
@@ -359,6 +366,7 @@ def trainee_create(
         # Validate birthdate format if provided
         if birthdate:
             import re
+
             if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(birthdate)):
                 birthdate = None
 
@@ -388,9 +396,19 @@ def trainee_create(
             "gender": gender,
             "birthdate": birthdate,
             "training_history": training_history,
-            "steroid_history": validate_length(steroid_history, "steroid_history", 0, 2000) if steroid_history else None,
-            "supplement_history": validate_length(supplement_history, "supplement_history", 0, 2000) if supplement_history else None,
-            "limitations": validate_length(limitations, "limitations", 0, 2000) if limitations else None,
+            "steroid_history": (
+                validate_length(steroid_history, "steroid_history", 0, 2000)
+                if steroid_history
+                else None
+            ),
+            "supplement_history": (
+                validate_length(supplement_history, "supplement_history", 0, 2000)
+                if supplement_history
+                else None
+            ),
+            "limitations": (
+                validate_length(limitations, "limitations", 0, 2000) if limitations else None
+            ),
             "notes": notes,
         }
 
@@ -451,6 +469,7 @@ def trainee_update(
             return HTMLResponse(content="", status_code=400, headers=headers)
         if birthdate:
             import re
+
             if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(birthdate)):
                 birthdate = None
 
@@ -484,9 +503,15 @@ def trainee_update(
             "gender": gender,
             "birthdate": birthdate,
             "blood_type": blood_type,
-            "training_history": validate_length(training_history, "t", 0, 2000) if training_history else None,
-            "steroid_history": validate_length(steroid_history, "t", 0, 2000) if steroid_history else None,
-            "supplement_history": validate_length(supplement_history, "t", 0, 2000) if supplement_history else None,
+            "training_history": (
+                validate_length(training_history, "t", 0, 2000) if training_history else None
+            ),
+            "steroid_history": (
+                validate_length(steroid_history, "t", 0, 2000) if steroid_history else None
+            ),
+            "supplement_history": (
+                validate_length(supplement_history, "t", 0, 2000) if supplement_history else None
+            ),
             "limitations": validate_length(limitations, "t", 0, 2000) if limitations else None,
             "notes": validate_length(notes, "t", 0, 1000) if notes else None,
         }
