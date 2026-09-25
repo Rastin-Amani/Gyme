@@ -1,5 +1,5 @@
 """
-Security regression tests for Gyme FastAPI hardening.
+Security regression tests for Gyme hardening.
 Verifies defensive controls without destructive actions.
 Run: pytest tests_security_regression.py -v
 """

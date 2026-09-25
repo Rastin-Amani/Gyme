@@ -1,4 +1,4 @@
-# Gyme FastAPI: Agent Instructions
+# Gyme: Agent Instructions
 
 ## Commands (Exact)
 

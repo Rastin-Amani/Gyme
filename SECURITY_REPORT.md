@@ -1,4 +1,4 @@
-# Gyme FastAPI — Security Hardening Report
+# Gyme — Security Hardening Report
 **Date:** 2026-08-22
 **Stack:** FastAPI + Jinja2 + HTMX/Alpine + Tailwind + PocketBase + Docker
 **Mode:** Defensive review & hardening (no destructive testing against prod)
@@ -271,7 +271,7 @@ curl -H "Host: gym.example.com" "http://localhost:8000/trainees?query=%22%20%7C%
 pip audit  # or pip-audit
 
 # 6. Container user
-docker run --rm gyme-fastapi whoami  # expect appuser
+docker run --rm gyme whoami  # expect appuser
 ```
 
 ---

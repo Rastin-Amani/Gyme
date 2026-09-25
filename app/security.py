@@ -1,5 +1,5 @@
 """
-Central security helpers for Gyme FastAPI.
+Central security helpers for Gyme.
 
 Defensive controls:
 - PB filter escaping to prevent NoSQL / filter injection
