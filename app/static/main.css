@@ -1,76 +1,272 @@
+/* ────────────────────────────────────────────────────────────────────────────
+   GYME — Design system (Wispr Flow inspired)
+   "cream broadsheet, dark velvet chambers"
+
+   Canvas  #ffffeb (lumen cream)    Primary #f0d7ff (lavender whisper) — FILL ONLY
+   Ink     #1a1a1a (vast ink)       Secondary #034f46 (forest ink)     — on-cream accent
+   Ember   #ffa946 (ember glow)     — active/live accents on dark only
+
+   Rules:
+   - Shadowless: depth comes from 2px ink borders + surface fills + radii.
+   - 2px border is the signature (applies to every DaisyUI control via --border).
+   - 9999px pills for badges/selectors; 12px radius for buttons/inputs;
+     32px radius boxes for cards/modals/sections; 40–80px dark chambers.
+   - EB Garamond (400) for display headings, Figtree for UI.
+   - Lavender is a FILL: never use it as text on cream. Use forest teal instead.
+   ---------------------------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+
 @import 'tailwindcss';
 
 @plugin "daisyui" {
     themes: all;
 }
 
+/* ── Gyme theme ────────────────────────────────────────────────────────────── */
 @plugin "daisyui/theme" {
     name: 'gyme';
     default: false;
     prefersdark: false;
     color-scheme: 'light';
-    --color-base-100: oklch(98% 0.003 247.858);
-    --color-base-200: oklch(96% 0.007 247.896);
-    --color-base-300: oklch(92% 0.013 255.508);
-    --color-base-content: oklch(20% 0.042 265.755);
-    --color-primary: #2a7eff;
-    --color-primary-content: #eff6ff;
-    --color-secondary: oklch(60% 0.25 292.717);
-    --color-secondary-content: oklch(96% 0.016 293.756);
-    --color-accent: oklch(58% 0.233 277.117);
-    --color-accent-content: oklch(96% 0.018 272.314);
-    --color-neutral: oklch(37% 0.044 257.287);
-    --color-neutral-content: oklch(98% 0.003 247.858);
-    --color-info: oklch(68% 0.169 237.323);
-    --color-info-content: oklch(97% 0.013 236.62);
-    --color-success: oklch(72% 0.219 149.579);
-    --color-success-content: oklch(98% 0.018 155.826);
-    --color-warning: oklch(79% 0.184 86.047);
-    --color-warning-content: oklch(98% 0.026 102.212);
-    --color-error: oklch(64% 0.246 16.439);
-    --color-error-content: oklch(96% 0.015 12.422);
-    --radius-selector: 1rem;
-    --radius-field: 0rem;
-    --radius-box: 0rem;
+
+    /* Surfaces — cream broadsheet */
+    --color-base-100: #ffffeb; /* lumen cream — page canvas */
+    --color-base-200: #e4e4d0; /* lumen stone — separators, muted fills */
+    --color-base-300: #cfcfae; /* one step deeper, hover/divider fills */
+    --color-base-content: #1a1a1a; /* vast ink — primary text */
+
+    /* Brand */
+    --color-primary: #f0d7ff; /* lavender whisper — the one clickable thing */
+    --color-primary-content: #1a1a1a;
+    --color-secondary: #034f46; /* forest ink — inner accent, badges */
+    --color-secondary-content: #ffffeb;
+    --color-accent: #ffa946; /* ember glow — live/active accents */
+    --color-accent-content: #1a1a1a;
+
+    /* Dark chambers */
+    --color-neutral: #1a1a1a;
+    --color-neutral-content: #ffffeb;
+
+    /* Status — tuned for AA on cream */
+    --color-info: #0f766e;
+    --color-info-content: #ffffeb;
+    --color-success: #15803d;
+    --color-success-content: #ffffeb;
+    --color-warning: #b45309;
+    --color-warning-content: #ffffeb;
+    --color-error: #b91c1c;
+    --color-error-content: #ffffeb;
+
+    /* Shape language: pills / 12px controls / 32px boxes */
+    --radius-selector: 999rem; /* badges, toggles, status → full pills */
+    --radius-field: 0.75rem; /* buttons, inputs, selects, textareas → 12px */
+    --radius-box: 2rem; /* cards, modals, collapses, sections → 32px */
+
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
-    --border: 1px;
-    --depth: 0;
-    --noise: 1;
+
+    /* Border-driven flatness: 2px ink border everywhere */
+    --border: 2px;
+    --depth: 0; /* no box-shadows */
+    --noise: 0;
 }
 
+/* ── Fonts & named tokens ──────────────────────────────────────────────────── */
 @theme {
-    --font-sans: 'yekanbakh';
-    --font-brand: 'yekanbakh';
+    /* Figtree = UI; YekanBakh = Latin-numeral Persian fallback (mixed text). */
+    --font-sans: 'Figtree', 'YekanBakh', ui-sans-serif, system-ui, -apple-system,
+        'Segoe UI', Roboto, sans-serif;
+    /* EB Garamond weight-400 display headings; YekanBakh falls back for Persian. */
+    --font-display: 'EB Garamond', 'YekanBakh', ui-serif, Georgia, 'Times New Roman', serif;
+    --font-brand: 'YekanBakh', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+
+    /* Wispr palette as first-class utilities (bg-lavender-whisper, text-forest-ink, …) */
+    --color-lavender-whisper: #f0d7ff;
+    --color-forest-ink: #034f46;
+    --color-ember-glow: #ffa946;
+    --color-vast-ink: #1a1a1a;
+    --color-lumen-cream: #ffffeb;
+    --color-lumen-stone: #e4e4d0;
+    --color-fog: #8a8a80;
+    --color-charcoal: #222222;
+    --color-pure-white: #ffffff;
 }
 
 @font-face {
     font-family: 'YekanBakh';
-    src: url('./assets/YekanBakhFaNum-VF.woff') format('woff2'); /* Ensure .woff2 for better performance */
-    font-weight: 100 900; /* Define the range of weights the variable font covers */
+    src: url('./assets/YekanBakhFaNum-VF.woff') format('woff');
+    font-weight: 100 900;
+    font-style: normal;
     font-display: swap;
 }
 
+/* ── Motion: one small, coherent vocabulary ────────────────────────────────── */
 @keyframes slide-up {
-    0% {
-        transform: translateY(100%);
+    from {
+        opacity: 0;
+        transform: translateY(0.5rem);
     }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(1.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes wave {
+    0%,
     100% {
-        transform: translateY(0);
+        transform: scaleY(0.4);
+    }
+    50% {
+        transform: scaleY(1);
     }
 }
 
 @utility animate-slide-up {
-    animation: slide-up 0.3s ease-out both;
+    animation: slide-up 0.35s ease-out both;
 }
 
-/* Unlayered: language switcher <details class="dropdown"> — daisyUI hides
-   .dropdown-content behind opacity:0 unless :focus-within/.dropdown-open;
-   native details[open] needs an explicit open state. */
-.dropdown > .dropdown-content,
-details.dropdown > .dropdown-content {
-    /* base may set opacity 0; open state below wins via higher specificity */
+/* Scroll reveal — driven by IntersectionObserver on the landing page. */
+@utility reveal {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+        opacity 0.6s ease-out,
+        transform 0.6s ease-out;
+
+    &.visible {
+        opacity: 1;
+        transform: none;
+    }
 }
+
+/* Waveform visualizer — decorative rhythm marker from the reference system. */
+@utility waveform {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    height: 1em;
+    color: inherit;
+
+    & > i {
+        width: 3px;
+        height: 100%;
+        border-radius: 999rem;
+        background: currentColor;
+        transform-origin: center;
+        animation: wave 1.2s ease-in-out infinite;
+    }
+
+    & > i:nth-child(1) {
+        animation-delay: 0s;
+    }
+    & > i:nth-child(2) {
+        animation-delay: 0.15s;
+    }
+    & > i:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+    & > i:nth-child(4) {
+        animation-delay: 0.45s;
+    }
+    & > i:nth-child(5) {
+        animation-delay: 0.6s;
+    }
+}
+
+/* ── Motion: tactile press + accent moments ───────────────────────────────── */
+/* Buttons compress while pressed; DaisyUI's hover color transition is kept
+   intact by re-listing the same properties plus `scale`. */
+.btn {
+    transition-property: color, background-color, border-color, box-shadow, scale;
+    transition-duration: 200ms, 200ms, 200ms, 200ms, 100ms;
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1),
+        cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), ease-out;
+}
+
+.btn:not(:disabled):active {
+    scale: 0.97;
+}
+
+/* Bottom dock — gentle lift + color shift on the interactive items */
+.dock a {
+    transition:
+        color 150ms ease,
+        opacity 150ms ease,
+        translate 150ms ease;
+}
+
+@media (hover: hover) {
+    .dock a:hover {
+        translate: 0 -2px;
+    }
+}
+
+.dock a:active {
+    translate: 0 0;
+    scale: 0.95;
+}
+
+/* Ember acknowledgment ring — used for meaningful completions (e.g. a day done) */
+@keyframes ring-out {
+    from {
+        opacity: 0.85;
+        scale: 1;
+    }
+    to {
+        opacity: 0;
+        scale: 1.16;
+    }
+}
+
+.pulse-ember {
+    position: relative;
+}
+
+.pulse-ember::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 2px solid var(--color-accent);
+    pointer-events: none;
+    animation: ring-out 0.55s ease-out forwards;
+}
+
+/* Reduced motion — collapse everything to near-instant state changes */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    .pulse-ember::after {
+        display: none;
+    }
+}
+
+/* ── Native dropdown disclosure (language switcher) ────────────────────────── */
 details.dropdown[open] > .dropdown-content {
     opacity: 1;
     scale: 1;
@@ -78,11 +274,12 @@ details.dropdown[open] > .dropdown-content {
     position: absolute;
     z-index: 999;
 }
-/* summary marker hidden + button reset */
+
 details.dropdown > summary {
     list-style: none;
     cursor: pointer;
 }
-details.dropdown > summary::-webkit-details-marker {
+
+::-webkit-details-marker {
     display: none;
 }
