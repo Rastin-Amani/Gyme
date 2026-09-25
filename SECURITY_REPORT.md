@@ -2,7 +2,30 @@
 **Date:** 2026-08-22
 **Stack:** FastAPI + Jinja2 + HTMX/Alpine + Tailwind + PocketBase + Docker
 **Mode:** Defensive review & hardening (no destructive testing against prod)
-**Author:** AppSec hardening run (Muse Spark)
+**Author:** AppSec hardening run
+
+> **Update (2026-09-25):** since this report was written, the **marketing site
+> was extracted into a separate application**. The `app/routes/marketing.py`
+> lead-capture flow and `POST /lead/submit` no longer exist in this repository
+> (the `leads` collection is now written only by that external app). Stale
+> marketing references below are annotated; all other hardening described here
+> is still present in the current tree (v0.9.1).
+
+> **Update (2026-09-25, second):** the v0.9.1 fix round resolved the remaining
+> known issues tracked in `docs/07`: training items now persist `category`;
+> the plan-list coach filter reads `users` (role `coach`) instead of the
+> orphaned `coaches` collection; the owner profile button points at
+> `/change-password`; `APP_VERSION` and `app/version.text` are synchronized
+> at `0.9.1` and the service-worker cache-buster derives from `app_version`;
+> the default PB client now fails fast in production when `PB_URL` is unset
+> (and defaults to `http://127.0.0.1:8090` locally); `list_items` sorts by
+> `+seq,+order`; the services layer standardizes on `get_pb()` instead of the
+> module singleton; `GET /dashboard/debug-coach-stats` is registered only
+> outside production; unknown-tenant requests on private routes are redirected
+> to `/login`; deleting a trainee now cascades to its linked user record.
+> A GitHub Actions workflow (`ruff`, `black --check`, `pytest`) and an ISC
+> `LICENSE` were added. Regression coverage grew to 54 tests
+> (`tests/test_security_regression.py` + `tests/test_known_issue_fixes.py`).
 
 > Goal was not “unhackable” but **understand trust boundaries, close realistic holes, add repeatable checks, and leave residual-risk transparency**.
 
@@ -10,11 +33,11 @@
 
 ## Executive Summary
 
-Gyme is a **multi-tenant SaaS gym management** system: tenant = gym (domain), roles = owner/coach/trainee. FastAPI is the trusted server, PocketBase is the data plane. Critical assets are tenant isolation, user accounts, training/diet/steroid plans, progress photos, and leads.
+Gyme is a **multi-tenant SaaS gym management** system: tenant = gym (domain), roles = owner/coach/trainee. FastAPI is the trusted server, PocketBase is the data plane. Critical assets are tenant isolation, user accounts, and training/diet/steroid plans with progress photos. (Leads were an asset pre-extraction of the marketing app — see update note.)
 
 **Pre-hardening risk:** **HIGH** — tenant isolation was enforced only by string-interpolated PocketBase filters (NoSQL injection), several `delete/update` paths ignored `tenant`, cookies were `Secure=False` always, no CSRF defense, no logout, XSS via toast `innerHTML`, file uploads trusted `content_type` only, weak password creation (`password=email`), missing security headers, and container ran as root.
 
-**Post-hardening:** 17 high/critical findings fixed, central `app/security.py` helpers added, middleware hardened, service layer escaped, IDOR gaps closed, 23 regression tests added (`tests_security_regression.py`) — all passing. App verified to boot and serve with hardened headers.
+**Post-hardening:** 17 high/critical findings fixed, central `app/security.py` helpers added, middleware hardened, service layer escaped, IDOR gaps closed, 22 regression tests added (`tests_security_regression.py`) — all passing. App verified to boot and serve with hardened headers.
 
 **Residual risk:** PocketBase collection rules still must be audited server-side (client could reach PB directly), no WAF/rate-limit at infra layer, no automated dependency scanning in CI yet. See § Residual.
 
@@ -29,7 +52,7 @@ Env: local dev + code review (no live prod creds used)
 Auth methods: pb_auth cookie (PocketBase auth_refresh) — HttpOnly
 Roles: owner (implicit, role != trainee/coach), coach, trainee
 Tenants: one tenant per Host header (domain)
-Important data: users, trainees, coaches, plans, plan_items, progress_logs, leads, files
+Important data: users, trainees, coaches, plans, plan_items, progress_logs, files (leads moved to the separate marketing app — see update note)
 External services: PocketBase (PB_URL), Workbox static assets
 ```
 
@@ -67,7 +90,7 @@ Container --> Host --> Reverse proxy --> Internet
 | Coach mgmt | coach | users | POST /coaches/new | privilege escalation (coach creates coach) | coach allowed → owner-only |
 | Trainee marks plan done | trainee | plan_progress | POST /user/plans/{id}/done | mark other trainee's plan | no trainee check → verify trainee owns plan |
 | Change password | authenticated | credential | POST /change-password | weak pw, no re-auth | length 8 only → length 8-72, not email, clear cookie on fail, secure cookie |
-| Lead submit | anonymous | leads table | POST /lead/submit | spam/DoS | no rate limit/validation → IP rate limit + validation |
+| Lead submit *(removed 2026-09-25 — marketing app extracted)* | anonymous | leads table *(external app now)* | POST /lead/submit *(deleted from this repo)* | spam/DoS | no rate limit/validation → IP rate limit + validation *(controls no longer relevant here; apply in the marketing app)* |
 
 ---
 
@@ -111,7 +134,7 @@ Container --> Host --> Reverse proxy --> Internet
 #### 6. No CSRF Protection (cookie auth + HTMX)
 - **Before:** state-changing POST/DELETE relied only on `SameSite=Lax` (insufficient for some flows).
 - **Impact:** cross-site POST via form could trigger actions if user visited attacker site.
-- **Fix:** `TenantMiddleware` now enforces for authenticated POST/PUT/PATCH/DELETE (except exempt: `/login`, `/lead/submit`, `/logout`): requires `HX-Request: true` **or** `Origin`/`Referer` matching `Host`, else 403 with toast JSON. Logs `csrf_blocked_*`. HTMX automatically sends `HX-Request`, so legitimate HTMX flows pass; raw fetch must send custom header.
+- **Fix:** `TenantMiddleware` now enforces for authenticated POST/PUT/PATCH/DELETE (except exempt: `/login`, `/logout`): requires `HX-Request: true` **or** `Origin`/`Referer` matching `Host`, else 403 with toast JSON. Logs `csrf_blocked_*`. HTMX automatically sends `HX-Request`, so legitimate HTMX flows pass; raw fetch must send custom header. *(The old exempt entry `/lead/submit` was removed with the marketing app.)*
 - **Test:** `test_middleware_has_csrf_and_security_headers`
 
 #### 7. Weak Credential Creation (`password=email`)
@@ -159,7 +182,7 @@ Container --> Host --> Reverse proxy --> Internet
 - **Fix:** `GET|POST /logout` clears `pb.auth_store` server-side and `pb_auth` cookie via `clear_auth_cookie`, redirects with `HX-Redirect`. Password change now also clears stale cookie on re-auth fail.
 
 #### 15. No Rate Limiting (login, leads)
-- **Fix:** in-memory per-IP+identity rate limit for login (`5/5min`) and IP limit for leads (`5/hour`), returns 429 with toast. Suitable for single-instance; note for multi-instance need Redis.
+- **Fix:** in-memory per-IP+identity rate limit for login (`5/5min`), returns 429 with toast. *(The leads IP limit — `5/hour` — was removed along with the marketing app on 2026-09-25; it belongs in the external app now.)* Suitable for single-instance; note for multi-instance need Redis.
 
 #### 16. Trainee Horizontal Escalation via Coach Filter Bypass
 - **Where:** coach could see all trainees, not just assigned, by tampering `coach_id` query; trainee detail showed any id.
@@ -179,7 +202,7 @@ Container --> Host --> Reverse proxy --> Internet
 - **Structlog:** auth failures log `login_failed` without password, only identity/tenant; plan errors logged with IDs not payloads.
 - **Trainee service:** `create_trainee` keeps tenant allowlist, `update_trainee` now allowlist sanitizes fields (prevent tenant/user overwrite).
 - **Dashboard:** `timeframe` allowlisted `all|week|month`, `coach_id` escaped, `get_one` verifies tenant.
-- **Marketing lead:** IP rate limit + validation + truncate, error status 400/429 appropriate.
+- **Marketing lead:** *(removed with marketing app extraction 2026-09-25)* previously IP rate limit + validation + truncate, error status 400/429 appropriate.
 - **Toast regression:** all `hx_toast` uses server helper, but client now safe even if message contains HTML.
 
 ---
@@ -244,7 +267,7 @@ test_rate_limiting_present PASS
 
 6. **Dependencies:** `pocketbase==0.17.1`, `starlette`, `fastapi`, `pandas` — add `pip-audit` / Dependabot in CI, pin `requirements.txt` hashes.
 
-7. **Logging sensitive fields:** lead submit logs `name,phone` — avoid logging PII in prod or mask. Already minimal but review.
+7. **Logging sensitive fields:** *(lead flow removed with the marketing app)* previously lead submit logged `name,phone` — avoid logging PII in prod or mask. Already minimal but review.
 
 8. **Brute force on change-password:** no rate limit yet — add similar per-user limit.
 
@@ -319,7 +342,7 @@ app/routes/coach.py — owner-only, validation
 app/routes/trainee.py — validation, coach isolation
 app/routes/progress_logs.py — file hardening, tenant checks
 app/routes/user/* — trainee isolation
-app/routes/marketing.py — lead rate limit + validation
+app/routes/marketing.py — lead rate limit + validation *(file removed on marketing-app extraction 2026-09-25)*
 app/templates/base.html — toast XSS, CSS injection, open-redirect guard
 app/main.py — TrustedHost, prod warn
 Dockerfile — non-root, healthcheck, ENV=production

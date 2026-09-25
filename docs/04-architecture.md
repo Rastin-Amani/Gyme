@@ -29,12 +29,12 @@ Component inventory:
 
 | Layer | Location | Responsibility |
 | --- | --- | --- |
-| App assembly | `app/main.py` | Router registration, static mount, version, prod gating of docs/debug |
+| App assembly | `app/main.py` | Router registration, static mount, version, prod gating of docs/debug, `ALLOWED_HOSTS` trust |
 | Middleware | `app/middleware.py` | Tenant resolution, authentication, access logs |
 | Routers | `app/routes/**` (+ `app/routes/user/**`) | HTTP endpoints; form parsing; HTMX header responses |
 | Services | `app/services/**` | All PocketBase queries/filters and business rules |
-| Templates | `app/templates/**` | base/layout/page/form/modal/component hierarchy (RTL Persian) |
-| Template env | `app/templates.py` | Jinja2 environment + `jalali_date` / `jalali_year` filters |
+| Templates | `app/templates/**` | base/layout/page/form/modal/component hierarchy (LTR/RTL per locale) |
+| Template env | `app/templates.py` | Jinja2 environment, `_`/`ngettext`/`locale` globals + locale-aware `jalali_date` / `jalali_year` filters |
 | PB clients | `app/pb.py` | `PB_URL` config, `get_pb()` factory |
 | Logging | `app/logging_config.py` | structlog pipeline with request context |
 | Static assets | `app/static/**` | Vite-built `app.css`/`app.js`, workbox chunks, fonts, swagger assets |
@@ -61,8 +61,8 @@ sequenceDiagram
     else invalid/expired
         M->>M: clear auth store, treat as anonymous
     end
-    alt path = "/" and tenant not main
-        M-->>B: 303 → /dashboard or /login
+    alt path = "/" (any tenant)
+        M-->>B: 303 → /dashboard if authenticated, else /login
     end
     alt anonymous and path not public
         M-->>B: 303 → /login
@@ -85,9 +85,12 @@ Step-by-step behavior (all verifiable in `middleware.py`):
    anonymous. The resolved user and its `role` (default `"trainee"`) go onto
    `request.state`.
 4. Redirect rules:
-   - `/` on a non-main tenant → `303` to `/dashboard` if authenticated else `/login`.
+   - `/` → `303` to `/dashboard` if authenticated else `/login`, regardless of
+     the tenant (`is_main` is no longer read).
    - Any non-public path while unauthenticated → `303 /login`. Public paths:
-     `/`, `/login`, `/static/*`, `/manifest.json`, `/sw.js`, `/favicon.ico`.
+     `/login`, `/logout`, `/static/*`, `/manifest.json`, `/sw.js`,
+     `/favicon.ico`, `/locale`. `/healthz` is served before these checks
+     (PB-free liveness endpoint).
 5. The request proceeds; start/end are logged as `request.started` /
    `request.completed` with method, path, role, status, duration. Exceptions
    are logged as `request.error` with traceback and re-raised.
@@ -107,13 +110,17 @@ traffic lands on the login page, and submitting login there yields the
   host-derived tenant id; mismatch ⇒ immediate logout-clear and failure
   («Invalid tenant access» logged as `login_cross_tenant_denied`).
 - **Session transport** is the PocketBase auth token in an `pb_auth` cookie:
-  `HttpOnly`, `SameSite=Lax`, `Secure=False` (hardcoded — see known issues).
-  There are no server-side sessions; every request re-validates the token
-  against PocketBase.
-- **Account creation** (`services/auth.create_user`) sets the initial password
-  equal to the email address, `emailVisibility=True`. This is why the create
-  forms warn about duplicate/short emails (PocketBase enforces ≥8-char
-  passwords).
+  `HttpOnly`, `SameSite=Lax`, `Secure` set conditionally via
+  `security.cookie_secure_flag()` (True when `ENV=production` or the request
+  arrived over https/x-forwarded-proto). There are no server-side sessions;
+  every request re-validates the token against PocketBase. Login is rate
+  limited in-memory to 5 attempts per 5 minutes per IP+identity+tenant.
+- **Account creation** (`services/auth.create_user`) generates a random
+  15-character password (never set to the email), with `emailVisibility=True`.
+  **The initial password is not displayed anywhere in the UI**, so staff must
+  share or reset it through PocketBase admin before first login. The legacy
+  error message still warns about duplicate/short emails (PocketBase enforces
+  ≥8-char passwords).
 - **Password change** (`POST /change-password`) validates confirmation +
   minimum length in the route, calls PocketBase's `oldPassword/password/
   passwordConfirm` update, then immediately re-authenticates with the new
@@ -155,7 +162,7 @@ erDiagram
 
 | Collection | Fields used by the code | Notes |
 | --- | --- | --- |
-| `tenants` | `domain`, `name`, `logo` (file), `theme`, `brand_theme` (map rendered as CSS vars), `brand_colors` (`base_100`, `base_content`), `primary_color`, `is_main` | one record per served hostname |
+| `tenants` | `domain`, `name`, `logo` (file), `theme`, `brand_theme` (map rendered as CSS vars), `brand_colors` (`base_100`, `base_content`), `primary_color`, `is_main` | one record per served hostname; `is_main` is still present in the schema but no longer read by the app (the marketing site is a separate application) |
 | `users` (auth) | `email`, `password`, `first_name`, `last_name`, `phone`, `tenant`, `role` (`owner`/`coach`/`trainee`), `emailVisibility` | coaches *and* owners are plain users with roles; there is also a separate `coaches` reference in one query (see known issues) |
 | `trainees` | `tenant`, `user`, `status` (`active`/`inactive`, default `active` on create), `gender`, `birthdate`, `blood_type`, `height`, `weight`, `training_history`, `steroid_history`, `supplement_history`, `limitations`, `notes` | list views expand `user` |
 | `plans` | `tenant`, `type` (`training`/`diet`/`steroid`), `trainee`, `coach`, `start_date`, `end_date`, `days_per_week`, `status` (`active`/`inactive`; `draft` is counted by dashboard stats but not offered in the form), `notes`, `is_template` (bool), `template_name` | templates = rows with `is_template=true`; list views expand `trainee,coach,trainee.user` |
@@ -164,7 +171,7 @@ erDiagram
 | `steroid_items` | `tenant`, `plan`, `name`, `type` (`supplement`/`steroid`), `dosage`, `frequency`, `seq`, `order`, `notes` | |
 | `progress_logs` | `tenant`, `trainee`, `height`, `weight`, `chest`, `waist`, `hip`, `arms`, `bmi`, `bfp`, `bmr`, `tdee`, `lbm`, `whr`, `notes`, `progress_photos` (files ≤5) | metrics computed client-side |
 | `plan_progress` | `tenant`, `plan`, `current_seq` | one row per started plan; "Done" advances/wraps `current_seq` |
-| `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` | marketing landing form |
+| `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` | written by the separate marketing site; this app no longer writes leads |
 
 ### Trainee "today" computation
 
@@ -202,27 +209,30 @@ A top progress bar animates on every HTMX request/beforeunload
 ## 6. Templates
 
 ```
-base.html                     RTL shell, theme vars, offline banner, toast/redirect
-│                             listeners, SW registration, iOS splash generator
+base.html                     lang/dir from locale, theme vars, offline banner,
+│                             toast/redirect listeners, SW registration,
+│                             iOS splash generator, locale switcher in header
 ├── layouts/dashboard.html    back button, tenant name/logo header, bottom dock
 │   ├── pages/owner/…         dashboard, trainees(+detail), coaches(+detail),
 │   │                         plans(+detail), profile
 │   ├── pages/user/…          today dashboard, plans(+detail), profile
 │   └── pages/auth/change_password.html
 ├── pages/auth/login.html     login card + iOS install overlay
-├── pages/marketing/slash.html landing page (main tenant root)
 ├── forms/*.html              full-page create/edit forms (trainees, coaches,
 │                             plans, progress_logs)
 ├── modals/*.html             HTMX-injected dialogs (items_form, apply_template,
 │                             confirm_delete, progress_log_edit)
 └── components/*.html         reusable fragments (dashboard_stats, coach_stats,
-                              dashboard_content, toast, datepicker)
+                              dashboard_content, locale_switcher, toast, datepicker)
 ```
 
-Jinja2 globals/filters: `app_version` global; `jalali_date` and `jalali_year`
+Jinja2 globals/filters: `app_version` global; `_` and `ngettext` from gettext
+(exposed globally) plus a `locale` proxy; `jalali_date` and `jalali_year`
 filters convert PocketBase datetime strings (`YYYY-MM-DD[ HH:MM:SS(.f)]`,
-optional trailing `Z`) to Jalali equivalents, falling back to the raw string
-with a `date_parse_error` warning on bad input.
+optional trailing `Z`). These filters are **locale-aware**: they produce
+Jalali output only when the active locale is `fa`; otherwise they fall back to
+a Gregorian year / Babel medium date (aliases `loc_year` / `loc_date`). On bad
+input they return the raw string with a `date_parse_error` warning.
 
 Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
 'custom'` else `tenant.theme` (default `gyme`); custom tenants may inject a
@@ -284,9 +294,10 @@ If structlog import fails, `main.py` degrades to stdlib logging with a warning.
 
 ## 10. Configuration surface
 
-Only two environment variables exist (see
-[06-configuration-deployment.md](06-configuration-deployment.md)): `PB_URL` and
-`ENV`. Feature gating done with them:
+Three environment variables exist (see
+[06-configuration-deployment.md](06-configuration-deployment.md)): `PB_URL`,
+`ENV`, and `ALLOWED_HOSTS` (optional; enables FastAPI's
+`TrustedHostMiddleware`). Feature gating done with them:
 
 | Concern | dev (default) | production |
 | --- | --- | --- |
@@ -304,8 +315,9 @@ architecture-relevant ones:
   module-level singletons whose `auth_store` mutates during login — acceptable
   today because those paths don't rely on stored state afterwards, but it is a
   latent concurrency hazard.
+- Template filters (`jalali_date` / `jalali_year`) exist in `templates.py` and
+  are only Jalali under `fa`; other locales get Gregorian/Babel output (see
+  [02-getting-started.md](02-getting-started.md) i18n note).
 - One query reads coaches from a `coaches` collection (`routes/plan.py`
   plan-list filter dropdown) while everywhere else coaches are `users` with
   `role="coach"`.
-- `AGENTS.md` describes an older toolchain (Tailwind CLI scripts) than what
-  `package.json` actually contains (Vite).

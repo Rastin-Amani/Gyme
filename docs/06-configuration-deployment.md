@@ -16,13 +16,15 @@ configuration — not stored here — and are marked accordingly.
 | --- | --- | --- | --- |
 | `PB_URL` | effectively yes | `http://db.dev.gyme.cloud` | Base URL of the PocketBase instance used for **all** data access (`app/pb.py`). ⚠️ The default is the project's shared **dev** database over plain HTTP; any deployment that forgets this variable silently reads/writes that server |
 | `ENV` | no | `dev` | Any value other than exactly `production` behaves as dev. In production mode: Swagger docs + `/openapi.json` disabled, `/debug/*` router excluded (and its routes cleared defensively), structlog switches to JSON output |
+| `ALLOWED_HOSTS` | no | unset | When set (comma-separated), adds FastAPI's `TrustedHostMiddleware` with those hosts plus `localhost`/`127.0.0.1`/`testserver` in dev. In production without it, a warning is logged and no host validation is applied |
 
 > **Important:** `python-dotenv` appears in `requirements.txt`, but nothing
 > ever calls it. `.env` files are **not** loaded. Provide variables through the
 > shell, container environment, or process manager.
 
-There are no other runtime configuration knobs: ports come from uvicorn/Docker
-invocation, and branding lives in PocketBase data (below).
+Ports come from uvicorn/Docker invocation, and branding lives in PocketBase
+data (below). Host allow-listing is the only optional runtime knob beyond the
+table above.
 
 ### Tenant (gym) record fields
 
@@ -36,7 +38,7 @@ The `tenants` collection drives per-domain behavior and all branding:
 | `theme` | `base.html` `data-theme` | daisyUI theme name: default `gyme`; `custom` enables CSS-variable injection; `light` also supported |
 | `brand_theme` | `base.html` `<style>` block when `theme == "custom"` | Map of CSS variable names → values (`_` rendered as `-`) |
 | `primary_color`, `brand_colors.base_100`, `brand_colors.base_content` | iOS splash generator | Splash background/text colors with sensible fallbacks |
-| `is_main` | middleware | The single main tenant serves the marketing landing page at `/`; all others redirect `/` → app |
+| `is_main` | (no longer read by the app) | Previously flagged the tenant serving the marketing landing page; the app now always redirects `/` → app and hosts no landing page |
 
 ### PocketBase collections required
 
@@ -55,7 +57,7 @@ long as filters like `tenant="..."` work):
 | `steroid_items` | `tenant`, `plan`, `name`, `type`, `dosage`, `frequency`, `seq`, `order`, `notes` |
 | `progress_logs` | `tenant`, `trainee`, metric numbers (`height weight chest waist hip arms bmi bfp bmr tdee lbm whr`), `notes`, `progress_photos` (multiple files, ≤5) |
 | `plan_progress` | `tenant`, `plan`, `current_seq` |
-| `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` |
+| `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` | written only by the **separate marketing application**; this app no longer writes or reads leads |
 
 Operational notes:
 
@@ -71,12 +73,12 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `0.8.0`) drives:
+- `APP_VERSION` constant in `app/main.py` (currently `0.9.1`) drives:
   template footer/global, and the PWA cache version injected into `sw.js`
   (bumping it purges clients' caches on next visit).
-- `app/version.text` mirrors it (`"0.8.0"`); keep both in sync when releasing.
-  Note `base.html` also hardcodes `sw.js?v=0.8.1` as a cache-buster — currently
-  out of sync (known issue #7).
+- `app/version.text` mirrors it (`"0.9.1"`); both are in sync. `base.html`
+  derives the SW cache-buster from `{{ app_version }}`, so no hardcoding is
+  left (known issue #7 resolved in 0.9.1).
 
 ## Part 2 — Deployment guide
 
@@ -123,8 +125,9 @@ docker run -d --name gyme \
 
 Notes:
 
-- The container listens on **8000**; there is no healthcheck endpoint defined —
-  use `GET /login` (public) as a liveness probe.
+- The container listens on **8000**; a PB-free liveness endpoint is available:
+  `GET /healthz` returns `{"status": "ok"}` (served by middleware before any
+  PocketBase call). Use it as the Docker/health-check probe.
 - `--proxy-headers --forwarded-allow-ips "*"` means uvicorn trusts
   `X-Forwarded-*` headers from **any** upstream. Keep the container reachable
   only from your trusted reverse proxy/network.
@@ -135,8 +138,8 @@ Notes:
    your proxy layer restores before uvicorn). Tenancy resolution reads the
    Host header verbatim — a proxy that rewrites every vhost to
    `localhost:8000` will break tenant lookup entirely.
-2. One proxied hostname per gym, each matching a `tenants.domain` record; the
-   platform's main domain hosts the landing page.
+2. One proxied hostname per gym, each matching a `tenants.domain` record.
+   The marketing site is a separate application and is not served by this app.
 3. TLS termination at the proxy. See the cookie caveat below before relying on
    HTTPS-only session behavior.
 
@@ -145,9 +148,13 @@ Notes:
 - [ ] `ENV=production` set (docs/debug off, JSON logs)
 - [ ] `PB_URL` explicitly set to the production PocketBase over **HTTPS**
 - [ ] Every served hostname has an up-to-date `tenants` record (`domain`,
-      `name`, `logo`, theme fields, `is_main` on exactly one)
-- [ ] Owner accounts exist and initial passwords (= emails) have been rotated
-- [ ] PocketBase API rules reviewed for the ten collections (see above)
+      `name`, `logo`, theme fields)
+- [ ] Owner accounts exist; new accounts' random initial passwords (never
+      displayed by the UI) are shared or reset via PocketBase admin before
+      first login
+- [ ] PocketBase API rules reviewed for the nine collections the app now uses
+      (see above; `leads` belongs to the separate marketing app)
+- [ ] `ALLOWED_HOSTS` set so `TrustedHostMiddleware` rejects spoofed hosts
 - [ ] Static assets rebuilt if templates changed since last commit
 - [ ] `APP_VERSION` bumped for releases so PWA caches invalidate
 - [ ] PocketBase backups scheduled (instance-level; not handled by this app)
@@ -157,12 +164,13 @@ Notes:
 (Each is detailed with evidence in
 [07-troubleshooting-known-issues.md](07-troubleshooting-known-issues.md)):
 
-1. Session cookie issued with `Secure=False` regardless of environment.
-2. New accounts start with password = email address.
-3. Default `PB_URL` points at a shared dev database.
-4. `GET /dashboard/debug-coach-stats` is registered in production too
+1. Default `PB_URL` points at a shared **dev** database over plain HTTP;
+   deployments must explicitly override it in production.
+2. `GET /dashboard/debug-coach-stats` is registered in production too
    (authenticated but exposes raw plan/progress counts).
-5. No rate limiting on login/lead endpoints (application level).
+3. Initial passwords are random but **never surfaced in the UI** — staff must
+   reset/share them via PocketBase admin (operational gap, not a security hole).
+4. Change-password endpoint has no rate limit (login does: 5 attempts / 5 min).
 
 ### Logging in production
 
@@ -174,4 +182,5 @@ no file handling or rotation is configured in-app.
 
 ## Documentation status
 
-- Last verified: 2026-08-22 against `main` @ `657ec90`.
+- Last verified: 2026-09-25 against `main` (uncommitted working tree after the
+  marketing-app extraction; version 0.9.1).

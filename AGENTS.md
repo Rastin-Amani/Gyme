@@ -10,7 +10,7 @@ source .venv/bin/activate  # Linux/macOS
 .venv\Scripts\activate   # Windows
 pip install -r app/requirements.txt
 
-# Node (for Tailwind)
+# Node (for Vite frontend build)
 npm install
 ```
 
@@ -19,20 +19,29 @@ npm install
 # Start FastAPI (uvicorn)
 uvicorn app.main:app --reload
 
-# Start Tailwind watcher (parallel terminal)
-npm run css:watch
+# Start Vite dev server (parallel terminal, live CSS/JS)
+npm run dev
 ```
 
 ### Build
 ```bash
-# Build Tailwind CSS (minified)
-npm run css:build
+# Build static assets (Vite → app/static/app.css + app.js, minified)
+npm run build
 ```
 
 ### Test
 ```bash
-# No explicit test command found. Use:
-pytest  # If tests exist
+make test     # = pytest -q
+pytest        # run directly, fine too
+```
+
+### i18n (multilingual)
+```bash
+make i18n-extract        # refresh app/locales/messages.pot
+make i18n-add LOCALE=de  # new catalog (also enable in app/i18n.py)
+make i18n-update
+make i18n-compile
+pytest tests/test_i18n.py
 ```
 
 ### Lint/Format
@@ -48,61 +57,59 @@ black .
 
 ### Stack
 - **Backend**: FastAPI (Python 3.11+)
-- **Frontend**: HTMX + Alpine.js + Tailwind CSS
-- **Templates**: Jinja2 (with custom Jalali date filters)
+- **Frontend**: HTMX + Alpine.js + Tailwind CSS 4, built with Vite
+- **Templates**: Jinja2 (locale-aware `jalali_year` / `jalali_date` filters; `_` / `ngettext` gettext)
 - **DB**: PocketBase (via SDK)
+- **i18n**: gettext catalogs under `app/locales/` (default locale **en**; `fa` is RTL and the source of msgids; `es`/`tr`/`hy` also enabled)
 
 ### Key Directories
 ```
 app/
-├── routes/       # FastAPI routers (feature-organized)
-├── services/     # Business logic (empty placeholder)
-├── static/       # CSS, JS, images
-├── templates/    # Jinja2 templates
+├── routes/       # FastAPI routers (feature-organized; user/ subfolder for trainee area)
+├── services/     # Business logic: PocketBase queries, auth, filters, tenant scoping
+├── static/       # Vite inputs (main.js, main.css) and built assets (app.css, app.js)
+├── templates/    # Jinja2 templates (base, layouts, pages, forms, modals, components)
 ├── main.py       # FastAPI app setup
 ├── middleware.py # TenantMiddleware
-└── templates.py  # Jinja2 env + Jalali filters
+├── security.py   # Auth cookies, sanitizers, allowlists, validators
+├── i18n.py       # Locale registry + gettext plumbing
+└── templates.py  # Jinja2 env (globals + locale-aware filters)
 ```
 
 ### Entry Points
 - **FastAPI**: `app.main:app`
-- **Templates**: `app/templates.py` (Jinja2 env + Jalali date filters)
-- **Static**: `app/static/css/input.css` (Tailwind input)
+- **Templates**: `app/templates.py` (Jinja2 env + `_`/`ngettext`/`locale` globals + locale-aware filters)
+- **Static**: `app/static/main.js` + `app/static/main.css` (Vite inputs)
 
 ### Quirks
-- **Jalali Dates**: Custom Jinja2 filters (`jalali_year`, `jalali_date`) in `templates.py`.
-- **Swagger**: Disabled in production (`IS_PROD` env var).
-- **Tenant Middleware**: Applied globally via `TenantMiddleware`.
-- **Tailwind**: Outputs to `app/static/css/app.css` (minified for prod).
+- **Jalali Dates**: `jalali_year`, `jalali_date` filters in `templates.py` (also aliased `loc_year`, `loc_date`) — Jalali only when the active locale is `fa`; otherwise Gregorian/Babel.
+- **Swagger**: Disabled in production (`ENV=production` / `IS_PROD`).
+- **Tenant Middleware**: Applied globally via `TenantMiddleware`; `GET /healthz` is served before any PocketBase call.
+- **Auth cookie**: `pb_auth` via `app/security.set_auth_cookie` — `Secure` conditional on prod/https; login rate-limited 5 attempts/5 min per IP+identity+tenant.
+- **Vite**: builds to `app/static/app.css` + `app/static/app.js` (committed; Python runs without Node).
 
 ## Constraints
 - **Python**: 3.11+ (per `pyproject.toml`).
-- **Node**: Required for Tailwind CSS.
-- **Env Vars**: `ENV=production` disables Swagger/docs.
-- **PocketBase**: Must be running (version ≥0.17.1).
+- **Node**: Required to rebuild static assets (Vite).
+- **Env Vars**: `PB_URL`, `ENV` (`production` disables Swagger/docs), optional `ALLOWED_HOSTS` (TrustedHostMiddleware allowlist).
+- **PocketBase**: Must be running (version ≥0.17.1) with a `tenants` record matching the request hostname.
 
 ## Workflow Order
 1. **Setup**: Python venv + Node deps.
-2. **Dev**: Run `uvicorn` + `npm run css:watch` in parallel.
-3. **Build**: `npm run css:build` before deployment.
-4. **Lint**: `ruff check .` + `black .` (order irrelevant).
+2. **Dev**: Run `uvicorn` + `npm run dev` in parallel.
+3. **Build**: `npm run build` before deployment (regenerates `app/static/app.{css,js}`).
+4. **Test**: `make test` (i18n + security regression suites).
+5. **Lint**: `ruff check .` + `black .` (order irrelevant).
 
 ## Gotchas
-- **Tailwind Input**: Must watch `input.css` → outputs to same file (dev) or `app.css` (prod).
+- **Tailwind**: Vite + `@tailwindcss/vite`; edit `app/static/main.css`, rebuild with `npm run build`.
 - **Jinja2 Filters**: Must be registered before template rendering.
+- **New accounts**: initial password is random and never shown in the UI — staff must reset/share via PocketBase admin.
 - **PocketBase**: No local mock → must be running for full functionality.
 
 ## References
 - `pyproject.toml`: Ruff/Black config.
-- `package.json`: Tailwind scripts.
+- `package.json`: Vite + Tailwind scripts (`dev`, `build`).
+- `Makefile`: test + i18n targets.
 - `app/requirements.txt`: Python deps.
-- `app/templates.py`: Jalali date filters.
-
-### i18n (multilingual)
-```bash
-make i18n-extract      # refresh app/locales/messages.pot
-make i18n-add LOCALE=de  # new catalog (also enable in app/i18n.py)
-make i18n-update
-make i18n-compile
-pytest tests/test_i18n.py
-```
+- `app/templates.py`: Jinja2 env + locale-aware date filters.

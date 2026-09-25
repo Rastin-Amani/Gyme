@@ -2,9 +2,9 @@
 
 **Verification status:** every command below was checked against the repository
 (`package.json`, `vite.config.js`, `Dockerfile`, `app/requirements.txt`,
-`pyproject.toml`). Note that `AGENTS.md` in the repo root still references
-`npm run css:watch` / `css:build` scripts — those **do not exist** anymore; the
-frontend is now built with Vite. See known issues.
+`pyproject.toml`, `Makefile`). The frontend is built with Vite (`npm run dev` /
+`npm run build`); the outdated `css:watch` / `css:build` scripts no longer
+exist.
 
 ---
 
@@ -51,12 +51,13 @@ Tailwind classes change, otherwise new classes won't have styles.
 
 ## 3. Configure environment variables
 
-Two environment variables exist (there is no committed `.env.example`):
+Three environment variables exist (there is no committed `.env.example`):
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `PB_URL` | `http://db.dev.gyme.cloud` | PocketBase base URL used by every request (`app/pb.py`). ⚠️ The default points at the project's remote **dev** database — always set your own for local work |
 | `ENV` | `dev` | `production` hides Swagger docs + `/debug/*` routes and switches logging to JSON |
+| `ALLOWED_HOSTS` | *(unset)* | Optional comma-separated host allowlist enabled via Starlette `TrustedHostMiddleware` (`app/main.py`) when non-empty |
 
 > **`.env` files are not loaded.** `python-dotenv` is installed but never called.
 > Export variables in your shell or process manager:
@@ -64,6 +65,7 @@ Two environment variables exist (there is no committed `.env.example`):
 > ```bash
 > export PB_URL="http://127.0.0.1:8090"
 > # export ENV=production   # only for prod-like runs
+> # export ALLOWED_HOSTS="yourgym.local,app.yourgym.ir"
 > ```
 
 ## 4. Prepare PocketBase
@@ -71,7 +73,8 @@ Two environment variables exist (there is no committed `.env.example`):
 The app expects these collections to exist (fields are inferred from code — see
 [06-configuration-deployment.md](06-configuration-deployment.md) for field-level
 detail): `tenants`, `users`, `trainees`, `plans`, `training_items`,
-`diet_items`, `steroid_items`, `progress_logs`, `plan_progress`, `leads`.
+`diet_items`, `steroid_items`, `progress_logs`, `plan_progress`. (`leads` is
+only written by the separate marketing application, not by this app.)
 
 Minimum to boot a usable gym:
 
@@ -103,22 +106,26 @@ from the `Host` header:
 
 - Unknown host → tenant is unresolved → login attempts show
   «خطای سیستم: باشگاه یافت نشد!».
-- Host of the record marked main (`is_main=true`) → public landing page at `/`.
-- Any other known host → `/` redirects to `/dashboard` (logged-in) or `/login`.
+- `/` always redirects into the app: `/dashboard` when logged in, otherwise
+  `/login` (the marketing site lives in a separate application).
 
 ## 6. Developer conveniences
 
 - Swagger UI at `/docs`, OpenAPI JSON at `/openapi.json` (non-production only).
+- Liveness probe: `GET /healthz` → `{"status": "ok"}` (never touches
+  PocketBase, so it reports app state even during a PB outage).
+- Locale switching: `GET /locale/{code}?next=...` (cookie + 303 redirect).
 - Debug endpoints under `/debug/*` (non-production only) dump raw tenant/user/
   plan records as JSON — useful for inspecting expand behavior.
 - Logs: structlog pretty console output in dev; add `req_id` and `tenant_id` to
   each line via middleware context.
 
-## Lint & format
+## Lint, format & test
 
 ```bash
 ruff check .    # line-length 100, py311 target
 black .         # line-length 100
+pytest -q       # or: make test  (i18n + security regression suites)
 ```
 
 Templates are additionally formatted with Prettier (plugins for Jinja and

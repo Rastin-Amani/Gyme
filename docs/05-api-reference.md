@@ -11,9 +11,12 @@ PocketBase endpoints are external and out of scope.
 
 **Authentication & tenancy**
 
-- Everything except the public paths (`/`, `/login`, `/static/*`,
-  `/manifest.json`, `/sw.js`, `/favicon.ico`) requires a valid `pb_auth`
-  cookie; anonymous requests get `303 → /login` from middleware.
+- Everything except the public paths (`/login`, `/logout`, `/static/*`,
+  `/manifest.json`, `/sw.js`, `/favicon.ico`, `/locale`) requires a valid
+  `pb_auth` cookie; anonymous requests get `303 → /login` from middleware.
+  `/` always `303`s to `/dashboard` (authenticated) or `/login` (anonymous),
+  and `/healthz` is served before auth checks (PB-free liveness, returns
+  `{"status": "ok"}`).
 - Requests are scoped to the tenant resolved from the Host header.
 - Role guards inside handlers: any `owner`/`coach`-side route redirects
   trainees (`303 → /user/dashboard`), and `/user/*` routes redirect
@@ -38,21 +41,18 @@ items per page (20 for coaches). Responses carry `page`, `total_pages`,
 
 ---
 
-## Public / marketing
-
-| Method | Path | Purpose | Notes |
-| --- | --- | --- | --- |
-| GET | `/` | Landing page (`pages/marketing/slash.html`) | Middleware: non-main tenants never see this — `/` redirects to `/dashboard` (logged in) or `/login`. Unknown domains likewise bounce to `/login` |
-| POST | `/lead/submit` | Save demo-request lead to `leads` collection | Form fields: `name`*, `phone`*, `position`*, `coaches_count`*, `trainees_count`*, `gym_name`, `note`. Success: `204` + toast «ممنون {name}! تا ۲۴ ساعت آتی با شما تماس می‌گیریم.» Failure: `200` + generic error toast |
-
 ## Authentication
 
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
 | GET | `/login` | Login page with tenant branding | Already-authenticated users are sent to `/dashboard` (which then forwards trainees onward) |
-| POST | `/login` | Password login against PocketBase `users` | Fields: `identity`* (email), `password`*. Wrong credentials ⇒ toast «اطلاعات اشتباه است!»; an account belonging to a *different* gym ⇒ the raw service error string `Invalid tenant access` is shown as the toast (logged as `login_cross_tenant_denied`). Success: `303` to `/user/dashboard` (role `trainee`) else `/dashboard`; sets `pb_auth` cookie (`HttpOnly`, `SameSite=Lax`, **`Secure=False`**) |
+| POST | `/login` | Password login against PocketBase `users` | Fields: `identity`* (email), `password`*. Wrong credentials ⇒ toast «ایمیل یا پسورد اشتباه است.»; an account belonging to a *different* gym ⇒ the raw service error string `Invalid tenant access` is shown as the toast (logged as `login_cross_tenant_denied`). Success: `303` to `/user/dashboard` (role `trainee`) else `/dashboard`; sets `pb_auth` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` conditional on prod/https). **Rate limited** in-memory to 5 attempts per 5 minutes per IP+identity+tenant; on limit a `429` toast «تعداد تلاشهای ورود بیش از حد مجاز است. لطفاً چند دقیقه صبر کنید.» is shown and further attempts for that key are blocked until the window expires (the key is cleared on successful login) |
+| GET | `/logout` | Logout (no-op page) | Clears the `pb_auth` cookie + auth store, `303 → /login` |
+| POST | `/logout` | Logout | Same clearing as GET; `303` + `HX-Redirect: /login` |
 | GET | `/change-password` | Change-password page | Requires login (`303 /login` otherwise) |
-| POST | `/change-password` | Rotate password | Fields: `old_password`*, `new_password`*, `confirm_password`*. Server checks match + ≥8 chars (toasts «پسورد جدید و تکرار آن یکسان نیستند.» / «پسورد باید حداقل ۸ کاراکتر باشد.»). On PocketBase success it re-authenticates with the new password, resets the cookie, and answers `HX-Redirect` to the role's dashboard |
+| POST | `/change-password` | Rotate password | Fields: `old_password`*, `new_password`*, `confirm_password`*. Server checks match, length 8–72 chars, and that the new password is not a substring of the account email (toasts «پسورد جدید و تکرار آن یکسان نیستند.» / «پسورد باید حداقل ۸ کاراکتر باشد.» / «پسورد خیلی طولانی است» / «پسورد نباید مشابه ایمیل باشد»). On PocketBase success (toast «پسورد با موفقیت تغییر کرد! 🔒») it re-authenticates with the new password, resets the cookie, and answers `HX-Redirect` to the role's dashboard; if re-auth fails the stale cookie is cleared and the redirect goes to `/login` |
+| GET | `/locale/{code}?next=…` | Switch language | `code` must be in the enabled locales (`fa`,`en`,`es`,`tr`,`hy`) else `404`; sets the `locale` cookie (1 year) and `303`s to `next` (open-redirect guarded) |
+| GET | `/healthz` | Liveness | Served by middleware before tenant lookup; returns `{"status": "ok"}` with **no PocketBase call** |
 
 ## Owner / coach area
 
@@ -86,12 +86,14 @@ Create/update form fields (identical for both):
 
 Behavior details:
 
-- **Create** runs two writes: `users.create` with `password = email` and
-  `role="trainee"`, then `trainees.create` (status defaults `active`).
-  Success responds with toast «شاگرد با موفقیت ثبت شد. در حال انتقال...» plus
-  `delayed-redirect` to `/progress-log/new/{trainee_id}`. User-creation
-  failure surfaces the duplicate/short-email toast; profile write failures hit
-  the generic server-error toast.
+- **Create** runs two writes: `services/auth.create_user` (random initial
+  password — never the email — and `role="trainee"`), then `trainees.create`
+  (status defaults `active`). Success responds with toast «شاگرد با موفقیت ثبت
+  شد. در حال انتقال...» plus `delayed-redirect` to
+  `/progress-log/new/{trainee_id}`. The random password is **not displayed in
+  the UI**; staff must share/reset it via PocketBase admin. User-creation
+  failure surfaces the duplicate/short-email toast (a legacy message);
+  profile write failures hit the generic server-error toast.
 - **Update** writes the contact fields to the linked `users` record and the
   rest to the `trainees` record, then `delayed-redirect` to the detail page.
 - **Delete** removes only the `trainees` record (the auth user remains),
@@ -105,7 +107,7 @@ Behavior details:
 | --- | --- | --- |
 | GET | `/coaches?page` | List page (20/page), users with `role="coach"` in tenant |
 | GET | `/coaches/new` | Create form |
-| POST | `/coaches/new` | Fields: `first_name`*, `last_name`*, `email`*, `phone`. Creates `users` record with `role="coach"` and `password = email` |
+| POST | `/coaches/new` | Fields: `first_name`*, `last_name`*, `email`*, `phone`. Creates `users` record with `role="coach"` and a **random initial password** (never the email; not displayed in the UI — reset via PocketBase admin) |
 | GET | `/coaches/{id}` | Detail page |
 | GET | `/coaches/{id}/edit` | Edit form |
 | POST | `/coaches/{id}` | Update the user record (verifies tenant+role first) |
@@ -116,7 +118,7 @@ Behavior details:
 
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
-| GET | `/plans?page&query&type&coach_id&is_template` | Plan list (5/page); `is_template=true` renders «قالب‌های برنامه» | Coaches forced to their own plans. Search matches `template_name` or expanded trainee names. The coach filter dropdown reads a `coaches` collection (see known issue #4) |
+| GET | `/plans?page&query&type&coach_id&is_template` | Plan list (5/page); `is_template=true` renders «قالب‌های برنامه» | Coaches forced to their own plans. Search matches `template_name` or expanded trainee names. The coach filter dropdown reads `users` with `role="coach"` (issue #4 resolved in 0.9.1) |
 | GET | `/plans/new?template=false` | Create form; `template=true` shows «نام قالب» instead of trainee selector | Coach `<select>` lists current user first + tenant coaches from `users` |
 | POST | `/plans` | Create plan or template | Fields: `type`* (`training`\|`diet`\|`steroid`), `trainee`, `start_date`, `end_date`, `days_per_week`, `status`, `notes`, `is_template` (`true/on/1/yes`), `template_name`, `coach`. Templates null-out `trainee`/`template_name` handling accordingly; default status `active` |
 | GET | `/plans/{id}` | Plan detail with its items | Items read from `{type}_items` collection sorted by `seq`,`order` |
@@ -139,7 +141,7 @@ of fields is persisted:
 
 | plan_type | Persisted item fields |
 | --- | --- |
-| `training` | `name` ← form `item_name`, `seq`, `order`, `sets`, `reps`, `weight`, `rest_seconds`, `notes` |
+| `training` | `name` ← form `item_name`, `seq`, `order`, `sets`, `reps`, `weight`, `rest_seconds`, `category` (گرم کردن / حرکات اصلاحی / اصلی / هوازی / سرد کردن), `notes` |
 | `diet` | `name` ← form `food_name`, `meal_name`, `quantity`, `seq`, `order`, `notes` |
 | `steroid` | `name` ← form `name`, `type`, `dosage`, `frequency`, `seq`, `order`, `notes` |
 
@@ -150,7 +152,7 @@ of fields is persisted:
 | GET | `/items/{id}/edit?plan_type={t}` | Edit-item modal | |
 | POST | `/items/{id}` | Update item | `plan` only forwarded when it doesn't look like a collection-prefix value |
 | GET | `/items/{id}/confirm-delete?plan_type={t}` | Delete confirmation modal | |
-| DELETE | `/items/{id}?plan_type={t}` | Delete item | ⚠️ **Currently broken:** handler calls `delete_item()` without importing it → `NameError` → caught → error toast «مشکلی پیش آمد…»; nothing is deleted (known issue #1) |
+| DELETE | `/items/{id}?plan_type={t}` | Delete item | ✅ Works in 0.9.1 (delete bug fixed in 0.9.0 via a lazy in-handler import — see known issue #1). Responds `204` + `closeModal` + `refreshList`. |
 
 Success responses here are `204` with `closeModal` (+ `refreshList` on
 update/delete) and a Persian success toast.
@@ -239,11 +241,6 @@ curl -i -c cookies.txt -X POST https://YOUR-GYM-DOMAIN/login \
 
 # Authenticated page fetch (HTML)
 curl -b cookies.txt https://YOUR-GYM-DOMAIN/dashboard -o dashboard.html
-
-# Lead submission from the landing page
-curl -i -X POST https://MAIN-TENANT-DOMAIN/lead/submit \
-  -d "name=Test" -d "phone=09120000000" -d "position=مربی خصوصی" \
-  -d "coaches_count=۱" -d "trainees_count=۱۰"
 ```
 
 Replace placeholders (`YOUR-GYM-DOMAIN`, credentials) — none of these values

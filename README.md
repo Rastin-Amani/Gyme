@@ -3,10 +3,13 @@
 **Gyme** is a multi-tenant gym coaching platform: each gym gets its own branded,
 installable web app (PWA) where owners and coaches manage trainees and deliver
 training, nutrition, and supplement plans — and trainees follow their daily plan
-from their phone. The UI is fully in Persian (RTL) with Jalali date support.
+from their phone. The UI is multilingual with **English as the default language**;
+Persian (RTL, Jalali dates), Spanish, Turkish, and Armenian are also supported.
 
-- **Current version:** 0.8.0 (`app/main.py` `APP_VERSION`)
-- **Status:** actively developed; no automated test suite yet
+- **Current version:** 0.9.1 (`app/main.py` `APP_VERSION`)
+- **Status:** actively developed; automated tests ship under `tests/`
+  (`tests/test_i18n.py`, plus the 22-test security regression suite in
+  `tests_security_regression.py`)
 
 ---
 
@@ -38,7 +41,6 @@ offline caching, and an offline fallback page.
 | Plan templates | Save reusable templates, apply one to a trainee (copies all items) |
 | Progress logs | Body metrics (BMI/BFP/BMR/TDEE/LBM/WHR auto-calculated) + up to 5 photos |
 | Owner dashboard | Trainee/plan counters and per-coach stats with week/month/all timeframes |
-| Marketing site | Landing page with lead-capture form on the main tenant domain |
 | PWA | Dynamic manifest per gym, service worker caching, offline page/banner, iOS install flow |
 
 ## Quick start (development)
@@ -75,6 +77,7 @@ hosts file and browse `http://yourgym.local:8000`). See
 | --- | --- | --- |
 | `PB_URL` | `http://db.dev.gyme.cloud` | Base URL of the PocketBase instance |
 | `ENV` | `dev` | Set to `production` to disable Swagger docs and `/debug/*` routes and switch logs to JSON |
+| `ALLOWED_HOSTS` | *(unset)* | Optional comma-separated allowlist passed to Starlette `TrustedHostMiddleware`; in production a warning is logged when it is unset |
 
 > Note: `python-dotenv` is listed in requirements but never invoked — `.env`
 > files are **not** loaded automatically; export variables in the shell.
@@ -104,11 +107,12 @@ FastAPI (app/main.py)
    │                    ── validates pb_auth cookie via PocketBase auth_refresh()
    ├── Routers (app/routes/**)        thin HTTP layer
    ├── Services (app/services/**)     PocketBase queries & business rules
-   └── Jinja2 templates (RTL, Jalali dates)
+   └── Jinja2 templates (i18n, RTL for fa, Jalali dates for fa)
    ▼
 PocketBase (external)  ── collections: tenants, users, trainees, plans,
                           training_items, diet_items, steroid_items,
                           progress_logs, plan_progress, leads
+                          (leads is written by the separate marketing app)
                           + auth tokens + file storage (logos, progress photos)
 ```
 
@@ -153,12 +157,12 @@ Documented in detail in
 [docs/07-troubleshooting-known-issues.md](docs/07-troubleshooting-known-issues.md).
 Highlights:
 
-- Deleting a plan item currently **always fails** (missing import in
-  `app/routes/item.py` — see known issues for the one-line fix).
-- Accounts created through the app start with **the email address as the
-  password** until the user changes it.
-- The `pb_auth` cookie is issued with `secure=False` even behind HTTPS.
-- No automated tests, no CI configuration, and no LICENSE file in the repo.
+- Accounts created in-app get a **random 15-character password** that the UI
+  never displays — staff must share or reset it before the new user can log in.
+- A **rate limit** is enforced on the login route but not on password changes.
+- CI (GitHub Actions: ruff, black --check, pytest), an ISC `LICENSE`, and a
+  54-test suite (i18n + security regression + known-issue fixes) ship with the
+  repo.
 
 ## Deployment
 
@@ -170,13 +174,14 @@ Node/Vite files are excluded from the image. Full runbook:
 ## Contributing
 
 There is no formal contribution process yet. Keep changes consistent with the
-existing patterns (routes thin, logic in services, Persian UI strings, HTMX +
-toast interaction style), and run `ruff check .` and `black .` before submitting.
+existing patterns (routes thin, logic in services, Persian msgids + gettext
+`_("…")` in UI strings, HTMX + toast interaction style), and run `ruff check .`
+and `black .` before submitting.
 
 
 ## Internationalization (i18n)
 
-Languages (cookie-based, Seoz pattern): **fa** (default, RTL), **en**, **es**, **tr**, **hy**.
+Languages (cookie-based): **en** (default, LTR), **fa** (RTL, source msgids), **es**, **tr**, **hy**.
 
 - Switcher sets `locale` cookie for 1 year via `GET /locale/{code}?next=...` and full page reload.
 - `<html lang dir>` follows the locale — RTL flips automatically for `fa`.

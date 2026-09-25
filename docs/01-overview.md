@@ -1,7 +1,7 @@
 # 01 — Product Overview
 
 **Verification status:** written against the current implementation (app version
-0.8.0, `main` branch). All features described here are traceable to code in this
+0.9.1, `main` branch). All features described here are traceable to code in this
 repository; where behavior depends on data configured in the external PocketBase
 instance, that is called out explicitly.
 
@@ -18,8 +18,12 @@ the app on its own domain. Inside a gym:
 - **Trainees** install the gym's app on their phone and follow their daily
   training, nutrition, and supplement plan with a single "Done" action per day.
 
-The entire user interface is in **Persian (Farsi)** with right-to-left layout and
-Jalali (Solar Hijri) date display.
+The user interface is **multilingual**: English is the default language, and
+Persian (Farsi) with right-to-left layout and Jalali (Solar Hijri) date display,
+Spanish, Turkish, and Armenian are also available. Visitors switch language with
+a selector in the header; the choice is stored in a `locale` cookie. Date
+filters render Jalali dates when the UI language is Persian and Gregorian
+(Babel medium format) otherwise.
 
 ## Who it is for
 
@@ -28,13 +32,11 @@ Jalali (Solar Hijri) date display.
 | Gym owner (مالک) | Runs the gym's app: manages coaches and trainees, oversees all plans and statistics, sees tenant settings |
 | Coach (مربی) | Manages only their own trainees and their plans; records assessments |
 | Trainee (شاگرد) | Follows daily plans, views own profile — read-only consumer of plans |
-| Prospective customer | Visits the marketing landing page on the platform's main domain and submits a demo request |
 
 ## The problems it solves
 
 - Replaces ad-hoc delivery of workout/nutrition programs via WhatsApp and PDF
-  files with a structured per-trainee plan system (this positioning appears on
-  the product's own landing page).
+  files with a structured per-trainee plan system.
 - Gives each gym an app under its own brand — logo, theme colors, name, icon,
   and splash screen are driven by the gym's tenant record.
 - Standardizes initial fitness assessments with automatic BMI / body-fat / BMR /
@@ -48,9 +50,8 @@ Jalali (Solar Hijri) date display.
 
 - Every request is mapped to a gym by hostname; each hostname corresponds to a
   record in the `tenants` collection.
-- One designated **main tenant** serves the public landing page at `/` with a
-  lead-capture form (name, phone, role, coach/trainee counts → saved as a lead).
-  All other gyms redirect `/` straight to login or dashboard.
+- The marketing site is a separate application; every tenant host redirects `/`
+  straight to login or dashboard.
 - Per-gym branding: name, logo (used for header, favicon, PWA icons, and iOS
   splash screen), theme (`gyme`, `light`, or `custom` with custom CSS color
   variables stored on the tenant).
@@ -60,15 +61,19 @@ Jalali (Solar Hijri) date display.
 - No self-signup: staff create accounts for coaches and trainees inside the app.
 - Three roles: `owner`, `coach`, `trainee`. Coaches are scoped to the trainees
   and plans assigned to them; owners see everything in their gym.
-- Users sign in with email + password. Passwords can be changed in-app
-  (minimum 8 characters).
+- Users sign in with email + password. Passwords can be changed in-app:
+  the new password must be 8–72 characters and not similar to the email address.
 - Login is tenant-checked: an account belonging to another gym cannot be used,
   even if the credentials are correct.
+- Login attempts are rate-limited per IP + identity + tenant (5 attempts per
+  5 minutes); exceeding the limit returns `429` with a toast.
 
-> ⚠️ **Important operational fact:** when staff create a new account, its
-> initial password equals the account's **email address** (verified in
-> `services/auth.py`). New users should change their password immediately via
-> «تغییر رمز عبور». There is no self-service "forgot password" flow.
+> ⚠️ **Important operational fact:** when staff create a new account, the app
+> generates a **random 15-character password** (verified in `services/auth.py`).
+> The UI does **not** display this password anywhere, so the staff member who
+> creates the account cannot hand it to the user. A new user can only log in
+> after staff resets the password through the PocketBase admin (or the account
+> owner resets it for them). There is no self-service "forgot password" flow.
 
 ### Trainee management
 
@@ -137,13 +142,16 @@ Plans come in three types, each with its own item structure:
 Stated so readers don't assume otherwise:
 
 - No payments, billing, or subscription management (payment tracking is only
-  mentioned as a pain point on the marketing page).
+  mentioned as a pain point on the separate marketing site).
 - No trainee-facing editing: trainees cannot mark individual items done, chat,
   or upload anything; their action set is view + daily "Done".
 - No notifications/push messaging, no scheduling/calendar beyond plan dates.
 - No self-service signup or password recovery; account lifecycle runs through
-  gym staff (or direct database administration).
-- No automated tests ship with the repository.
+  gym staff (or direct database administration). Because the app generates
+  random initial passwords and never displays them, new accounts must have
+  their password reset via PocketBase admin before first login.
+- No CI configuration or LICENSE file; automated tests do ship under `tests/`
+  (`test_i18n.py` and the security regression suite).
 
 ## Requirements in brief
 
