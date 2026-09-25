@@ -3,7 +3,7 @@ import threading
 
 from starlette.concurrency import run_in_threadpool
 
-from app.pb import pb
+from app.pb import get_pb
 from app.security import pb_escape, is_valid_host
 
 # ponytail: in-process TTL cache (60s hit / 5s miss); multi-instance deploys get
@@ -15,6 +15,7 @@ _cache_lock = threading.Lock()
 
 
 def _lookup_tenant(domain: str):
+    pb = get_pb()
     safe_domain = pb_escape(domain)
     try:
         return pb.collection("tenants").get_first_list_item(f'domain="{safe_domain}"')
