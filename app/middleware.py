@@ -6,13 +6,13 @@ from urllib.parse import urlparse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.concurrency import run_in_threadpool
 from fastapi import Request
-from fastapi.responses import RedirectResponse, JSONResponse, HTMLResponse
+from fastapi.responses import RedirectResponse, JSONResponse
 from structlog import get_logger
 
 from app.services.tenants import get_tenant_by_domain
 from app.pb import get_pb
 from app.logging_config import bind_request_context, clear_request_context
-from app.security import is_valid_host, cookie_secure_flag
+from app.security import is_valid_host
 from app.i18n import LOCALE_COOKIE, _, set_request_locale
 
 # 🟢 1. Define routes that anyone can access without a token.
@@ -24,7 +24,6 @@ PUBLIC_PATHS = [
     "/manifest.json",  # Required for your PWA
     "/sw.js",  # Required for offline caching
     "/favicon.ico",
-    "/lead/submit",  # public marketing form
     "/locale",  # language switcher (cookie + redirect)
 ]
 
@@ -32,7 +31,6 @@ IS_PROD = os.getenv("ENV", "dev").lower() == "production"
 
 CSRF_EXEMPT_PATHS = [
     "/login",
-    "/lead/submit",
     "/logout",
 ]
 
@@ -107,7 +105,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
         # Only spend the PB auth roundtrip where auth state is actually used:
         # private routes, "/" (redirect decision) and "/login" (redirect-if-authed).
-        # Static assets / manifest / sw.js / logout / lead form never read request.state.user.
+        # Static assets / manifest / sw.js / logout never read request.state.user.
         needs_auth = (
             not (path == "/" or any(path.startswith(p) for p in PUBLIC_PATHS))
             or path == "/"
@@ -165,36 +163,67 @@ class TenantMiddleware(BaseHTTPMiddleware):
                         if request.headers.get("hx-request"):
                             from fastapi.responses import HTMLResponse
                             import json
-                            headers = {"HX-Trigger": json.dumps({"show-toast": {"message": _("درخواست نامعتبر (CSRF)"), "type": "error"}})}
+
+                            headers = {
+                                "HX-Trigger": json.dumps(
+                                    {
+                                        "show-toast": {
+                                            "message": _("درخواست نامعتبر (CSRF)"),
+                                            "type": "error",
+                                        }
+                                    }
+                                )
+                            }
                             return HTMLResponse(content="", status_code=403, headers=headers)
-                        return JSONResponse(status_code=403, content={"detail": "CSRF validation failed"})
+                        return JSONResponse(
+                            status_code=403, content={"detail": "CSRF validation failed"}
+                        )
                 if not origin_ok or not referer_ok:
-                    logger.warning("csrf_blocked_origin_mismatch", path=path, origin=origin, referer=referer, host=host_header)
+                    logger.warning(
+                        "csrf_blocked_origin_mismatch",
+                        path=path,
+                        origin=origin,
+                        referer=referer,
+                        host=host_header,
+                    )
                     if request.headers.get("hx-request"):
                         from fastapi.responses import HTMLResponse
                         import json
-                        headers = {"HX-Trigger": json.dumps({"show-toast": {"message": _("درخواست نامعتبر (CSRF)"), "type": "error"}})}
+
+                        headers = {
+                            "HX-Trigger": json.dumps(
+                                {
+                                    "show-toast": {
+                                        "message": _("درخواست نامعتبر (CSRF)"),
+                                        "type": "error",
+                                    }
+                                }
+                            )
+                        }
                         return HTMLResponse(content="", status_code=403, headers=headers)
-                    return JSONResponse(status_code=403, content={"detail": "CSRF validation failed"})
+                    return JSONResponse(
+                        status_code=403, content={"detail": "CSRF validation failed"}
+                    )
 
         # ---- 🟢 2. The Global Redirect Logic ----
-        # Root path: main-tenant → public landing; sub-tenant → redirect
+        # The marketing site lives outside this app; "/" always points into the app.
         if path == "/":
-            is_main = (
-                getattr(request.state.tenant, "is_main", False) if request.state.tenant else False
+            return RedirectResponse(
+                url="/dashboard" if is_authenticated else "/login",
+                status_code=303,
             )
-            if not is_main:
-                return RedirectResponse(
-                    url="/dashboard" if is_authenticated else "/login",
-                    status_code=303,
-                )
 
-        # Tenant not found: for private tenants, do not leak existence; treat as main?
-        # If tenant is None and host is non-empty, we still allow public paths but block private?
-        # Already handled via tenant_id bound to None
+        # Explicitly allow the exact public paths, THEN check the subfolders
+        is_public = any(path.startswith(p) for p in PUBLIC_PATHS)
 
-        # Explicitly allow the exact root path "/", THEN check the subfolders
-        is_public = (path == "/") or any(path.startswith(p) for p in PUBLIC_PATHS)
+        # Unknown host / unresolved tenant on a private route: never let the
+        # request reach handlers that dereference request.state.tenant.id.
+        if tenant is None and not is_public and path != "/":
+            if request.headers.get("hx-request") == "true":
+                resp = HTMLResponse(content="", status_code=401)
+                resp.headers["HX-Redirect"] = "/login"
+                return resp
+            return RedirectResponse(url="/login", status_code=303)
 
         # If they aren't logged in AND they are trying to access a private route
         if not is_authenticated and not is_public:
@@ -216,7 +245,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
         try:
             response = await call_next(request)
-        except Exception as e:
+        except Exception:
             elapsed = time.time() - start
             logger.exception(
                 "request.error",
@@ -243,11 +272,19 @@ class TenantMiddleware(BaseHTTPMiddleware):
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        response.headers.setdefault(
+            "Permissions-Policy", "camera=(), microphone=(), geolocation=()"
+        )
         # HSTS only when https
         try:
-            if request.url.scheme == "https" or request.headers.get("x-forwarded-proto") == "https" or IS_PROD:
-                response.headers.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+            if (
+                request.url.scheme == "https"
+                or request.headers.get("x-forwarded-proto") == "https"
+                or IS_PROD
+            ):
+                response.headers.setdefault(
+                    "Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload"
+                )
         except Exception:
             pass
         # Minimal CSP that allows current stack: HTMX, Alpine, Tailwind CDN not needed but allow self + inline styles/scripts hashed? Keep permissive but block object-src
