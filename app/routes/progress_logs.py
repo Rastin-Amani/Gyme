@@ -58,6 +58,7 @@ async def save_progress_log(
     notes: str = Form(""),
     bmi: str = Form(""),
     bfp: str = Form(""),
+    bmr: str = Form(""),
     tdee: str = Form(""),
     lbm: str = Form(""),
     whr: str = Form(""),

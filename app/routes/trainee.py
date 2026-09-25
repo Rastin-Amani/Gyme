@@ -130,7 +130,6 @@ def search_trainees(
                 "min_birthdate": min_birthdate,
                 "max_birthdate": max_birthdate,
             },
-            "search_query": query,
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees) == 0
             and len(query) > 0,
             "empty_message": _("هیچ شاگردی با این مشخصات پیدا نشد"),
@@ -191,7 +190,6 @@ def filter_trainees(
                 "min_birthdate": min_birthdate,
                 "max_birthdate": max_birthdate,
             },
-            "search_query": request.query_params.get("query", ""),
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
             == 0,
             "empty_message": _("هیچ شاگردی با این فیلتر پیدا نشد"),
