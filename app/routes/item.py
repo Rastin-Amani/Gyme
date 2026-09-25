@@ -2,14 +2,15 @@ from fastapi import APIRouter, Request, Form, Query
 import csv
 import functools
 import json
-from app.services.item import list_items, get_item_by_id, create_item, update_item
+from app.services.item import get_item_by_id, create_item, update_item
 from app.services.plan import get_plan_by_id
 from ..templates import templates
 from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
-from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES, pb_escape
+from app.security import sanitize_collection_name
 from structlog import get_logger
 from app.i18n import _
+
 logger = get_logger(__name__)
 
 router = APIRouter(tags=["items Management"])
@@ -20,11 +21,19 @@ router = APIRouter(tags=["items Management"])
 @functools.lru_cache(maxsize=None)
 def _unique_names(path: str, column: str) -> tuple:
     with open(path, newline="", encoding="utf-8-sig") as f:
-        return tuple({row[column].strip() for row in csv.DictReader(f) if row.get(column) and row[column].strip()})
+        return tuple(
+            {
+                row[column].strip()
+                for row in csv.DictReader(f)
+                if row.get(column) and row[column].strip()
+            }
+        )
 
 
 def _exercise_names():
-    return list(_unique_names("data/Persian_Fitness_Exercises_Dataset.csv", "نام حرکت (Exercise Name)"))
+    return list(
+        _unique_names("data/Persian_Fitness_Exercises_Dataset.csv", "نام حرکت (Exercise Name)")
+    )
 
 
 def _food_names():
@@ -66,7 +75,7 @@ def item_edit_form(request: Request, plan_type: str = Query(...), plan_id: str =
 
 
 @router.get("/items/{id}/edit")
-def item_edit_form(request: Request, id: str, plan_type: str = Query(...)):
+def item_edit_form_by_id(request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
@@ -112,8 +121,9 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
         # Verify item ownership before delete
         get_item_by_id(pb, tenant, collection_name, id)
         from app.services.item import delete_item
+
         delete_item(pb, id, collection_name)
-        
+
         # 🟢 SUCCESS: Close modal, refresh the list, and show success toast!
         trigger_data = {
             "closeModal": True,
@@ -123,9 +133,6 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     except Exception as e:
-        from structlog import get_logger
-
-        logger = get_logger(__name__)
         logger.error("item.delete_failed", error=str(e), item_id=id, plan_type=plan_type)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {
@@ -167,6 +174,7 @@ def item_create(
     type: str = Form(None),  # Steroid
     dosage: str = Form(None),  # Steroid
     frequency: str = Form(None),  # Steroid
+    category: str = Form(None),  # Training
     notes: str = Form(None),
 ):
     pb = request.state.pb
@@ -183,7 +191,9 @@ def item_create(
             raise ValueError("type mismatch")
         # Coach can only add to own plans
         user = request.state.user
-        if getattr(user, "role", None) == "coach" and str(getattr(plan_obj, "coach", "")) != str(user.id):
+        if getattr(user, "role", None) == "coach" and str(getattr(plan_obj, "coach", "")) != str(
+            user.id
+        ):
             trigger_data = {"show-toast": {"message": _("دسترسی غیرمجاز"), "type": "error"}}
             return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
     except Exception as e:
@@ -206,6 +216,7 @@ def item_create(
                 "reps": reps,
                 "weight": weight,
                 "rest_seconds": rest_seconds,
+                "category": category,
             }
         )
     elif plan_type == "diet":
@@ -241,9 +252,6 @@ def item_create(
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     except Exception as e:
-        from structlog import get_logger
-
-        logger = get_logger(__name__)
         logger.error("item.create_failed", error=str(e), plan_type=plan_type, plan=plan)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {
@@ -272,6 +280,7 @@ def item_update(
     type: str = Form(None),  # Steroid
     dosage: str = Form(None),  # Steroid
     frequency: str = Form(None),  # Steroid
+    category: str = Form(None),  # Training
     notes: str = Form(None),
 ):
     pb = request.state.pb
@@ -283,13 +292,13 @@ def item_update(
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     # Verify existing item tenant ownership
     try:
-        existing = get_item_by_id(pb, tenant, collection_name, id)
+        get_item_by_id(pb, tenant, collection_name, id)
         # If plan change requested, verify new plan belongs to tenant
         if plan:
             plan_obj = get_plan_by_id(pb, tenant, plan)
             if str(getattr(plan_obj, "type", "")) != plan_type:
                 raise ValueError("type mismatch")
-    except Exception as e:
+    except Exception:
         trigger_data = {"show-toast": {"message": _("آیتم یافت نشد"), "type": "error"}}
         return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -311,6 +320,7 @@ def item_update(
                 "reps": reps,
                 "weight": weight,
                 "rest_seconds": rest_seconds,
+                "category": category,
             }
         )
     elif plan_type == "diet":
@@ -348,9 +358,6 @@ def item_update(
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     except Exception as e:
-        from structlog import get_logger
-
-        logger = get_logger(__name__)
         logger.error("item.update_failed", error=str(e), item_id=id, plan_type=plan_type)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {

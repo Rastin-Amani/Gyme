@@ -1,8 +1,10 @@
-from app.security import pb_escape, sanitize_collection_name, ALLOWED_PLAN_TYPES
+from app.security import pb_escape
+
 
 def _validate_collection(collection: str):
     if collection not in {"training_items", "diet_items", "steroid_items"}:
         raise ValueError(f"Invalid collection: {collection}")
+
 
 def list_items(pb, tenant, collection, page=1, per_page=50):
     _validate_collection(collection)
@@ -11,7 +13,7 @@ def list_items(pb, tenant, collection, page=1, per_page=50):
         per_page=per_page,
         query_params={
             "filter": f'tenant="{pb_escape(tenant)}"',
-            "sort": "+day,+order",
+            "sort": "+seq,+order",
             "expand": "plan,trainee",
         },
     )
@@ -23,7 +25,10 @@ def list_items_by_plan(pb, tenant, collection, plan=None, page=1, per_page=100):
     return pb.collection(collection).get_list(
         page=page,
         per_page=per_page,
-        query_params={"filter": f'tenant="{pb_escape(tenant)}" && plan="{pb_escape(plan)}"', "sort": "+seq,+order"},
+        query_params={
+            "filter": f'tenant="{pb_escape(tenant)}" && plan="{pb_escape(plan)}"',
+            "sort": "+seq,+order",
+        },
     )
 
 
@@ -36,6 +41,7 @@ def get_item_by_id(pb, tenant, collection, id):
     rec_tenant = getattr(record, "tenant", None)
     if str(rec_tenant) != str(tenant):
         from pocketbase.errors import ClientResponseError
+
         raise ClientResponseError({"status": 404, "message": "Not found"}, 404, "Not found")
     return record
 
