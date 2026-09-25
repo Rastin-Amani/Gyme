@@ -113,17 +113,6 @@
     }
 }
 
-@keyframes rise {
-    from {
-        opacity: 0;
-        transform: translateY(1.5rem);
-    }
-    to {
-        opacity: 1;
-        transform: none;
-    }
-}
-
 @keyframes wave {
     0%,
     100% {
@@ -136,20 +125,6 @@
 
 @utility animate-slide-up {
     animation: slide-up 0.35s ease-out both;
-}
-
-/* Scroll reveal — driven by IntersectionObserver on the landing page. */
-@utility reveal {
-    opacity: 0;
-    transform: translateY(1.5rem);
-    transition:
-        opacity 0.6s ease-out,
-        transform 0.6s ease-out;
-
-    &.visible {
-        opacity: 1;
-        transform: none;
-    }
 }
 
 /* Waveform visualizer — decorative rhythm marker from the reference system. */
@@ -254,11 +229,6 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
-    }
-
-    .reveal {
-        opacity: 1;
-        transform: none;
     }
 
     .pulse-ember::after {

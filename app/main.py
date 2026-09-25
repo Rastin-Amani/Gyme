@@ -2,13 +2,10 @@
 import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-import structlog
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app.routes import marketing
-
-# route imports
-from .routes import auth
+from app.routes import auth
 from .routes import dashboard
 from .routes import trainee
 from .routes import debug
@@ -90,7 +87,6 @@ app.include_router(user_dashboard.router)
 app.include_router(user_profile.router)
 app.include_router(user_plan.router)
 app.include_router(pwa.router)
-app.include_router(marketing.router)
 
 
 @app.get("/locale/{code}", include_in_schema=False)
