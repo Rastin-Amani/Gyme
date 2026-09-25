@@ -35,6 +35,10 @@ except ImportError:
 # middleware import
 from app.middleware import TenantMiddleware
 
+# i18n: locale switch endpoint (cookie + redirect, Seoz pattern)
+from fastapi.responses import RedirectResponse, JSONResponse
+from app.i18n import ENABLED_LOCALES, LOCALE_COOKIE
+
 # swagger/docs only in dev
 IS_PROD = os.getenv("ENV", "dev").lower() == "production"
 
@@ -87,6 +91,29 @@ app.include_router(user_profile.router)
 app.include_router(user_plan.router)
 app.include_router(pwa.router)
 app.include_router(marketing.router)
+
+
+@app.get("/locale/{code}", include_in_schema=False)
+def switch_locale(code: str, next: str = "/"):
+    """Persist an explicit language choice (allowlisted) and return to the page.
+
+    GET with a cookie side effect on purpose: a UI preference, not a data
+    mutation — keeps the switcher plain links (keyboard accessible, no JS).
+    """
+    if code not in ENABLED_LOCALES:
+        return JSONResponse({"error": {"code": "unsupported_locale"}}, status_code=404)
+    next_url = next
+    if not next_url.startswith("/") or next_url.startswith("//") or "://" in next_url:
+        next_url = "/"  # open-redirect guard
+    response = RedirectResponse(next_url, status_code=303)
+    response.set_cookie(
+        LOCALE_COOKIE,
+        code,
+        max_age=365 * 24 * 3600,
+        samesite="lax",
+        path="/",
+    )
+    return response
 
 
 # swagger ui

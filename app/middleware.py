@@ -13,6 +13,7 @@ from app.services.tenants import get_tenant_by_domain
 from app.pb import get_pb
 from app.logging_config import bind_request_context, clear_request_context
 from app.security import is_valid_host, cookie_secure_flag
+from app.i18n import LOCALE_COOKIE, _, set_request_locale
 
 # 🟢 1. Define routes that anyone can access without a token.
 # Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
@@ -24,6 +25,7 @@ PUBLIC_PATHS = [
     "/sw.js",  # Required for offline caching
     "/favicon.ico",
     "/lead/submit",  # public marketing form
+    "/locale",  # language switcher (cookie + redirect)
 ]
 
 IS_PROD = os.getenv("ENV", "dev").lower() == "production"
@@ -58,6 +60,8 @@ def _host_matches(header_value: str, host_header: str) -> bool:
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        # ---- Locale resolution (cookie preference, allowlisted, default fa) ----
+        set_request_locale(request.cookies.get(LOCALE_COOKIE))
 
         # Liveness probe: must never touch PocketBase, so container healthchecks
         # report the APP's state, not PocketBase's. During a PB outage this keeps
@@ -161,7 +165,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                         if request.headers.get("hx-request"):
                             from fastapi.responses import HTMLResponse
                             import json
-                            headers = {"HX-Trigger": json.dumps({"show-toast": {"message": "درخواست نامعتبر (CSRF)", "type": "error"}})}
+                            headers = {"HX-Trigger": json.dumps({"show-toast": {"message": _("درخواست نامعتبر (CSRF)"), "type": "error"}})}
                             return HTMLResponse(content="", status_code=403, headers=headers)
                         return JSONResponse(status_code=403, content={"detail": "CSRF validation failed"})
                 if not origin_ok or not referer_ok:
@@ -169,7 +173,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                     if request.headers.get("hx-request"):
                         from fastapi.responses import HTMLResponse
                         import json
-                        headers = {"HX-Trigger": json.dumps({"show-toast": {"message": "درخواست نامعتبر (CSRF)", "type": "error"}})}
+                        headers = {"HX-Trigger": json.dumps({"show-toast": {"message": _("درخواست نامعتبر (CSRF)"), "type": "error"}})}
                         return HTMLResponse(content="", status_code=403, headers=headers)
                     return JSONResponse(status_code=403, content={"detail": "CSRF validation failed"})
 
