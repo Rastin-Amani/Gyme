@@ -1,29 +1,12 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div class="max-w-150">
+    <div class="max-w-150 pb-24">
         <div
-            class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-4 card flex-row-reverse"
+            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex-row-reverse rounded-[2rem]"
         >
             {% if plan.is_template | string | lower == 'true' %}
                 <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
-                    <button
-                        hx-get="/plans/{{ plan.id }}/confirm-delete"
-                        hx-target="#modal-container"
-                        class=" btn-error btn-soft btn-sm"
-                    >
-                        {{ _('حذف') }}
-                    </button>
-                </div>
-                <div class="text-center">
-                    <h1 class="text-m font-semibold text-right ml-4">
-                        <span class="opacity-60 font-extrabold">{{ _('قالب:') }}</span>
-                        {{ plan.template_name or _('بدون نام') }}
-                    </h1>
-                </div>
-            {% else %}
-                <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
@@ -32,9 +15,26 @@
                         {{ _('حذف') }}
                     </button>
                 </div>
-                <div class="text-center">
-                    <h1 class="text-m font-semibold text-right ml-4">
-                        {{ _('برنامه‌ی') }}
+                <div class="text-center min-w-0">
+                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('قالب:') }}</span>
+                    <h1 class="font-display font-normal text-2xl leading-tight truncate">
+                        {{ plan.template_name or _('بدون نام') }}
+                    </h1>
+                </div>
+            {% else %}
+                <div class="flex gap-2">
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+                    <button
+                        hx-get="/plans/{{ plan.id }}/confirm-delete"
+                        hx-target="#modal-container"
+                        class="btn btn-sm btn-error btn-soft"
+                    >
+                        {{ _('حذف') }}
+                    </button>
+                </div>
+                <div class="text-center min-w-0">
+                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('برنامه‌ی') }}</span>
+                    <h1 class="font-display font-normal text-2xl leading-tight truncate">
                         {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                     </h1>
                 </div>
@@ -43,8 +43,8 @@
 
         <div class="grid grid-cols-3 gap-4 text-sm mb-4 text-center">
             <div>
-                <span class="opacity-60 block">{{ _('نوع') }}</span>
-                <span class="font-medium">
+                <span class="text-fog block text-xs">{{ _('نوع') }}</span>
+                <span class="font-semibold">
                     {% if plan.type == 'diet' %}
                         {{ _('غذایی') }}
                     {% elif plan.type =='training' %}
@@ -55,16 +55,16 @@
                 </span>
             </div>
             <div>
-                <span class="opacity-60 block">{{ _('روز در هفته') }}</span>
-                <span class="font-medium">{{ plan.days_per_week or '-' }}</span>
+                <span class="text-fog block text-xs">{{ _('روز در هفته') }}</span>
+                <span class="font-semibold">{{ plan.days_per_week or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">{{ _('وضعیت') }}</span>
-                <span class="font-medium">
+                <span class="text-fog block text-xs">{{ _('وضعیت') }}</span>
+                <span class="font-semibold">
                     {% if plan.status == 'active' %}
-                        {{ _('فعال') }}
+                        <span class="badge badge-success badge-soft">{{ _('فعال') }}</span>
                     {% elif plan.status == 'inactive' %}
-                        {{ _('غیرفعال') }}
+                        <span class="badge badge-error badge-soft">{{ _('غیرفعال') }}</span>
                     {% else %}
                         -
                     {% endif %}
@@ -73,31 +73,31 @@
 
             {% if plan.is_template | string | lower != 'true' %}
                 <div>
-                    <span class="opacity-60 block">{{ _('مربی') }}</span>
-                    <span class="font-medium">
+                    <span class="text-fog block text-xs">{{ _('مربی') }}</span>
+                    <span class="font-semibold">
                         {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
                     </span>
                 </div>
                 <div>
-                    <span class="opacity-60 block">{{ _('تاریخ شروع') }}</span>
-                    <span class="font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
+                    <span class="text-fog block text-xs">{{ _('تاریخ شروع') }}</span>
+                    <span class="font-semibold">{{ plan.start_date | jalali_date or '-' }}</span>
                 </div>
                 <div>
-                    <span class="opacity-60 block">{{ _('تاریخ پایان') }}</span>
-                    <span class="font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
+                    <span class="text-fog block text-xs">{{ _('تاریخ پایان') }}</span>
+                    <span class="font-semibold">{{ plan.end_date | jalali_date or '-' }}</span>
                 </div>
             {% endif %}
 
             {% if plan.notes and plan.notes != "" %}
-                <div class="bg-base-200 p-4 rounded-box col-span-3 text-right mt-2">
-                    <p class="text-sm opacity-60">{{ plan.notes }}</p>
+                <div class="bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1.5rem] p-4 col-span-3 text-right mt-2">
+                    <p class="text-sm">{{ plan.notes }}</p>
                 </div>
             {% endif %}
         </div>
 
         {% if plan.is_template | string | lower == 'true' %}
             <button
-                class="btn btn-s w-full"
+                class="btn btn-primary btn-s w-full border-2 border-base-content"
                 type="button"
                 hx-get="/templates/{{ plan.id }}/apply"
                 hx-target="#modal-container"
@@ -108,112 +108,109 @@
             </button>
         {% endif %}
 
-        <div>
-            <div class="mt-4">
-                <div class="divider text-xs opacity-50">{{ _('آیتم‌های برنامه') }}</div>
-                <button
-                    class="btn btn-primary btn-soft btn-s w-full mb-4"
-                    type="button"
-                    hx-get="/items/new?plan_type={{ plan.type }}&plan_id={{ plan.id }}"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('افزودن آیتم') }}
-                </button>
-                <div
-                    id="items-list-content"
-                    class="flex flex-col gap-2"
-                    hx-get="/plans/{{ plan.id }}"
-                    hx-trigger="performListRefresh from:body"
-                    hx-select="#items-list-content"
-                    hx-swap="outerHTML"
-                >
-                    {% for item in item.items %}
-                        <div class="bg-base-200 p-4 card">
-                            {% if plan.type == 'diet' %}
-                                <div class="flex justify-between items-center">
-                                    <div class="max-w-3/4">
-                                        <h3 class="font-bold text-sm">{{ item.meal_name }}</h3>
-                                        <p class="text-sm opacity-80 mt-1">
-                                            {{ _('غذا:') }} {{ item.name }} | {{ _('مقدار:') }} {{ item.quantity }}
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        class="btn btn-xs text-left"
-                                        hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                        hx-target="#modal-container"
-                                        hx-swap="innerHTML"
-                                        hx-boost="false"
-                                        hx-select="unset"
-                                    >
-                                        {{ _('ویرایش') }}
-                                    </button>
+        <div class="mt-6">
+            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('آیتم‌های برنامه') }}</div>
+            <button
+                class="btn btn-primary btn-soft btn-s w-full mb-4 border-2 border-base-content"
+                type="button"
+                hx-get="/items/new?plan_type={{ plan.type }}&plan_id={{ plan.id }}"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
+            >
+                {{ _('افزودن آیتم') }}
+            </button>
+            <div
+                id="items-list-content"
+                class="flex flex-col gap-3"
+                data-enter
+                hx-get="/plans/{{ plan.id }}"
+                hx-trigger="performListRefresh from:body"
+                hx-select="#items-list-content"
+                hx-swap="outerHTML"
+            >
+                {% for item in item.items %}
+                    <div class="bg-base-100 border-2 border-base-content rounded-[1.5rem] p-4 card">
+                        {% if plan.type == 'diet' %}
+                            <div class="flex justify-between items-center gap-2">
+                                <div class="max-w-3/4">
+                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('غذا') }}</span>
+                                    <h3 class="font-semibold text-sm mt-2">{{ item.meal_name }}</h3>
+                                    <p class="text-sm text-fog mt-1">
+                                        {{ item.name }} · {{ _('مقدار:') }} {{ item.quantity }}
+                                    </p>
                                 </div>
-                                {% if item.notes %}
-                                    <p class="text-xs opacity-60 mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
-                                {% endif %}
-                            {% elif plan.type == 'steroid' %}
-                                <div class="flex justify-between items-center">
-                                    <div>
-                                        <h3 class="font-bold text-sm">{{ item.name }}</h3>
-                                        <p class="text-sm opacity-80 mt-1">
-                                            {{ _('روز مصرف:') }} {{ item.seq or '-' }}
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        class="btn btn-xs text-left"
-                                        hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                        hx-target="#modal-container"
-                                        hx-swap="innerHTML"
-                                        hx-boost="false"
-                                        hx-select="unset"
-                                    >
-                                        {{ _('ویرایش') }}
-                                    </button>
-                                </div>
-                                {% if item.notes %}
-                                    <p class="text-xs opacity-60 mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
-                                {% endif %}
-                            {% elif plan.type == 'training' %}
-                                <div class="flex justify-between items-center gap-2">
-                                    <div>
-                                        <span class="badge badge-accent badge-sm">
-                                            {{ _('روز') }} {{ item.seq }}
-                                        </span>
-                                        <h3 class="font-bold text-sm mt-1">{{ item.name }}</h3>
-                                        <p class="text-sm opacity-80 mt-1">
-                                            {{ _('ست:') }} {{ item.sets }} | {{ _('تکرار:') }} {{ item.reps }} | {{ _('وزن:') }}
-                                            {{ item.weight }}kg
-                                        </p>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        class="btn btn-xs text-left"
-                                        hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                        hx-target="#modal-container"
-                                        hx-swap="innerHTML"
-                                        hx-boost="false"
-                                        hx-select="unset"
-                                    >
-                                        {{ _('ویرایش') }}
-                                    </button>
-                                </div>
-                            {% else %}
-                                <p class="text-sm opacity-60">{{ item.name }}</p>
+                                <button
+                                    type="button"
+                                    class="btn btn-xs btn-ghost border-2 border-base-content/30 text-secondary"
+                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
+                                    hx-target="#modal-container"
+                                    hx-swap="innerHTML"
+                                    hx-boost="false"
+                                    hx-select="unset"
+                                >
+                                    {{ _('ویرایش') }}
+                                </button>
+                            </div>
+                            {% if item.notes %}
+                                <p class="text-xs text-fog mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
                             {% endif %}
-                        </div>
-                    {% else %}
-                        <div class="bg-base-200 p-4 text-center card border border-base-300">
-                            <p class="text-sm opacity-60 p-4">
-                                <span class="status status-secondary animate-bounce ml-1"></span>
-                                {{ _('هیچ آیتمی ثبت نشده.') }}
-                            </p>
-                        </div>
-                    {% endfor %}
-                </div>
+                        {% elif plan.type == 'steroid' %}
+                            <div class="flex justify-between items-center gap-2">
+                                <div>
+                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('دارو/مکمل') }}</span>
+                                    <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
+                                    <p class="text-sm text-fog mt-1">{{ _('روز مصرف:') }} {{ item.seq or '-' }}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn btn-xs btn-ghost border-2 border-base-content/30 text-secondary"
+                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
+                                    hx-target="#modal-container"
+                                    hx-swap="innerHTML"
+                                    hx-boost="false"
+                                    hx-select="unset"
+                                >
+                                    {{ _('ویرایش') }}
+                                </button>
+                            </div>
+                            {% if item.notes %}
+                                <p class="text-xs text-fog mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
+                            {% endif %}
+                        {% elif plan.type == 'training' %}
+                            <div class="flex justify-between items-center gap-2">
+                                <div>
+                                    <span class="badge badge-accent border-2 border-base-content">{{ _('روز') }} {{ item.seq }}</span>
+                                    <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
+                                    <p class="text-sm text-fog mt-1">
+                                        {{ _('ست:') }} {{ item.sets }} · {{ _('تکرار:') }} {{ item.reps }} · {{ _('وزن:') }}
+                                        {{ item.weight }}kg
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn btn-xs btn-ghost border-2 border-base-content/30 text-secondary"
+                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
+                                    hx-target="#modal-container"
+                                    hx-swap="innerHTML"
+                                    hx-boost="false"
+                                    hx-select="unset"
+                                >
+                                    {{ _('ویرایش') }}
+                                </button>
+                            </div>
+                        {% else %}
+                            <p class="text-sm text-fog">{{ item.name }}</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="bg-base-100 border-2 border-dashed border-base-content/30 rounded-[1.5rem] p-8 text-center card">
+                        <p class="text-sm text-fog">
+                            <span class="status status-secondary ml-1"></span>
+                            {{ _('هیچ آیتمی ثبت نشده.') }}
+                        </p>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

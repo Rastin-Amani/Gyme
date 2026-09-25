@@ -24,7 +24,7 @@
                 readonly
                 x-model="formattedDate"
                 placeholder="{{ placeholder }}"
-                class="input input-bordered w-full font-sans cursor-pointer validator"
+                class="input w-full font-sans cursor-pointer validator"
                 @click="openModal()"
                 {{ required }}
             />
@@ -36,26 +36,26 @@
 
     <!-- Modal -->
     <dialog x-ref="modalRef" class="modal">
-        <div class="modal-box max-w-sm font-sans" @click.stop>
-            <h3 class="font-bold text-lg text-center mb-6">{{ modal_title }}</h3>
+        <div class="modal-box max-w-sm font-sans border-2 border-base-content" @click.stop>
+            <h3 class="font-display font-normal text-2xl text-center mb-6">{{ modal_title }}</h3>
 
             <div class="flex justify-center gap-3 mb-6" dir="ltr">
                 <div
                     x-ref="yearRef"
-                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200"
+                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200 border-2 border-base-content/20"
                 ></div>
                 <div
                     x-ref="monthRef"
-                    class="relative w-24 h-72 overflow-hidden rounded-box bg-base-200"
+                    class="relative w-24 h-72 overflow-hidden rounded-box bg-base-200 border-2 border-base-content/20"
                 ></div>
                 <div
                     x-ref="dayRef"
-                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200"
+                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200 border-2 border-base-content/20"
                 ></div>
             </div>
 
             <div class="flex flex-col gap-2">
-                <button type="button" class="btn btn-primary" @click="confirmDate()">
+                <button type="button" class="btn btn-primary border-2 border-base-content" @click="confirmDate()">
                     {{ confirm_text }}
                 </button>
                 <button type="button" class="btn btn-outline" @click="closeModal()">
@@ -233,7 +233,7 @@
                   <ul class="absolute inset-0 z-101 w-full cursor-grab active:cursor-grabbing">
                     ${this.source.map((item, index) => `<li data-index="${index}" class="h-10 leading-10 text-center transition-all duration-200 select-none">${item.text}</li>`).join('')}
                   </ul>
-                  <div class="absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 border-y border-primary pointer-events-none z-0"></div>
+                  <div class="absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 border-y border-secondary pointer-events-none z-0"></div>
                 `;
                 this.list = this.el.querySelector('ul');
                 this.items = this.el.querySelectorAll('li');
@@ -287,8 +287,8 @@
             updateFade() {
                 this.items.forEach((item, i) => {
                     const distance = Math.abs(i - this.selectedIndex);
-                    item.classList.remove('text-primary', 'font-bold');
-                    if (i === this.selectedIndex) item.classList.add('text-primary', 'font-bold');
+                    item.classList.remove('text-secondary', 'font-bold');
+                    if (i === this.selectedIndex) item.classList.add('text-secondary', 'font-bold');
                     item.style.opacity =
                         distance < this.middleIndex ? 1 - distance / this.middleIndex : 0.25;
                 });

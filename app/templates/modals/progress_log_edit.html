@@ -28,7 +28,7 @@
                     id="val_height"
                     name="height"
                     value="{{ log.height }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                     required
                 />
             </label>
@@ -40,7 +40,7 @@
                     id="val_weight"
                     name="weight"
                     value="{{ log.weight }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                     required
                 />
             </label>
@@ -51,7 +51,7 @@
                     step="0.1"
                     name="chest"
                     value="{{ log.chest or '' }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                 />
             </label>
             <label class="floating-label">
@@ -62,7 +62,7 @@
                     id="val_waist"
                     name="waist"
                     value="{{ log.waist or '' }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                 />
             </label>
             <label class="floating-label">
@@ -73,7 +73,7 @@
                     id="val_hip"
                     name="hip"
                     value="{{ log.hip or '' }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                 />
             </label>
             <label class="floating-label">
@@ -83,14 +83,14 @@
                     step="0.1"
                     name="arms"
                     value="{{ log.arms or '' }}"
-                    class="input input-bordered w-full calc-trigger"
+                    class="input w-full calc-trigger"
                 />
             </label>
         </div>
 
         <label class="floating-label w-full">
             <span>{{ _('سطح فعالیت') }}</span>
-            <select id="val_activity" class="select select-bordered w-full calc-trigger">
+            <select id="val_activity" class="select w-full calc-trigger">
                 <option value="1.2">{{ _('بدون تحرک') }}</option>
                 <option value="1.375">{{ _('سبک') }}</option>
                 <option value="1.55" selected>{{ _('متوسط') }}</option>
@@ -101,18 +101,18 @@
 
         <label class="floating-label w-full">
             <span>{{ _('یادداشت‌ها') }}</span>
-            <textarea name="notes" class="textarea textarea-bordered w-full h-24">
+            <textarea name="notes" class="textarea w-full h-24">
 {{ log.notes }}</textarea
             >
         </label>
 
         <div class="flex justify-between items-center mt-4">
-            <button type="submit" class="btn btn-primary w-1/2">
+            <button type="submit" class="btn btn-primary w-1/2 border-2 border-base-content">
                 {{ _('ذخیره تغییرات') }}
             </button>
             <button
                 type="button"
-                class="btn btn-ghost"
+                class="btn btn-ghost border-2 border-base-content/20"
                 hx-on:click="document.getElementById('item-modal').remove()"
             >
                 {{ _('لغو') }}

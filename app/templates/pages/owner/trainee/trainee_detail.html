@@ -1,377 +1,202 @@
-{% extends "layouts/dashboard.html" %}
+{% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
-    <div class="max-w-150">
-        <!-- Header: Name, Edit button, Avatar placeholder -->
-        <div
-            class="items-center justify-between border border-base-300 bg-base-200 p-4 mb-6 card flex-row-reverse"
-        >
-            <div class="flex gap-2">
-                <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm">{{ _('ویرایش') }}</a>
-            </div>
-            <div class="text-center">
-                <h1 class="text-m font-bold">
-                    {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '-' }}
+<div class="max-w-150 mx-auto">
+    {# ── Header ─────────────────────────────────────────────────────────── #}
+    <div class="card flex-row-reverse items-center justify-between border-2 border-base-content bg-base-100 rounded-[2rem] p-4 mb-4">
+        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+        <div class="text-center min-w-0">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <h1 class="font-display font-normal text-2xl leading-tight truncate">
+                    {% if trainee.expand and 'user' in trainee.expand %}
+                        {{ trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '') }}
+                    {% else %}-{% endif %}
                 </h1>
-                <div>
-                    <span class="text-sm opacity-50">
-                        {{ trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '-' }}
-                    </span>
+                <div class="avatar avatar-placeholder shrink-0">
+                    <div class="bg-lavender-whisper text-vast-ink w-10 h-10 rounded-full border-2 border-base-content flex items-center justify-center font-semibold">
+                        {% if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name %}{{ trainee.expand['user'].first_name[0] }}{% else %}?{% endif %}
+                    </div>
                 </div>
             </div>
-            <div class="avatar avatar-placeholder">
-                <div class="bg-base-100 text-neutral-content w-10 h-10 rounded-full text-center">
-                    <span class="text-xs">
-                        {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '-' }}
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Info Grid -->
-        <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
-            <div>
-                <span class="opacity-60 block">{{ _('تلفن') }}</span>
-                <span class="font-medium">
-                    {{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '-' }}
-                </span>
-            </div>
-            <div>
-                <span class="opacity-60 block">{{ _('جنسیت') }}</span>
-                <span class="font-medium">
-                    {% set gender_map = {'male': _('آقا'), 'female': _('خانم')} %}
-                    {{ gender_map.get(trainee.gender, '-') }}
-                </span>
-            </div>
-            <div>
-                <span class="opacity-60 block">{{ _('تاریخ تولد') }}</span>
-                <span class="font-medium">{{ trainee.birthdate | jalali_date or '-' }}</span>
-            </div>
-            <div>
-                <span class="opacity-60 block">{{ _('قد') }}</span>
-                <span class="font-medium">{{ trainee.height or '-' }}</span>
-            </div>
-            <div>
-                <span class="opacity-60 block">{{ _('وزن') }}</span>
-                <span class="font-medium">{{ trainee.weight or '-' }}</span>
-            </div>
-            <div>
-                <span class="opacity-60 block">{{ _('گروه خونی') }}</span>
-                <span class="font-medium">{{ trainee.blood_type or '-' }}</span>
-            </div>
-        </div>
-
-        <!-- Info / Records Section -->
-        <div>
-            <div class="divider text-xs opacity-50">{{ _('اطلاعات تکمیلی') }}</div>
-            {% if trainee.notes != "" %}
-                <div class="bg-base-200 p-4 rounded-box">
-                    <p class="text-sm opacity-60">{{ trainee.notes }}</p>
-                </div>
-            {% endif %}
-            <div class="grid grid-cols-1 gap-4 text-sm my-4">
-                <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">{{ _('سابقه تمرینی') }}</span>
-                    <span class="font-medium">
-                        {{ trainee.training_history | jalali_year or '-' }}
-                    </span>
-                </div>
-                <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">{{ _('مصرف استروئید') }}</span>
-                    <span class="font-medium">{{ trainee.steroid_history or '-' }}</span>
-                </div>
-                <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">{{ _('مصرف مکمل') }}</span>
-                    <span class="font-medium">{{ trainee.supplement_history or '-' }}</span>
-                </div>
-                <div class="flex flex-row gap-3 items-center">
-                    <span class="opacity-60 block">{{ _('ناهنجاری‌ها و بیماری‌ها') }}</span>
-                    <span class="font-medium">{{ trainee.limitations or '-' }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- History Accordion -->
-        <div class="mt-4">
-            <div class="divider text-xs opacity-50">{{ _('تاریخچه') }}</div>
-            {% if progress_logs and progress_logs | length > 0 %}
-                <div class="flex flex-col gap-3">
-                    {% for log in progress_logs %}
-                        <div class="collapse collapse-arrow border border-base-300 bg-base-200">
-                            <input type="checkbox" />
-                            <div class="collapse-title text-sm font-medium">
-                                <span>{{ log.created | jalali_date }}</span>
-                            </div>
-                            <div class="collapse-content">
-                                <div class="grid grid-cols-2 gap-4 mt-2">
-                                    <!-- HEIGHT -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('قد') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.height if log.height else '-' }}
-                                        </div>
-                                    </div>
-                                    <!-- WEIGHT -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('وزن') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.weight if log.weight else '-' }}
-                                        </div>
-                                    </div>
-                                    <!-- BMI -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">BMI</div>
-                                        <div class="font-bold">
-                                            {{ log.bmi | round(1) if log.bmi else '-' }}
-                                        </div>
-                                    </div>
-                                    <!-- BFP -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('درصد چربی بدن') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.bfp | round(1) if log.bfp != None else '-' }}%
-                                        </div>
-                                    </div>
-                                    <!-- LBM -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('جرم عضلانی') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.lbm | round(1) if log.lbm else '-' }} {{ _('کیلوگرم') }}
-                                        </div>
-                                    </div>
-                                    <!-- BMR -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('متابولیسم پایه') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.bmr | int if log.bmr else '-' }} {{ _('کیلوکالری') }}
-                                        </div>
-                                    </div>
-                                    <!-- TDEE -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('متابولیسم با فعالیت') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.tdee | int if log.tdee else '-' }} {{ _('کیلوکالری') }}
-                                        </div>
-                                    </div>
-                                    <!-- WHR -->
-                                    <div class="text-center p-2 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('نسبت کمر به لگن') }}</div>
-                                        <div class="font-bold">
-                                            {{ log.whr | round(2) if log.whr else '-' }}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 📸 THUMBNAILS ONLY (NO MODALS HERE) 📸 -->
-                                {% if log.progress_photos and log.progress_photos | length > 0 %}
-                                    <div class="mt-3">
-                                        <div class="text-xs opacity-60 mb-2">
-                                            {{ _('تصاویر پیشرفت') }} ({{ log.progress_photos | length }})
-                                        </div>
-                                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 relative">
-                                            {% for photo in log.progress_photos %}
-                                                <div
-                                                    class="relative rounded border border-base-300 overflow-hidden cursor-pointer group"
-                                                >
-                                                    <label
-                                                        for="modal-{{ log.id }}-{{ loop.index0 }}"
-                                                        class="cursor-pointer block w-full h-full"
-                                                    >
-                                                        <img
-                                                            src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
-                                                            alt="{{ _('Progress photo') }}"
-                                                            class="w-full h-24 object-cover transition-transform duration-300 group-hover:scale-110"
-                                                            loading="lazy"
-                                                        />
-                                                    </label>
-                                                </div>
-                                            {% endfor %}
-                                        </div>
-                                    </div>
-                                {% endif %}
-                                <!-- 📸 END THUMBNAILS 📸 -->
-
-                                {% if log.notes %}
-                                    <div class="mt-3 p-4 bg-base-100 rounded">
-                                        <div class="text-xs opacity-60">{{ _('یادداشت‌ها') }}</div>
-                                        <div class="text-sm">{{ log.notes }}</div>
-                                    </div>
-                                {% endif %}
-                                <div class="mt-4 flex justify-center">
-                                    <button
-                                        class="btn btn-sm btn-ghost text-primary w-full"
-                                        hx-get="/progress-log/{{ log.id }}/edit"
-                                        hx-target="#modal-container"
-                                        hx-trigger="click"
-                                        hx-swap="innerHTML"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.5"
-                                            stroke="currentColor"
-                                            class="size-4"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
-                                            />
-                                        </svg>
-                                        {{ _('ویرایش') }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="bg-base-200 p-4 text-center card border border-base-300">
-                    <p class="text-sm opacity-60 p-4 flex items-center justify-center">
-                        <span class="status status-secondary animate-bounce ml-2"></span>
-                        {{ _('لاگی ثبت نشده!') }}
-                    </p>
-                </div>
+            {% if trainee.expand and 'user' in trainee.expand %}
+            <span class="text-sm text-fog block truncate">{{ trainee.expand['user'].email }}</span>
             {% endif %}
         </div>
-
-        <!-- Add Progress Log Button -->
-        <div class="mt-4 flex justify-center">
-                                <a
-                                    href="/progress-log/new/{{ trainee.id }}"
-                                    class="btn btn-primary btn-soft w-full"
-                                >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="size-4"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M12 4.5v15m7.5-7.5h-15"
-                    />
-                </svg>
-                {{ _('ثبت لاگ پیشرفت') }}
-            </a>
-        </div>
-
-        <div class="mt-4">
-            <div class="divider text-xs opacity-50">{{ _('برنامه‌ها') }}</div>
-
-            {% set plan_list = plans.items if plans.items is defined else plans %}
-
-            {% if plan_list and plan_list | length > 0 %}
-                <div class="flex flex-col gap-3">
-                    {% for plan in plan_list %}
-                        <div class="bg-base-200 p-4 card border border-base-300">
-                            <div class="flex justify-between items-center">
-                                <div class="max-w-[75%]">
-                                    <div class="flex items-center gap-2">
-                                        <h3 class="font-bold text-sm truncate">
-                                            {% if plan.type == 'training' %}
-                                                {{ _('برنامه تمرینی') }}
-                                            {% elif plan.type == 'diet' %}
-                                                {{ _('برنامه غذایی') }}
-                                            {% elif plan.type == 'steroid' %}
-                                                {{ _('برنامه استروئیدی') }}
-                                            {% endif %}
-                                        </h3>
-                                        {% if plan.type == 'training' %}
-                                            <span class="text-xl">💪🏻</span>
-                                        {% elif plan.type == 'diet' %}
-                                            <span class="text-xl">🥑</span>
-                                        {% elif plan.type == 'steroid' %}
-                                            <span class="text-xl">💊</span>
-                                        {% endif %}
-                                    </div>
-                                    <div class="text-xs opacity-60 mt-2 flex flex-col gap-1">
-                                        <div>
-                                            {{ _('وضعیت:') }}
-                                            {% if plan.status == 'active' %}
-                                                {{ _('فعال') }}
-                                            {% elif plan.status == 'draft' %}
-                                                {{ _('پیش‌نویس') }}
-                                            {% elif plan.status == 'inactive' %}
-                                                {{ _('غیرفعال') }}
-                                            {% else %}
-                                                {{ plan.status }}
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {% if plan.start_date %}
-                                                {{ _('شروع:') }} {{ plan.start_date | jalali_date }}
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {% if plan.end_date %}
-                                                {{ _('پایان:') }} {{ plan.end_date | jalali_date }}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <a
-                                        href="/plans/{{ plan.id }}"
-                                        class="btn btn-sm btn-ghost text-primary"
-                                    >
-                                        {{ _('مشاهده') }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="bg-base-200 p-4 text-center card border border-base-300">
-                    <p class="text-sm opacity-60 p-4 flex items-center justify-center">
-                        <span class="status status-secondary animate-bounce ml-2"></span>
-                        {{ _('برنامه‌ای ثبت نشده!') }}
-                    </p>
-                </div>
-            {% endif %}
-        </div>
+        <div class="w-16"></div>
     </div>
 
-    <!-- 🌟 RENDER ALL MODALS AT THE VERY BOTTOM OF THE LAYOUT 🌟 -->
-    <!-- This completely avoids the accordion's hidden overflow and z-index traps! -->
-    {% if progress_logs and progress_logs | length > 0 %}
+    {# ── محور اطلاعات ────────────────────────────────────────────────────── #}
+    {% set gender_map = {'male': _('آقا'), 'female': _('خانم')} %}
+    <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
+        <div><span class="text-fog block text-xs mb-1">{{ _('تلفن') }}</span><span class="font-semibold">{% if trainee.expand and 'user' in trainee.expand %}{{ trainee.expand['user'].phone or '-' }}{% else %}-{% endif %}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('جنسیت') }}</span><span class="font-semibold">{{ gender_map.get(trainee.gender, gender_map.get(trainee.gender, _('-'))) }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('تاریخ تولد') }}</span><span class="font-semibold">{{ trainee.birthdate|jalali_date or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('قد') }}</span><span class="font-semibold">{{ trainee.height or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('وزن') }}</span><span class="font-semibold">{{ trainee.weight or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('گروه خونی') }}</span><span class="font-semibold">{{ trainee.blood_type or '-' }}</span></div>
+    </div>
+
+    {% if trainee.notes %}
+    <div class="bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1.5rem] p-4 mb-6">
+        <p class="text-sm text-base-content/80">{{ trainee.notes }}</p>
+    </div>
+    {% endif %}
+
+    {# ── اطلاعات تکمیلی ──────────────────────────────────────────────────── #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('اطلاعات تکمیلی') }}</div>
+    <div class="grid gap-4 text-sm mb-2">
+        {% if trainee.training_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('سابقه تمرینی') }}</span><span class="font-medium">{{ trainee.training_history|jalali_year }}</span></div>{% endif %}
+        {% if trainee.steroid_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('مصرف استروئید') }}</span><span class="font-medium">{{ trainee.steroid_history }}</span></div>{% endif %}
+        {% if trainee.supplement_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('مصرف مکمل') }}</span><span class="font-medium">{{ trainee.supplement_history }}</span></div>{% endif %}
+        {% if trainee.limitations %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('ناهنجاری‌ها و بیماری‌ها') }}</span><span class="font-medium">{{ trainee.limitations }}</span></div>{% endif %}
+    </div>
+
+    {# ── تاریخچه ─────────────────────────────────────────────────────────── #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('تاریخچه') }}</div>
+
+    {% if progress_logs %}
         {% for log in progress_logs %}
-            {% if log.progress_photos and log.progress_photos | length > 0 %}
-                {% for photo in log.progress_photos %}
-                    <input
-                        type="checkbox"
-                        id="modal-{{ log.id }}-{{ loop.index0 }}"
-                        class="modal-toggle"
-                    />
-                    <div class="modal z-[9999]" role="dialog">
-                        <div
-                            class="modal-box p-0 bg-transparent shadow-none w-auto max-w-[95vw] flex flex-col items-center justify-center overflow-hidden"
-                        >
-                            <label
-                                for="modal-{{ log.id }}-{{ loop.index0 }}"
-                                class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white bg-black/50 hover:bg-black/80 z-[10000]"
-                            >
-                                ✕
-                            </label>
-                            <img
-                                src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
-                                class="max-w-full max-h-[85vh] object-contain rounded-box"
-                                alt="{{ _('Full size progress photo') }}"
-                            />
-                        </div>
-                        <label
-                            class="modal-backdrop bg-black/50"
-                            for="modal-{{ log.id }}-{{ loop.index0 }}"
-                        >
-                            {{ _('Close') }}
+        <div class="collapse collapse-arrow border-2 border-base-content/20 rounded-[2rem] bg-base-100 mb-3">
+            <input type="checkbox" aria-label="{{ log.created|jalali_date }}" />
+            <div class="collapse-title font-bold text-sm flex items-center gap-2">
+                📋 {{ log.created|jalali_date }}
+                {% if log.progress_photos %}<span class="badge badge-secondary badge-sm">{{ log.progress_photos|length }} 📷</span>{% endif %}
+            </div>
+            <div class="collapse-content">
+                <div class="grid grid-cols-2 gap-3 mt-2">
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('قد') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.height or '-' }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('وزن') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.weight or '-' }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">BMI</span>
+                        <span class="font-display text-2xl font-normal">{{ log.bmi|round(1) if log.bmi else '-' }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('درصد چربی بدن') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.bfp|round(1) if log.bfp else '-' }}%</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('جرم عضلانی') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.lbm|round(1) if log.lbm else '-' }} {{ _('کیلوگرم') }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('متابولیسم پایه') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.bmr|int if log.bmr else '-' }} {{ _('کیلوکالری') }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('متابولیسم با فعالیت') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.tdee|int if log.tdee else '-' }} {{ _('کیلوکالری') }}</span>
+                    </div>
+                    <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
+                        <span class="text-fog block text-xs mb-1">{{ _('نسبت کمر به لگن') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.whr|round(2) if log.whr else '-' }}</span>
+                    </div>
+                </div>
+
+                {% if log.progress_photos %}
+                <p class="text-xs text-fog mt-4 mb-2">{{ _('تصاویر پیشرفت') }} ({{ log.progress_photos|length }})</p>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {% for photo in log.progress_photos %}
+                    <div class="relative rounded-[1rem] border-2 border-base-content/15 overflow-hidden cursor-pointer group">
+                        <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="block cursor-pointer">
+                            <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
+                                 alt="{{ _('تصویر پیشرفت') }}"
+                                 class="w-full h-24 object-cover transition group-hover:scale-110 lazy"
+                                 loading="lazy" />
                         </label>
                     </div>
-                {% endfor %}
-            {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if log.notes %}
+                <div class="mt-3 p-4 bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1rem]">
+                    <span class="text-fog text-xs block mb-1">{{ _('یادداشت‌ها') }}</span>
+                    <p class="text-sm text-base-content/80">{{ log.notes }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mt-4 flex justify-center">
+                    <button class="btn btn-sm btn-ghost border-2 border-base-content/30 text-secondary w-full"
+                            hx-get="/progress-log/{{ log.id }}/edit"
+                            hx-target="#modal-container"
+                            hx-trigger="click"
+                            hx-swap="innerHTML">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                        </svg>
+                        {{ _('ویرایش') }}
+                    </button>
+                </div>
+            </div>
+        </div>
         {% endfor %}
+    {% else %}
+        <div class="bg-base-100 rounded-[2rem] p-8 text-center border-2 border-dashed border-base-content/30">
+            <span class="status status-secondary animate-bounce"></span>
+            <p class="text-sm text-fog font-medium mt-2">{{ _('لاگی ثبت نشده!') }}</p>
+        </div>
     {% endif %}
+
+    <div class="mt-4 flex justify-center">
+        <a href="/progress-log/new/{{ trainee.id }}" class="btn btn-primary btn-soft w-full border-2 border-base-content">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            {{ _('ثبت لاگ پیشرفت') }}
+        </a>
+    </div>
+
+    {# ── برنامه‌ها ────────────────────────────────────────────────────────── #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('برنامه‌ها') }}</div>
+    {% set plan_list = plans.items if plans.items is defined else plans %}
+    {% if plan_list %}
+        {% for plan in plan_list %}
+        <div class="bg-base-100 p-4 card border-2 border-base-content/20 rounded-[1.5rem] mb-3">
+            <div class="flex justify-between items-center gap-3">
+                <div class="min-w-0 max-w-[75%]">
+                    <div class="flex items-center gap-2">
+                        {% if plan.type == 'training' %}💪🏻{% elif plan.type == 'diet' %}🥑{% else %}💊{% endif %}
+                        <h3 class="font-bold text-sm truncate">
+                            {% if plan.type == 'training' %}{{ _('برنامه تمرینی') }}{% elif plan.type == 'diet' %}{{ _('برنامه غذایی') }}{% else %}{{ _('برنامه استروئیدی') }}{% endif %}
+                        </h3>
+                    </div>
+                    <div class="text-xs text-fog mt-2 flex flex-col gap-1">
+                        <span>{{ _('وضعیت') }}: {% if plan.status == 'active' %}{{ _('فعال') }}{% elif plan.status == 'inactive' %}{{ _('غیرفعال') }}{% else %}{{ _('پیش‌نویس') }}{% endif %}</span>
+                        <span>{{ _('شروع') }}: {{ plan.start_date|jalali_date or '-' }} — {{ _('پایان') }}: {{ plan.end_date|jalali_date or '-' }}</span>
+                    </div>
+                </div>
+                <a href="/plans/{{ plan.id }}" class="btn btn-sm btn-ghost text-secondary border-2 border-base-content/30 shrink-0">{{ _('مشاهده') }}</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-sm text-fog text-center py-4">{{ _('برنامه‌ای ثبت نشده!') }}</p>
+    {% endif %}
+</div>
+
+{# ── Photo lightbox modals (checkbox style) ───────────────────────────────── #}
+{% if progress_logs %}
+    {% for log in progress_logs %}
+        {% if log.progress_photos %}
+            {% for photo in log.progress_photos %}
+            <input type="checkbox" id="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-toggle" />
+            <div class="modal z-[9999]" role="dialog" aria-modal="true">
+                <div class="modal-box p-0 bg-transparent shadow-none w-auto max-w-[95vw] flex flex-col items-center justify-center overflow-hidden">
+                    <label for="modal-{{ log.id }}-{{ loop.index0 }}"
+                           class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white bg-vast-ink border-2 border-base-content z-[10000] cursor-pointer">✕</label>
+                    <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
+                         alt="{{ _('تصویر کامل پیشرفت') }}"
+                         class="max-w-full max-h-[85vh] object-contain rounded-box" />
+                </div>
+                <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-backdrop bg-black/50 cursor-pointer">{{ _('بستن') }}</label>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
 {% endblock %}

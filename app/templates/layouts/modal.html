@@ -5,12 +5,12 @@
     class="modal modal-bottom sm:modal-middle modal-open text-right"
     hx-boost="false"
 >
-    <div class="modal-box bg-base-100 max-h-[85vh] overflow-y-auto pb-8">
+    <div class="modal-box bg-base-100 border-2 border-base-content max-h-[85vh] overflow-y-auto pb-8">
         <!-- Drag Handle (Visible only on mobile) -->
-        <div class="w-12 h-1.5 bg-base-300 rounded-full mx-auto mb-6 sm:hidden"></div>
+        <div class="w-12 h-1.5 bg-base-content/30 rounded-full mx-auto mb-6 sm:hidden"></div>
 
         <!-- Modal Title -->
-        <h3 class="font-bold text-xl mb-6">{% block modal_title %}{% endblock %}</h3>
+        <h3 class="font-display font-normal text-2xl mb-6">{% block modal_title %}{% endblock %}</h3>
 
         <!-- Modal Body -->
         <div class="mt-2">
@@ -21,7 +21,7 @@
 
                     <!-- Action Buttons -->
                     <div class="flex justify-between items-center mt-6">
-                        <button type="submit" class="btn btn-primary w-1/2">
+                        <button type="submit" class="btn btn-primary w-1/2 border-2 border-base-content">
                             {{ _('ذخیره تغییرات') }}
                         </button>
 

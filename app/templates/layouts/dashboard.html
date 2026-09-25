@@ -29,14 +29,14 @@
 
         <div class="flex flex-auto items-center justify-end gap-4 ml-2">
             {% include "components/locale_switcher.html" %}
-            <span class="font-bold text-base text-primary">
+            <span class="font-bold text-base text-secondary">
                 {{ tenant.name if tenant else _('باشگاه') }}
             </span>
 
             {% if tenant and tenant.logo %}
                 {% set pb_url = request.state.pb.base_url.rstrip("/") %}
                 <div class="avatar">
-                    <div class="w-10 h-10 rounded-xl shadow-sm border border-base-200 bg-base-100">
+                    <div class="w-10 h-10 rounded-xl border-2 border-base-content bg-base-100">
                         <img
                             src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=100x100f"
                             alt="{{ tenant.name }}"
@@ -54,7 +54,7 @@
         <!-- Persistent Navigation -->
         <nav
             id="bottom-dock"
-            class="dock text-xs max-w-150 mx-auto bg-base-100 border-t-2 border-base-200 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16"
+            class="dock text-xs max-w-150 mx-auto bg-base-100 border-t-2 border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16"
         >
             {% if user and user.role in ['coach', 'owner'] %}
                 <a href="/dashboard">
@@ -211,7 +211,6 @@
                 function setActiveDock() {
                     var path = window.location.pathname;
                     document.querySelectorAll('#bottom-dock a').forEach(function (link) {
-                        link.classList.remove('text-primary');
                         var href = link.getAttribute('href');
                         var active =
                             (href === '/dashboard' && path === '/dashboard') ||
@@ -224,7 +223,13 @@
                             (href === '/user/plans' && path.startsWith('/user/plans')) ||
                             (href === '/user/dashboard' && path === '/user/dashboard') ||
                             (href === '/user/profile' && path.startsWith('/user/profile'));
-                        if (active) link.classList.add('text-primary');
+                        if (active) {
+                            link.classList.add('text-secondary');
+                            link.setAttribute('aria-current', 'page');
+                        } else {
+                            link.classList.remove('text-secondary');
+                            link.removeAttribute('aria-current');
+                        }
                     });
                 }
                 setActiveDock();

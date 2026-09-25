@@ -1,15 +1,9 @@
-<dialog
-    id="delete-confirmation-modal"
-    class="modal modal-bottom sm:modal-middle modal-open text-right"
-    hx-boost="false"
->
-    <div class="modal-box bg-base-100 border border-base-300">
-        <h3 class="font-bold text-lg text-error">{{ title }}</h3>
-        <p class="py-4">
-            {{ _('آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست.') }}
-        </p>
+<dialog id="delete-confirmation-modal" class="modal modal-bottom sm:modal-middle modal-open text-right" hx-boost="false">
+    <div class="modal-box bg-base-100 border-2 border-base-content">
+        <h3 class="font-display font-normal text-2xl text-error mb-2">{{ title }}</h3>
+        <p class="py-4">{{ _('آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست.') }}</p>
         <div class="modal-action flex justify-end gap-3">
-            <button type="button" class="btn btn-ghost" onclick="this.closest('dialog').remove()">
+            <button type="button" class="btn btn-ghost border-2 border-base-content/20" onclick="this.closest('dialog').remove()">
                 {{ _('انصراف') }}
             </button>
             <form
@@ -19,12 +13,11 @@
                 hx-boost="false"
                 hx-on::after-request="this.closest('dialog').remove()"
             >
-                <button type="submit" class="btn btn-error">{{ _('حذف') }}</button>
+                <button type="submit" class="btn btn-error border-2 border-base-content/20">
+                    {{ _('حذف') }}
+                </button>
             </form>
         </div>
+        <div class="modal-backdrop bg-black/40 backdrop-blur-sm cursor-pointer" onclick="this.closest('dialog').remove()"></div>
     </div>
-    <div
-        class="modal-backdrop bg-black/40 backdrop-blur-sm cursor-pointer"
-        onclick="this.closest('dialog').remove()"
-    ></div>
 </dialog>

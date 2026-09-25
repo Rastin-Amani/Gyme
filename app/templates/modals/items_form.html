@@ -1,279 +1,165 @@
 {% extends "layouts/modal.html" %}
 
 {% block modal_body %}
-    <form
-        hx-post="{{ '/items/' + item.id if item else '/items' }}"
-        hx-boost="false"
-        hx-swap="none"
-        hx-on:htmx:after-request="if(event.detail.successful) {
-                    console.log('modal success, triggering refresh');
-                    document.getElementById('modal-container').innerHTML = '';
-                    htmx.trigger(document.body, 'performListRefresh');
-                    }"
-        class="flex flex-col gap-4 text-right"
-        dir="rtl"
-    >
-        {% if plan_type == 'training' %}
-            <div class="form-control w-full flex flex-col gap-4">
-                <label class="floating-label w-full">
-                    <span>{{ _('نام حرکت') }}</span>
-                    <input
-                        list="exercise-options"
-                        type="text"
-                        name="item_name"
-                        value="{{ item.name or '' }}"
-                        placeholder="{{ _('نام حرکت (انتخاب یا تایپ کنید)') }}"
-                        class="input input-bordered w-full validator"
-                        autocomplete="on"
-                        required
-                    />
+<form
+    hx-post="{{ '/items/' + item.id if item else '/items' }}"
+    hx-boost="false"
+    hx-swap="none"
+    hx-on:htmx:after-request="if(event.detail.successful){console.log('modal success, triggering refresh');document.getElementById('modal-container').innerHTML='';htmx.trigger(document.body,'performListRefresh');}"
+    class="flex flex-col gap-4 text-right"
+    dir="rtl"
+>
+    {% if plan_type == 'training' %}
+        <div class="form-control w-full flex flex-col gap-4">
+            <label class="floating-label">
+                <span>{{ _('نام حرکت') }}</span>
+                <input
+                    list="exercise-options"
+                    type="text"
+                    name="item_name"
+                    value="{{ item.name or '' }}"
+                    placeholder="{{ _('نام حرکت (انتخاب یا تایپ کنید)') }}"
+                    class="input w-full validator"
+                    autocomplete="on"
+                    required
+                />
+            </label>
+            <datalist id="exercise-options">
+                {% for name in exercise_names %}
+                    <option value="{{ name }}"></option>
+                {% endfor %}
+            </datalist>
+            <p class="validator-hint text-error text-xs mt-1 hidden">{{ _('این فیلد اجباری است.') }}</p>
 
-                    <datalist id="exercise-options">
-                        {% for name in exercise_names %}
-                            <option value="{{ name }}"></option>
-                        {% endfor %}
-                    </datalist>
-
-                    <div class="validator-hint text-error text-xs mt-1 hidden">
-                        {{ _('This field is required.') }}
-                    </div>
-                </label>
-                <label class="floating-label w-full">
-                    <span>{{ _('دسته‌بندی حرکت') }}</span>
-
-                    <select name="category" class="select select-bordered w-full" required>
-                        <option value="گرم کردن">{{ _('گرم کردن') }}</option>
-                        <option value="حرکات اصلاحی">{{ _('حرکات اصلاحی') }}</option>
-                        <option value="اصلی" selected>{{ _('اصلی') }}</option>
-                        <option value="هوازی">{{ _('هوازی') }}</option>
-                        <option value="سرد کردن">{{ _('سرد کردن') }}</option>
-                    </select>
-                </label>
-            </div>
-
-            <!-- Grid 3 for compact mobile view -->
-            <div class="grid grid-cols-3 gap-4">
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('روز') }}</span>
-                        <input
-                            type="number"
-                            name="seq"
-                            value="{{ item.seq or 1 }}"
-                            class="input input-bordered w-full"
-                        />
-                        <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('ترتیب') }}</span>
-                        <input
-                            type="number"
-                            name="order"
-                            value="{{ item.order or 1 }}"
-                            class="input input-bordered w-full"
-                        />
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('ست') }}</span>
-                        <input
-                            type="number"
-                            name="sets"
-                            value="{{ item.sets or '' }}"
-                            class="input input-bordered w-full"
-                        />
-                    </label>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('تکرار') }}</span>
-                        <input
-                            type="number"
-                            name="reps"
-                            value="{{ item.reps or '' }}"
-                            class="input input-bordered w-full"
-                        />
-                    </label>
-                </div>
-                <div class="form-control">
-                    <label class="floating-label"
-                        ><span class="label-text">{{ _('وزنه') }}</span></label
-                    >
-                    <input
-                        type="number"
-                        step="0.1"
-                        name="weight"
-                        value="{{ item.weight or '' }}"
-                        class="input input-bordered w-full"
-                    />
-                </div>
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('استراحت (s)') }}</span>
-                        <input
-                            type="number"
-                            name="rest_seconds"
-                            value="{{ item.rest_seconds or '' }}"
-                            class="input input-bordered w-full"
-                        />
-                    </label>
-                </div>
-            </div>
-        {% elif plan_type == 'diet' %}
-            <div class="form-control w-full">
-                <label class="floating-label">
-                    <span>{{ _('نام وعده') }}</span>
-                    <select name="meal_name" class="select select-bordered w-full" required>
-                        <option value="" {% if not item.meal_name %}selected{% endif %} disabled>
-                            {{ _('انتخاب وعده...') }}
+            <label class="floating-label">
+                <span>{{ _('دسته‌بندی حرکت') }}</span>
+                <select name="category" class="select w-full" required>
+                    {% for cat in ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+                        <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>
+                            {{ _(cat) }}
                         </option>
-                        {% for category in ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
-                            <option
-                                value="{{ category }}"
-                                {% if item.meal_name == category %}selected{% endif %}
-                            >
-                                {{ _(category) }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-            <div class="form-control w-full">
-                <label class="floating-label w-full">
-                    <span>{{ _('نام غذا') }}</span>
-
-                    <input
-                        list="food-options"
-                        type="text"
-                        name="food_name"
-                        value="{{ item.food_name or '' }}"
-                        placeholder="{{ _('نام غذا (انتخاب یا تایپ کنید)') }}"
-                        class="input input-bordered w-full"
-                        autocomplete="off"
-                    />
-
-                    <datalist id="food-options">
-                        {% for name in food_names %}
-                            <option value="{{ name }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </label>
-            </div>
-            <div class="form-control w-full">
-                <label class="floating-label">
-                    <span class="label-text">{{ _('مقدار / واحد') }}</span>
-                    <input
-                        type="text"
-                        name="quantity"
-                        value="{{ item.quantity or '' }}"
-                        class="input input-bordered w-full"
-                    />
-                </label>
-            </div>
-        {% elif plan_type == 'steroid' %}
-            <div class="form-control w-full">
-                <label class="floating-label">
-                    <span class="label-text">{{ _('نام مکمل/دارو') }}</span>
-                    <input
-                        type="text"
-                        name="name"
-                        value="{{ item.name or '' }}"
-                        class="input input-bordered w-full"
-                    />
-                </label>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-                <div class="form-control">
-                    <label class="floating-label"
-                        ><span class="label-text">{{ _('نوع') }}</span></label
-                    >
-                    <select name="type" class="select select-bordered w-full">
-                        <option
-                            value="supplement"
-                            {% if item.type == 'supplement' %}selected{% endif %}
-                        >
-                            {{ _('مکمل') }}
-                        </option>
-                        <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>
-                            {{ _('استروئید') }}
-                        </option>
-                    </select>
-                </div>
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('دوز') }}</span>
-                        <input
-                            type="text"
-                            name="dosage"
-                            value="{{ item.dosage or '' }}"
-                            class="input input-bordered w-full"
-                        />
-                    </label>
-                </div>
-            </div>
-            <div class="form-control w-full">
-                <label class="floating-label">
-                    <span class="label-text">{{ _('زمان/تکرار مصرف') }}</span>
-                    <input
-                        type="text"
-                        name="frequency"
-                        value="{{ item.frequency or '' }}"
-                        class="input input-bordered w-full"
-                    />
-                </label>
-            </div>
-        {% endif %}
-
-        <div class="form-control">
-            {% if item.notes and item.notes.strip() %}
-                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
-                    {{ item.notes.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="notes"
-                    class="textarea textarea-bordered h-12 w-full"
-                    placeholder="{{ _('یادداشت') }}"
-                ></textarea>
-            {% endif %}
+                    {% endfor %}
+                </select>
+            </label>
         </div>
 
-        <div class="hidden">
-            <input type="hidden" name="plan_type" value="{{ plan_type }}" />
-            <!-- Pass the original plan ID so the relation doesn't break -->
-            <input type="hidden" name="plan" value="{{ plan_id }}" />
+        <div class="grid grid-cols-3 gap-4">
+            <label class="floating-label">
+                <span>{{ _('روز') }}</span>
+                <input type="number" name="seq" value="{{ item.seq or 1 }}" class="input w-full" />
+            </label>
+            <p class="validator-hint text-error text-xs hidden">{{ _('این فیلد اجباریه.') }}</p>
+            <label class="floating-label">
+                <span>{{ _('ترتیب') }}</span>
+                <input type="number" name="order" value="{{ item.order or 1 }}" class="input w-full" />
+            </label>
+            <label class="floating-label">
+                <span>{{ _('ست') }}</span>
+                <input type="number" name="sets" value="{{ item.sets or '' }}" class="input w-full" />
+            </label>
         </div>
 
-        <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+        <div class="grid grid-cols-3 gap-2">
+            <label class="floating-label">
+                <span>{{ _('تکرار') }}</span>
+                <input type="number" name="reps" value="{{ item.reps or '' }}" class="input w-full" />
+            </label>
+            <label class="floating-label">
+                <span>{{ _('وزنه') }}</span>
+                <input type="number" step="0.1" name="weight" value="{{ item.weight or '' }}" class="input w-full" />
+            </label>
+            <label class="floating-label">
+                <span>{{ _('استراحت (s)') }}</span>
+                <input type="number" name="rest_seconds" value="{{ item.rest_seconds or '' }}" class="input w-full" />
+            </label>
+        </div>
+    {% elif plan_type == 'diet' %}
+        <label class="floating-label">
+            <span>{{ _('نام وعده') }}</span>
+            <select name="meal_name" class="select w-full" required>
+                <option value="" {% if not item %}selected{% endif %} disabled>{{ _('انتخاب وعده...') }}</option>
+                {% for category in ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+                    <option value="{{ category }}" {% if item.meal_name == category %}selected{% endif %}>
+                        {{ _(category) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="floating-label">
+            <span>{{ _('نام غذا') }}</span>
+            <input
+                list="food-options"
+                type="text"
+                name="food_name"
+                value="{{ item.food_name or '' }}"
+                placeholder="{{ _('نام غذا (انتخاب یا تایپ کنید)') }}"
+                class="input w-full"
+                autocomplete="off"
+            />
+        </label>
+        <datalist id="food-options">
+            {% for name in food_names %}
+                <option value="{{ name }}"></option>
+            {% endfor %}
+        </datalist>
+        <label class="floating-label">
+            <span>{{ _('مقدار / واحد') }}</span>
+            <input type="text" name="quantity" value="{{ item.quantity or '' }}" class="input w-full" />
+        </label>
+    {% elif plan_type == 'steroid' %}
+        <label class="floating-label">
+            <span>{{ _('نام مکمل/دارو') }}</span>
+            <input type="text" name="name" value="{{ item.name or '' }}" class="input w-full" />
+        </label>
+        <div class="grid grid-cols-2 gap-4">
+            <label class="floating-label">
+                <span>{{ _('نوع') }}</span>
+                <select name="type" class="select w-full">
+                    <option value="supplement" {% if item.type == 'supplement' %}selected{% endif %}>{{ _('مکمل') }}</option>
+                    <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>{{ _('استروئید') }}</option>
+                </select>
+            </label>
+            <label class="floating-label">
+                <span>{{ _('دوز') }}</span>
+                <input type="text" name="dosage" value="{{ item.dosage or '' }}" class="input w-full" />
+            </label>
+        </div>
+        <label class="floating-label">
+            <span>{{ _('زمان/تکرار مصرف') }}</span>
+            <input type="text" name="frequency" value="{{ item.frequency or '' }}" class="input w-full" />
+        </label>
+    {% endif %}
+
+    {% if item.notes and item.notes.strip() %}
+        <textarea name="notes" class="textarea h-12 w-full">{{ item.notes.strip() }}</textarea>
+    {% else %}
+        <textarea name="notes" class="textarea h-12 w-full" placeholder="{{ _('یادداشت') }}"></textarea>
+    {% endif %}
+
+    <div class="hidden">
+        <input type="hidden" name="plan_type" value="{{ plan_type }}" />
+        <input type="hidden" name="plan" value="{{ plan_id }}" />
+    </div>
+
+    <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+        <button type="button" class="btn btn-ghost border-2 border-base-content/20 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
+            {{ _('لغو') }}
+        </button>
+        {% if item %}
             <button
                 type="button"
-                class="btn btn-ghost flex-1"
-                onclick="document.getElementById('modal-container').innerHTML = ''"
+                class="btn btn-error btn-soft border-2 border-base-content/20 flex-1"
+                hx-get="/items/{{ item.id }}/confirm-delete"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
             >
-                {{ _('لغو') }}
+                {{ _('حذف') }}
             </button>
-            {% if item %}
-                <button
-                    type="button"
-                    class="btn btn-error btn-soft flex-1"
-                    hx-get="/items/{{ item.id }}/confirm-delete"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('حذف') }}
-                </button>
-            {% endif %}
-            <button type="submit" class="btn btn-primary flex-3">
-                <span class="text-center"></span>
-                {% if item %}{{ _('بروزرسانی') }}{% else %}{{ _('افزودن به لیست') }}{% endif %}
-            </button>
-        </div>
-    </form>
+        {% endif %}
+        <button type="submit" class="btn btn-primary border-2 border-base-content flex-3">
+            {{ _('بروزرسانی') if item else _('افزودن به لیست') }}
+        </button>
+    </div>
+</form>
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
     <div class="max-w-150">
-        <div class="items-center justify-between bg-base-200 p-4 mb-4 card flex-row-reverse">
-            <a href="/change-password" class="btn btn-sm">{{ _('تغییر پسورد') }}</a>
+        <div class="items-center justify-between bg-base-100 border-2 border-base-content p-4 mb-4 card flex-row-reverse rounded-[2rem]">
+            <a href="/change-password" class="btn btn-sm border-2 border-base-content">{{ _('تغییر پسورد') }}</a>
             <div class="text-center">
-                <h1 class="text-m font-semibold text-right ml-4">
+                <h1 class="font-display font-normal text-2xl leading-tight text-right ml-4">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
                 </h1>
             </div>
@@ -12,19 +12,19 @@
         <!-- Info Grid -->
         <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
             <div>
-                <span class="opacity-60 block">{{ _('ایمیل') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('ایمیل') }}</span>
                 <span class="font-medium">{{ user.email }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">{{ _('وضعیت') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('وضعیت') }}</span>
                 <span class="font-medium">{{ _('فعال') }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">{{ _('تاریخ ساخت حساب') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('تاریخ ساخت حساب') }}</span>
                 <span class="font-medium">{{ tenant.created | jalali_date or '-' }}</span>
             </div>
             <div>
-                <span class="opacity-60 block">{{ _('تاریخ آخرین آپدیت') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('تاریخ آخرین آپدیت') }}</span>
                 <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
             </div>
         </div>

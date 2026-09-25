@@ -6,7 +6,7 @@
     <div class="max-w-3xl mx-auto space-y-6 pb-24">
         <div class="flex items-center gap-3 mb-4">
             <div class="flex flex-col">
-                <span class="text-sm text-base-content/60 font-medium">
+                <span class="text-sm text-fog font-medium">
                     {{ _('لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود.') }}
                 </span>
             </div>
@@ -35,7 +35,7 @@
                                     id="val_height"
                                     name="height"
                                     value="{{ trainee.height if trainee.height else '' }}"
-                                    class="calc-trigger validator"
+                                    class="w-full calc-trigger validator"
                                     required
                                 />
                             </label>
@@ -104,7 +104,7 @@
                     <div class="form-control">
                         <label class="select w-full">
                             <span class="label">{{ _('سطح فعالیت') }}</span>
-                            <select id="val_activity" class="select-bordered w-full calc-trigger">
+                            <select id="val_activity" class="select w-full calc-trigger">
                                 <option value="1.2">{{ _('بدون تحرک (پشت میز)') }}</option>
                                 <option value="1.375">{{ _('سبک (۱ تا ۳ روز ورزش)') }}</option>
                                 <option value="1.55" selected>{{ _('متوسط (۳ تا ۵ روز ورزش)') }}</option>
@@ -116,8 +116,8 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="card bg-base-200 p-4 text-center items-center -sm">
-                    <div class="text-xs font-bold opacity-60 mb-3">{{ _('شاخص توده بدنی (BMI)') }}</div>
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
+                    <div class="text-xs font-semibold text-fog mb-3">{{ _('شاخص توده بدنی (BMI)') }}</div>
                     <div
                         id="bmi-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -128,8 +128,8 @@
                     <div id="bmi-status" class="text-xs mt-3 font-bold">-</div>
                 </div>
 
-                <div class="card bg-base-200 p-4 text-center items-center -sm">
-                    <div class="text-xs font-bold opacity-60 mb-3">{{ _('درصد چربی (BFP)') }}</div>
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
+                    <div class="text-xs font-semibold text-fog mb-3">{{ _('درصد چربی (BFP)') }}</div>
                     <div
                         id="bfp-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -140,30 +140,30 @@
                     <div id="bfp-status" class="text-xs mt-3 font-bold">-</div>
                 </div>
 
-                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('توده بدون چربی (LBM)') }}</div>
-                    <div id="lbm-display" class="text-xl font-black text-info mt-2">0</div>
-                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('توده بدون چربی (LBM)') }}</div>
+                    <div id="lbm-display" class="font-display font-normal text-2xl text-info mt-2">0</div>
+                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
-                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('وزن چربی') }}</div>
-                    <div id="fat-mass-display" class="text-xl font-black text-warning mt-2">0</div>
-                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">KG</div>
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('وزن چربی') }}</div>
+                    <div id="fat-mass-display" class="font-display font-normal text-2xl text-warning mt-2">0</div>
+                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
-                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('متابولیسم (BMR)') }}</div>
-                    <div id="bmr-display" class="text-xl font-black text-accent mt-2">0</div>
-                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('متابولیسم (BMR)') }}</div>
+                    <div id="bmr-display" class="font-display font-normal text-2xl text-base-content mt-2">0</div>
+                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
                         Kcal / Day
                     </div>
                 </div>
 
-                <div class="card bg-base-200 p-4 text-center items-center -sm justify-center">
-                    <div class="text-xs font-bold opacity-60 mb-2">{{ _('کالری نگهداری (TDEE)') }}</div>
-                    <div id="tdee-display" class="text-xl font-black text-success mt-2">0</div>
-                    <div class="text-[10px] opacity-50 mt-1 uppercase tracking-wider">
+                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('کالری نگهداری (TDEE)') }}</div>
+                    <div id="tdee-display" class="font-display font-normal text-2xl text-success mt-2">0</div>
+                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
                         Kcal / Day
                     </div>
                 </div>
@@ -173,13 +173,13 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text opacity-70 mb-2">{{ _('تصاویر پیشرفت (اختیاری)') }}</span>
+                            <span class="label-text text-fog mb-2">{{ _('تصاویر پیشرفت (اختیاری)') }}</span>
                         </label>
                         <input
                             type="file"
                             name="progress_photos"
                             id="progress-photos-input"
-                            class="file-input file-input-bordered w-full"
+                            class="file-input w-full"
                             multiple
                             accept="image/*"
                         />
@@ -196,12 +196,12 @@
             <div class="form-control">
                 <textarea
                     name="notes"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea h-12 w-full"
                     placeholder="{{ _('یادداشت‌های ارزیابی') }}"
                 ></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full">{{ _('ثبت ارزیابی') }}</button>
+            <button type="submit" class="btn btn-primary w-full border-2 border-base-content">{{ _('ثبت ارزیابی') }}</button>
         </form>
     </div>
 
@@ -408,7 +408,7 @@
                         const div = document.createElement('div');
                         div.className = 'relative group';
                         div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border border-base-300" />
+                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border-2 border-base-content/20" />
                             <button type="button" data-index="${index}"
                                 class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                             >✕</button>

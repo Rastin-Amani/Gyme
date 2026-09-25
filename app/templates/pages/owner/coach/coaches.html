@@ -1,104 +1,54 @@
-{% extends "layouts/dashboard.html" %}
+{% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
-    <div id="coaches-content">
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="text-xl font-bold">{{ _('مربی‌ها') }}</h1>
-                <p class="text-sm opacity-70">{{ _('مدیریت مربی‌های ثبت‌شده') }}</p>
-            </div>
-            <a href="/coaches/new" class="btn btn-primary">{{ _('مربی جدید') }}</a>
+<div id="coaches-content" data-settle>
+    <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+        <div>
+            <h1 class="font-display font-normal text-3xl leading-tight">{{ _('مربی‌ها') }}</h1>
+            <p class="text-sm text-fog mt-1">{{ _('مدیریت مربی‌های ثبت‌شده') }}</p>
         </div>
+        <a href="/coaches/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('مربی جدید') }}</a>
+    </header>
 
-        <div id="coaches-table-container">
-            <div class="card bg-base-100 border border-base-300">
-                <div class="card-body p-0">
-                    {% if coaches is defined and coaches|length > 0 %}
-                        <ul class="divide-y divide-base-300">
-                            {% for coach in coaches %}
-                                <li
-                                    class="flex items-center gap-3 px-4 py-3 active:bg-base-200 transition-colors duration-150"
-                                >
-                                    <div
-                                        class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary"
-                                    >
-                                        {{ (coach.first_name[0] if coach.first_name else '?') }}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <span class="font-medium text-sm">
-                                            {{ (coach.first_name ~ ' ' ~ coach.last_name) if coach.first_name else '-' }}
-                                        </span>
-                                        <span class="text-xs opacity-50 block">
-                                            {{ coach.email }}
-                                        </span>
-                                    </div>
-                                    <a
-                                        href="/coaches/{{ coach.id }}"
-                                        class="flex-shrink-0 btn btn-sm btn-square"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            class="h-5 w-5 opacity-40"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
-                                        >
-                                            <path
-                                                fill-rule="evenodd"
-                                                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                                clip-rule="evenodd"
-                                            />
-                                        </svg>
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div class="text-center py-12 px-4">
-                            <div
-                                class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
-                            >
-                                <p class="text-base opacity-70">
-                                    <span
-                                        class="status status-secondary mr-2 animate-bounce"
-                                    ></span>
-                                    {{ _('هنوز مربی‌ای ثبت نکردید!') }}
-                                </p>
-                            </div>
+    <div id="coaches-table-container">
+        <div class="card bg-base-100 border-2 border-base-content rounded-[2rem]">
+            <div class="card-body p-0">
+                {% if coaches and coaches|length > 0 %}
+                <ul class="divide-y divide-base-content/15">
+                    {% for coach in coaches %}
+                    <li class="flex items-center gap-3 px-4 py-3 active:bg-base-200">
+                        <div class="w-11 h-11 rounded-full bg-lavender-whisper border-2 border-base-content flex items-center justify-center text-sm font-semibold text-vast-ink shrink-0">
+                            {{ coach.first_name[0] if coach.first_name else '?' }}
                         </div>
-                    {% endif %}
+                        <div class="min-w-0 flex-1">
+                            <span class="font-semibold text-sm block truncate">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</span>
+                            <span class="text-xs text-fog block truncate">{{ coach.email or '' }}</span>
+                        </div>
+                        <a href="/coaches/{{ coach.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('مشاهده مربی') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40 rtl:rotate-180">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="bg-base-100 rounded-[2rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
+                    <span class="status status-secondary animate-bounce"></span>
+                    <p class="text-sm text-fog font-medium mt-2">{{ _('هنوز مربی‌ای ثبت نکردید!') }}</p>
                 </div>
+                {% endif %}
             </div>
-
-            {% if total_pages is defined and total_pages > 1 %}
-                <div class="mt-6">
-                    <div class="join flex justify-center">
-                        <a
-                            href="/coaches?page={{ page - 1 }}"
-                            class="join-item btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled{% endif %}"
-                            hx-get="/coaches?page={{ page - 1 }}"
-                            hx-target="#coaches-content"
-                            hx-select="#coaches-content"
-                            hx-swap="outerHTML"
-                            hx-push-url="true"
-                        >
-                            «
-                        </a>
-                        <button class="join-item btn btn-sm btn-disabled pointer-events-none">
-                            {{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}
-                        </button>
-                        <a
-                            href="/coaches?page={{ page + 1 }}"
-                            class="join-item btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled{% endif %}"
-                            hx-get="/coaches?page={{ page + 1 }}"
-                            hx-target="#coaches-content"
-                            hx-select="#coaches-content"
-                            hx-swap="outerHTML"
-                            hx-push-url="true"
-                        >
-                            »
-                        </a>
-                    </div>
-                </div>
-            {% endif %}
         </div>
+
+        {% if total_pages > 1 %}
+        <nav class="join flex justify-center mt-4" aria-label="{{ _('صفحه‌بندی') }}">
+            <a class="btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
+               {% if page > 1 %}href="/coaches?page={{ page - 1 }}" hx-get="/coaches?page={{ page - 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('قبلی') }}">«</a>
+            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}</button>
+            <a class="btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
+               {% if page < total_pages %}href="/coaches?page={{ page + 1 }}" hx-get="/coaches?page={{ page + 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('بعدی') }}">»</a>
+        </nav>
+        {% endif %}
     </div>
+</div>
 {% endblock %}

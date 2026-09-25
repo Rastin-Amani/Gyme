@@ -1,24 +1,24 @@
-<div id="dashboard-content" class="flex flex-col gap-6">
+<div id="dashboard-content" class="flex flex-col gap-6" data-settle>
     {% if user.role == 'owner' %}
         {% include "components/dashboard_stats.html" %}
     {% endif %}
 
     {% if show_coach_stats %}
         <details
-            class="collapse collapse-arrow border border-base-300 rounded-box bg-primary/5"
+            class="collapse collapse-arrow border-2 border-base-content rounded-[2rem] bg-lavender-whisper/40"
             open
         >
             <summary class="collapse-title font-bold text-sm flex items-center gap-2">
                 <span class="text-base">🏋️</span>
                 <span>{{ _('عملکرد مربیان') }}</span>
-                <span class="badge badge-sm badge-ghost">{{ coach_stats|length }}</span>
+                <span class="badge badge-secondary badge-sm">{{ coach_stats|length }}</span>
             </summary>
             <div class="collapse-content">{% include "components/coach_stats.html" %}</div>
         </details>
     {% endif %}
 
     {% if is_owner_coach %}
-        <div class="border border-base-300 rounded-box bg-primary/5 p-4">
+        <div class="border-2 border-base-content rounded-[2rem] bg-lavender-whisper/40 p-4">
             <div class="flex items-center gap-2 mb-3">
                 <span class="text-base">🏋️</span>
                 <span class="font-bold text-sm">{{ _('عملکرد شما') }}</span>

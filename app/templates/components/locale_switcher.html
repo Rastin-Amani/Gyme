@@ -15,7 +15,7 @@
         tabindex="-1"
         role="menu"
         aria-label="{{ _('زبان‌های موجود') }}"
-        class="dropdown-content menu z-50 w-44 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg"
+        class="dropdown-content menu z-50 w-44 rounded-box border-2 border-base-content bg-base-100 p-2"
     >
         {% set next_path = (request.url.path ~ ('?' ~ request.url.query if request.url.query else '')) if request is defined and request else '/' %}
         {% for l in locale.enabled() %}

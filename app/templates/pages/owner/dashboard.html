@@ -2,12 +2,15 @@
 
 {% block dashboard_content %}
     <div class="bg-base-100 pb-24">
-        <div class="flex justify-between text-right flex-col gap-3 mb-8">
-            <h1 class="text-xl font-black">{{ _('آمار کلی') }} 📊</h1>
+        <div class="flex flex-col gap-3 mb-8">
+            <h1 class="font-display text-3xl font-normal leading-tight">
+                {{ _('آمار کلی') }} <span class="text-2xl">📊</span>
+            </h1>
 
             <select
                 name="timeframe"
-                class="select select-bordered w-full"
+                class="select w-full sm:w-56"
+                aria-label="{{ _('بازه زمانی') }}"
                 hx-get="/dashboard"
                 hx-target="#dashboard-content"
                 hx-swap="outerHTML"

@@ -84,11 +84,13 @@
 
     <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
         {% block body_start %}{% endblock %}
-        <div class="mx-auto w-full max-w-150 min-h-screen bg-base-100 shadow-2xl selection:bg-primary selection:text-primary-content">
+        <div
+            class="mx-auto w-full max-w-150 min-h-screen bg-base-100 border-x border-base-300/80 selection:bg-primary selection:text-primary-content"
+        >
             
             <div
                 id="top-progress-bar"
-                class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 drop-shadow-md pointer-events-none max-w-150 mx-auto"
+                class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 pointer-events-none max-w-150 mx-auto"
             ></div>
 
             <main id="main-content" class="px-4">
@@ -175,7 +177,7 @@
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
                     }
 
-                    toast.className = `alert ${colorClass} alert-soft shadow-lg transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
+                    toast.className = `alert ${colorClass} alert-soft transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
 
                     // Use safe DOM construction to prevent XSS via message
                     const wrapper = document.createElement('div');
@@ -364,13 +366,13 @@
             {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
                 {% set splash_bg = request.state.tenant.brand_colors.base_100 %}
             {% else %}
-                {% set splash_bg = 'oklch(14% .004 49.25)' %}
+                {% set splash_bg = '#1a1a1a' %}
             {% endif %}
 
             {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
                 {% set splash_text = request.state.tenant.brand_colors.base_content %}
             {% else %}
-                {% set splash_text = '#ffffff' %}
+                {% set splash_text = '#ffffeb' %}
             {% endif %}
 
             generateIOSSplashScreen(

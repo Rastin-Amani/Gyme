@@ -44,7 +44,7 @@
             <div class="form-control">
                 <label class="select w-full">
                     <span class="label">{{ _('مربی') }}</span>
-                    <select name="coach" class="select select-bordered w-full">
+                    <select name="coach" class="select w-full">
                         {% for coach in coaches %}
                             <option
                                 value="{{ coach.id }}"
@@ -62,7 +62,7 @@
                 <div class="form-control">
                     <label class="select w-full">
                         <span class="label">{{ _('شاگرد') }}</span>
-                        <select name="trainee" class="select select-bordered w-full">
+                        <select name="trainee" class="select w-full">
                             {% for trainee in trainees %}
                                 <option
                                     value="{{ trainee.id }}"
@@ -126,13 +126,13 @@
         <!-- Notes -->
         <div class="form-control">
             {% if plan.notes and plan.notes.strip() %}
-                <textarea name="notes" class="textarea textarea-bordered h-12 w-full">
+                <textarea name="notes" class="textarea h-12 w-full">
 {{ plan.notes.strip() }}</textarea
                 >
             {% else %}
                 <textarea
                     name="notes"
-                    class="textarea textarea-bordered h-12 w-full"
+                    class="textarea h-12 w-full"
                     placeholder="{{ _('یادداشت') }}"
                 ></textarea>
             {% endif %}
@@ -142,12 +142,12 @@
         <div class="flex flex-col-reverse justify-end gap-2 mt-6">
             <a
                 href="{{ '/plans?is_template=true' if is_template else '/plans' }}"
-                class="btn btn-ghost"
+                class="btn btn-ghost border-2 border-base-content/20"
                 hx-boost="false"
             >
                 {{ _('انصراف') }}
             </a>
-            <button type="submit" class="w-full btn btn-primary">
+            <button type="submit" class="w-full btn btn-primary border-2 border-base-content">
                 {% if plan %}
                     {{ _('ویرایش برنامه') }}
                 {% elif is_template %}
@@ -159,7 +159,7 @@
             {% if plan %}
                 <button
                     type="button"
-                    class="btn btn-error btn-soft w-full"
+                    class="btn btn-error btn-soft w-full border-2 border-base-content/20"
                     hx-get="/plans/{{ plan.id }}/confirm-delete"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"

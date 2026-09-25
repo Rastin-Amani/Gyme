@@ -4,30 +4,30 @@
     <!-- iOS install overlay — shown once for first-time iOS non-standalone users -->
     <div
         id="ios-overlay"
-        class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral/70 backdrop-blur-sm p-6"
+        class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral p-6"
     >
         <div
-            class="bg-base-100 rounded-box w-full max-w-sm p-6 pb-8 shadow-2xl border border-base-200 transform transition-all duration-300 animate-slide-up"
+            class="bg-base-100 rounded-[2rem] w-full max-w-sm p-6 pb-8 border-2 border-base-content transform transition-all duration-300 animate-slide-up"
         >
             <div class="flex flex-col items-center text-center gap-3">
                 <img
                     src="/apple-touch-icon-180x180.png"
                     alt=""
-                    class="w-20 h-20 rounded-box shadow-md"
+                    class="w-20 h-20 rounded-box border-2 border-base-content"
                     onerror="this.style.display='none'"
                 />
                 <div>
-                    <p class="text-xl font-black text-base-content">{{ _('نصب اپلیکیشن') }}</p>
+                    <p class="font-display text-3xl font-normal text-base-content">{{ _('نصب اپلیکیشن') }}</p>
                     <p class="text-sm text-base-content/60 mt-1 leading-relaxed">
                         {{ _('وب اپلیکیشن را به صفحه اصلی خود اضافه کنید.') }}
                     </p>
                 </div>
                 <div
-                    class="text-right w-full space-y-3 bg-base-200/70 rounded-box p-4 text-sm mt-2"
+                    class="text-right w-full space-y-3 bg-base-200 rounded-box p-4 text-sm mt-2 border border-base-300"
                 >
                     <div class="flex items-start gap-3">
                         <span
-                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
                             ۱
                         </span>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="flex items-start gap-3">
                         <span
-                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
                             ۲
                         </span>
@@ -52,7 +52,7 @@
                     </div>
                     <div class="flex items-start gap-3">
                         <span
-                            class="flex-shrink-0 w-6 h-6 rounded-box bg-primary/10 text-primary flex items-center justify-center text-xs font-bold"
+                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
                             ۳
                         </span>
@@ -95,50 +95,41 @@
         {% include "components/locale_switcher.html" %}
     </div>
 
-    <div class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8">
-        <div class="absolute inset-0 flex justify-center items-center pointer-events-none z-0">
-            <div
-                class="w-64 h-64 bg-primary/20 rounded-box blur-[60px] absolute -top-10 -right-10 mix-blend-multiply"
-            ></div>
-            <div
-                class="w-64 h-64 bg-secondary/20 rounded-box blur-[60px] absolute -bottom-10 -left-10 mix-blend-multiply"
-            ></div>
-        </div>
-
+    <div
+        class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8"
+    >
         <div
-            class="card bg-base-100/90 backdrop-blur-xl shadow-2xl border border-base-200 w-full max-w-sm rounded-box z-10"
+            class="card bg-base-100 border-2 border-base-content w-full max-w-sm rounded-[2rem] z-10"
         >
             <div class="card-body p-6 sm:p-8">
                 <div class="text-center mb-5 flex flex-col items-center">
                     {% if tenant and tenant.logo %}
                         {% set pb_url = request.state.pb.base_url.rstrip("/") %}
-                        <div
-                            class="avatar drop-shadow-sm mb-5 transition-transform hover:scale-105 duration-300"
-                        >
+                        <div class="avatar mb-5 transition-transform hover:scale-105 duration-300">
                             <div
-                                class="w-20 h-20 rounded-box border border-base-200 bg-base-100 p-1"
+                                class="w-20 h-20 rounded-[1.5rem] border-2 border-base-content bg-base-100 p-1"
                             >
                                 <img
                                     src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
                                     alt="{{ tenant.name }}"
-                                    class="rounded-box object-cover"
+                                    class="rounded-[1rem] object-cover"
                                 />
                             </div>
                         </div>
                     {% else %}
-                        <div class="avatar placeholder drop-shadow-sm mb-5">
+                        <div class="avatar placeholder mb-5">
                             <div
-                                class="bg-primary/10 text-primary rounded-box w-20 h-20 border border-primary/20 flex items-center justify-center text-3xl font-black"
+                                class="bg-lavender-whisper text-vast-ink rounded-[1.5rem] w-20 h-20 border-2 border-base-content flex items-center justify-center text-3xl font-medium"
                             >
                                 {{ tenant.name[:1] if tenant else "G" }}
                             </div>
                         </div>
                     {% endif %}
 
-                    <h1 class="text-2xl font-black text-base-content">
+                    <h1 class="font-display font-normal text-4xl leading-[1.1] text-base-content">
                         {{ tenant.name if tenant else _("جیمی") }}
                     </h1>
-                    <p class="text-xs font-medium text-base-content/50 mt-1.5">
+                    <p class="text-xs font-semibold tracking-wide text-secondary mt-2">
                         {{ _('پنل کاربری') }}
                     </p>
                 </div>
@@ -149,7 +140,7 @@
                             <span>{{ _('ایمیل') }}</span>
                             <input
                                 name="identity"
-                                class="input input-bordered w-full validator transition-colors"
+                                class="input w-full validator transition-colors"
                                 placeholder="{{ _('ایمیل') }}"
                                 type="email"
                                 required
@@ -167,7 +158,7 @@
                                 <span>{{ _('رمز عبور') }}</span>
                                 <input
                                     name="password"
-                                    class="input input-bordered w-full validator pl-12 transition-colors"
+                                    class="input w-full validator pl-12 transition-colors"
                                     placeholder="{{ _('رمز عبور') }}"
                                     type="password"
                                     required
@@ -179,7 +170,7 @@
 
                             <button
                                 type="button"
-                                class="absolute top-1/2 -translate-y-1/2 left-3 p-2 text-base-content/40 hover:text-primary transition-colors focus:outline-none z-10"
+                                class="absolute top-1/2 -translate-y-1/2 left-3 p-2 text-base-content/40 hover:text-secondary transition-colors focus:outline-none z-10"
                                 onclick="toggleLoginPassword(this)"
                                 tabindex="-1"
                             >
@@ -221,21 +212,24 @@
                     <div class="flex justify-start pt-1 hidden">
                         <a
                             href="#"
-                            class="text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+                            class="text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors"
                         >
                             {{ _('رمز عبور را فراموش کردید؟') }}
                         </a>
                     </div>
 
                     <div class="pt-4">
-                        <button
-                            type="submit"
-                            class="btn btn-primary w-full text-base shadow-md shadow-primary/20 hover:shadow-primary/40 hover:-translate-y-[1px] transition-all duration-300"
-                        >
+                        <button type="submit" class="btn btn-primary w-full h-12 text-base font-semibold">
                             {{ _('ورود') }}
                         </button>
                     </div>
                 </form>
+
+                <div class="flex items-center justify-center gap-2 mt-6 text-secondary/70">
+                    <span class="waveform h-3"><i></i><i></i><i></i><i></i><i></i></span>
+                    <span class="text-[0.7rem] font-medium text-fog">{{ tenant.name if tenant else _("جیمی") }} / Gyme</span>
+                    <span class="waveform h-3"><i></i><i></i><i></i><i></i><i></i></span>
+                </div>
             </div>
         </div>
     </div>

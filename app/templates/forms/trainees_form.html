@@ -1,209 +1,139 @@
-{% extends "layouts/dashboard.html" %}
+{% extends 'layouts/dashboard.html' %}
+
 {% block dashboard_content %}
-    <form
-        hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees/new' }}"
-        hx-swap="none"
-        class="bg-base-100 space-y-4"
-    >
-        <div class="grid grid-cols-2 gap-4 items-baseline">
-            <div class="form-control">
-                <label class="floating-label">
-                    <span>{{ _('نام') }}</span>
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="{{ _('نام') }}"
-                        value="{{ trainee.expand['user'].first_name if trainee.expand and 'user' in trainee.expand else '' }}"
-                        required
-                        class="input input-bordered w-full validator"
-                    />
-                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
-                </label>
-            </div>
+{% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
+<form
+    hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees/new' }}"
+    hx-swap="none"
+    class="bg-base-100 space-y-4"
+>
+    <div class="grid grid-cols-2 gap-4 items-baseline">
+        <label class="floating-label">
+            <span>{{ _('نام') }}</span>
+            <input
+                type="text"
+                name="first_name"
+                required
+                class="input w-full validator"
+                placeholder="{{ _('نام') }}"
+                value="{{ trainee.expand['user'].first_name if trainee.expand and 'user' in trainee.expand else '' }}"
+            />
+            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+        </label>
+        <label class="floating-label">
+            <span>{{ _('نام خانوادگی') }}</span>
+            <input
+                type="text"
+                name="last_name"
+                required
+                class="input w-full validator"
+                placeholder="{{ _('نام خانوادگی') }}"
+                value="{{ trainee.expand['user'].last_name if trainee.expand and 'user' in trainee.expand else '' }}"
+            />
+            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+        </label>
+    </div>
+    <div class="form-control">
+        <label class="input w-full validator">
+            <span class="label">{{ _('ایمیل') }}</span>
+            <input
+                type="email"
+                name="email"
+                {{ 'readonly' if current_email else '' }}
+                value="{{ current_email }}"
+                required
+                placeholder="test@gyme.cloud {{ _('مثل') }}"
+            />
+        </label>
+        <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <label class="floating-label">
+            <span>{{ _('شماره موبایل') }}</span>
+            <input
+                type="tel"
+                name="phone"
+                required
+                minlength="11"
+                maxlength="11"
+                pattern="[0-9]*"
+                class="input w-full text-right tabular-nums validator"
+                placeholder="{{ _('شماره موبایل') }}"
+                value="{{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '' }}"
+            />
+        </label>
+        {% with
+            name="birthdate",
+            label=_("تاریخ تولد"),
+            placeholder=_("تاریخ تولد"),
+            required="required",
+            value=trainee.birthdate
+        %}
+            {% include 'components/datepicker.html' %}
+        {% endwith %}
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+        <label class="select w-full">
+            <span class="label">{{ _('جنسیت') }}</span>
+            <select name="gender" class="select w-full" required>
+                <option value="male" {{ 'selected' if trainee.gender == 'male' else '' }}>{{ _('آقا') }}</option>
+                <option value="female" {{ 'selected' if trainee.gender == 'female' else '' }}>{{ _('خانم') }}</option>
+            </select>
+        </label>
+        <label class="select w-full">
+            <span class="label">{{ _('گروه خونی') }}</span>
+            <select name="blood_type" class="select w-full">
+                <option value="">{{ _('نامشخص') }}</option>
+                {% for bt in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
+                <option value="{{ bt }}" {{ 'selected' if trainee.blood_type == bt else '' }}>{{ bt }}</option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+    <div class="divider text-xs font-semibold tracking-widest text-fog my-6">{{ _('اطلاعات تکمیلی') }}</div>
+    {% set textarea_fields = [
+        ('limitations', _('ناهنجاری‌ها و بیماری‌ها')),
+        ('training_history', _('سابقه تمرین')),
+        ('steroid_history', _('سابقه استروئید')),
+        ('supplement_history', _('سابقه مکمل')),
+        ('notes', _('یادداشت')),
+    ] %}
+    {% for field, label in textarea_fields %}
+        {% set content_value = trainee[field].strip() if trainee and trainee[field] else '' %}
+        {% if content_value %}
+        <label class="form-control">
+            <span class="label text-sm font-medium text-base-content/80">{{ label }}</span>
+            <textarea name="{{ field }}" class="textarea h-6 w-full">{{ content_value }}</textarea>
+        </label>
+        {% else %}
+        <label class="floating-label">
+            <span>{{ label }}</span>
+            <textarea name="{{ field }}" class="textarea h-6 w-full" placeholder="{{ label }}"></textarea>
+        </label>
+        {% endif %}
+    {% endfor %}
 
-            <div class="form-control">
-                <label class="floating-label">
-                    <span>{{ _('نام خانوادگی') }}</span>
-                    <input
-                        type="text"
-                        name="last_name"
-                        placeholder="{{ _('نام خانوادگی') }}"
-                        value="{{ trainee.expand['user'].last_name if trainee.expand and 'user' in trainee.expand else '' }}"
-                        required
-                        class="input input-bordered w-full validator"
-                    />
-                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
-                </label>
-            </div>
+    <div class="flex flex-col gap-2 mt-6">
+        {% if trainee %}
+        <button
+            type="button"
+            class="btn btn-error btn-soft w-full border-2 border-base-content/20"
+            hx-get="/trainees/{{ trainee.id }}/confirm-delete"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            hx-boost="false"
+        >
+            {{ _('حذف شاگرد') }}
+        </button>
+        {% endif %}
+        <div class="flex justify-end gap-2">
+            <a href="/trainees" class="btn btn-ghost border-2 border-base-content/20" hx-boost="false">
+                {{ _('انصراف') }}
+            </a>
+            <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content">
+                {{ _('ثبت و رفتن به فرم ارزیابی') if not trainee else _('ذخیره تغییرات') }}
+            </button>
         </div>
-
-        <div class="grid grid-cols-1 gap-4">
-            <div class="form-control">
-                <label class="input w-full validator">
-                    <span class="label">{{ _('ایمیل') }}</span>
-                    {% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
-                    <input
-                        type="email"
-                        name="email"
-                        {{ 'readonly' if current_email else '' }}
-                        value="{{ current_email }}"
-                        required
-                        placeholder="test@gyme.cloud {{ _('مثل') }}"
-                    />
-                </label>
-                <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-control">
-                    <label class="floating-label">
-                        <span class="label-text">{{ _('شماره موبایل') }}</span>
-                        <input
-                            type="tel"
-                            name="phone"
-                            value="{{ trainee.expand['user'].phone if trainee.expand and 'user' in trainee.expand else '' }}"
-                            required
-                            placeholder="{{ _('شماره موبایل') }}"
-                            class="input input-bordered text-right w-full tabular-nums validator"
-                            minlength="11"
-                            maxlength="11"
-                            pattern="[0-9]*"
-                        />
-                    </label>
-                </div>
-                <div>
-                    {% with name="birthdate", label=_("تاریخ تولد"), placeholder=_("تاریخ تولد"), required="required", value=trainee.birthdate %}
-                        {% include 'components/datepicker.html' %}
-                    {% endwith %}
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-4">
-            <div class="form-control">
-                <label class="select">
-                    <span class="label">{{ _('جنسیت') }}</span>
-                    <select name="gender" class="select-bordered w-full" required>
-                        <option value="male" {{ 'selected' if trainee.gender == 'male' else '' }}>
-                            {{ _('آقا') }}
-                        </option>
-                        <option
-                            value="female"
-                            {{ 'selected' if trainee.gender == 'female' else '' }}
-                        >
-                            {{ _('خانم') }}
-                        </option>
-                    </select>
-                </label>
-            </div>
-            <div class="form-control">
-                <label class="select">
-                    <span class="label">{{ _('گروه خونی') }}</span>
-                    <select name="blood_type" class="select select-bordered w-full">
-                        <option value="">{{ _('نامشخص') }}</option>
-                        {% for bt in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
-                            <option
-                                value="{{ bt }}"
-                                {{ 'selected' if trainee.blood_type == bt else '' }}
-                            >
-                                {{ bt }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </label>
-            </div>
-        </div>
-        <div class="divider text-xs opacity-50">{{ _('اطلاعات تکمیلی') }}</div>
-
-        <div class="form-control">
-            {% if trainee.limitations and trainee.limitations.strip() %}
-                <textarea name="limitations" class="textarea textarea-bordered h-6 w-full">
-{{ trainee.limitations.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="limitations"
-                    class="textarea textarea-bordered h-6 w-full"
-                    placeholder="{{ _('ناهنجاری‌ها و بیماری‌ها') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <div class="form-control">
-            {% if trainee.training_history and trainee.training_history.strip() %}
-                <textarea name="training_history" class="textarea textarea-bordered h-6 w-full">
-{{ trainee.training_history.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="training_history"
-                    class="textarea textarea-bordered h-6 w-full"
-                    placeholder="{{ _('سابقه تمرین') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <div class="form-control">
-            {% if trainee.steroid_history and trainee.steroid_history.strip() %}
-                <textarea name="steroid_history" class="textarea textarea-bordered h-6 w-full">
-{{ trainee.steroid_history.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="steroid_history"
-                    class="textarea textarea-bordered h-6 w-full"
-                    placeholder="{{ _('سابقه استروئید') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <div class="form-control">
-            {% if trainee.supplement_history and trainee.supplement_history.strip() %}
-                <textarea name="supplement_history" class="textarea textarea-bordered h-6 w-full">
-{{ trainee.supplement_history.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="supplement_history"
-                    class="textarea textarea-bordered h-6 w-full"
-                    placeholder="{{ _('سابقه مکمل') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <div class="form-control">
-            {% if trainee.notes and trainee.notes.strip() %}
-                <textarea name="notes" class="textarea textarea-bordered !h-6 w-full">
-{{ trainee.notes.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="notes"
-                    class="textarea textarea-bordered !h-6 w-full"
-                    placeholder="{{ _('یادداشت') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <div class="flex flex-col gap-2 mt-6">
-            {% if trainee %}
-                <button
-                    type="button"
-                    class="btn btn-error btn-soft w-full"
-                    hx-get="/trainees/{{ trainee.id }}/confirm-delete"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('حذف شاگرد') }}
-                </button>
-            {% endif %}
-            <div class="flex justify-end gap-2">
-                <a href="/trainees" class="btn btn-ghost" hx-boost="false">{{ _('انصراف') }}</a>
-                <button type="submit" class="btn btn-primary flex-1">
-                    {{ _('ثبت و رفتن به فرم ارزیابی') if not trainee else _('ذخیره تغییرات') }}
-                </button>
-            </div>
-        </div>
-    </form>
+    </div>
+</form>
 {% endblock %}

@@ -6,8 +6,8 @@
     <div class="max-w-3xl mx-auto">
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="text-xl font-bold">{{ _('برنامه‌های من') }}</h1>
-                <p class="text-sm text-base-content/60 mt-1">
+                <h1 class="font-display font-normal text-3xl leading-tight">{{ _('برنامه‌های من') }}</h1>
+                <p class="text-sm text-fog mt-2">
                     {{ _('مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما') }}
                 </p>
             </div>
@@ -20,13 +20,13 @@
             <div class="flex flex-col gap-4">
                 {% for plan in plan_list %}
                     <div
-                        class="card bg-base-100  border border-base-200 hover:border-primary/30 transition-all duration-300"
+                        class="card bg-base-100 border-2 border-base-content/20 hover:border-secondary transition-all duration-300"
                     >
                         <div class="card-body p-4 sm:p-5">
                             <div class="flex flex-wrap justify-between items-center gap-4">
                                 <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-[200px]">
                                     <div
-                                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-primary/10 rounded-2xl text-2xl"
+                                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-lavender-whisper border-2 border-base-content rounded-2xl text-2xl"
                                     >
                                         {% if plan.type == 'training' %}
                                             💪🏻
@@ -57,25 +57,25 @@
 
                                             {% if plan.status == 'active' %}
                                                 <span
-                                                    class="badge badge-success badge-sm badge-soft rounded-box font-medium"
+                                                    class="badge badge-success badge-sm badge-soft font-medium"
                                                 >
                                                     {{ _('فعال') }}
                                                 </span>
                                             {% elif plan.status == 'draft' %}
                                                 <span
-                                                    class="badge badge-ghost badge-sm rounded-box font-medium"
+                                                    class="badge badge-ghost badge-sm font-medium"
                                                 >
                                                     {{ _('پیش‌نویس') }}
                                                 </span>
                                             {% elif plan.status == 'inactive' %}
                                                 <span
-                                                    class="badge badge-error badge-sm badge-soft rounded-box font-medium"
+                                                    class="badge badge-error badge-sm badge-soft font-medium"
                                                 >
                                                     {{ _('غیرفعال') }}
                                                 </span>
                                             {% else %}
                                                 <span
-                                                    class="badge badge-ghost badge-sm rounded-box"
+                                                    class="badge badge-ghost badge-sm"
                                                 >
                                                     {{ plan.status }}
                                                 </span>
@@ -83,7 +83,7 @@
                                         </div>
 
                                         <div
-                                            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-base-content/60 font-medium"
+                                            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-fog font-medium"
                                         >
                                             {% if plan.start_date %}
                                                 <div
@@ -139,7 +139,7 @@
                                 <div class="flex-shrink-0 mr-auto sm:mr-0">
                                     <a
                                         href="/user/plans/{{ plan.id }}"
-                                        class="btn btn-square transition-colors"
+                                        class="btn btn-square border-2 border-base-content transition-colors"
                                     >
                                         <svg
                                             class="w-5 h-5"
@@ -163,17 +163,17 @@
             </div>
         {% else %}
             <div
-                class="card bg-base-100  border border-base-200 p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
+                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem] p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
             >
                 <div
-                    class="w-16 h-16 bg-base-200 rounded-full flex items-center justify-center mb-4 text-3xl opacity-50"
+                    class="w-16 h-16 bg-lavender-whisper border-2 border-base-content rounded-full flex items-center justify-center mb-4 text-3xl"
                 >
                     📭
                 </div>
-                <h3 class="text-lg font-bold text-base-content">
+                <h3 class="font-display font-normal text-2xl text-base-content">
                     {{ _('برنامه‌ای ثبت نشده!') }}
                 </h3>
-                <p class="text-sm text-base-content/60 mt-2 max-w-xs mx-auto">
+                <p class="text-sm text-fog mt-2 max-w-xs mx-auto">
                     {{
                         _(
                             'در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد برنامه جدید، در اینجا نمایش داده می‌شود.'
@@ -181,7 +181,7 @@
                     }}
                 </p>
                 <span
-                    class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 px-3 py-1.5 rounded-full"
+                    class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 border-2 border-base-content/20 px-3 py-1.5 rounded-full"
                 >
                     <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
                     {{ _('منتظر دریافت برنامه...') }}

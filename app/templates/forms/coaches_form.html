@@ -1,93 +1,87 @@
-{% extends "layouts/dashboard.html" %}
+{% extends 'layouts/dashboard.html' %}
+
 {% block dashboard_content %}
-    <form
-        hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
-        hx-swap="none"
-        class="bg-base-100 space-y-4"
-    >
-        <div class="grid grid-cols-2 gap-4 items-baseline">
-            <div class="form-control">
-                <label class="floating-label">
-                    <span>{{ _('نام') }}</span>
-                    <input
-                        type="text"
-                        name="first_name"
-                        placeholder="{{ _('نام') }}"
-                        value="{{ coach.first_name if coach else '' }}"
-                        required
-                        class="input input-bordered w-full validator"
-                    />
-                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
-                </label>
-            </div>
+<form
+    hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
+    hx-swap="none"
+    class="bg-base-100 space-y-4"
+>
+    <div class="grid grid-cols-2 gap-4 items-baseline">
+        <label class="floating-label">
+            <span>{{ _('نام') }}</span>
+            <input
+                type="text"
+                name="first_name"
+                required
+                class="input w-full validator"
+                placeholder="{{ _('نام') }}"
+                value="{{ coach.first_name if coach else '' }}"
+            />
+            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+        </label>
+        <label class="floating-label">
+            <span>{{ _('نام خانوادگی') }}</span>
+            <input
+                type="text"
+                name="last_name"
+                required
+                class="input w-full validator"
+                placeholder="{{ _('نام خانوادگی') }}"
+                value="{{ coach.last_name if coach else '' }}"
+            />
+            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+        </label>
+    </div>
+    <div class="form-control">
+        <label class="input w-full validator">
+            <span class="label">{{ _('ایمیل') }}</span>
+            <input
+                type="email"
+                name="email"
+                value="{{ coach.email if coach else '' }}"
+                {{ 'readonly' if coach else '' }}
+                placeholder="test@gyme.cloud"
+                required
+            />
+        </label>
+        <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
+    </div>
+    <label class="floating-label">
+        <span>{{ _('شماره موبایل') }}</span>
+        <input
+            type="tel"
+            name="phone"
+            required
+            minlength="11"
+            maxlength="11"
+            pattern="[0-9]*"
+            class="input w-full text-right tabular-nums validator"
+            placeholder="{{ _('شماره موبایل') }}"
+            value="{{ coach.phone if coach else '' }}"
+        />
+    </label>
 
-            <div class="form-control">
-                <label class="floating-label">
-                    <span>{{ _('نام خانوادگی') }}</span>
-                    <input
-                        type="text"
-                        name="last_name"
-                        placeholder="{{ _('نام خانوادگی') }}"
-                        value="{{ coach.last_name if coach else '' }}"
-                        required
-                        class="input input-bordered w-full validator"
-                    />
-                    <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
-                </label>
-            </div>
+    <div class="flex flex-col gap-2 mt-6">
+        {% if coach %}
+        <button
+            type="button"
+            class="btn btn-error btn-soft w-full border-2 border-base-content/20"
+            hx-get="/coaches/{{ coach.id }}/confirm-delete"
+            hx-target="#modal-container"
+            hx-swap="innerHTML"
+            hx-boost="false"
+        >
+            {{ _('حذف مربی') }}
+        </button>
+        {% endif %}
+        <div class="flex justify-end gap-2">
+            <a href="/coaches" class="btn btn-ghost border-2 border-base-content/20" hx-boost="false">
+                {{ _('انصراف') }}
+            </a>
+            <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content">
+                {{ _('ذخیره تغییرات') if coach else _('ثبت مربی') }}
+            </button>
         </div>
-
-        <div class="form-control">
-            <label class="input w-full validator">
-                <span class="label">{{ _('ایمیل') }}</span>
-                <input
-                    type="email"
-                    name="email"
-                    value="{{ coach.email if coach else '' }}"
-                    {{ 'readonly' if coach else '' }}
-                    placeholder="test@gyme.cloud"
-                    required
-                />
-            </label>
-            <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
-        </div>
-
-        <div class="form-control">
-            <label class="floating-label">
-                <span>{{ _('شماره موبایل') }}</span>
-                <input
-                    type="tel"
-                    name="phone"
-                    placeholder="{{ _('شماره موبایل') }}"
-                    value="{{ coach.phone if coach else '' }}"
-                    required
-                    class="input input-bordered w-full text-right tabular-nums validator"
-                    minlength="11"
-                    maxlength="11"
-                    pattern="[0-9]*"
-                />
-            </label>
-        </div>
-
-        <div class="flex flex-col gap-2 mt-6">
-            {% if coach %}
-                <button
-                    type="button"
-                    class="btn btn-error btn-soft w-full"
-                    hx-get="/coaches/{{ coach.id }}/confirm-delete"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('حذف مربی') }}
-                </button>
-            {% endif %}
-            <div class="flex justify-end gap-2">
-                <a href="/coaches" class="btn btn-ghost" hx-boost="false">{{ _('انصراف') }}</a>
-                <button type="submit" class="btn btn-primary flex-1">
-                    {{ _('ذخیره تغییرات') if coach else _('ثبت مربی') }}
-                </button>
-            </div>
-        </div>
-    </form>
+    </div>
+</form>
 {% endblock %}

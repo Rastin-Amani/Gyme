@@ -1,38 +1,32 @@
 <div class="w-full">
     {% if coach_stats|length == 0 %}
-        <div class="alert bg-base-200 border border-base-300">
+        <div class="alert border-2 border-base-content/20 bg-base-200 rounded-[1.5rem]">
             <span>{{ _('هیچ مربی‌ای یافت نشد.') }}</span>
         </div>
     {% else %}
         {% for coach in coach_stats %}
-            <div class="border border-base-300 rounded-box mb-3 bg-base-200/50">
+            <div class="border-2 border-base-content/20 rounded-[1.5rem] mb-3 bg-base-100">
                 <div class="flex items-center justify-between px-4 pt-4 pb-2">
                     <span class="font-bold text-base">{{ coach.name }}</span>
-                    <span class="badge badge-ghost badge-sm">{{ coach.active_plans }} {{ _('برنامه') }}</span>
+                    <span class="badge badge-secondary badge-sm">{{ coach.active_plans }} {{ _('برنامه') }}</span>
                 </div>
-                <div class="flex gap-0 border-t border-base-300/50 mx-4">
-                    <div
-                        class="flex-1 py-3 text-center border-l border-base-300/50 last:border-l-0"
-                    >
-                        <div class="text-lg font-bold">{{ coach.trainee_count }}</div>
-                        <div class="text-xs opacity-50">👥 {{ _('شاگردان') }}</div>
+                <div class="flex gap-0 border-t border-base-content/15 mx-4">
+                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                        <div class="font-display text-3xl font-normal" data-count-up="{{ coach.trainee_count }}">{{ coach.trainee_count }}</div>
+                        <div class="text-xs text-fog">👥 {{ _('شاگردان') }}</div>
                     </div>
-                    <div
-                        class="flex-1 py-3 text-center border-l border-base-300/50 last:border-l-0"
-                    >
-                        <div class="text-lg font-bold">{{ coach.diet_count }}</div>
-                        <div class="text-xs opacity-50">🍎 {{ _('غذایی') }}</div>
+                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                        <div class="font-display text-3xl font-normal" data-count-up="{{ coach.diet_count }}">{{ coach.diet_count }}</div>
+                        <div class="text-xs text-fog">🍎 {{ _('غذایی') }}</div>
                     </div>
-                    <div
-                        class="flex-1 py-3 text-center border-l border-base-300/50 last:border-l-0"
-                    >
-                        <div class="text-lg font-bold">{{ coach.training_count }}</div>
-                        <div class="text-xs opacity-50">💪 {{ _('تمرینی') }}</div>
+                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                        <div class="font-display text-3xl font-normal" data-count-up="{{ coach.training_count }}">{{ coach.training_count }}</div>
+                        <div class="text-xs text-fog">💪 {{ _('تمرینی') }}</div>
                     </div>
                     {% if coach.steroid_count > 0 %}
                         <div class="flex-1 py-3 text-center last:border-l-0">
-                            <div class="text-lg font-bold">{{ coach.steroid_count }}</div>
-                            <div class="text-xs opacity-50">💉 {{ _('دارویی') }}</div>
+                            <div class="font-display text-3xl font-normal" data-count-up="{{ coach.steroid_count }}">{{ coach.steroid_count }}</div>
+                            <div class="text-xs text-fog">💉 {{ _('دارویی') }}</div>
                         </div>
                     {% endif %}
                 </div>
@@ -41,7 +35,7 @@
 
         <!-- Footer summary -->
         <div
-            class="border border-base-300 rounded-box px-4 py-3 bg-base-200 flex justify-between text-xs opacity-60"
+            class="border-2 border-base-content/15 rounded-[1.5rem] px-4 py-3 bg-base-200 flex justify-between text-xs text-base-content/70"
         >
             <span>🏋️ {{ coach_stats|length }} {{ _('مربی') }}</span>
             <span>👥 {{ coach_stats|map(attribute='trainee_count')|sum }} {{ _('شاگرد') }}</span>

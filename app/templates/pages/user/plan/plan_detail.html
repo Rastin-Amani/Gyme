@@ -4,26 +4,26 @@
 
 {% block dashboard_content %}
     <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24 max-w-3xl mx-auto">
-        <div class="items-center justify-between bg-base-200 p-4 card flex-row-reverse">
+        <div class="items-center justify-between bg-base-100 border-2 border-base-content p-4 mb-4 card flex-row-reverse rounded-[2rem]">
             <div>
                 {% if plan.status == 'active' %}
-                    <span class="badge badge-success badge-sm badge-soft font-medium"
+                    <span class="badge badge-success badge-sm badge-soft font-medium border-2 border-base-content/20"
                         >{{ _('فعال') }}</span
                     >
                 {% elif plan.status == 'draft' %}
-                    <span class="badge badge-ghost badge-sm font-medium"
+                    <span class="badge badge-ghost badge-sm font-medium border-2 border-base-content/20"
                         >{{ _('پیش‌نویس') }}</span
                     >
                 {% elif plan.status == 'inactive' %}
-                    <span class="badge badge-error badge-sm badge-soft font-medium"
+                    <span class="badge badge-error badge-sm badge-soft font-medium border-2 border-base-content/20"
                         >{{ _('غیرفعال') }}</span
                     >
                 {% else %}
-                    <span class="badge badge-ghost badge-sm">{{ plan.status }}</span>
+                    <span class="badge badge-ghost badge-sm border-2 border-base-content/20">{{ plan.status }}</span>
                 {% endif %}
             </div>
             <div class="text-right flex-1 px-4">
-                <h1 class="text-lg font-bold text-base-content">
+                <h1 class="font-display font-normal text-2xl leading-tight text-base-content">
                     {% if plan.type == 'training' %}
                         {{ _('برنامه تمرینی') }}
                     {% elif plan.type == 'diet' %}
@@ -34,7 +34,7 @@
                         {{ _('جزئیات برنامه') }}
                     {% endif %}
                 </h1>
-                <div class="text-xs text-base-content/60 font-medium mt-1">
+                <div class="text-xs text-fog font-medium mt-1">
                     {% if plan.start_date %}
                         {{ _('از') }} {{ plan.start_date | jalali_date }}
                     {% endif %}
@@ -46,7 +46,7 @@
 
             <div class="avatar avatar-placeholder">
                 <div
-                    class="bg-base-100 text-neutral-content w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-sm"
+                    class="bg-lavender-whisper text-base-content w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2 border-base-content"
                 >
                     {% if plan.type == 'training' %}
                         💪🏻
@@ -69,7 +69,7 @@
             <div class="mb-6 sticky top-4 z-20">
                 <div
                     role="tablist"
-                    class="tabs tabs-box bg-base-300 justify-start mt-6 !overflow-x-auto !flex !flex-nowrap border border-base-300"
+                    class="tabs tabs-box bg-base-100 border-2 border-base-content justify-start mt-6 !overflow-x-auto !flex !flex-nowrap"
                 >
                     {% for seq in seqs %}
                         <a
@@ -100,26 +100,26 @@
                             {% set category_items = day_items | selectattr('meal_name', 'equalto', category) | list %}
                             {% if category_items %}
                                 <div
-                                    class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                    class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                                 >
                                     {{ category }}
                                 </div>
                                 {% for i in category_items %}
-                                    <div class="card bg-base-200 border border-base-200 mb-3">
+                                    <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                         <div
                                             class="card-body p-3 flex-row items-center justify-between"
                                         >
                                             <div class="flex flex-col">
-                                                <span class="font-bold text-sm">{{ i.name }}</span>
+                                                <span class="font-semibold text-sm">{{ i.name }}</span>
                                                 {% if i.notes and i.notes.strip() %}
-                                                    <span class="text-xs text-base-content/60 mt-1">
+                                                    <span class="text-xs text-fog mt-1">
                                                         {{ i.notes.strip() }}
                                                     </span>
                                                 {% endif %}
                                             </div>
                                             {% if i.quantity %}
                                                 <div
-                                                    class="badge badge-primary badge-soft badge-sm font-medium"
+                                                    class="badge badge-primary badge-soft badge-sm font-medium border-2 border-base-content/20"
                                                 >
                                                     {{ i.quantity }}
                                                 </div>
@@ -134,25 +134,25 @@
                         {% set other_items = day_items | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
                                 <div
-                                    class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                    class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                                 >
-                                    {{ _(category) }}
+                                    {{ _('سایر') }}
                                 </div>
                             {% for i in other_items %}
-                                <div class="card bg-base-200 border border-base-200 mb-3">
+                                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                     <div
                                         class="card-body p-3 flex-row items-center justify-between"
                                     >
                                         <div class="flex flex-col gap-1">
-                                            <span class="font-bold text-sm">{{ i.name }}</span>
+                                            <span class="font-semibold text-sm">{{ i.name }}</span>
                                             {% if i.meal_name %}
-                                                <span class="text-xs text-primary">
+                                                <span class="text-xs text-secondary">
                                                     {{ i.meal_name }}
                                                 </span>
                                             {% endif %}
                                         </div>
                                         {% if i.quantity %}
-                                            <div class="badge badge-ghost badge-sm">
+                                            <div class="badge badge-ghost badge-sm border-2 border-base-content/20">
                                                 {{ i.quantity }}
                                             </div>
                                         {% endif %}
@@ -169,15 +169,15 @@
                             {% set category_items = day_items | selectattr('category', 'equalto', category) | list %}
                             {% if category_items %}
                                 <div
-                                    class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                    class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                                 >
                                     {{ category }}
                                 </div>
                                 {% for i in category_items %}
-                                    <div class="card bg-base-200 mb-3 border border-base-200">
+                                    <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                         <div class="card-body p-4 text-right justify-between gap-4">
                                             <div class="flex justify-between items-center">
-                                                <span class="font-bold text-base">
+                                                <span class="font-semibold text-base">
                                                     {{ i.name }}
                                                 </span>
                                             </div>
@@ -186,7 +186,7 @@
                                             >
                                                 {% if i.sets and i.reps %}
                                                     <div
-                                                        class="badge badge-primary gap-1 px-3 py-3"
+                                                        class="badge badge-soft border-2 border-base-content/20 gap-1 px-3 py-3"
                                                     >
                                                         <span class="font-black text-sm">
                                                             {{ i.sets }}
@@ -200,14 +200,14 @@
                                                 {% endif %}
                                                 {% if i.weight %}
                                                     <div
-                                                        class="badge badge-primary badge-soft px-3 py-3 font-medium"
+                                                        class="badge badge-primary badge-soft px-3 py-3 font-medium border-2 border-base-content/20"
                                                     >
                                                         {{ i.weight }} {{ _('کیلوگرم') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if i.rest_seconds %}
                                                     <div
-                                                        class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1"
+                                                        class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1 border-2 border-base-content/20"
                                                     >
                                                         <svg
                                                             class="w-4 h-4"
@@ -228,9 +228,9 @@
                                             </div>
                                             {% if i.notes %}
                                                 <div
-                                                    class="bg-base-100 rounded-box p-3 mt-1 border border-base-300"
+                                                    class="bg-lavender-whisper/30 rounded-box p-3 mt-1 border-2 border-base-content/15"
                                                 >
-                                                    <span class="text-xs text-base-content/70">
+                                                    <span class="text-xs text-base-content/80">
                                                         {{ i.notes }}
                                                     </span>
                                                 </div>
@@ -245,21 +245,21 @@
                         {% set other_training_items = day_items | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
                             <div
-                                class="divider divider-start text-sm opacity-40 font-bold text-primary"
+                                class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                             >
                                 {{ _('سایر حرکات') }}
                             </div>
                             {% for i in other_training_items %}
-                                <div class="card bg-base-200 mb-3 border border-base-200">
+                                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                     <div class="card-body p-4 text-right justify-between gap-4">
                                         <div class="flex justify-between items-center">
-                                            <span class="font-bold text-base">{{ i.name }}</span>
+                                            <span class="font-semibold text-base">{{ i.name }}</span>
                                         </div>
                                         <div
                                             class="flex gap-2 justify-start items-center flex-wrap mt-1"
                                         >
                                             {% if i.sets and i.reps %}
-                                                <div class="badge badge-primary gap-1 px-3 py-3">
+                                                <div class="badge badge-soft border-2 border-base-content/20 gap-1 px-3 py-3">
                                                     <span class="font-black text-sm">
                                                         {{ i.sets }}
                                                     </span>
@@ -272,14 +272,14 @@
                                             {% endif %}
                                             {% if i.weight %}
                                                 <div
-                                                    class="badge badge-primary badge-soft px-3 py-3 font-medium"
+                                                    class="badge badge-primary badge-soft px-3 py-3 font-medium border-2 border-base-content/20"
                                                 >
                                                     {{ i.weight }} {{ _('کیلوگرم') }}
                                                 </div>
                                             {% endif %}
                                             {% if i.rest_seconds %}
                                                 <div
-                                                    class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1"
+                                                    class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1 border-2 border-base-content/20"
                                                 >
                                                     {{ i.rest_seconds }} {{ _('ثانیه') }}
                                                 </div>
@@ -287,9 +287,9 @@
                                         </div>
                                         {% if i.notes %}
                                             <div
-                                                class="bg-base-100 rounded-box p-3 mt-1 border border-base-300"
+                                                class="bg-lavender-whisper/30 rounded-box p-3 mt-1 border-2 border-base-content/15"
                                             >
-                                                <span class="text-xs text-base-content/70">
+                                                <span class="text-xs text-base-content/80">
                                                     {{ i.notes }}
                                                 </span>
                                             </div>
@@ -303,18 +303,18 @@
                     {% elif plan.type == 'steroid' %}
                         <div class="flex flex-col gap-3 mt-4">
                             {% for i in day_items %}
-                                <div class="card bg-base-200 border border-base-200">
+                                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem]">
                                     <div class="card-body p-4">
-                                        <span class="font-bold text-lg">{{ i.name }}</span>
+                                        <span class="font-semibold text-lg">{{ i.name }}</span>
                                         {% if i.quantity or i.notes %}
                                             <div class="flex flex-col gap-2 mt-2">
                                                 {% if i.quantity %}
-                                                    <div class="badge badge-primary badge-soft">
+                                                    <div class="badge badge-primary badge-soft border-2 border-base-content/20">
                                                         {{ i.quantity }}
                                                     </div>
                                                 {% endif %}
                                                 {% if i.notes %}
-                                                    <span class="text-sm text-base-content/60">
+                                                    <span class="text-sm text-fog">
                                                         {{ i.notes }}
                                                     </span>
                                                 {% endif %}
@@ -329,11 +329,11 @@
             {% endfor %}
         {% else %}
             <div
-                class="card bg-base-200 p-10 text-center flex flex-col items-center justify-center mt-6"
+                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem] p-10 text-center flex flex-col items-center justify-center mt-6"
             >
                 <div class="text-4xl mb-4 opacity-50">📭</div>
-                <h3 class="text-lg font-bold">{{ _('آیتمی یافت نشد') }}</h3>
-                <p class="text-sm text-base-content/60 mt-2">
+                <h3 class="font-display font-normal text-2xl">{{ _('آیتمی یافت نشد') }}</h3>
+                <p class="text-sm text-fog mt-2">
                     {{ _('هنوز هیچ آیتمی برای این برنامه ثبت نشده است.') }}
                 </p>
             </div>

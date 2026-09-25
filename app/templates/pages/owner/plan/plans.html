@@ -1,8 +1,8 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div id="plans-content">
+    <div id="plans-content" data-settle>
         <!-- Tab Bar: Active Plans | Templates -->
-        <div class="tabs tabs-box mb-6 bg-base-200 p-1 gap-0">
+        <div class="tabs tabs-box mb-6 bg-base-100 border-2 border-base-content p-1 gap-0">
             <a
                 href="/plans"
                 class="tab {{ 'tab-active' if not is_template else '' }}"
@@ -30,26 +30,26 @@
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-xl font-bold">
+                <h1 class="font-display text-3xl font-normal leading-tight">
                     {% if is_template %}{{ _('قالب‌ها') }}{% else %}{{ _('برنامه‌ها') }}{% endif %}
                 </h1>
-                <p class="text-sm opacity-70"></p>
+                <p class="text-sm text-fog"></p>
             </div>
 
             {% if is_template %}
-                <a href="/plans/new?template=true" class="btn btn-primary">{{ _('قالب جدید') }}</a>
+                <a href="/plans/new?template=true" class="btn btn-primary border-2 border-base-content">{{ _('قالب جدید') }}</a>
             {% else %}
-                <a href="/plans/new" class="btn btn-primary">{{ _('برنامه جدید') }}</a>
+                <a href="/plans/new" class="btn btn-primary border-2 border-base-content">{{ _('برنامه جدید') }}</a>
             {% endif %}
         </div>
 
         <!-- Search / Filter (only for active plans) -->
         {% if not is_template %}
             <div
-                class="collapse collapse-arrow border border-base-300 bg-base-200 rounded-box mb-6"
+                class="collapse collapse-arrow border-2 border-base-content bg-base-100 rounded-[2rem] mb-6"
             >
                 <input type="checkbox" />
-                <div class="collapse-title text-md font-medium">{{ _('جستجو و فیلتر') }}</div>
+                <div class="collapse-title text-md font-semibold">{{ _('جستجو و فیلتر') }}</div>
                 <div class="collapse-content">
                     <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                         <label class="form-control floating-label">
@@ -58,7 +58,7 @@
                                 name="query"
                                 id="search-input"
                                 placeholder="{{ _('جستجو (نام شاگرد، نام مربی...)') }}"
-                                class="input input-bordered w-full peer"
+                                class="input w-full peer"
                                 value="{{ search_query or '' }}"
                                 hx-get="/plans?page=1"
                                 hx-target="#plans-content"
@@ -75,7 +75,7 @@
                                 <select
                                     name="type"
                                     id="type-filter"
-                                    class="select select-bordered w-full peer"
+                                    class="select w-full peer"
                                     hx-get="/plans?page=1"
                                     hx-target="#plans-content"
                                     hx-select="#plans-content"
@@ -132,17 +132,17 @@
             </div>
         {% else %}
             <!-- Regular Plans List -->
-            <div class="card bg-base-100 border border-base-300">
+            <div class="card bg-base-100 border-2 border-base-content">
                 <div class="card-body p-0">
                     <div id="plans-table-container">
                         {% if plans|length > 0 %}
-                            <ul class="divide-y divide-base-300">
+                            <ul class="divide-y divide-base-content/15">
                                 {% for plan in plans %}
                                     <li
                                         class="flex items-center gap-3 px-4 py-3 active:bg-base-200 transition-colors duration-150"
                                     >
                                         <div
-                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary"
+                                            class="flex-shrink-0 w-11 h-11 rounded-full bg-lavender-whisper border-2 border-base-content flex items-center justify-center text-base"
                                         >
                                             {% if plan.type == 'diet' %}
                                                 🥑
@@ -153,10 +153,10 @@
                                             {% endif %}
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <span class="font-medium text-sm">
+                                            <span class="font-semibold text-sm">
                                                 {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                                             </span>
-                                            <span class="text-xs opacity-60 block">
+                                            <span class="text-xs text-fog block">
                                                 {% if plan.type == 'diet' %}
                                                     {{ _('غذایی') }}
                                                 {% elif plan.type == 'training' %}
@@ -170,11 +170,11 @@
 
                                         <a
                                             href="/plans/{{ plan.id }}"
-                                            class="flex-shrink-0 btn btn-sm btn-square"
+                                            class="flex-shrink-0 btn btn-sm btn-square border-2 border-base-content"
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 opacity-40"
+                                                class="h-5 w-5 opacity-40 rtl:rotate-180"
                                                 viewBox="0 0 20 20"
                                                 fill="currentColor"
                                             >
@@ -191,9 +191,9 @@
                         {% else %}
                             <div class="text-center py-12 px-4">
                                 <div
-                                    class="bg-base-200 rounded-lg p-8 max-w-md mx-auto border border-base-300"
+                                    class="bg-base-100 rounded-[2rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30"
                                 >
-                                    <p class="text-base opacity-70">
+                                    <p class="text-base text-fog">
                                         {% if is_search_result or show_empty_state %}
                                             <span class="status status-secondary ml-1"></span>
                                             {{ empty_message }}

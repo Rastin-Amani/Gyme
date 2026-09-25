@@ -3,13 +3,13 @@
 {% block dashboard_content %}
     <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24">
         <div class="flex flex-col gap-4 pb-6">
-            <h1 class="text-2xl md:text-3xl font-light">
-                <span class="font-black text-primary">
+            <h1 class="font-display font-normal text-3xl md:text-4xl leading-tight">
+                <span class="text-secondary font-medium">
                     {{ user.first_name if user else _('قهرمان') }}
                 </span>
                 {{ _('خوش اومدی') }} 👋🏻
             </h1>
-            <div role="alert" class="alert alert-warning alert-soft">
+            <div role="alert" class="alert alert-warning alert-soft border-2 border-base-content/20">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="stroke-current shrink-0 h-6 w-6"
@@ -42,7 +42,7 @@
         <div class="mb-6">
             <div
                 role="tablist"
-                class="tabs tabs-box bg-base-200 justify-between !overflow-x-auto !flex !flex-nowrap"
+                class="tabs tabs-box bg-base-100 border-2 border-base-content justify-between !overflow-x-auto !flex !flex-nowrap"
             >
                 {% if plans['diet'] %}
                     <a
@@ -87,35 +87,35 @@
                         {% set meal_categories = ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
-                            class="btn btn-primary w-full mb-4"
+                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            {{ _('انجام شد') }}
+                            <span class="js-done-label">{{ _('انجام شد') }}</span>
                         </button>
                         {% for category in meal_categories %}
                             {% set category_items = p['items'] | selectattr('meal_name', 'equalto', category) | list %}
 
                             {% if category_items %}
-                                <div class="divider divider-start text-sm opacity-30">
+                                <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
                                     {{ _(category) }}
                                 </div>
                                 {% for item in category_items %}
-                                    <div class="card bg-base-200 border border-base-200 mb-3">
+                                    <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                         <div
                                             class="card-body p-3 flex-row items-center justify-between"
                                         >
                                             <div class="flex flex-col">
-                                                <span class="font-bold text-sm">
+                                                <span class="font-semibold text-sm">
                                                     {{ item.name }}
                                                 </span>
                                                 {% if item.notes and item.notes.strip() %}
-                                                    <span class="text-xs text-base-content/60 mt-1">
+                                                    <span class="text-xs text-fog mt-1">
                                                         {{ item.notes.strip() }}
                                                     </span>
                                                 {% endif %}
                                             </div>
                                             {% if item.quantity %}
                                                 <div
-                                                    class="badge badge-primary badge-soft badge-sm font-medium"
+                                                    class="badge badge-primary badge-soft badge-sm font-medium border-2 border-base-content/20"
                                                 >
                                                     {{ item.quantity }}
                                                 </div>
@@ -128,24 +128,24 @@
 
                         {% set other_items = p['items'] | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
-                            <div class="divider divider-start text-sm opacity-30">
+                            <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
                                 {{ _('سایر') }}
                             </div>
                             {% for item in other_items %}
-                                <div class="card bg-base-200 mb-3">
+                                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                     <div
                                         class="card-body p-3 flex-row items-center justify-between"
                                     >
                                         <div class="flex flex-col gap-2">
-                                            <span class="font-bold text-sm">{{ item.name }}</span>
+                                            <span class="font-semibold text-sm">{{ item.name }}</span>
                                             {% if item.meal_name %}
-                                                <span class="text-xs text-primary">
+                                                <span class="text-xs text-secondary">
                                                     {{ item.meal_name }}
                                                 </span>
                                             {% endif %}
                                         </div>
                                         {% if item.quantity %}
-                                            <div class="badge badge-ghost badge-sm">
+                                            <div class="badge badge-ghost badge-sm border-2 border-base-content/20">
                                                 {{ item.quantity }}
                                             </div>
                                         {% endif %}
@@ -156,12 +156,12 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all diet plans are empty #}
-                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                         {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-base-content/50 card bg-base-200">
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                     {{ _('برنامه غذایی ندارید') }} 📭
                 </div>
             {% endif %}
@@ -174,9 +174,9 @@
                     <div class="mb-6">
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
-                            class="btn btn-primary w-full mb-4"
+                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            {{ _('انجام شد') }}
+                            <span class="js-done-label">{{ _('انجام شد') }}</span>
                         </button>
 
                         {# Jinja2 logic to group training items chronologically #}
@@ -186,22 +186,22 @@
                             {% set category_items = p['items'] | selectattr('category', 'equalto', category) | list %}
 
                             {% if category_items %}
-                                <div class="divider divider-start text-sm opacity-30">
+                                <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
                                     {{ _(category) }}
                                 </div>
                                 {% for item in category_items %}
-                                    <div class="card bg-base-200 mb-3">
+                                    <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                         <div class="card-body p-4 text-right justify-between gap-4">
                                             <div class="flex flex-col gap-2">
                                                 <div class="flex justify-between">
-                                                    <span class="font-bold">{{ item.name }}</span>
+                                                    <span class="font-semibold">{{ item.name }}</span>
                                                 </div>
                                             </div>
                                             <div
                                                 class="flex gap-3 justify-start items-center flex-wrap"
                                             >
                                                 {% if item.sets and item.reps %}
-                                                    <div class="badge badge-primary justify-end">
+                                                    <div class="badge badge-soft border-2 border-base-content/20 justify-end">
                                                         <span class="font-bold">
                                                             {{ item.sets }}
                                                         </span>
@@ -214,23 +214,23 @@
                                                 {% endif %}
                                                 {% if item.weight %}
                                                     <div
-                                                        class="badge badge-primary badge-sm badge-soft"
+                                                        class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                     >
                                                         {{ item.weight }} {{ _('کیلوگرم') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.rest_seconds %}
                                                     <div
-                                                        class="badge badge-primary badge-sm badge-soft"
+                                                        class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                     >
                                                         {{ item.rest_seconds }} {{ _('ثانیه') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
                                             {% if item.notes %}
-                                                <div class="bg-base-100 w-full card">
+                                                <div class="bg-lavender-whisper/30 border-2 border-base-content/15 w-full card rounded-[1rem]">
                                                     <span
-                                                        class="text-xs text-base-content/60 py-4 px-2"
+                                                        class="text-xs text-base-content/80 py-4 px-2"
                                                     >
                                                         {{ item.notes }}
                                                     </span>
@@ -245,22 +245,22 @@
                         {# Catch-all for training items with missing or custom categories #}
                         {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
-                            <div class="divider divider-start text-sm opacity-30">
+                            <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
                                 {{ _('سایر') }}
                             </div>
                             {% for item in other_training_items %}
-                                <div class="card bg-base-200 mb-3">
+                                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
                                     <div class="card-body p-4 text-right justify-between gap-4">
                                         <div class="flex flex-col gap-2">
                                             <div class="flex justify-between">
-                                                <span class="font-bold">{{ item.name }}</span>
+                                                <span class="font-semibold">{{ item.name }}</span>
                                             </div>
                                         </div>
                                         <div
                                             class="flex gap-3 justify-start items-center flex-wrap"
                                         >
                                             {% if item.sets and item.reps %}
-                                                <div class="badge badge-primary justify-end">
+                                                <div class="badge badge-soft border-2 border-base-content/20 justify-end">
                                                     <span class="font-bold">{{ item.sets }}</span>
                                                     {{ _('ست') }} ×
                                                     <span class="font-bold">{{ item.reps }}</span>
@@ -269,23 +269,23 @@
                                             {% endif %}
                                             {% if item.weight %}
                                                 <div
-                                                    class="badge badge-primary badge-sm badge-soft"
+                                                    class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                 >
                                                     {{ item.weight }} {{ _('کیلوگرم') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.rest_seconds %}
                                                 <div
-                                                    class="badge badge-primary badge-sm badge-soft"
+                                                    class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                 >
                                                     {{ item.rest_seconds }} {{ _('ثانیه') }}
                                                 </div>
                                             {% endif %}
                                         </div>
                                         {% if item.notes %}
-                                            <div class="bg-base-100 w-full card">
+                                            <div class="bg-lavender-whisper/30 border-2 border-base-content/15 w-full card rounded-[1rem]">
                                                 <span
-                                                    class="text-xs text-base-content/60 py-4 px-2"
+                                                    class="text-xs text-base-content/80 py-4 px-2"
                                                 >
                                                     {{ item.notes }}
                                                 </span>
@@ -298,12 +298,12 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all training plans are empty #}
-                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                         {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-base-content/50 card bg-base-200">
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                     {{ _('برنامه تمرینی ندارید') }} 📭
                 </div>
             {% endif %}
@@ -316,26 +316,26 @@
                     <div class="mb-6 flex flex-col gap-3">
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
-                            class="btn btn-primary w-full mb-4"
+                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            {{ _('انجام شد') }}
+                            <span class="js-done-label">{{ _('انجام شد') }}</span>
                         </button>
                         {% for item in p['items'] %}
-                            <div class="card bg-base-200">
+                            <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem]">
                                 <div class="card-body">
-                                    <span class="font-bold">{{ item.name }}</span>
+                                    <span class="font-semibold">{{ item.name }}</span>
                                 </div>
                             </div>
                         {% endfor %}
                     </div>
                 {% else %}
                     {# This triggers ONLY if all steroid plans are empty #}
-                    <div class="text-center py-6 text-base-content/50 text-sm card bg-base-200">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                         {{ _('آیتمی وجود ندارد') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-base-content/50 card bg-base-200">
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
                     {{ _('برنامه استروئیدی ندارید') }} 📭
                 </div>
             {% endif %}
