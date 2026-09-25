@@ -66,7 +66,7 @@ else:
         import logging as _logging
         _logging.getLogger(__name__).warning("ALLOWED_HOSTS not set in production - relying on tenant host validation only")
 
-APP_VERSION = "0.8.1"
+APP_VERSION = "0.9.0"
 templates.env.globals["app_version"] = APP_VERSION
 
 # static folder
