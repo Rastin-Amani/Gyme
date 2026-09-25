@@ -212,7 +212,7 @@
                     }
                     setTimeout(() => {
                         window.location.href = targetUrl;
-                    }, 500); // Gives the toast 1.2 seconds to shine before moving
+                    }, 500); // Gives the toast 0.5 seconds to shine before moving
                 });
 
                 window.toastListenerAttached = true;
@@ -224,7 +224,7 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', async () => {
                     try {
-                        const reg = await navigator.serviceWorker.register('/sw.js?v=0.8.1', { scope: '/' });
+                        const reg = await navigator.serviceWorker.register('/sw.js?v={{ app_version }}', { scope: '/' });
                         console.log('SW registered:', reg.scope);
 
                         reg.addEventListener('updatefound', () => {

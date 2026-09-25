@@ -60,9 +60,12 @@ else:
     if IS_PROD:
         # In prod without ALLOWED_HOSTS, log warning but still enforce via TenantMiddleware host validation
         import logging as _logging
-        _logging.getLogger(__name__).warning("ALLOWED_HOSTS not set in production - relying on tenant host validation only")
 
-APP_VERSION = "0.9.0"
+        _logging.getLogger(__name__).warning(
+            "ALLOWED_HOSTS not set in production - relying on tenant host validation only"
+        )
+
+APP_VERSION = "0.9.1"
 templates.env.globals["app_version"] = APP_VERSION
 
 # static folder
