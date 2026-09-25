@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Form
 from ...templates import templates
 from fastapi.responses import RedirectResponse
+from app.i18n import _
 
 router = APIRouter(
     tags=["Trainee Profile"]
@@ -18,7 +19,7 @@ def plan_list (request: Request):
         request=request,
         name="pages/user/profile/profile.html",
         context={
-        "title" : "پروفایل",
+        "title" : _("پروفایل"),
         "tenant": tenant,
         "user": user,
         }

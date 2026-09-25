@@ -4,6 +4,7 @@ from app.services.dashboard import get_owner_dashboard_stats, get_coach_stats
 from ..templates import templates
 from fastapi.responses import RedirectResponse
 from structlog import get_logger
+from app.i18n import _
 
 logger = get_logger(__name__)
 
@@ -33,7 +34,7 @@ def owner_dashboard(request: Request, timeframe: str = "all"):
     )
 
     context = {
-        "title": "داشبورد مدیریت",
+        "title": _("داشبورد مدیریت"),
         "stats": stats,
         "timeframe": timeframe,
         "tenant": tenant,

@@ -17,6 +17,7 @@ from app.utils import hx_toast
 import json
 from structlog import get_logger
 from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name, ALLOWED_PLAN_STATUS
+from app.i18n import _
 
 logger = get_logger(__name__)
 
@@ -88,7 +89,7 @@ def plan_list(
         request=request,
         name="pages/owner/plan/plans.html",
         context={
-            "title": "قالب‌های برنامه" if is_template_bool else "لیست برنامه‌ها",
+            "title": _("قالب‌های برنامه") if is_template_bool else _("لیست برنامه‌ها"),
             "tenant": tenant_name,
             "user": user,
             "plans": plans.items if hasattr(plans, "items") else plans,
@@ -101,7 +102,7 @@ def plan_list(
             },
             "show_empty_state": len(plans.items if hasattr(plans, "items") else plans) == 0
             and bool(query or type or coach_id),
-            "empty_message": "هیچ برنامه‌ای با این مشخصات پیدا نشد",
+            "empty_message": _("هیچ برنامه‌ای با این مشخصات پیدا نشد"),
             "is_template": is_template_bool,
             "page": page,
             "total_pages": total_pages,
@@ -146,7 +147,7 @@ def plan_new_form(request: Request, template: str = Query("false")):
         request=request,
         name="forms/plans_form.html",
         context={
-            "title": "قالب برنامه جدید" if is_template else "برنامه جدید",
+            "title": _("قالب برنامه جدید") if is_template else _("برنامه جدید"),
             "tenant": tenant,
             "user": user,
             "plan": None,
@@ -195,7 +196,7 @@ def show_plan_detail(request: Request, id: str):
         request=request,
         name="pages/owner/plan/plan_detail.html",
         context={
-            "title": "جزئیات برنامه",
+            "title": _("جزئیات برنامه"),
             "tenant": request.state.tenant,
             "user": user,
             "plan": plan_data,
@@ -244,7 +245,7 @@ def plan_edit_form(request: Request, id: str):
         request=request,
         name="forms/plans_form.html",
         context={
-            "title": "ویرایش برنامه",
+            "title": _("ویرایش برنامه"),
             "tenant": tenant_name,
             "user": user,
             "plan": plan_data,
@@ -331,7 +332,7 @@ def template_apply(
         # 🟢 SUCCESS: Modal closes, Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {
             "closeModal": True,
-            "show-toast": {"message": "برنامه با موفقیت از قالب ایجاد شد", "type": "success"},
+            "show-toast": {"message": _("برنامه با موفقیت از قالب ایجاد شد"), "type": "success"},
             "delayed-redirect": {"url": f"/plans/{new_plan.id}"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -339,11 +340,11 @@ def template_apply(
     except Exception as e:
         error_msg = str(e)
         logger.error("template.apply_failed", error=error_msg, template_id=id, tenant=tenant)
-        user_message = "خطا در برقراری ارتباط با پایگاه داده."
+        user_message = _("خطا در برقراری ارتباط با پایگاه داده.")
         if "404" in error_msg:
-            user_message = "قالب یا شاگرد مورد نظر یافت نشد!"
+            user_message = _("قالب یا شاگرد مورد نظر یافت نشد!")
         elif "400" in error_msg:
-            user_message = "اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید."
+            user_message = _("اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید.")
 
         # 🔴 ERROR: Modal stays open, Toast shows
         trigger_data = {"show-toast": {"message": user_message, "type": "error"}}
@@ -374,18 +375,18 @@ def plan_create(
 
     # --- Input validation ---
     if type not in ALLOWED_PLAN_TYPES:
-        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر است", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر است"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if status and status not in ALLOWED_PLAN_STATUS:
         status = "active"
     if days_per_week is not None and not (1 <= days_per_week <= 7):
-        trigger_data = {"show-toast": {"message": "تعداد روزهای هفته باید بین ۱ تا ۷ باشد", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("تعداد روزهای هفته باید بین ۱ تا ۷ باشد"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if trainee and not is_template_bool:
         try:
             get_trainee_by_id(pb, tenant, trainee)
         except Exception:
-            trigger_data = {"show-toast": {"message": "شاگرد یافت نشد", "type": "error"}}
+            trigger_data = {"show-toast": {"message": _("شاگرد یافت نشد"), "type": "error"}}
             return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if coach:
         # Verify coach belongs to tenant
@@ -422,7 +423,7 @@ def plan_create(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         success_msg = (
-            "قالب جدید با موفقیت ذخیره شد" if is_template_bool else "برنامه جدید با موفقیت ایجاد شد"
+            _("قالب جدید با موفقیت ذخیره شد") if is_template_bool else _("برنامه جدید با موفقیت ایجاد شد")
         )
         redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
 
@@ -438,7 +439,7 @@ def plan_create(
         )
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {
-            "show-toast": {"message": "خطا در ایجاد. لطفا فیلدها را بررسی کنید.", "type": "error"}
+            "show-toast": {"message": _("خطا در ایجاد. لطفا فیلدها را بررسی کنید."), "type": "error"}
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -470,24 +471,24 @@ def plan_update(
     try:
         existing = get_plan_by_id(pb, tenant, id)
     except Exception:
-        trigger_data = {"show-toast": {"message": "برنامه یافت نشد", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("برنامه یافت نشد"), "type": "error"}}
         return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if getattr(user, "role", None) == "coach" and getattr(existing, "coach", None) != user.id:
-        trigger_data = {"show-toast": {"message": "دسترسی غیرمجاز", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("دسترسی غیرمجاز"), "type": "error"}}
         return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
     if type not in ALLOWED_PLAN_TYPES:
-        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if status and status not in ALLOWED_PLAN_STATUS:
         status = getattr(existing, "status", "active")
     if days_per_week is not None and not (1 <= days_per_week <= 7):
-        trigger_data = {"show-toast": {"message": "تعداد روزهای هفته نامعتبر", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("تعداد روزهای هفته نامعتبر"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if trainee and not is_template_bool:
         try:
             get_trainee_by_id(pb, tenant, trainee)
         except Exception:
-            trigger_data = {"show-toast": {"message": "شاگرد یافت نشد", "type": "error"}}
+            trigger_data = {"show-toast": {"message": _("شاگرد یافت نشد"), "type": "error"}}
             return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if coach:
         try:
@@ -520,7 +521,7 @@ def plan_update(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {
-            "show-toast": {"message": "تغییرات با موفقیت ذخیره شد", "type": "success"},
+            "show-toast": {"message": _("تغییرات با موفقیت ذخیره شد"), "type": "success"},
             "delayed-redirect": {"url": f"/plans/{id}"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -528,7 +529,7 @@ def plan_update(
     except Exception as e:
         logger.error("plan.update_failed", error=str(e), plan_id=id, tenant=tenant)
         # 🔴 ERROR: Stays on page, Toast shows
-        trigger_data = {"show-toast": {"message": "خطا در بروزرسانی اطلاعات.", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("خطا در بروزرسانی اطلاعات."), "type": "error"}}
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
 
@@ -537,7 +538,7 @@ def plan_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
-        context={"delete_url": f"/plans/{id}", "title": "حذف برنامه"},
+        context={"delete_url": f"/plans/{id}", "title": _("حذف برنامه")},
     )
 
 
@@ -547,12 +548,12 @@ def plan_delete(request: Request, id: str):
         pb = request.state.pb
         tenant_id = request.state.tenant.id
         delete_plan(pb, tenant_id, id)
-        headers = hx_toast("برنامه با موفقیت حذف شد.", "success")
+        headers = hx_toast(_("برنامه با موفقیت حذف شد."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/plans"}
         headers["HX-Trigger"] = json.dumps(trigger_dict)
         return HTMLResponse(content="", status_code=200, headers=headers)
     except Exception as e:
         logger.error("plan.delete_failed", error=str(e), plan_id=id)
-        headers = hx_toast("خطا در حذف برنامه.", "error")
+        headers = hx_toast(_("خطا در حذف برنامه."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

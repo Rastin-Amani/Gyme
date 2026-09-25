@@ -5,6 +5,7 @@ from app.services.plan import list_plans, get_plan_by_id, get_plans_by_trainee
 from app.services.item import list_items_by_plan, get_items_by_plan_seq
 from app.services.trainee import list_trainees, get_trainee_by_user
 from app.services.progress import get_progress_by_plan
+from app.i18n import _
 
 
 router = APIRouter(prefix="/debug", tags=["debug"])
@@ -113,7 +114,7 @@ def debug_expand(request: Request):
 
 
     return {
-        "title": "داشبورد کاربر",
+        "title": _("داشبورد کاربر"),
         "user": user,
         "tenant": request.state.tenant, # Frontend might still want the object
         "trainee": trainee,

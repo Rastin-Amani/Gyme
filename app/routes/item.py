@@ -9,6 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.responses import RedirectResponse
 from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES, pb_escape
 from structlog import get_logger
+from app.i18n import _
 logger = get_logger(__name__)
 
 router = APIRouter(tags=["items Management"])
@@ -52,7 +53,7 @@ def item_edit_form(request: Request, plan_type: str = Query(...), plan_id: str =
         request=request,
         name="modals/items_form.html",
         context={
-            "title": "ویرایش آیتم",
+            "title": _("ویرایش آیتم"),
             "tenant": tenant,
             "plan_type": plan_type,
             "plan_id": plan_id,
@@ -86,7 +87,7 @@ def item_edit_form(request: Request, id: str, plan_type: str = Query(...)):
         request=request,
         name="modals/items_form.html",
         context={
-            "title": "ویرایش آیتم",
+            "title": _("ویرایش آیتم"),
             "tenant": tenant_name,
             "item": item,
             "plan_type": plan_type,
@@ -117,7 +118,7 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
         trigger_data = {
             "closeModal": True,
             "refreshList": True,
-            "show-toast": {"message": "آیتم با موفقیت حذف شد.", "type": "success"},
+            "show-toast": {"message": _("آیتم با موفقیت حذف شد."), "type": "success"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -128,7 +129,7 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
         logger.error("item.delete_failed", error=str(e), item_id=id, plan_type=plan_type)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {
-            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+            "show-toast": {"message": _("مشکلی پیش آمد. لطفا دوباره تلاش کنید."), "type": "error"}
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -140,7 +141,7 @@ def item_confirm_delete(request: Request, id: str, plan_type: str = Query(...)):
         "modals/confirm_delete.html",
         {
             "request": request,
-            "title": "حذف آیتم",
+            "title": _("حذف آیتم"),
             "delete_url": f"/items/{id}?plan_type={plan_type}",
         },
     )
@@ -173,7 +174,7 @@ def item_create(
     try:
         collection_name = sanitize_collection_name(plan_type)
     except ValueError:
-        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     # Verify plan belongs to tenant and type matches
     try:
@@ -183,11 +184,11 @@ def item_create(
         # Coach can only add to own plans
         user = request.state.user
         if getattr(user, "role", None) == "coach" and str(getattr(plan_obj, "coach", "")) != str(user.id):
-            trigger_data = {"show-toast": {"message": "دسترسی غیرمجاز", "type": "error"}}
+            trigger_data = {"show-toast": {"message": _("دسترسی غیرمجاز"), "type": "error"}}
             return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
     except Exception as e:
         logger.warning("item.create_plan_check_failed", error=str(e), plan=plan)
-        trigger_data = {"show-toast": {"message": "برنامه یافت نشد", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("برنامه یافت نشد"), "type": "error"}}
         return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     # Input length validation
     if notes:
@@ -235,7 +236,7 @@ def item_create(
         # 🟢 SUCCESS: Close modal and show success toast!
         trigger_data = {
             "closeModal": True,
-            "show-toast": {"message": "آیتم با موفقیت اضافه شد.", "type": "success"},
+            "show-toast": {"message": _("آیتم با موفقیت اضافه شد."), "type": "success"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -246,7 +247,7 @@ def item_create(
         logger.error("item.create_failed", error=str(e), plan_type=plan_type, plan=plan)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {
-            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+            "show-toast": {"message": _("مشکلی پیش آمد. لطفا دوباره تلاش کنید."), "type": "error"}
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -278,7 +279,7 @@ def item_update(
     try:
         collection_name = sanitize_collection_name(plan_type)
     except ValueError:
-        trigger_data = {"show-toast": {"message": "نوع برنامه نامعتبر", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     # Verify existing item tenant ownership
     try:
@@ -289,7 +290,7 @@ def item_update(
             if str(getattr(plan_obj, "type", "")) != plan_type:
                 raise ValueError("type mismatch")
     except Exception as e:
-        trigger_data = {"show-toast": {"message": "آیتم یافت نشد", "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("آیتم یافت نشد"), "type": "error"}}
         return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
 
     # Base data
@@ -342,7 +343,7 @@ def item_update(
         trigger_data = {
             "closeModal": True,
             "refreshList": True,
-            "show-toast": {"message": "آیتم با موفقیت ویرایش شد.", "type": "success"},
+            "show-toast": {"message": _("آیتم با موفقیت ویرایش شد."), "type": "success"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
@@ -353,6 +354,6 @@ def item_update(
         logger.error("item.update_failed", error=str(e), item_id=id, plan_type=plan_type)
         # 🔴 ERROR: Keep modal open and show error toast!
         trigger_data = {
-            "show-toast": {"message": "مشکلی پیش آمد. لطفا دوباره تلاش کنید.", "type": "error"}
+            "show-toast": {"message": _("مشکلی پیش آمد. لطفا دوباره تلاش کنید."), "type": "error"}
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})

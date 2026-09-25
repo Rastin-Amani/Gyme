@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from app.services.trainee import get_trainee_by_user
 from fastapi.responses import RedirectResponse
 from app.security import sanitize_collection_name, ALLOWED_PLAN_TYPES
+from app.i18n import _
 
 
 router = APIRouter(
@@ -32,7 +33,7 @@ def plan_list (request: Request):
         request=request,
         name="pages/user/plan/plans.html",
         context={
-        "title" : "لیست برنامه‌ها",
+        "title" : _("لیست برنامه‌ها"),
         "tenant": tenant_name,
         "user": user,
         "plans": plans
@@ -67,7 +68,7 @@ def show_plan_detail (request: Request, id: str):
         request=request,
         name="pages/user/plan/plan_detail.html",
         context={
-        "title" : "جزئیات برنامه",
+        "title" : _("جزئیات برنامه"),
         "tenant": tenant_name,
         "user": user,
         "plan": plan_data,

@@ -3,6 +3,7 @@ from fastapi.responses import HTMLResponse
 from app.utils import hx_toast  # Using your awesome toast utility!
 from ..templates import templates
 from app.security import validate_phone, validate_length
+from app.i18n import _
 import time
 from collections import defaultdict
 
@@ -19,7 +20,7 @@ def slash(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="pages/marketing/slash.html",
-        context={"title": "اپلیکیشن اختصاصی باشگاه شما", "tenant": tenant},
+        context={"title": _("اپلیکیشن اختصاصی باشگاه شما"), "tenant": tenant},
     )
 
 
@@ -40,7 +41,7 @@ def submit_lead(
     now = time.time()
     _lead_attempts[client_ip] = [t for t in _lead_attempts[client_ip] if now - t < LEAD_WINDOW]
     if len(_lead_attempts[client_ip]) >= LEAD_MAX:
-        headers = hx_toast("تعداد درخواست‌ها بیش از حد مجاز است", "error")
+        headers = hx_toast(_("تعداد درخواست‌ها بیش از حد مجاز است"), "error")
         return HTMLResponse(status_code=429, headers=headers)
     _lead_attempts[client_ip].append(now)
 
@@ -74,7 +75,7 @@ def submit_lead(
 
         pb.collection("leads").create(payload)
 
-        headers = hx_toast(f"ممنون {name}! تا ۲۴ ساعت آتی با شما تماس می‌گیریم.", "success")
+        headers = hx_toast(_("ممنون {name}! تا ۲۴ ساعت آتی با شما تماس می‌گیریم.").format(name=name), "success")
 
         # 🟢 FIXED: Swap the header key so it fires immediately without waiting for a DOM swap!
         trigger_data = headers.pop("HX-Trigger-After-Swap")
@@ -87,7 +88,7 @@ def submit_lead(
 
         logger = get_logger(__name__)
         logger.error("lead.submit_failed", error=str(e), name=name, phone=phone)
-        headers = hx_toast("مشکلی پیش اومد. لطفا دوباره تلاش کنید.", "error")
+        headers = hx_toast(_("مشکلی پیش اومد. لطفا دوباره تلاش کنید."), "error")
 
         # We do the same here just to be safe, since the form has hx-swap="none"
         trigger_data = headers.pop("HX-Trigger-After-Swap", None)

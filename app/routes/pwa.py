@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse, JSONResponse, Response
+from app.i18n import _
 
 router = APIRouter()
 
@@ -29,12 +30,13 @@ def service_worker():
 
 @router.get("/offline/", include_in_schema=False, response_class=HTMLResponse)
 def offline_page():
-    return """<!doctype html>
+    return (
+        """<!doctype html>
 <html dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>قطع ارتباط</title>
+    <title>__OFFLINE_TITLE__</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
@@ -75,11 +77,19 @@ def offline_page():
         <path d="M3 3l18 18" />
       </svg>
     </div>
-    <h1>شما آفلاین هستید</h1>
-    <p>صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به اینترنت، دوباره امتحان کنید.</p>
-    <button class="btn" onclick="window.location.reload()">تلاش مجدد</button>
+    <h1>__OFFLINE_HEADING__</h1>
+    <p>__OFFLINE_BODY__</p>
+    <button class="btn" onclick="window.location.reload()">__OFFLINE_ACTION__</button>
   </body>
 </html>"""
+    .replace("__OFFLINE_TITLE__", _("قطع ارتباط"))
+    .replace("__OFFLINE_HEADING__", _("شما آفلاین هستید"))
+    .replace(
+        "__OFFLINE_BODY__",
+        _("صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به اینترنت، دوباره امتحان کنید."),
+    )
+    .replace("__OFFLINE_ACTION__", _("تلاش مجدد"))
+    )
 
 
 @router.get("/manifest.json", response_class=JSONResponse)
@@ -111,7 +121,7 @@ def dynamic_manifest(request: Request):
     manifest = {
         "name": f"{tenant_name}",
         "short_name": tenant_name,
-        "description": f"اپلیکیشن اختصاصی {tenant_name}",
+        "description": _("اپلیکیشن اختصاصی {tenant_name}").format(tenant_name=tenant_name),
         "start_url": "/login",
         "scope": "/",
         "display": "standalone",

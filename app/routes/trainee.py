@@ -8,6 +8,7 @@ from app.services.progress_logs import get_progress_logs_by_trainee
 import json
 from app.utils import hx_toast
 from app.security import validate_email, validate_phone, sanitize_gender, sanitize_blood_type, validate_length
+from app.i18n import _
 
 router = APIRouter(tags=["Trainees Management"])
 
@@ -56,7 +57,7 @@ def trainees_list(
         request=request,
         name="pages/owner/trainee/trainees.html",
         context={
-            "title": "لیست شاگردان",
+            "title": _("لیست شاگردان"),
             "tenant": request.state.tenant,
             "user": user,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
@@ -70,7 +71,7 @@ def trainees_list(
             },
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
             == 0,
-            "empty_message": "هیچ شاگردی با این مشخصات پیدا نشد",
+            "empty_message": _("هیچ شاگردی با این مشخصات پیدا نشد"),
             "page": page,
             "total_pages": total_pages,
             "total": total,
@@ -117,7 +118,7 @@ def search_trainees(
         request=request,
         name="pages/owner/trainee/trainees.html",
         context={
-            "title": "لیست شاگردان",
+            "title": _("لیست شاگردان"),
             "tenant": request.state.tenant,
             "user": request.state.user,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
@@ -132,7 +133,7 @@ def search_trainees(
             "search_query": query,
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees) == 0
             and len(query) > 0,
-            "empty_message": "هیچ شاگردی با این مشخصات پیدا نشد",
+            "empty_message": _("هیچ شاگردی با این مشخصات پیدا نشد"),
             "page": page,
             "total_pages": total_pages,
             "has_more_pages": has_more_pages,
@@ -178,7 +179,7 @@ def filter_trainees(
         request=request,
         name="pages/owner/trainee/trainees.html",
         context={
-            "title": "لیست شاگردان",
+            "title": _("لیست شاگردان"),
             "tenant": request.state.tenant,
             "user": request.state.user,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
@@ -193,7 +194,7 @@ def filter_trainees(
             "search_query": request.query_params.get("query", ""),
             "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
             == 0,
-            "empty_message": "هیچ شاگردی با این فیلتر پیدا نشد",
+            "empty_message": _("هیچ شاگردی با این فیلتر پیدا نشد"),
             "page": page,
             "total_pages": total_pages,
             "has_more_pages": has_more_pages,
@@ -214,7 +215,7 @@ def trainees_new_form(request: Request):
         request=request,
         name="forms/trainees_form.html",
         context={
-            "title": "ثبت شاگرد جدید",
+            "title": _("ثبت شاگرد جدید"),
             "tenant": tenant,
             "user": user,
             "trainee": None,
@@ -253,7 +254,7 @@ def show_trainee_detail(request: Request, id: str):
         request=request,
         name="pages/owner/trainee/trainee_detail.html",
         context={
-            "title": "اطلاعات شاگرد",
+            "title": _("اطلاعات شاگرد"),
             "tenant": tenant_name,
             "user": user,
             "trainee": trainee_data,
@@ -269,7 +270,7 @@ def trainee_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
-        context={"delete_url": f"/trainees/{id}", "title": "حذف شاگرد"},
+        context={"delete_url": f"/trainees/{id}", "title": _("حذف شاگرد")},
     )
 
 
@@ -281,7 +282,7 @@ def trainee_delete(request: Request, id: str):
         from app.services.trainee import delete_trainee
 
         delete_trainee(pb, tenant_id, id)
-        headers = hx_toast("شاگرد با موفقیت حذف شد.", "success")
+        headers = hx_toast(_("شاگرد با موفقیت حذف شد."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/trainees"}
         headers["HX-Trigger"] = json.dumps(trigger_dict)
@@ -291,7 +292,7 @@ def trainee_delete(request: Request, id: str):
 
         logger = get_logger(__name__)
         logger.error("trainee.delete_failed", error=str(e), trainee_id=id)
-        headers = hx_toast("خطا در حذف شاگرد.", "error")
+        headers = hx_toast(_("خطا در حذف شاگرد."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
 
@@ -309,7 +310,7 @@ def trainee_edit_form(request: Request, id: str):
         request=request,
         name="forms/trainees_form.html",
         context={
-            "title": "ویرایش شاگرد",
+            "title": _("ویرایش شاگرد"),
             "tenant": tenant_name,
             "user": user,
             "trainee": trainee_data,
@@ -375,7 +376,7 @@ def trainee_create(
         )
 
         if not user_result.get("ok"):
-            error_msg = user_result.get("error", "خطا در ثبت کاربر.")
+            error_msg = user_result.get("error", _("خطا در ثبت کاربر."))
             headers = hx_toast(error_msg, "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
 
@@ -399,7 +400,7 @@ def trainee_create(
         new_trainee_id = created_trainee.id
 
         # --- STEP 3: Success! Delayed Redirect to Progress Logs ---
-        headers = hx_toast("شاگرد با موفقیت ثبت شد. در حال انتقال...", "success")
+        headers = hx_toast(_("شاگرد با موفقیت ثبت شد. در حال انتقال..."), "success")
 
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": f"/progress-log/new/{new_trainee_id}"}
@@ -412,7 +413,7 @@ def trainee_create(
 
         logger = get_logger(__name__)
         logger.error("trainee.create_failed", error=str(e), tenant=tenant_id)
-        headers = hx_toast("خطای سرور: اطلاعات وارد شده را بررسی کنید.", "error")
+        headers = hx_toast(_("خطای سرور: اطلاعات وارد شده را بررسی کنید."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
 
@@ -465,10 +466,10 @@ def trainee_update(
                 coach_trainees = list_trainees(pb, tenant_id, coach_id=user.id, per_page=500)
                 ids = {t.id for t in getattr(coach_trainees, "items", [])}
                 if id not in ids:
-                    headers = hx_toast("دسترسی غیرمجاز", "error")
+                    headers = hx_toast(_("دسترسی غیرمجاز"), "error")
                     return HTMLResponse(content="", status_code=403, headers=headers)
         except Exception:
-            headers = hx_toast("شاگرد مورد نظر یافت نشد.", "error")
+            headers = hx_toast(_("شاگرد مورد نظر یافت نشد."), "error")
             return HTMLResponse(content="", status_code=404, headers=headers)
 
         # --- STEP 2: Update Auth User ---
@@ -494,7 +495,7 @@ def trainee_update(
         update_trainee(pb, id, trainee_data)
 
         # --- STEP 4: Success! Delayed Redirect to Trainee Details ---
-        headers = hx_toast("اطلاعات شاگرد با موفقیت بروزرسانی شد.", "success")
+        headers = hx_toast(_("اطلاعات شاگرد با موفقیت بروزرسانی شد."), "success")
 
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": f"/trainees/{id}"}
@@ -507,5 +508,5 @@ def trainee_update(
 
         logger = get_logger(__name__)
         logger.error("trainee.update_failed", error=str(e), trainee_id=id)
-        headers = hx_toast("خطا در بروزرسانی اطلاعات.", "error")
+        headers = hx_toast(_("خطا در بروزرسانی اطلاعات."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

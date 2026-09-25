@@ -6,6 +6,7 @@ from app.services.plan import get_plans_by_trainee, get_plan_by_id
 from app.services.progress import get_progress_by_plan
 from app.services.item import get_items_by_plan_seq, list_items_by_plan
 from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name
+from app.i18n import _
 
 router = APIRouter()
 
@@ -68,7 +69,7 @@ def trainee_dashboard(request: Request):
         name="pages/user/dashboard.html",
         context={
             "request": request,
-            "title": "داشبورد کاربر",
+            "title": _("داشبورد کاربر"),
             "user": user,
             "tenant": request.state.tenant,  # Frontend might still want the object
             "trainee": trainee,

@@ -1,6 +1,7 @@
 from app.pb import pb
 from fastapi import Request
 from structlog import get_logger
+from app.i18n import _
 
 logger = get_logger(__name__)
 
@@ -20,7 +21,7 @@ def login_user(identity: str, password: str, tenant: str):
 
     except Exception as e:
         logger.warning("login_failed", identity=identity, tenant=tenant, error=str(e))
-        return {"ok": False, "error": "اطلاعات اشتباه است!"}
+        return {"ok": False, "error": _("اطلاعات اشتباه است!")}
 
 
 def create_user(
@@ -65,7 +66,7 @@ def create_user(
         logger.error("user_creation_failed", email=email, role=role, tenant=tenant_id, error=str(e))
         return {
             "ok": False,
-            "error": "ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر دارد)",
+            "error": _("ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر دارد)"),
         }
 
 
@@ -130,4 +131,4 @@ def update_user_password(
 
     except Exception as e:
         logger.warning("password_change_failed", user_id=user_id, error=str(e))
-        return {"ok": False, "error": "پسورد فعلی اشتباه است یا خطایی رخ داد."}
+        return {"ok": False, "error": _("پسورد فعلی اشتباه است یا خطایی رخ داد.")}
