@@ -1,4 +1,5 @@
 import './main.css';
+import './motion.js';
 // frontend/js/app.js
 import htmx from 'htmx.org';
 import Alpine from 'alpinejs';
