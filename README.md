@@ -172,3 +172,21 @@ Node/Vite files are excluded from the image. Full runbook:
 There is no formal contribution process yet. Keep changes consistent with the
 existing patterns (routes thin, logic in services, Persian UI strings, HTMX +
 toast interaction style), and run `ruff check .` and `black .` before submitting.
+
+
+## Internationalization (i18n)
+
+Languages (cookie-based, Seoz pattern): **fa** (default, RTL), **en**, **es**, **tr**, **hy**.
+
+- Switcher sets `locale` cookie for 1 year via `GET /locale/{code}?next=...` and full page reload.
+- `<html lang dir>` follows the locale — RTL flips automatically for `fa`.
+- UI strings: `_("…")` in Jinja and Python (Persian msgids + gettext catalogs under `app/locales/`).
+
+```bash
+make i18n-extract   # refresh messages.pot
+make i18n-add LOCALE=de   # enable a new language (also flip enabled=True in app/i18n.py)
+make i18n-update    # merge new msgids into existing .po files
+make i18n-compile   # build .mo
+```
+
+To add a language: register it in `app/i18n.py` (`enabled=True`), `make i18n-add LOCALE=xx`, translate the `.po`, `make i18n-compile`.

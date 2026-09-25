@@ -97,3 +97,12 @@ app/
 - `package.json`: Tailwind scripts.
 - `app/requirements.txt`: Python deps.
 - `app/templates.py`: Jalali date filters.
+
+### i18n (multilingual)
+```bash
+make i18n-extract      # refresh app/locales/messages.pot
+make i18n-add LOCALE=de  # new catalog (also enable in app/i18n.py)
+make i18n-update
+make i18n-compile
+pytest tests/test_i18n.py
+```
