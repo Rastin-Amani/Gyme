@@ -1,21 +1,22 @@
 /* ────────────────────────────────────────────────────────────────────────────
-   GYME — Design system (Wispr Flow inspired)
-   "cream broadsheet, dark velvet chambers"
+   GYME — Design system (Caldera)
+   "forge fire on warm limestone"
 
-   Canvas  #ffffeb (lumen cream)    Primary #f0d7ff (lavender whisper) — FILL ONLY
-   Ink     #1a1a1a (vast ink)       Secondary #034f46 (forest ink)     — on-cream accent
-   Ember   #ffa946 (ember glow)     — active/live accents on dark only
+   Canvas  #e2e2df (pumice)        Accent  #fc5000 (ember)   — the one aggressive chromatic
+   Surface #f7f6f2 (limestone)              #524ae9 (plasma violet) — hero halftone only
+   Ink     #070607 (obsidian)              #f5f28e (sulfur)        — tags/labels only
+   Chalk   #ffffff (chalk) — text on dark surfaces
 
    Rules:
-   - Shadowless: depth comes from 2px ink borders + surface fills + radii.
-   - 2px border is the signature (applies to every DaisyUI control via --border).
-   - 9999px pills for badges/selectors; 12px radius for buttons/inputs;
-     32px radius boxes for cards/modals/sections; 40–80px dark chambers.
-   - EB Garamond (400) for display headings, Figtree for UI.
-   - Lavender is a FILL: never use it as text on cream. Use forest teal instead.
+   - Shadowless: hierarchy comes from surface contrast (pumice canvas → limestone
+     cards → ember features → obsidian lines), not depth.
+   - Triple-radius: 800px pills (buttons, badges, tags) / 100px inputs / 40px surfaces.
+   - Anton (condensed ultrabold) for display headings; DM Sans Medium for UI text.
+   - Ember is the only aggressive accent; plasma violet never touches controls;
+     sulfur never leaves tag/badge duty.
    ---------------------------------------------------------------------------- */
 
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 @import 'tailwindcss';
 
@@ -23,85 +24,112 @@
     themes: all;
 }
 
-/* ── Gyme theme ────────────────────────────────────────────────────────────── */
+/* ── Gyme theme (Caldera) ─────────────────────────────────────────────────── */
 @plugin "daisyui/theme" {
     name: 'gyme';
     default: false;
     prefersdark: false;
     color-scheme: 'light';
 
-    /* Surfaces — cream broadsheet */
-    --color-base-100: #ffffeb; /* lumen cream — page canvas */
-    --color-base-200: #e4e4d0; /* lumen stone — separators, muted fills */
-    --color-base-300: #cfcfae; /* one step deeper, hover/divider fills */
-    --color-base-content: #1a1a1a; /* vast ink — primary text */
+    /* Surfaces — warm limestone */
+    --color-base-100: #f7f6f2; /* limestone — column, cards, components */
+    --color-base-200: #e2e2df; /* pumice — page canvas outside the column */
+    --color-base-300: #d6d6d1; /* deeper pumice — dividers, hover fills */
+    --color-base-content: #070607; /* obsidian — primary text */
 
-    /* Brand */
-    --color-primary: #f0d7ff; /* lavender whisper — the one clickable thing */
-    --color-primary-content: #1a1a1a;
-    --color-secondary: #034f46; /* forest ink — inner accent, badges */
-    --color-secondary-content: #ffffeb;
-    --color-accent: #ffa946; /* ember glow — live/active accents */
-    --color-accent-content: #1a1a1a;
+    /* Brand — ember is the one clickable thing */
+    --color-primary: #fc5000; /* ember — CTAs, featured surfaces */
+    --color-primary-content: #070607;
+    --color-secondary: #070607; /* obsidian — links, active states, dark chips */
+    --color-secondary-content: #f7f6f2;
+    --color-accent: #fc5000; /* ember — checked controls, day badges */
+    --color-accent-content: #070607;
 
     /* Dark chambers */
-    --color-neutral: #1a1a1a;
-    --color-neutral-content: #ffffeb;
+    --color-neutral: #070607;
+    --color-neutral-content: #ffffff;
 
-    /* Status — tuned for AA on cream */
+    /* Status — tuned for AA on warm limestone */
     --color-info: #0f766e;
-    --color-info-content: #ffffeb;
+    --color-info-content: #f7f6f2;
     --color-success: #15803d;
-    --color-success-content: #ffffeb;
+    --color-success-content: #f7f6f2;
     --color-warning: #b45309;
-    --color-warning-content: #ffffeb;
+    --color-warning-content: #f7f6f2;
     --color-error: #b91c1c;
-    --color-error-content: #ffffeb;
+    --color-error-content: #f7f6f2;
 
-    /* Shape language: pills / 12px controls / 32px boxes */
-    --radius-selector: 999rem; /* badges, toggles, status → full pills */
-    --radius-field: 0.75rem; /* buttons, inputs, selects, textareas → 12px */
-    --radius-box: 2rem; /* cards, modals, collapses, sections → 32px */
+    /* Triple-radius: 800px pills / 100px inputs · buttons / 40px surfaces */
+    --radius-selector: 800px; /* badges, toggles, tags → full pills */
+    --radius-field: 100px; /* buttons, inputs, selects, join → pills */
+    --radius-box: 2.5rem; /* cards, modals, collapses, sections → 40px */
 
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
 
-    /* Border-driven flatness: 2px ink border everywhere */
+    /* Flat, paper-like: 2px obsidian border signature, deliberately shadowless */
     --border: 2px;
     --depth: 0; /* no box-shadows */
     --noise: 0;
 }
 
-/* ── Fonts & named tokens ──────────────────────────────────────────────────── */
+/* ── Fonts & named tokens ─────────────────────────────────────────────────── */
 @theme {
-    /* Figtree = UI; YekanBakh = Latin-numeral Persian fallback (mixed text). */
-    --font-sans: 'Figtree', 'YekanBakh', ui-sans-serif, system-ui, -apple-system,
-        'Segoe UI', Roboto, sans-serif;
-    /* EB Garamond weight-400 display headings; YekanBakh falls back for Persian. */
-    --font-display: 'EB Garamond', 'YekanBakh', ui-serif, Georgia, 'Times New Roman', serif;
-    --font-brand: 'YekanBakh', 'Figtree', ui-sans-serif, system-ui, sans-serif;
+    /* DM Sans = UI (medium-weight body). */
+    --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+        Roboto, sans-serif;
+    /* Anton = condensed ultrabold display (stands in for PP Neue Corp Compact). */
+    --font-display: 'Anton', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-brand: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
 
-    /* Wispr palette as first-class utilities (bg-lavender-whisper, text-forest-ink, …) */
-    --color-lavender-whisper: #f0d7ff;
-    --color-forest-ink: #034f46;
-    --color-ember-glow: #ffa946;
-    --color-vast-ink: #1a1a1a;
-    --color-lumen-cream: #ffffeb;
-    --color-lumen-stone: #e4e4d0;
-    --color-fog: #8a8a80;
-    --color-charcoal: #222222;
+    /* Caldera palette as first-class utilities (bg-ember, text-obsidian, …) */
+    --color-ember: #fc5000;
+    --color-plasma-violet: #524ae9;
+    --color-sulfur: #f5f28e;
+    --color-limestone: #f7f6f2;
+    --color-pumice: #e2e2df;
+    --color-obsidian: #070607;
+    --color-chalk: #ffffff;
+
+    /* Warm muted gray for captions/meta — AA on limestone */
+    --color-fog: #6a6964;
+
+    /* Legacy rebinds — existing template utilities map onto Caldera:
+       lavender fill → ember fill (with /NN opacity = warm ember washes) */
+    --color-lavender-whisper: #fc5000;
+    --color-ember-glow: #fc5000;
+    --color-vast-ink: #070607;
+    --color-lumen-cream: #f7f6f2;
+    --color-lumen-stone: #e2e2df;
+    --color-charcoal: #070607;
     --color-pure-white: #ffffff;
+
+    /* Architectural display scale (login hero, featured stats) */
+    --text-display: 3.5rem;
+    --text-display--line-height: 1;
+    --text-heading-3xl: 2.75rem;
+    --text-heading-3xl--line-height: 1;
+    --text-heading-2xl: 2.125rem;
+    --text-heading-2xl--line-height: 1.05;
 }
 
-@font-face {
-    font-family: 'YekanBakh';
-    src: url('./assets/YekanBakhFaNum-VF.woff') format('woff');
-    font-weight: 100 900;
-    font-style: normal;
-    font-display: swap;
+/* ── Signature: halftone dot pattern (violet → ember, ember dot grid) ────────
+   The system's most recognizable motif. Applied to hero-scale blocks with
+   border-2 border-base-content and rounded-[2.5rem]. */
+@utility halftone {
+    background-color: var(--color-plasma-violet);
+    background-image:
+        radial-gradient(
+            120% 110% at 88% -12%,
+            var(--color-ember) 0%,
+            color-mix(in oklab, var(--color-ember) 45%, transparent) 52%,
+            transparent 80%
+        ),
+        radial-gradient(var(--color-ember) 1.6px, transparent 1.7px);
+    background-size: auto, 13px 13px;
 }
 
-/* ── Motion: one small, coherent vocabulary ────────────────────────────────── */
+/* ── Motion: one small, coherent vocabulary ───────────────────────────────── */
 @keyframes slide-up {
     from {
         opacity: 0;
@@ -113,13 +141,15 @@
     }
 }
 
-@keyframes wave {
+@keyframes sparks-flicker {
     0%,
     100% {
-        transform: scaleY(0.4);
+        opacity: 0.45;
+        transform: scale(0.92);
     }
     50% {
-        transform: scaleY(1);
+        opacity: 1;
+        transform: scale(1.05);
     }
 }
 
@@ -127,37 +157,34 @@
     animation: slide-up 0.35s ease-out both;
 }
 
-/* Waveform visualizer — decorative rhythm marker from the reference system. */
-@utility waveform {
+/* Ember spark trail — three ember dots flickering like coals; the
+   decorative heartbeat of the system (replaces the old equalizer bars). */
+@utility sparks {
     display: inline-flex;
-    gap: 3px;
     align-items: center;
-    height: 1em;
-    color: inherit;
+    gap: 4px;
+    vertical-align: middle;
 
     & > i {
-        width: 3px;
-        height: 100%;
-        border-radius: 999rem;
-        background: currentColor;
-        transform-origin: center;
-        animation: wave 1.2s ease-in-out infinite;
+        display: block;
+        border-radius: 800px;
+        background: var(--color-ember);
+        animation: sparks-flicker 2.8s ease-in-out infinite;
     }
 
     & > i:nth-child(1) {
-        animation-delay: 0s;
+        width: 0.5rem;
+        height: 0.5rem;
     }
     & > i:nth-child(2) {
-        animation-delay: 0.15s;
+        width: 0.375rem;
+        height: 0.375rem;
+        animation-delay: 0.4s;
     }
     & > i:nth-child(3) {
-        animation-delay: 0.3s;
-    }
-    & > i:nth-child(4) {
-        animation-delay: 0.45s;
-    }
-    & > i:nth-child(5) {
-        animation-delay: 0.6s;
+        width: 0.25rem;
+        height: 0.25rem;
+        animation-delay: 0.8s;
     }
 }
 
@@ -215,7 +242,7 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    border: 2px solid var(--color-accent);
+    border: 2px solid var(--color-ember);
     pointer-events: none;
     animation: ring-out 0.55s ease-out forwards;
 }
