@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-25 16:09+0000\n"
+"POT-Creation-Date: 2026-09-26 12:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,439 +17,422 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: app/middleware.py:168 app/middleware.py:176
-msgid "درخواست نامعتبر (CSRF)"
+#: app/middleware.py:171 app/middleware.py:197
+msgid "Invalid request (CSRF)"
 msgstr ""
 
-#: app/routes/auth.py:44 app/templates/pages/auth/login.html:223
-msgid "ورود"
+#: app/routes/auth.py:46 app/templates/pages/auth/login.html:150
+#: app/templates/pages/auth/login.html:239
+msgid "Log in"
 msgstr ""
 
-#: app/routes/auth.py:91
-msgid "خطای سیستم: باشگاه یافت نشد!"
+#: app/routes/auth.py:92
+msgid "System error: Gym not found!"
 msgstr ""
 
-#: app/routes/auth.py:98
-msgid "تعداد تلاش‌های ورود بیش از حد مجاز است. لطفاً چند دقیقه صبر کنید."
+#: app/routes/auth.py:100
+msgid "Too many login attempts. Please wait a few minutes."
 msgstr ""
 
-#: app/routes/auth.py:106
-msgid "ایمیل و رمز عبور الزامی است"
+#: app/routes/auth.py:109
+msgid "Email and password are required"
 msgstr ""
 
-#: app/routes/auth.py:113
-msgid "فرمت ایمیل نامعتبر است"
+#: app/routes/auth.py:116
+msgid "Invalid email format"
 msgstr ""
 
-#: app/routes/auth.py:121
-msgid "ایمیل یا پسورد اشتباه است."
+#: app/routes/auth.py:124
+msgid "Wrong email or password."
 msgstr ""
 
-#: app/routes/auth.py:162
-msgid "شما وارد نشده‌اید!"
+#: app/routes/auth.py:163
+msgid "You are not logged in!"
 msgstr ""
 
-#: app/routes/auth.py:167
-msgid "پسورد جدید و تکرار آن یکسان نیستند."
+#: app/routes/auth.py:168
+msgid "New password and its confirmation do not match."
 msgstr ""
 
-#: app/routes/auth.py:171
-msgid "پسورد باید حداقل ۸ کاراکتر باشد."
+#: app/routes/auth.py:172
+msgid "Password must be at least 8 characters."
 msgstr ""
 
-#: app/routes/auth.py:174
-msgid "پسورد خیلی طولانی است"
+#: app/routes/auth.py:175
+msgid "Password is too long"
 msgstr ""
 
-#: app/routes/auth.py:179
-msgid "پسورد نباید مشابه ایمیل باشد"
+#: app/routes/auth.py:180
+msgid "Password must not be similar to the email"
 msgstr ""
 
-#: app/routes/auth.py:204
-msgid "پسورد با موفقیت تغییر کرد! 🔒"
+#: app/routes/auth.py:205
+msgid "Password changed successfully! 🔒"
 msgstr ""
 
 #: app/routes/coach.py:37 app/templates/pages/owner/coach/coaches.html:6
 #: app/templates/pages/owner/profile/profile.html:65
-msgid "مربی‌ها"
+msgid "Coaches"
 msgstr ""
 
-#: app/routes/coach.py:60
-msgid "ثبت مربی جدید"
+#: app/routes/coach.py:60 app/templates/pages/owner/coach/coaches.html:9
+msgid "New coach"
 msgstr ""
 
 #: app/routes/coach.py:88
-msgid "اطلاعات مربی"
+msgid "Coach details"
 msgstr ""
 
 #: app/routes/coach.py:114
-msgid "ویرایش مربی"
+msgid "Edit coach"
 msgstr ""
 
-#: app/routes/coach.py:127 app/templates/forms/coaches_form.html:74
-msgid "حذف مربی"
+#: app/routes/coach.py:127
+msgid "Delete coach"
 msgstr ""
 
 #: app/routes/coach.py:136 app/routes/coach.py:169 app/routes/coach.py:227
-#: app/routes/item.py:187 app/routes/plan.py:477 app/routes/progress_logs.py:71
-#: app/routes/progress_logs.py:261 app/routes/trainee.py:469
-msgid "دسترسی غیرمجاز"
+#: app/routes/item.py:195 app/routes/plan.py:498 app/routes/progress_logs.py:80
+#: app/routes/progress_logs.py:284 app/routes/trainee.py:486
+msgid "Access denied"
 msgstr ""
 
 #: app/routes/coach.py:142
-msgid "مربی با موفقیت حذف شد."
+msgid "Coach deleted successfully."
 msgstr ""
 
 #: app/routes/coach.py:152
-msgid "خطا در حذف مربی."
+msgid "Error deleting coach."
 msgstr ""
 
-#: app/routes/coach.py:196 app/routes/trainee.py:379
-msgid "خطا در ثبت کاربر."
+#: app/routes/coach.py:196 app/routes/trainee.py:385
+msgid "Error creating user."
 msgstr ""
 
 #: app/routes/coach.py:200
-msgid "مربی با موفقیت ثبت شد."
+msgid "Coach registered successfully."
 msgstr ""
 
-#: app/routes/coach.py:212 app/routes/trainee.py:416
-msgid "خطای سرور: اطلاعات وارد شده را بررسی کنید."
+#: app/routes/coach.py:212 app/routes/trainee.py:432
+msgid "Server error: check the entered information."
 msgstr ""
 
 #: app/routes/coach.py:256
-msgid "اطلاعات مربی با موفقیت بروزرسانی شد."
+msgid "Coach information updated successfully."
 msgstr ""
 
-#: app/routes/coach.py:268 app/routes/plan.py:532 app/routes/trainee.py:511
-msgid "خطا در بروزرسانی اطلاعات."
+#: app/routes/coach.py:268 app/routes/plan.py:554 app/routes/trainee.py:534
+msgid "Error updating information."
 msgstr ""
 
-#: app/routes/dashboard.py:37
-msgid "داشبورد مدیریت"
+#: app/routes/dashboard.py:36
+msgid "Management dashboard"
 msgstr ""
 
-#: app/routes/debug.py:117 app/routes/user/dashboard.py:72
-msgid "داشبورد کاربر"
+#: app/routes/debug.py:113 app/routes/user/dashboard.py:74
+msgid "User dashboard"
 msgstr ""
 
-#: app/routes/item.py:56 app/routes/item.py:90
-msgid "ویرایش آیتم"
+#: app/routes/item.py:63 app/routes/item.py:97
+msgid "Edit item"
 msgstr ""
 
-#: app/routes/item.py:121
-msgid "آیتم با موفقیت حذف شد."
+#: app/routes/item.py:129
+msgid "Item deleted successfully."
 msgstr ""
 
-#: app/routes/item.py:132 app/routes/item.py:250 app/routes/item.py:357
-msgid "مشکلی پیش آمد. لطفا دوباره تلاش کنید."
+#: app/routes/item.py:137 app/routes/item.py:256 app/routes/item.py:362
+msgid "Something went wrong. Please try again."
 msgstr ""
 
-#: app/routes/item.py:144
-msgid "حذف آیتم"
+#: app/routes/item.py:149
+msgid "Delete item"
 msgstr ""
 
-#: app/routes/item.py:177 app/routes/item.py:282 app/routes/plan.py:480
-msgid "نوع برنامه نامعتبر"
+#: app/routes/item.py:183 app/routes/item.py:289 app/routes/plan.py:391
+#: app/routes/plan.py:501
+msgid "Invalid plan type"
 msgstr ""
 
-#: app/routes/item.py:191 app/routes/plan.py:474
-msgid "برنامه یافت نشد"
+#: app/routes/item.py:199 app/routes/plan.py:495
+msgid "Plan not found"
 msgstr ""
 
-#: app/routes/item.py:239
-msgid "آیتم با موفقیت اضافه شد."
+#: app/routes/item.py:248
+msgid "Item added successfully."
 msgstr ""
 
-#: app/routes/item.py:293
-msgid "آیتم یافت نشد"
+#: app/routes/item.py:300
+msgid "Item not found"
 msgstr ""
 
-#: app/routes/item.py:346
-msgid "آیتم با موفقیت ویرایش شد."
+#: app/routes/item.py:354
+msgid "Item updated successfully."
 msgstr ""
 
-#: app/routes/marketing.py:23
-msgid "اپلیکیشن اختصاصی باشگاه شما"
+#: app/routes/plan.py:96
+msgid "Plan templates"
 msgstr ""
 
-#: app/routes/marketing.py:44
-msgid "تعداد درخواست‌ها بیش از حد مجاز است"
+#: app/routes/plan.py:96 app/routes/user/plan.py:30
+#: app/templates/components/coach_stats.html:11
+#: app/templates/components/coach_stats.html:42
+#: app/templates/layouts/dashboard.html:92
+#: app/templates/layouts/dashboard.html:166
+#: app/templates/pages/owner/plan/plans.html:15
+#: app/templates/pages/owner/plan/plans.html:34
+#: app/templates/pages/owner/trainee/trainee_detail.html:155
+msgid "Plans"
 msgstr ""
 
-#: app/routes/marketing.py:78
-msgid "ممنون {name}! تا ۲۴ ساعت آتی با شما تماس می‌گیریم."
+#: app/routes/plan.py:109
+msgid "No plan found with these criteria"
 msgstr ""
 
-#: app/routes/marketing.py:91
-msgid "مشکلی پیش اومد. لطفا دوباره تلاش کنید."
+#: app/routes/plan.py:157
+msgid "New plan template"
 msgstr ""
 
-#: app/routes/plan.py:92
-msgid "قالب‌های برنامه"
+#: app/routes/plan.py:157 app/templates/pages/owner/plan/plans.html:42
+msgid "New plan"
 msgstr ""
 
-#: app/routes/plan.py:92 app/routes/user/plan.py:36
-msgid "لیست برنامه‌ها"
-msgstr ""
-
-#: app/routes/plan.py:105
-msgid "هیچ برنامه‌ای با این مشخصات پیدا نشد"
-msgstr ""
-
-#: app/routes/plan.py:150
-msgid "قالب برنامه جدید"
-msgstr ""
-
-#: app/routes/plan.py:150 app/templates/pages/owner/plan/plans.html:42
-msgid "برنامه جدید"
-msgstr ""
-
-#: app/routes/plan.py:199 app/routes/user/plan.py:71
+#: app/routes/plan.py:206 app/routes/user/plan.py:61
 #: app/templates/pages/user/plan/plan_detail.html:34
-msgid "جزئیات برنامه"
+msgid "Plan details"
 msgstr ""
 
-#: app/routes/plan.py:248 app/templates/forms/plans_form.html:152
-msgid "ویرایش برنامه"
+#: app/routes/plan.py:258
+msgid "Edit plan"
 msgstr ""
 
-#: app/routes/plan.py:335
-msgid "برنامه با موفقیت از قالب ایجاد شد"
+#: app/routes/plan.py:348
+msgid "Plan created from template successfully"
 msgstr ""
 
-#: app/routes/plan.py:343
-msgid "خطا در برقراری ارتباط با پایگاه داده."
+#: app/routes/plan.py:356
+msgid "Error connecting to the database."
 msgstr ""
 
-#: app/routes/plan.py:345
-msgid "قالب یا شاگرد مورد نظر یافت نشد!"
+#: app/routes/plan.py:358
+msgid "Template or trainee not found!"
 msgstr ""
 
-#: app/routes/plan.py:347
-msgid "اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید."
+#: app/routes/plan.py:360
+msgid "Invalid input. Please check the dates."
 msgstr ""
 
-#: app/routes/plan.py:378
-msgid "نوع برنامه نامعتبر است"
+#: app/routes/plan.py:397
+msgid "Days per week must be between 1 and 7"
 msgstr ""
 
-#: app/routes/plan.py:383
-msgid "تعداد روزهای هفته باید بین ۱ تا ۷ باشد"
-msgstr ""
-
-#: app/routes/plan.py:389 app/routes/plan.py:491 app/routes/progress_logs.py:76
-msgid "شاگرد یافت نشد"
-msgstr ""
-
-#: app/routes/plan.py:426
-msgid "قالب جدید با موفقیت ذخیره شد"
-msgstr ""
-
-#: app/routes/plan.py:426
-msgid "برنامه جدید با موفقیت ایجاد شد"
+#: app/routes/plan.py:404 app/routes/plan.py:512 app/routes/progress_logs.py:87
+msgid "Trainee not found"
 msgstr ""
 
 #: app/routes/plan.py:442
-msgid "خطا در ایجاد. لطفا فیلدها را بررسی کنید."
+msgid "New template saved successfully"
 msgstr ""
 
-#: app/routes/plan.py:485
-msgid "تعداد روزهای هفته نامعتبر"
+#: app/routes/plan.py:444
+msgid "New plan created successfully"
 msgstr ""
 
-#: app/routes/plan.py:524
-msgid "تغییرات با موفقیت ذخیره شد"
+#: app/routes/plan.py:461
+msgid "Error creating. Please check the fields."
 msgstr ""
 
-#: app/routes/plan.py:541
-msgid "حذف برنامه"
+#: app/routes/plan.py:506
+msgid "Invalid number of days per week"
 msgstr ""
 
-#: app/routes/plan.py:551
-msgid "برنامه با موفقیت حذف شد."
+#: app/routes/plan.py:546
+msgid "Changes saved successfully"
 msgstr ""
 
-#: app/routes/plan.py:558
-msgid "خطا در حذف برنامه."
+#: app/routes/plan.py:563
+msgid "Delete plan"
 msgstr ""
 
-#: app/routes/profile.py:21 app/routes/user/profile.py:22
+#: app/routes/plan.py:573
+msgid "Plan deleted successfully."
+msgstr ""
+
+#: app/routes/plan.py:580
+msgid "Error deleting plan."
+msgstr ""
+
+#: app/routes/profile.py:21 app/routes/user/profile.py:21
 #: app/templates/layouts/dashboard.html:148
 #: app/templates/layouts/dashboard.html:205
-msgid "پروفایل"
+msgid "Profile"
 msgstr ""
 
-#: app/routes/progress_logs.py:40
-msgid "ثبت ارزیابی اولیه"
+#: app/routes/progress_logs.py:43
+msgid "Record initial assessment"
 msgstr ""
 
-#: app/routes/progress_logs.py:132 app/routes/progress_logs.py:314
-msgid "حداکثر {max_files} فایل مجاز است"
+#: app/routes/progress_logs.py:146 app/routes/progress_logs.py:342
+msgid "Maximum {max_files} files allowed"
 msgstr ""
 
-#: app/routes/progress_logs.py:139 app/routes/progress_logs.py:319
-msgid "نام فایل نامعتبر"
+#: app/routes/progress_logs.py:154 app/routes/progress_logs.py:348
+msgid "Invalid file name"
 msgstr ""
 
-#: app/routes/progress_logs.py:142 app/routes/progress_logs.py:322
-msgid "پسوند {fname} مجاز نیست"
+#: app/routes/progress_logs.py:158 app/routes/progress_logs.py:352
+msgid "Extension {fname} is not allowed"
 msgstr ""
 
-#: app/routes/progress_logs.py:146 app/routes/progress_logs.py:326
-msgid "فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)"
+#: app/routes/progress_logs.py:163 app/routes/progress_logs.py:357
+msgid "Format {filename} is not allowed (JPEG, PNG, WebP, GIF)"
 msgstr ""
 
-#: app/routes/progress_logs.py:152 app/routes/progress_logs.py:331
-msgid "{filename} بزرگتر از ۵MB است"
+#: app/routes/progress_logs.py:172 app/routes/progress_logs.py:365
+msgid "{filename} is larger than 5MB"
 msgstr ""
 
-#: app/routes/progress_logs.py:155 app/routes/progress_logs.py:334
-msgid "فایل خراب است"
+#: app/routes/progress_logs.py:175 app/routes/progress_logs.py:368
+msgid "Corrupted file"
 msgstr ""
 
-#: app/routes/progress_logs.py:163 app/routes/progress_logs.py:167
-#: app/routes/progress_logs.py:337
-msgid "فایل تصویری نامعتبر"
+#: app/routes/progress_logs.py:183 app/routes/progress_logs.py:189
+#: app/routes/progress_logs.py:373
+msgid "Invalid image file"
 msgstr ""
 
-#: app/routes/progress_logs.py:179
-msgid "ارزیابی با موفقیت ثبت شد. در حال انتقال..."
+#: app/routes/progress_logs.py:201
+msgid "Assessment recorded successfully. Redirecting..."
 msgstr ""
 
-#: app/routes/progress_logs.py:192
-msgid "خطا در ثبت اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید."
+#: app/routes/progress_logs.py:214
+msgid "Error saving assessment. Please check the values."
 msgstr ""
 
-#: app/routes/progress_logs.py:217
-msgid "خطا در بارگذاری اطلاعات ارزیابی."
+#: app/routes/progress_logs.py:239
+msgid "Error loading assessment."
 msgstr ""
 
-#: app/routes/progress_logs.py:224
+#: app/routes/progress_logs.py:246
 #: app/templates/modals/progress_log_edit.html:3
-msgid "ویرایش ارزیابی"
+msgid "Edit assessment"
 msgstr ""
 
-#: app/routes/progress_logs.py:266
-msgid "ارزیابی یافت نشد"
+#: app/routes/progress_logs.py:291
+msgid "Assessment not found"
 msgstr ""
 
-#: app/routes/progress_logs.py:352
-msgid "ارزیابی با موفقیت به‌روزرسانی شد."
+#: app/routes/progress_logs.py:388
+msgid "Assessment updated successfully."
 msgstr ""
 
-#: app/routes/progress_logs.py:367
-msgid "خطا در به‌روزرسانی اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید."
+#: app/routes/progress_logs.py:403
+msgid "Error updating assessment. Please check the values."
+msgstr ""
+
+#: app/routes/pwa.py:84
+msgid "Offline"
 msgstr ""
 
 #: app/routes/pwa.py:85
-msgid "قطع ارتباط"
+msgid "You are offline"
 msgstr ""
 
-#: app/routes/pwa.py:86
-msgid "شما آفلاین هستید"
-msgstr ""
-
-#: app/routes/pwa.py:89
+#: app/routes/pwa.py:88
 msgid ""
-"صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به "
-"اینترنت، دوباره امتحان کنید."
+"Pages you've already seen are still available.<br />After reconnecting to"
+" the internet, try again."
 msgstr ""
 
-#: app/routes/pwa.py:91
-msgid "تلاش مجدد"
+#: app/routes/pwa.py:92
+msgid "Try again"
 msgstr ""
 
-#: app/routes/pwa.py:124
-msgid "اپلیکیشن اختصاصی {tenant_name}"
+#: app/routes/pwa.py:125
+msgid "The dedicated app for {tenant_name}"
 msgstr ""
 
-#: app/routes/trainee.py:60 app/routes/trainee.py:121 app/routes/trainee.py:182
-msgid "لیست شاگردان"
+#: app/routes/trainee.py:66 app/routes/trainee.py:127 app/routes/trainee.py:187
+#: app/templates/components/coach_stats.html:16
+#: app/templates/components/dashboard_stats.html:2
+#: app/templates/layouts/dashboard.html:126
+#: app/templates/pages/owner/trainee/trainees.html:6
+msgid "Trainees"
 msgstr ""
 
-#: app/routes/trainee.py:74 app/routes/trainee.py:136
-msgid "هیچ شاگردی با این مشخصات پیدا نشد"
+#: app/routes/trainee.py:80 app/routes/trainee.py:141
+msgid "No trainee found with these criteria"
 msgstr ""
 
-#: app/routes/trainee.py:197
-msgid "هیچ شاگردی با این فیلتر پیدا نشد"
+#: app/routes/trainee.py:201
+msgid "No trainee found with these filters"
 msgstr ""
 
-#: app/routes/trainee.py:218
-msgid "ثبت شاگرد جدید"
+#: app/routes/trainee.py:222 app/templates/pages/owner/trainee/trainees.html:9
+msgid "New trainee"
 msgstr ""
 
-#: app/routes/trainee.py:257
-msgid "اطلاعات شاگرد"
+#: app/routes/trainee.py:262
+msgid "Trainee details"
 msgstr ""
 
-#: app/routes/trainee.py:273 app/templates/forms/trainees_form.html:126
-msgid "حذف شاگرد"
+#: app/routes/trainee.py:278
+msgid "Delete trainee"
 msgstr ""
 
-#: app/routes/trainee.py:285
-msgid "شاگرد با موفقیت حذف شد."
+#: app/routes/trainee.py:290
+msgid "Trainee deleted successfully."
 msgstr ""
 
-#: app/routes/trainee.py:295
-msgid "خطا در حذف شاگرد."
+#: app/routes/trainee.py:300
+msgid "Error deleting trainee."
 msgstr ""
 
-#: app/routes/trainee.py:313
-msgid "ویرایش شاگرد"
+#: app/routes/trainee.py:318
+msgid "Edit trainee"
 msgstr ""
 
-#: app/routes/trainee.py:403
-msgid "شاگرد با موفقیت ثبت شد. در حال انتقال..."
+#: app/routes/trainee.py:419
+msgid "Trainee registered successfully. Redirecting..."
 msgstr ""
 
-#: app/routes/trainee.py:472
-msgid "شاگرد مورد نظر یافت نشد."
+#: app/routes/trainee.py:489
+msgid "Trainee not found."
 msgstr ""
 
-#: app/routes/trainee.py:498
-msgid "اطلاعات شاگرد با موفقیت بروزرسانی شد."
+#: app/routes/trainee.py:521
+msgid "Trainee information updated successfully."
 msgstr ""
 
-#: app/services/auth.py:24
-msgid "اطلاعات اشتباه است!"
+#: app/services/auth.py:26
+msgid "Invalid credentials!"
 msgstr ""
 
-#: app/services/auth.py:69
+#: app/services/auth.py:71
 msgid ""
-"ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر "
-"دارد)"
+"Could not create the user. (The email may already be in use or the "
+"password is too short)"
 msgstr ""
 
-#: app/services/auth.py:134
-msgid "پسورد فعلی اشتباه است یا خطایی رخ داد."
+#: app/services/auth.py:141
+msgid "Current password is incorrect or an error occurred."
 msgstr ""
 
 #: app/templates/base.html:20 app/templates/pages/auth/login.html:130
-#: app/templates/pages/auth/login.html:230
-msgid "جیمی"
+#: app/templates/pages/auth/login.html:251
+msgid "Gyme"
 msgstr ""
 
 #: app/templates/base.html:43
-msgid "⚠️ شما آفلاین هستید — داده‌های ذخیره‌شده نمایش داده می‌شود"
+msgid "⚠️ You are offline — showing saved data"
 msgstr ""
 
 #: app/templates/base.html:236
-msgid "نسخه جدید در دسترس است. برای بروزرسانی کلیک کنید."
+msgid "A new version is available. Click to update."
 msgstr ""
 
 #: app/templates/components/coach_stats.html:4
-msgid "هیچ مربی‌ای یافت نشد."
-msgstr ""
-
-#: app/templates/components/coach_stats.html:11
-#: app/templates/components/coach_stats.html:42
-msgid "برنامه"
-msgstr ""
-
-#: app/templates/components/coach_stats.html:16
-#: app/templates/components/dashboard_stats.html:2
-msgid "شاگردان"
+msgid "No coaches found."
 msgstr ""
 
 #: app/templates/components/coach_stats.html:20
@@ -459,177 +442,136 @@ msgstr ""
 #: app/templates/pages/owner/plan/plans.html:96
 #: app/templates/pages/owner/plan/plans.html:161
 #: app/templates/pages/owner/plan/templates_list.html:11
-msgid "غذایی"
+#: app/templates/pages/user/dashboard.html:54
+msgid "Diet"
 msgstr ""
 
 #: app/templates/components/coach_stats.html:24
 #: app/templates/components/dashboard_stats.html:51
 #: app/templates/forms/plans_form.html:31
+#: app/templates/pages/owner/plan/plan_detail.html:51
+#: app/templates/pages/owner/plan/plans.html:102
+#: app/templates/pages/owner/plan/plans.html:163
 #: app/templates/pages/owner/plan/templates_list.html:13
-msgid "تمرینی"
+#: app/templates/pages/user/dashboard.html:65
+msgid "Training"
 msgstr ""
 
 #: app/templates/components/coach_stats.html:29
-msgid "دارویی"
+msgid "Medication"
 msgstr ""
 
 #: app/templates/components/coach_stats.html:40
 #: app/templates/forms/plans_form.html:46
-#: app/templates/modals/apply_template.html:16
+#: app/templates/modals/apply_template.html:15
 #: app/templates/pages/owner/plan/plan_detail.html:76
-msgid "مربی"
+msgid "Coach"
 msgstr ""
 
 #: app/templates/components/coach_stats.html:41
 #: app/templates/forms/plans_form.html:64
-msgid "شاگرد"
+msgid "Trainee"
 msgstr ""
 
 #: app/templates/components/dashboard_content.html:13
-msgid "عملکرد مربیان"
+msgid "Coach performance"
 msgstr ""
 
 #: app/templates/components/dashboard_content.html:24
-msgid "عملکرد شما"
+msgid "Your performance"
 msgstr ""
 
 #: app/templates/components/dashboard_stats.html:20
-msgid "شاگردهای فعال"
+msgid "Active trainees"
 msgstr ""
 
 #: app/templates/components/dashboard_stats.html:40
-msgid "شاگردهای غیرفعال"
+msgid "Inactive trainees"
 msgstr ""
 
 #: app/templates/components/dashboard_stats.html:47
-msgid "برنامه‌های ثبت شده"
+msgid "Registered plans"
 msgstr ""
 
 #: app/templates/components/dashboard_stats.html:63
 #: app/templates/forms/plans_form.html:37
-msgid "استروئیدی"
+#: app/templates/modals/items_form.html:118
+#: app/templates/pages/owner/plan/plan_detail.html:53
+#: app/templates/pages/owner/plan/plans.html:108
+#: app/templates/pages/owner/plan/plans.html:165
+#: app/templates/pages/owner/plan/templates_list.html:15
+#: app/templates/pages/user/dashboard.html:76
+msgid "Steroid"
 msgstr ""
 
 #: app/templates/components/datepicker.html:3
 #: app/templates/components/datepicker.html:6
-msgid "انتخاب تاریخ"
+msgid "Select date"
 msgstr ""
 
 #: app/templates/components/datepicker.html:7
-msgid "تایید"
+msgid "Confirm"
 msgstr ""
 
 #: app/templates/components/datepicker.html:8
+#: app/templates/components/datepicker.html:69
 #: app/templates/pages/owner/trainee/trainee_detail.html:196
-msgid "بستن"
+msgid "Close"
 msgstr ""
 
 #: app/templates/components/datepicker.html:31
-#: app/templates/forms/coaches_form.html:20
-#: app/templates/forms/coaches_form.html:32
-#: app/templates/forms/trainees_form.html:21
-#: app/templates/forms/trainees_form.html:33
-#: app/templates/modals/items_form.html:51
+#: app/templates/components/phone_field.html:35
+#: app/templates/modals/items_form.html:31
+#: app/templates/modals/items_form.html:50
 #: app/templates/pages/auth/change_password.html:19
-msgid "این فیلد اجباریه."
-msgstr ""
-
-#: app/templates/components/datepicker.html:69
-msgid "close"
+msgid "This field is required."
 msgstr ""
 
 #: app/templates/components/locale_switcher.html:7
-msgid "تغییر زبان"
+msgid "Change language"
 msgstr ""
 
 #: app/templates/components/locale_switcher.html:17
-msgid "زبان‌های موجود"
+msgid "Available languages"
 msgstr ""
 
-#: app/templates/forms/coaches_form.html:11
-#: app/templates/forms/coaches_form.html:17
-#: app/templates/forms/trainees_form.html:12
-#: app/templates/forms/trainees_form.html:18
-msgid "نام"
+#: app/templates/components/phone_field.html:2
+#: app/templates/components/phone_field.html:29
+msgid "Phone number"
 msgstr ""
 
-#: app/templates/forms/coaches_form.html:23
-#: app/templates/forms/coaches_form.html:29
-#: app/templates/forms/trainees_form.html:24
-#: app/templates/forms/trainees_form.html:30
-msgid "نام خانوادگی"
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:37
-#: app/templates/forms/trainees_form.html:38
-#: app/templates/pages/auth/login.html:140
-#: app/templates/pages/auth/login.html:144
-#: app/templates/pages/owner/coach/coach_detail.html:22
-#: app/templates/pages/owner/profile/profile.html:22
-#: app/templates/pages/user/profile/profile.html:15
-msgid "ایمیل"
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:47
-#: app/templates/forms/trainees_form.html:48
-msgid "ایمیل صحیح وارد کنید."
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:50
-#: app/templates/forms/coaches_form.html:59
-#: app/templates/forms/trainees_form.html:52
-#: app/templates/forms/trainees_form.html:61
-msgid "شماره موبایل"
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:79
-#: app/templates/forms/plans_form.html:148
-#: app/templates/forms/trainees_form.html:131
-#: app/templates/modals/confirm_delete.html:7
-msgid "انصراف"
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:82
-#: app/templates/forms/trainees_form.html:134
-#: app/templates/layouts/modal.html:25
-#: app/templates/modals/progress_log_edit.html:111
-#: app/templates/pages/auth/change_password.html:171
-msgid "ذخیره تغییرات"
-msgstr ""
-
-#: app/templates/forms/coaches_form.html:82
-msgid "ثبت مربی"
+#: app/templates/components/phone_field.html:15
+msgid "Country code"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:12
-msgid "نام قالب"
+msgid "Template name"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:16
-msgid "مثل: برنامه کتو"
+msgid "e.g. Keto plan"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:25
 #: app/templates/pages/owner/plan/plans.html:111
-msgid "نوع برنامه"
+msgid "Plan type"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:81
-#: app/templates/modals/apply_template.html:37
+#: app/templates/modals/apply_template.html:36
 #: app/templates/pages/owner/plan/plan_detail.html:82
-msgid "تاریخ شروع"
+msgid "Start date"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:86
-#: app/templates/modals/apply_template.html:40
+#: app/templates/modals/apply_template.html:39
 #: app/templates/pages/owner/plan/plan_detail.html:86
-msgid "تاریخ پایان"
+msgid "End date"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:96
 #: app/templates/pages/owner/plan/plan_detail.html:58
-#: app/templates/pages/owner/plan/templates_list.html:17
-msgid "روز در هفته"
+msgid "Days per week"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:106
@@ -638,10 +580,11 @@ msgstr ""
 #: app/templates/pages/owner/trainee/trainee_detail.html:169
 #: app/templates/pages/owner/trainee/trainees.html:47
 #: app/templates/pages/user/profile/profile.html:19
-msgid "وضعیت"
+msgid "Status"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:112
+#: app/templates/modals/progress_log_edit.html:96
 #: app/templates/pages/owner/plan/plan_detail.html:65
 #: app/templates/pages/owner/profile/profile.html:27
 #: app/templates/pages/owner/trainee/trainee_detail.html:169
@@ -649,7 +592,7 @@ msgstr ""
 #: app/templates/pages/user/plan/plan_detail.html:11
 #: app/templates/pages/user/plan/plans.html:62
 #: app/templates/pages/user/profile/profile.html:20
-msgid "فعال"
+msgid "Active"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:118
@@ -658,1044 +601,715 @@ msgstr ""
 #: app/templates/pages/owner/trainee/trainees.html:57
 #: app/templates/pages/user/plan/plan_detail.html:19
 #: app/templates/pages/user/plan/plans.html:74
-msgid "غیرفعال"
+msgid "Inactive"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:136
-#: app/templates/forms/trainees_form.html:99
-#: app/templates/modals/apply_template.html:44
-#: app/templates/modals/items_form.html:136
-msgid "یادداشت"
+#: app/templates/modals/apply_template.html:43
+#: app/templates/modals/items_form.html:135
+#: app/templates/modals/progress_log_edit.html:102
+#: app/templates/pages/owner/trainee/trainee_detail.html:118
+msgid "Notes"
+msgstr ""
+
+#: app/templates/forms/plans_form.html:148 app/templates/layouts/modal.html:34
+#: app/templates/modals/apply_template.html:47
+#: app/templates/modals/confirm_delete.html:7
+#: app/templates/modals/items_form.html:145
+#: app/templates/modals/progress_log_edit.html:117
+msgid "Cancel"
+msgstr ""
+
+#: app/templates/forms/plans_form.html:152
+msgid "Update plan"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:154
-msgid "ذخیره قالب"
+msgid "Save template"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:156
-msgid "ثبت برنامه"
+#: app/templates/modals/apply_template.html:50
+msgid "Create plan"
 msgstr ""
 
 #: app/templates/forms/plans_form.html:168
 #: app/templates/modals/confirm_delete.html:17
-#: app/templates/modals/items_form.html:157
+#: app/templates/modals/items_form.html:156
 #: app/templates/pages/owner/plan/plan_detail.html:15
 #: app/templates/pages/owner/plan/plan_detail.html:32
-msgid "حذف"
+msgid "Delete"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:10
-msgid "لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود."
+msgid ""
+"Please enter your body measurements. Calculations will be done "
+"automatically."
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:32
-#: app/templates/modals/progress_log_edit.html:25
+#: app/templates/modals/progress_log_edit.html:24
 #: app/templates/pages/owner/trainee/trainee_detail.html:33
 #: app/templates/pages/owner/trainee/trainee_detail.html:67
-msgid "قد"
+msgid "Height"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:45
-#: app/templates/modals/progress_log_edit.html:36
+#: app/templates/modals/items_form.html:67
+#: app/templates/modals/progress_log_edit.html:35
 #: app/templates/pages/owner/trainee/trainee_detail.html:34
 #: app/templates/pages/owner/trainee/trainee_detail.html:71
-msgid "وزن"
+msgid "Weight"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:59
-#: app/templates/modals/progress_log_edit.html:48
-msgid "دور سینه"
+#: app/templates/modals/progress_log_edit.html:47
+msgid "Chest"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:70
-#: app/templates/modals/progress_log_edit.html:58
-msgid "دور کمر"
+#: app/templates/modals/progress_log_edit.html:57
+msgid "Waist"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:82
-#: app/templates/modals/progress_log_edit.html:69
-msgid "دور باسن"
+#: app/templates/modals/progress_log_edit.html:68
+msgid "Hips"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:94
-#: app/templates/modals/progress_log_edit.html:80
-msgid "دور بازو"
+#: app/templates/modals/progress_log_edit.html:79
+msgid "Arms"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:106
-#: app/templates/modals/progress_log_edit.html:92
-msgid "سطح فعالیت"
+#: app/templates/modals/progress_log_edit.html:91
+msgid "Activity level"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:108
-msgid "بدون تحرک (پشت میز)"
+msgid "Sedentary (desk job)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:109
-msgid "سبک (۱ تا ۳ روز ورزش)"
+msgid "Light (1-3 days of exercise)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:110
-msgid "متوسط (۳ تا ۵ روز ورزش)"
+msgid "Moderate (3-5 days of exercise)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:111
-msgid "شدید (۶ تا ۷ روز ورزش)"
+msgid "Intense (6-7 days of exercise)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:112
-msgid "بسیار شدید (ورزشکار حرفه‌ای)"
+msgid "Very intense (professional athlete)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:120
-msgid "شاخص توده بدنی (BMI)"
+msgid "Body mass index (BMI)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:132
-msgid "درصد چربی (BFP)"
+msgid "Body fat percentage (BFP)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:144
-msgid "توده بدون چربی (LBM)"
+msgid "Lean body mass (LBM)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:150
-msgid "وزن چربی"
+msgid "Fat mass"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:156
-msgid "متابولیسم (BMR)"
+msgid "Metabolism (BMR)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:164
-msgid "کالری نگهداری (TDEE)"
+msgid "Maintenance calories (TDEE)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:176
-msgid "تصاویر پیشرفت (اختیاری)"
+msgid "Progress photos (optional)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:200
-msgid "یادداشت‌های ارزیابی"
+msgid "Assessment notes"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:204
-msgid "ثبت ارزیابی"
+msgid "Save assessment"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:267
-msgid "کمبود وزن"
+msgid "Underweight"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:272
-msgid "نرمال"
+msgid "Normal"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:277
-msgid "اضافه وزن"
+msgid "Overweight"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:282
 #: app/templates/forms/progress_logs.html:327
 #: app/templates/forms/progress_logs.html:345
-msgid "چاقی"
+msgid "Obesity"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:315
 #: app/templates/forms/progress_logs.html:333
-msgid "چربی ضروری"
+msgid "Essential fat"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:318
 #: app/templates/forms/progress_logs.html:336
-msgid "ورزشکار"
+msgid "Athletic"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:321
 #: app/templates/forms/progress_logs.html:339
-msgid "تناسب اندام"
+msgid "Fit"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:324
 #: app/templates/forms/progress_logs.html:342
-msgid "قابل قبول"
+msgid "Acceptable"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:441
-msgid "حداکثر {0} فایل مجاز است ({1} انتخاب شده)"
+msgid "Maximum {0} files allowed ({1} selected)"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:452
-msgid "فقط JPEG, PNG, WebP, GIF مجاز هستند"
+msgid "Only JPEG, PNG, WebP, GIF are allowed"
 msgstr ""
 
 #: app/templates/forms/progress_logs.html:458
-msgid "هر فایل حداکثر ۵MB ({0} {1}MB)"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:45
-msgid "مثل"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:67
-#: app/templates/forms/trainees_form.html:68
-#: app/templates/pages/owner/trainee/trainee_detail.html:32
-msgid "تاریخ تولد"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:77
-#: app/templates/pages/owner/trainee/trainee_detail.html:31
-#: app/templates/pages/owner/trainee/trainees.html:32
-msgid "جنسیت"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:79
-#: app/templates/pages/owner/trainee/trainee_detail.html:28
-#: app/templates/pages/owner/trainee/trainees.html:42
-msgid "آقا"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:80
-#: app/templates/pages/owner/trainee/trainee_detail.html:28
-#: app/templates/pages/owner/trainee/trainees.html:43
-msgid "خانم"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:84
-#: app/templates/pages/owner/trainee/trainee_detail.html:35
-msgid "گروه خونی"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:86
-msgid "نامشخص"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:93
-#: app/templates/pages/owner/trainee/trainee_detail.html:45
-msgid "اطلاعات تکمیلی"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:95
-#: app/templates/pages/owner/trainee/trainee_detail.html:50
-msgid "ناهنجاری‌ها و بیماری‌ها"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:96
-msgid "سابقه تمرین"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:97
-msgid "سابقه استروئید"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:98
-msgid "سابقه مکمل"
-msgstr ""
-
-#: app/templates/forms/trainees_form.html:134
-msgid "ثبت و رفتن به فرم ارزیابی"
+msgid "Each file must be at most 5MB ({0} {1}MB)"
 msgstr ""
 
 #: app/templates/layouts/dashboard.html:8
-msgid "بازگشت به صفحه قبل"
+msgid "Back to previous page"
 msgstr ""
 
 #: app/templates/layouts/dashboard.html:33
-msgid "باشگاه"
+msgid "Gym"
 msgstr ""
 
 #: app/templates/layouts/dashboard.html:75
-msgid "داشبورد"
-msgstr ""
-
-#: app/templates/layouts/dashboard.html:92
-#: app/templates/layouts/dashboard.html:166
-#: app/templates/pages/owner/plan/plans.html:15
-#: app/templates/pages/owner/plan/plans.html:34
-#: app/templates/pages/owner/trainee/trainee_detail.html:155
-msgid "برنامه‌ها"
+msgid "Dashboard"
 msgstr ""
 
 #: app/templates/layouts/dashboard.html:109
-msgid "افزودن شاگرد"
-msgstr ""
-
-#: app/templates/layouts/dashboard.html:126
-#: app/templates/pages/owner/trainee/trainees.html:6
-msgid "شاگردها"
+msgid "Add trainee"
 msgstr ""
 
 #: app/templates/layouts/dashboard.html:183
-msgid "امروز"
+msgid "Today"
 msgstr ""
 
-#: app/templates/layouts/modal.html:34
-#: app/templates/modals/apply_template.html:48
-#: app/templates/modals/items_form.html:146
-#: app/templates/modals/progress_log_edit.html:118
-msgid "لغو"
+#: app/templates/layouts/modal.html:25
+#: app/templates/modals/progress_log_edit.html:110
+#: app/templates/pages/auth/change_password.html:171
+msgid "Save changes"
 msgstr ""
 
 #: app/templates/modals/apply_template.html:5
-msgid "اعمال"
+msgid "Apply"
 msgstr ""
 
 #: app/templates/modals/apply_template.html:5
 #: app/templates/pages/owner/plan/templates_list.html:7
-msgid "قالب"
+msgid "Template"
 msgstr ""
 
-#: app/templates/modals/apply_template.html:26
-msgid "انتخاب شاگرد"
+#: app/templates/modals/apply_template.html:25
+msgid "Select trainee"
 msgstr ""
 
-#: app/templates/modals/apply_template.html:28
-msgid "شاگرد را انتخاب کنید..."
-msgstr ""
-
-#: app/templates/modals/apply_template.html:51
-msgid "ایجاد برنامه"
+#: app/templates/modals/apply_template.html:27
+msgid "Select a trainee..."
 msgstr ""
 
 #: app/templates/modals/confirm_delete.html:4
-msgid "آیا مطمئن هستید؟ این عملیات قابل بازگشت نیست."
+msgid "Are you sure? This action cannot be undone."
 msgstr ""
 
-#: app/templates/modals/items_form.html:15
-msgid "نام حرکت"
+#: app/templates/modals/items_form.html:14
+msgid "Exercise name"
 msgstr ""
 
-#: app/templates/modals/items_form.html:21
-msgid "نام حرکت (انتخاب یا تایپ کنید)"
+#: app/templates/modals/items_form.html:20
+msgid "Exercise name (select or type)"
 msgstr ""
 
-#: app/templates/modals/items_form.html:32
-msgid "این فیلد اجباری است."
+#: app/templates/modals/items_form.html:34
+msgid "Exercise category"
 msgstr ""
 
-#: app/templates/modals/items_form.html:35
-msgid "دسته‌بندی حرکت"
-msgstr ""
-
-#: app/templates/modals/items_form.html:48
-#: app/templates/pages/owner/plan/plan_detail.html:182
+#: app/templates/modals/items_form.html:47
+#: app/templates/pages/owner/plan/plan_detail.html:183
 #: app/templates/pages/user/plan/plan_detail.html:81
-msgid "روز"
+msgid "Day"
 msgstr ""
 
-#: app/templates/modals/items_form.html:53
-msgid "ترتیب"
+#: app/templates/modals/items_form.html:52
+msgid "Order"
 msgstr ""
 
-#: app/templates/modals/items_form.html:57
+#: app/templates/modals/items_form.html:56
 #: app/templates/pages/user/dashboard.html:208
 #: app/templates/pages/user/dashboard.html:265
 #: app/templates/pages/user/plan/plan_detail.html:194
 #: app/templates/pages/user/plan/plan_detail.html:266
-msgid "ست"
+msgid "Sets"
 msgstr ""
 
-#: app/templates/modals/items_form.html:64
+#: app/templates/modals/items_form.html:63
 #: app/templates/pages/user/dashboard.html:212
 #: app/templates/pages/user/dashboard.html:267
 #: app/templates/pages/user/plan/plan_detail.html:198
 #: app/templates/pages/user/plan/plan_detail.html:270
-msgid "تکرار"
+msgid "Reps"
 msgstr ""
 
-#: app/templates/modals/items_form.html:68
-msgid "وزنه"
+#: app/templates/modals/items_form.html:71
+msgid "Rest (s)"
 msgstr ""
 
-#: app/templates/modals/items_form.html:72
-msgid "استراحت (s)"
+#: app/templates/modals/items_form.html:77
+#: app/templates/pages/owner/plan/plan_detail.html:137
+msgid "Meal"
 msgstr ""
 
-#: app/templates/modals/items_form.html:78
-msgid "نام وعده"
+#: app/templates/modals/items_form.html:79
+msgid "Select a meal..."
 msgstr ""
 
-#: app/templates/modals/items_form.html:80
-msgid "انتخاب وعده..."
+#: app/templates/modals/items_form.html:88
+msgid "Food name"
 msgstr ""
 
-#: app/templates/modals/items_form.html:89
-msgid "نام غذا"
+#: app/templates/modals/items_form.html:94
+msgid "Food name (select or type)"
 msgstr ""
 
-#: app/templates/modals/items_form.html:95
-msgid "نام غذا (انتخاب یا تایپ کنید)"
+#: app/templates/modals/items_form.html:105
+msgid "Quantity / unit"
 msgstr ""
 
-#: app/templates/modals/items_form.html:106
-msgid "مقدار / واحد"
+#: app/templates/modals/items_form.html:110
+msgid "Supplement/medication name"
 msgstr ""
 
-#: app/templates/modals/items_form.html:111
-msgid "نام مکمل/دارو"
-msgstr ""
-
-#: app/templates/modals/items_form.html:116
+#: app/templates/modals/items_form.html:115
 #: app/templates/pages/owner/plan/plan_detail.html:46
-msgid "نوع"
+msgid "Type"
 msgstr ""
 
-#: app/templates/modals/items_form.html:118
-msgid "مکمل"
+#: app/templates/modals/items_form.html:117
+msgid "Supplement"
 msgstr ""
 
-#: app/templates/modals/items_form.html:119
-#: app/templates/pages/owner/plan/plan_detail.html:53
-#: app/templates/pages/owner/plan/plans.html:108
-#: app/templates/pages/owner/plan/plans.html:165
-#: app/templates/pages/owner/plan/templates_list.html:15
-#: app/templates/pages/user/dashboard.html:76
-msgid "استروئید"
+#: app/templates/modals/items_form.html:122
+msgid "Dosage"
 msgstr ""
 
-#: app/templates/modals/items_form.html:123
-msgid "دوز"
+#: app/templates/modals/items_form.html:127
+msgid "Timing / frequency"
 msgstr ""
 
-#: app/templates/modals/items_form.html:128
-msgid "زمان/تکرار مصرف"
+#: app/templates/modals/items_form.html:160
+msgid "Update"
 msgstr ""
 
-#: app/templates/modals/items_form.html:161
-msgid "بروزرسانی"
+#: app/templates/modals/items_form.html:160
+msgid "Add to list"
 msgstr ""
 
-#: app/templates/modals/items_form.html:161
-msgid "افزودن به لیست"
+#: app/templates/modals/progress_log_edit.html:93
+msgid "Sedentary"
 msgstr ""
 
 #: app/templates/modals/progress_log_edit.html:94
-msgid "بدون تحرک"
+msgid "Light"
 msgstr ""
 
 #: app/templates/modals/progress_log_edit.html:95
-msgid "سبک"
-msgstr ""
-
-#: app/templates/modals/progress_log_edit.html:96
-msgid "متوسط"
+msgid "Moderate"
 msgstr ""
 
 #: app/templates/modals/progress_log_edit.html:97
-msgid "شدید"
-msgstr ""
-
-#: app/templates/modals/progress_log_edit.html:98
-msgid "بسیار شدید"
-msgstr ""
-
-#: app/templates/modals/progress_log_edit.html:103
-#: app/templates/pages/owner/trainee/trainee_detail.html:118
-msgid "یادداشت‌ها"
+msgid "Very active"
 msgstr ""
 
 #: app/templates/pages/auth/change_password.html:3
 #: app/templates/pages/auth/change_password.html:7
+#: app/templates/pages/owner/profile/profile.html:11
 #: app/templates/pages/user/profile/profile.html:5
-msgid "تغییر پسورد"
+msgid "Change password"
 msgstr ""
 
 #: app/templates/pages/auth/change_password.html:11
 #: app/templates/pages/auth/change_password.html:15
-msgid "پسورد فعلی"
+msgid "Current password"
 msgstr ""
 
 #: app/templates/pages/auth/change_password.html:64
 #: app/templates/pages/auth/change_password.html:68
-msgid "پسورد جدید"
+msgid "New password"
 msgstr ""
 
 #: app/templates/pages/auth/change_password.html:74
 #: app/templates/pages/auth/change_password.html:128
-msgid "حداقل ۸ کاراکتر وارد کنید."
+msgid "Enter at least 8 characters."
 msgstr ""
 
 #: app/templates/pages/auth/change_password.html:118
 #: app/templates/pages/auth/change_password.html:122
-msgid "تکرار پسورد جدید"
+msgid "Confirm new password"
 msgstr ""
 
 #: app/templates/pages/auth/login.html:20
-msgid "نصب اپلیکیشن"
+msgid "Install the app"
 msgstr ""
 
 #: app/templates/pages/auth/login.html:22
-msgid "وب اپلیکیشن را به صفحه اصلی خود اضافه کنید."
+msgid "Add the web app to your home screen."
 msgstr ""
 
 #: app/templates/pages/auth/login.html:35
-msgid "در نوار پایین دکمه"
+msgid "Tap the"
 msgstr ""
 
 #: app/templates/pages/auth/login.html:38
-#: app/templates/pages/auth/login.html:50
-msgid "را انتخاب کنید."
+msgid "button in the bottom bar."
 msgstr ""
 
 #: app/templates/pages/auth/login.html:48
-msgid "در منوی باز شده، گزینه"
+msgid "In the menu that opens, choose"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:60
-msgid "در مرحله بعد، روی"
+#: app/templates/pages/auth/login.html:59
+msgid "In the next step, tap"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:62
-msgid "کلیک کنید."
+#: app/templates/pages/auth/login.html:65
+msgid "Got it"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:67
-msgid "متوجه شدم"
+#: app/templates/pages/auth/login.html:137
+msgid "User panel"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:133
-msgid "پنل کاربری"
+#: app/templates/pages/auth/login.html:156
+#: app/templates/pages/auth/login.html:160
+#: app/templates/pages/owner/coach/coach_detail.html:22
+#: app/templates/pages/owner/profile/profile.html:22
+#: app/templates/pages/user/profile/profile.html:15
+msgid "Email"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:150
-msgid "ایمیل معتبر نیست."
+#: app/templates/pages/auth/login.html:166
+msgid "Enter a valid email address."
 msgstr ""
 
-#: app/templates/pages/auth/login.html:158
-#: app/templates/pages/auth/login.html:162
-msgid "رمز عبور"
+#: app/templates/pages/auth/login.html:174
+#: app/templates/pages/auth/login.html:178
+msgid "Password"
 msgstr ""
 
-#: app/templates/pages/auth/login.html:167
-msgid "رمز عبور الزامی است."
+#: app/templates/pages/auth/login.html:183
+msgid "Password is required."
 msgstr ""
 
-#: app/templates/pages/auth/login.html:217
-msgid "رمز عبور را فراموش کردید؟"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:24
-msgid "پلتفرم انحصاری مربیان الیت"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:28
-msgid "دوران برنامه‌های کاغذی و PDF تمام شده!"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:29
-msgid "اپلیکیشن اختصاصی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:30
-msgid "شما آماده است."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:34
-msgid ""
-"شاگردهایتان را از کاغذ، پی‌دی‌اف و دکمه‌ی رو به جلو واتساپ نجات دهید. "
-"جیمی، اپلیکیشن اختصاصی باشگاه شماست با برند خودتان — سریع، ساده و "
-"حرفه‌ای."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:40
-msgid "ساخت اپلیکیشن شما"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:49
-msgid "بدون نیاز به دانش فنی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:49
-msgid "راه‌اندازی در کمتر از ۱۵ دقیقه"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:58
-msgid "مشکل"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:60
-msgid "چرا سیستم فعلی شما جلوی رشدتان را گرفته است؟"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:65
-msgid "کاغذ و PDF"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:65
-msgid ""
-"در محیط باشگاه خوانا نیستند، گم می‌شوند و شاگرد همیشه از آخرین نسخه "
-"بی‌خبر است."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:66
-msgid "هرج و مرج واتس‌اپ"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:66
-msgid ""
-"برنامه‌ها در چت‌ها دفن می‌شوند، اسکرین‌شات‌ها قدیمی می‌شوند و پیگیری "
-"پیشرفت غیرممکن است."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:67
-msgid "خستگی مربی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:67
-msgid ""
-"از طراحی برنامه تا یادآوری تمرین، همه‌چیز روی دوش شماست — بدون هیچ ابزاری"
-" برای مدیریت."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:97
-msgid "راه‌حل"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:99
-msgid "راه‌حل؟ جیمی."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:102
-msgid "نرم‌افزاری که پشت پرده، شما را یک قهرمان نشان می‌دهد."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:107
-msgid "اپلیکیشن با نام و برند شما"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:107
-msgid "لوگو، نام و رنگ باشگاه شما — یک اپ واقعی که شاگردها با افتخار نصب می‌کنند."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:108
-msgid "سیستم CRM قدرتمند مربیان"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:108
-msgid "پروفایل کامل بدنی، سوابق تمرین و برنامه‌های منظم برای هر شاگرد."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:109
-msgid "حضور مجازی شما با GIF حرکات"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:109
-msgid "هر تمرین با ویدیوی حرکتی دقیق — بدون خطای فرم و سوال تکراری."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:110
-msgid "نصب روی تمام گوشی‌های دنیا"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:110
-msgid "روی iOS و اندروید، بدون نیاز به دانش فنی از سمت شاگرد."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:124
-msgid "سرعت نور با سرورهای اختصاصی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:126
-msgid ""
-"اپلیکیشن شما روی زیرساخت اختصاصی اجرا می‌شود؛ باز شدن آنی، بدون کندی و "
-"بدون نگرانی از ترافیک."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:139
-msgid "ظرفیت مشاوره محدود"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:142
-msgid "آماده ارتقا هستید؟"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:145
-msgid ""
-"فرم زیر را پر کنید تا در کمتر از ۲۴ ساعت یک دموی زنده از اپلیکیشن اختصاصی"
-" باشگاه شما آماده کنیم."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:154
-msgid "نام شما (مربی / مدیر)"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:160
-msgid "مثال: راستین امانی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:162
-msgid "لطفاً نام خود را وارد کنید"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:165
-msgid "شماره تماس"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:172
-msgid "مثال: ۰۹۱۲۲۲۷۹۵۷۷"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:174
-msgid "شماره موبایل معتبر نیست (مثال: 09123456789)"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:177
-msgid "سمت شما"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:182
-msgid "انتخاب کنید"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:183
-msgid "موسس / مدیر باشگاه"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:184
-msgid "مربی خصوصی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:185
-#: app/templates/pages/user/dashboard.html:132
-#: app/templates/pages/user/dashboard.html:249
-#: app/templates/pages/user/plan/plan_detail.html:139
-msgid "سایر"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:191
-msgid "تعداد مربی‌ها"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:196
-msgid "فقط خودم"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:197
-msgid "۲ تا ۵ مربی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:198
-msgid "۶ تا ۱۰ مربی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:199
-msgid "بیش از ۱۰ مربی"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:204
-msgid "تعداد شاگردها"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:209
-msgid "کمتر از ۵۰ شاگرد"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:210
-msgid "۵۰ تا ۲۰۰ شاگرد"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:211
-msgid "۲۰۰ تا ۵۰۰ شاگرد"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:212
-msgid "بیش از ۵۰۰ شاگرد"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:218
-msgid "نام باشگاه یا تیم (اختیاری)"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:224
-msgid "باشگاه اکسیژن"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:228
-msgid "توضیحات تکمیلی (اختیاری)"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:231
-msgid "درباره باشگاه، اهداف و انتظاراتتان بنویسید..."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:234
-msgid "ارسال درخواست دمو"
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:238
-msgid "اطلاعات شما نزد ما کاملاً محفوظ است."
-msgstr ""
-
-#: app/templates/pages/marketing/slash.html:248
-msgid "طراحی شده با دقت و داده‌محوری برای مربیان پیشرو"
+#: app/templates/pages/auth/login.html:233
+msgid "Forgot your password?"
 msgstr ""
 
 #: app/templates/pages/owner/dashboard.html:7
-msgid "آمار کلی"
+msgid "Overall statistics"
 msgstr ""
 
 #: app/templates/pages/owner/dashboard.html:13
-msgid "بازه زمانی"
+msgid "Time period"
 msgstr ""
 
 #: app/templates/pages/owner/dashboard.html:19
-msgid "همه زمان‌ها"
+msgid "All time"
 msgstr ""
 
 #: app/templates/pages/owner/dashboard.html:22
-msgid "این ماه"
+msgid "This month"
 msgstr ""
 
 #: app/templates/pages/owner/dashboard.html:25
-msgid "این هفته"
+msgid "This week"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coach_detail.html:5
 #: app/templates/pages/owner/plan/plan_detail.html:9
 #: app/templates/pages/owner/plan/plan_detail.html:26
-#: app/templates/pages/owner/plan/plan_detail.html:151
-#: app/templates/pages/owner/plan/plan_detail.html:173
-#: app/templates/pages/owner/plan/plan_detail.html:198
+#: app/templates/pages/owner/plan/plan_detail.html:152
+#: app/templates/pages/owner/plan/plan_detail.html:174
+#: app/templates/pages/owner/plan/plan_detail.html:199
 #: app/templates/pages/owner/trainee/trainee_detail.html:6
 #: app/templates/pages/owner/trainee/trainee_detail.html:132
-msgid "ویرایش"
+msgid "Edit"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coach_detail.html:21
 #: app/templates/pages/owner/trainee/trainee_detail.html:30
-msgid "تلفن"
+msgid "Phone"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:7
-msgid "مدیریت مربی‌های ثبت‌شده"
-msgstr ""
-
-#: app/templates/pages/owner/coach/coaches.html:9
-msgid "مربی جدید"
+msgid "Manage registered coaches"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:26
-msgid "مشاهده مربی"
+msgid "View coach"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:37
-msgid "هنوز مربی‌ای ثبت نکردید!"
+msgid "You haven't added any coaches yet!"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:44
 #: app/templates/pages/owner/trainee/trainees.html:109
-msgid "صفحه‌بندی"
+msgid "Pagination"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:46
 #: app/templates/pages/owner/trainee/trainees.html:112
-msgid "قبلی"
+msgid "Previous"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:47
 #: app/templates/pages/owner/plan/plans.html:228
 #: app/templates/pages/owner/trainee/trainees.html:113
-msgid "صفحه"
+msgid "Page"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:47
 #: app/templates/pages/owner/plan/plans.html:228
 #: app/templates/pages/owner/trainee/trainees.html:113
-#: app/templates/pages/user/plan/plan_detail.html:39
-msgid "از"
+msgid "of"
 msgstr ""
 
 #: app/templates/pages/owner/coach/coaches.html:49
 #: app/templates/pages/owner/trainee/trainees.html:115
-msgid "بعدی"
+msgid "Next"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:19
-msgid "قالب:"
+msgid "Template:"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:21
-msgid "بدون نام"
+msgid "Untitled"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:36
-msgid "برنامه‌ی"
-msgstr ""
-
-#: app/templates/pages/owner/plan/plan_detail.html:51
-#: app/templates/pages/owner/plan/plans.html:102
-#: app/templates/pages/owner/plan/plans.html:163
-msgid "ورزشی"
+msgid "Plan:"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:107
 #: app/templates/pages/owner/plan/templates_list.html:35
-msgid "اعمال برای شاگرد"
+msgid "Apply to trainee"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:112
-msgid "آیتم‌های برنامه"
+msgid "Plan items"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plan_detail.html:121
-msgid "افزودن آیتم"
+msgid "Add item"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:136
-msgid "غذا"
+#: app/templates/pages/owner/plan/plan_detail.html:140
+msgid "Quantity:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:139
-msgid "مقدار:"
+#: app/templates/pages/owner/plan/plan_detail.html:156
+#: app/templates/pages/owner/plan/plan_detail.html:178
+msgid "Notes:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:155
-#: app/templates/pages/owner/plan/plan_detail.html:177
-msgid "توضیحات:"
+#: app/templates/pages/owner/plan/plan_detail.html:161
+msgid "Medication/Supplement"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:160
-msgid "دارو/مکمل"
+#: app/templates/pages/owner/plan/plan_detail.html:163
+msgid "Day:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:162
-msgid "روز مصرف:"
+#: app/templates/pages/owner/plan/plan_detail.html:186
+msgid "Sets:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:185
-msgid "ست:"
+#: app/templates/pages/owner/plan/plan_detail.html:186
+msgid "Reps:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:185
-msgid "تکرار:"
+#: app/templates/pages/owner/plan/plan_detail.html:186
+msgid "Weight:"
 msgstr ""
 
-#: app/templates/pages/owner/plan/plan_detail.html:185
-msgid "وزن:"
-msgstr ""
-
-#: app/templates/pages/owner/plan/plan_detail.html:209
-msgid "هیچ آیتمی ثبت نشده."
+#: app/templates/pages/owner/plan/plan_detail.html:210
+msgid "No items recorded."
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:26
 #: app/templates/pages/owner/plan/plans.html:34
-msgid "قالب‌ها"
+msgid "Templates"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:40
-msgid "قالب جدید"
+msgid "New template"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:52
 #: app/templates/pages/owner/trainee/trainees.html:13
 #: app/templates/pages/owner/trainee/trainees.html:15
-msgid "جستجو و فیلتر"
+msgid "Search and filter"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:60
 #: app/templates/pages/owner/plan/plans.html:70
-msgid "جستجو (نام شاگرد، نام مربی...)"
+msgid "Search (trainee name, coach name...)"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:90
 #: app/templates/pages/owner/trainee/trainees.html:41
 #: app/templates/pages/owner/trainee/trainees.html:55
-msgid "همه"
+msgid "All"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:121
 #: app/templates/pages/owner/trainee/trainees.html:62
-msgid "پاک کردن فیلترها"
+msgid "Clear filters"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:167
-msgid "روز/هفته"
+msgid "days/week"
 msgstr ""
 
 #: app/templates/pages/owner/plan/plans.html:204
-msgid "هنوز برنامه‌ای ثبت نکردید!"
+msgid "You haven't created any plans yet!"
+msgstr ""
+
+#: app/templates/pages/owner/plan/templates_list.html:17
+msgid "days per week"
 msgstr ""
 
 #: app/templates/pages/owner/plan/templates_list.html:20
 #: app/templates/pages/owner/profile/profile.html:68
 #: app/templates/pages/owner/trainee/trainee_detail.html:173
-msgid "مشاهده"
+msgid "View"
 msgstr ""
 
 #: app/templates/pages/owner/plan/templates_list.html:45
-msgid "هنوز قالبی ساخته نشده."
+msgid "No templates created yet."
 msgstr ""
 
 #: app/templates/pages/owner/plan/templates_list.html:48
-msgid "ساخت قالب جدید"
-msgstr ""
-
-#: app/templates/pages/owner/profile/profile.html:11
-msgid "ویرایش حساب"
-msgstr ""
-
-#: app/templates/pages/owner/profile/profile.html:11
-msgid "تغییر رمز عبور"
+msgid "Create new template"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:30
 #: app/templates/pages/user/profile/profile.html:23
-msgid "تاریخ ساخت حساب"
+msgid "Account created"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:34
 #: app/templates/pages/user/profile/profile.html:27
-msgid "تاریخ آخرین آپدیت"
+msgid "Last updated"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:43
 #: app/templates/pages/user/profile/profile.html:36
-msgid "اطلاعات و تنظیمات اپلیکیشن"
+msgid "App information and settings"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:46
-msgid "دامنه"
+msgid "Domain"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:50
-msgid "تم"
+msgid "Theme"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:60
-msgid "مدیریت"
+msgid "Management"
 msgstr ""
 
 #: app/templates/pages/owner/profile/profile.html:66
-msgid "مدیریت مربی‌های مجموعه"
+msgid "Manage your gym's coaches"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:28
+#: app/templates/pages/owner/trainee/trainees.html:42
+msgid "Male"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:28
+#: app/templates/pages/owner/trainee/trainees.html:43
+msgid "Female"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:31
+#: app/templates/pages/owner/trainee/trainees.html:32
+msgid "Gender"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:31
 msgid "-"
 msgstr ""
 
+#: app/templates/pages/owner/trainee/trainee_detail.html:32
+msgid "Date of birth"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:35
+msgid "Blood type"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:45
+msgid "Additional information"
+msgstr ""
+
 #: app/templates/pages/owner/trainee/trainee_detail.html:47
-msgid "سابقه تمرینی"
+msgid "Training history"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:48
-msgid "مصرف استروئید"
+msgid "Steroid history"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:49
-msgid "مصرف مکمل"
+msgid "Supplement history"
+msgstr ""
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:50
+msgid "Abnormalities and illnesses"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:54
-msgid "تاریخچه"
+msgid "History"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:79
-msgid "درصد چربی بدن"
+msgid "Body fat %"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:83
-msgid "جرم عضلانی"
+msgid "Lean body mass"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:84
@@ -1703,202 +1317,202 @@ msgstr ""
 #: app/templates/pages/user/dashboard.html:274
 #: app/templates/pages/user/plan/plan_detail.html:205
 #: app/templates/pages/user/plan/plan_detail.html:277
-msgid "کیلوگرم"
+msgid "kg"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:87
-msgid "متابولیسم پایه"
+msgid "Basal metabolic rate"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:88
 #: app/templates/pages/owner/trainee/trainee_detail.html:92
-msgid "کیلوکالری"
+msgid "kcal"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:91
-msgid "متابولیسم با فعالیت"
+msgid "Activity-adjusted metabolism"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:95
-msgid "نسبت کمر به لگن"
+msgid "Waist-to-hip ratio"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:101
-msgid "تصاویر پیشرفت"
+msgid "Progress photos"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:107
-msgid "تصویر پیشرفت"
+msgid "Progress photo"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:141
-msgid "لاگی ثبت نشده!"
+msgid "No assessments recorded yet!"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:150
-msgid "ثبت لاگ پیشرفت"
+msgid "Record assessment"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:165
 #: app/templates/pages/user/plan/plan_detail.html:28
 #: app/templates/pages/user/plan/plans.html:48
-msgid "برنامه تمرینی"
+msgid "Training plan"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:165
 #: app/templates/pages/user/plan/plan_detail.html:30
 #: app/templates/pages/user/plan/plans.html:50
-msgid "برنامه غذایی"
+msgid "Diet plan"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:165
 #: app/templates/pages/user/plan/plan_detail.html:32
 #: app/templates/pages/user/plan/plans.html:52
-msgid "برنامه استروئیدی"
+msgid "Steroid plan"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:169
 #: app/templates/pages/user/plan/plan_detail.html:15
 #: app/templates/pages/user/plan/plans.html:68
-msgid "پیش‌نویس"
+msgid "Draft"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:170
 #: app/templates/pages/user/plan/plans.html:106
-msgid "شروع"
+msgid "Start"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:170
 #: app/templates/pages/user/plan/plans.html:130
-msgid "پایان"
+msgid "End"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:178
 #: app/templates/pages/user/plan/plans.html:174
-msgid "برنامه‌ای ثبت نشده!"
+msgid "No plans recorded yet!"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainee_detail.html:193
-msgid "تصویر کامل پیشرفت"
+msgid "Full progress photo"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:7
-msgid "مدیریت شاگردهای ثبت‌شده"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainees.html:9
-msgid "شاگرد جدید"
+msgid "Manage registered trainees"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:21
-msgid "جستجو"
+msgid "Search"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:21
-msgid "نام، ایمیل..."
+msgid "name, email..."
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:22
-msgid "جستجو..."
+msgid "Search..."
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:87
-msgid "مشاهده شاگرد"
+msgid "View trainee"
 msgstr ""
 
 #: app/templates/pages/owner/trainee/trainees.html:100
-msgid "هنوز شاگردی ثبت نکردید!"
+msgid "You haven't added any trainees yet!"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:8
-msgid "قهرمان"
+msgid "Champion"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:10
-msgid "خوش اومدی"
+msgid "Welcome back"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:27
-msgid "برای کارکرد صحیح اپ، بعد از پایان هر روز حتما تیک انجام شد را بزنید!"
-msgstr ""
-
-#: app/templates/pages/user/dashboard.html:54
-msgid "تغذیه"
-msgstr ""
-
-#: app/templates/pages/user/dashboard.html:65
-msgid "تمرین"
+msgid ""
+"For the app to work correctly, make sure to mark \"Done\" at the end of "
+"each day!"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:92
 #: app/templates/pages/user/dashboard.html:179
 #: app/templates/pages/user/dashboard.html:321
-msgid "انجام شد"
+msgid "Done"
+msgstr ""
+
+#: app/templates/pages/user/dashboard.html:132
+#: app/templates/pages/user/dashboard.html:249
+#: app/templates/pages/user/plan/plan_detail.html:139
+msgid "Other"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:160
 #: app/templates/pages/user/dashboard.html:302
 #: app/templates/pages/user/dashboard.html:334
-msgid "آیتمی وجود ندارد"
+msgid "No items yet"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:165
-msgid "برنامه غذایی ندارید"
+msgid "No diet plan"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:226
 #: app/templates/pages/user/dashboard.html:281
 #: app/templates/pages/user/plan/plan_detail.html:284
-msgid "ثانیه"
+msgid "sec"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:307
-msgid "برنامه تمرینی ندارید"
+msgid "No training plan"
 msgstr ""
 
 #: app/templates/pages/user/dashboard.html:339
-msgid "برنامه استروئیدی ندارید"
+msgid "No steroid plan"
+msgstr ""
+
+#: app/templates/pages/user/plan/plan_detail.html:39
+msgid "From"
 msgstr ""
 
 #: app/templates/pages/user/plan/plan_detail.html:42
-msgid "تا"
+msgid "To"
 msgstr ""
 
 #: app/templates/pages/user/plan/plan_detail.html:225
-msgid "ثانیه استراحت"
+msgid "sec rest"
 msgstr ""
 
 #: app/templates/pages/user/plan/plan_detail.html:250
-msgid "سایر حرکات"
+msgid "Other exercises"
 msgstr ""
 
 #: app/templates/pages/user/plan/plan_detail.html:335
-msgid "آیتمی یافت نشد"
+msgid "No items found"
 msgstr ""
 
 #: app/templates/pages/user/plan/plan_detail.html:337
-msgid "هنوز هیچ آیتمی برای این برنامه ثبت نشده است."
+msgid "No items have been added to this plan yet."
 msgstr ""
 
 #: app/templates/pages/user/plan/plans.html:9
-msgid "برنامه‌های من"
+msgid "My plans"
 msgstr ""
 
 #: app/templates/pages/user/plan/plans.html:11
-msgid "مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما"
+msgid "View and track the plans your coach created for you"
 msgstr ""
 
 #: app/templates/pages/user/plan/plans.html:54
-msgid "برنامه نامشخص"
+msgid "Unknown plan"
 msgstr ""
 
 #: app/templates/pages/user/plan/plans.html:178
 msgid ""
-"در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد "
-"برنامه جدید، در اینجا نمایش داده می‌شود."
+"Your coach hasn't created any plans for you yet. As soon as a new plan is"
+" created, it will show up here."
 msgstr ""
 
 #: app/templates/pages/user/plan/plans.html:187
-msgid "منتظر دریافت برنامه..."
+msgid "Waiting for your plan..."
 msgstr ""
 

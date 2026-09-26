@@ -58,7 +58,7 @@ def _host_matches(header_value: str, host_header: str) -> bool:
 
 class TenantMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # ---- Locale resolution (cookie preference, allowlisted, default fa) ----
+        # ---- Locale resolution (cookie preference, allowlisted, default en) ----
         set_request_locale(request.cookies.get(LOCALE_COOKIE))
 
         # Liveness probe: must never touch PocketBase, so container healthchecks
@@ -168,7 +168,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                                 "HX-Trigger": json.dumps(
                                     {
                                         "show-toast": {
-                                            "message": _("درخواست نامعتبر (CSRF)"),
+                                            "message": _("Invalid request (CSRF)"),
                                             "type": "error",
                                         }
                                     }
@@ -194,7 +194,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
                             "HX-Trigger": json.dumps(
                                 {
                                     "show-toast": {
-                                        "message": _("درخواست نامعتبر (CSRF)"),
+                                        "message": _("Invalid request (CSRF)"),
                                         "type": "error",
                                     }
                                 }

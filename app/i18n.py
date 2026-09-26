@@ -3,8 +3,8 @@
 - ``LOCALES``      — one registry of BCP 47 locale metadata (direction, names,
                      enabled state). Adding a language = add an entry + a
                      catalog under ``app/locales/<code>/LC_MESSAGES/``.
-- ``_()``          — gettext translation. Persian (``fa``) is the *source*
-                     language: msgids in code/templates are Persian, and any
+- ``_()``          — gettext translation. English (``en``) is the *source*
+                     language: msgids in code/templates are English, and any
                      locale without a compiled catalog falls back to the
                      source strings (fails safe, never crashes).
 - ``get_locale()`` — request-scoped locale, set by middleware via contextvar.
@@ -12,6 +12,8 @@
 No URL prefixes by design: authenticated dashboard; the explicit user choice
 travels in the ``locale`` cookie and every relative link/HTMX URL keeps
 working unchanged.
+
+All enabled locales are left-to-right; the interface is always LTR.
 """
 
 from __future__ import annotations
@@ -39,17 +41,14 @@ class Locale:
 # One authoritative registry. Disabled entries are readiness declarations:
 # enabling a language = flip `enabled` + ship app/locales/<code>/LC_MESSAGES/messages.mo
 #
-# English first: the application's default (first-visit) language is English.
-# Persian remains enabled as an explicit user choice and as the *source*
-# language for msgids (see module docstring).
+# English first: the application's default (first-visit) language is English,
+# and English is the *source* language for msgids (see module docstring).
 LOCALES: dict[str, Locale] = {
-    "fa": Locale("fa", "فارسی", "rtl", enabled=True, flag="🇮🇷"),
     "en": Locale("en", "English", "ltr", enabled=True, default=True, flag="🇬🇧"),
     "es": Locale("es", "Español", "ltr", enabled=True, flag="🇪🇸"),
     "tr": Locale("tr", "Türkçe", "ltr", enabled=True, flag="🇹🇷"),
     "hy": Locale("hy", "Հայերեն", "ltr", enabled=True, flag="🇦🇲"),
     # --- prepared but disabled (same workflow, no architecture changes) ---
-    "ar": Locale("ar", "العربية", "rtl", flag="🇸🇦"),
     "ru": Locale("ru", "Русский", "ltr", flag="🇷🇺"),
     "de": Locale("de", "Deutsch", "ltr", flag="🇩🇪"),
     "fr": Locale("fr", "Français", "ltr", flag="🇫🇷"),
@@ -78,7 +77,7 @@ def _get_translation(code: str) -> _stdlib_gettext.NullTranslations:
         try:
             translation = _stdlib_gettext.translation("messages", _LOCALEDIR, [code])
         except FileNotFoundError:
-            # Missing/uncompiled catalog fails safe: source (Persian) strings.
+            # Missing/uncompiled catalog fails safe: source (English) strings.
             translation = _stdlib_gettext.NullTranslations()
         _translations[code] = translation
     return translation
@@ -98,7 +97,7 @@ def set_request_locale(code: str | None) -> None:
 
 
 def _(message: str) -> str:
-    """Translate a UI string (msgids are Persian source strings)."""
+    """Translate a UI string (msgids are English source strings)."""
     return _get_translation(_current.get()).gettext(message)
 
 

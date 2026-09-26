@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -29,10 +31,11 @@ def client():
 
 def test_registry_enabled_languages():
     assert DEFAULT_LOCALE.code == "en" and not DEFAULT_LOCALE.is_rtl
-    for code in ("fa", "en", "es", "tr", "hy"):
+    for code in ("en", "es", "tr", "hy"):
         assert code in ENABLED_LOCALES
-    assert not LOCALES["en"].is_rtl
-    assert LOCALES["fa"].is_rtl
+    # Every supported locale is LTR — the app is English-only and LTR.
+    for code, loc in LOCALES.items():
+        assert not loc.is_rtl, code
 
 
 def test_unknown_collapses_to_default():
@@ -40,17 +43,10 @@ def test_unknown_collapses_to_default():
     assert get_locale().code == "en"
 
 
-def test_catalog_translations():
-    expected = {
-        "en": "Log in",
-        "es": "Iniciar sesión",
-        "tr": "Giriş",
-        "hy": "Մուտք",
-        "fa": "ورود",
-    }
-    for code, want in expected.items():
-        set_request_locale(code)
-        assert _("ورود") == want, (code, _("ورود"))
+def test_catalog_english_source():
+    # English is the source language; the default catalog is identity.
+    set_request_locale("en")
+    assert _("Log in") == "Log in"
 
 
 def test_locale_switch_sets_cookie_and_redirects(client):
@@ -77,13 +73,20 @@ def test_locale_switch_open_redirect_guard(client):
 def test_html_lang_dir_follows_cookie(client):
     r = client.get("/login")
     assert 'lang="en"' in r.text and 'dir="ltr"' in r.text
-    for name in ("فارسی", "English", "Español", "Türkçe", "Հայերեն"):
+    for name in ("English", "Español", "Türkçe", "Հայերեն"):
         assert name in r.text
 
-    r = client.get("/login", cookies={"locale": "fa"})
-    assert 'lang="fa"' in r.text and 'dir="rtl"' in r.text
-    set_request_locale("fa")
-    assert _("ورود") in r.text
+    # Non-default enabled locales are all LTR as well.
+    r = client.get("/login", cookies={"locale": "tr"})
+    assert 'lang="tr"' in r.text and 'dir="ltr"' in r.text
+
+
+def test_ui_has_no_persian(client):
+    r = client.get("/login")
+    # Assert absence using the Arabic/Persian unicode block so no Persian words
+    # ever need to appear in the source tree itself.
+    assert re.search("[\u0600-\u06ff]", r.text) is None
+    assert 'dir="rtl"' not in r.text
 
 
 def test_locale_switcher_full_reload_attr(client):
