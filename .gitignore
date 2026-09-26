@@ -76,3 +76,21 @@ app/__pycache__/main.cpython-313.pyc
 
 # Uploads
 app/static/uploads/
+
+
+# -----------------------------
+# Local mock / seed tooling (never commit local credentials)
+# -----------------------------
+scripts/
+
+
+# -----------------------------
+# brag launch-video: toolchain + stale render artifacts
+# (render outputs predate the monogram rename — re-render to refresh)
+# -----------------------------
+brag-output/bin/
+brag-output/.browser-libs/
+brag-output/frames/
+brag-output/composition/snapshots/
+brag-output/brag.mp4
+brag-output/brag.jpg
