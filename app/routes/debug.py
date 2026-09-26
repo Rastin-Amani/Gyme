@@ -110,7 +110,7 @@ def debug_user_test(request: Request):
             categorized[plan_type].append(plan_dict)
 
     return {
-        "title": _("داشبورد کاربر"),
+        "title": _("User dashboard"),
         "user": user,
         "tenant": request.state.tenant,  # Frontend might still want the object
         "trainee": trainee,

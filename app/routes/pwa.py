@@ -32,7 +32,7 @@ def service_worker():
 def offline_page():
     return (
         """<!doctype html>
-<html dir="rtl">
+<html dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -81,15 +81,15 @@ def offline_page():
     <p>__OFFLINE_BODY__</p>
     <button class="btn" onclick="window.location.reload()">__OFFLINE_ACTION__</button>
   </body>
-</html>""".replace("__OFFLINE_TITLE__", _("قطع ارتباط"))
-        .replace("__OFFLINE_HEADING__", _("شما آفلاین هستید"))
+</html>""".replace("__OFFLINE_TITLE__", _("Offline"))
+        .replace("__OFFLINE_HEADING__", _("You are offline"))
         .replace(
             "__OFFLINE_BODY__",
             _(
-                "صفحه‌هایی که قبلاً دیده‌اید هنوز در دسترس هستند.<br />پس از اتصال به اینترنت، دوباره امتحان کنید."
+                "Pages you've already seen are still available.<br />After reconnecting to the internet, try again."
             ),
         )
-        .replace("__OFFLINE_ACTION__", _("تلاش مجدد"))
+        .replace("__OFFLINE_ACTION__", _("Try again"))
     )
 
 
@@ -122,13 +122,13 @@ def dynamic_manifest(request: Request):
     manifest = {
         "name": f"{tenant_name}",
         "short_name": tenant_name,
-        "description": _("اپلیکیشن اختصاصی {tenant_name}").format(tenant_name=tenant_name),
+        "description": _("The dedicated app for {tenant_name}").format(tenant_name=tenant_name),
         "start_url": "/login",
         "scope": "/",
         "display": "standalone",
         "orientation": "portrait",
-        "background_color": "#1d232a",
-        "theme_color": "#1d232a",
+        "background_color": "#e2e2df",  # Caldera pumice — page canvas
+        "theme_color": "#070607",  # Caldera obsidian — app chrome
         "icons": [
             {"src": icon_192, "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
             {"src": icon_512, "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},

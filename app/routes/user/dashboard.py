@@ -71,7 +71,7 @@ def trainee_dashboard(request: Request):
         name="pages/user/dashboard.html",
         context={
             "request": request,
-            "title": _("داشبورد کاربر"),
+            "title": _("User dashboard"),
             "user": user,
             "tenant": request.state.tenant,  # Frontend might still want the object
             "trainee": trainee,

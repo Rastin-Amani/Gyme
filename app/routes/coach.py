@@ -34,7 +34,7 @@ def coaches_list(request: Request, page: int = Query(1, ge=1)):
         request=request,
         name="pages/owner/coach/coaches.html",
         context={
-            "title": _("مربی‌ها"),
+            "title": _("Coaches"),
             "tenant": request.state.tenant,
             "user": user,
             "coaches": coaches.items if hasattr(coaches, "items") else coaches,
@@ -57,7 +57,7 @@ def coaches_new_form(request: Request):
         request=request,
         name="forms/coaches_form.html",
         context={
-            "title": _("ثبت مربی جدید"),
+            "title": _("New coach"),
             "tenant": tenant,
             "user": user,
             "coach": None,
@@ -85,7 +85,7 @@ def coach_detail(request: Request, id: str):
         request=request,
         name="pages/owner/coach/coach_detail.html",
         context={
-            "title": _("اطلاعات مربی"),
+            "title": _("Coach details"),
             "tenant": request.state.tenant,
             "user": user,
             "coach": coach,
@@ -111,7 +111,7 @@ def coach_edit_form(request: Request, id: str):
         request=request,
         name="forms/coaches_form.html",
         context={
-            "title": _("ویرایش مربی"),
+            "title": _("Edit coach"),
             "tenant": request.state.tenant,
             "user": user,
             "coach": coach,
@@ -124,7 +124,7 @@ def coach_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
-        context={"delete_url": f"/coaches/{id}", "title": _("حذف مربی")},
+        context={"delete_url": f"/coaches/{id}", "title": _("Delete coach")},
     )
 
 
@@ -133,13 +133,13 @@ def coach_delete(request: Request, id: str):
     # Only owner can delete coaches
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("دسترسی غیرمجاز"), "error")
+        headers = hx_toast(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
         delete_coach(pb, tenant_id, id)
-        headers = hx_toast(_("مربی با موفقیت حذف شد."), "success")
+        headers = hx_toast(_("Coach deleted successfully."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/coaches"}
         headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)
@@ -149,7 +149,7 @@ def coach_delete(request: Request, id: str):
 
         logger = get_logger(__name__)
         logger.error("coach.delete_failed", error=str(e), coach_id=id)
-        headers = hx_toast(_("خطا در حذف مربی."), "error")
+        headers = hx_toast(_("Error deleting coach."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
 
@@ -166,7 +166,7 @@ def coach_create(
 ):
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("دسترسی غیرمجاز"), "error")
+        headers = hx_toast(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         # Validate inputs
@@ -193,11 +193,11 @@ def coach_create(
         )
 
         if not user_result.get("ok"):
-            error_msg = user_result.get("error", _("خطا در ثبت کاربر."))
+            error_msg = user_result.get("error", _("Error creating user."))
             headers = hx_toast(error_msg, "error")
             return HTMLResponse(content="", status_code=200, headers=headers)
 
-        headers = hx_toast(_("مربی با موفقیت ثبت شد."), "success")
+        headers = hx_toast(_("Coach registered successfully."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/coaches"}
         headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)
@@ -209,7 +209,7 @@ def coach_create(
 
         logger = get_logger(__name__)
         logger.error("coach.create_failed", error=str(e), tenant=tenant_id)
-        headers = hx_toast(_("خطای سرور: اطلاعات وارد شده را بررسی کنید."), "error")
+        headers = hx_toast(_("Server error: check the entered information."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
 
@@ -224,7 +224,7 @@ def coach_update(
 ):
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("دسترسی غیرمجاز"), "error")
+        headers = hx_toast(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         try:
@@ -253,7 +253,7 @@ def coach_update(
             },
         )
 
-        headers = hx_toast(_("اطلاعات مربی با موفقیت بروزرسانی شد."), "success")
+        headers = hx_toast(_("Coach information updated successfully."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["delayed-redirect"] = {"url": f"/coaches/{id}"}
         headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)
@@ -265,5 +265,5 @@ def coach_update(
 
         logger = get_logger(__name__)
         logger.error("coach.update_failed", error=str(e), coach_id=id)
-        headers = hx_toast(_("خطا در بروزرسانی اطلاعات."), "error")
+        headers = hx_toast(_("Error updating information."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

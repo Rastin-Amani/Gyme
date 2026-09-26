@@ -93,7 +93,7 @@ def plan_list(
         request=request,
         name="pages/owner/plan/plans.html",
         context={
-            "title": _("قالب‌های برنامه") if is_template_bool else _("لیست برنامه‌ها"),
+            "title": _("Plan templates") if is_template_bool else _("Plans"),
             "tenant": tenant_name,
             "user": user,
             "plans": plans.items if hasattr(plans, "items") else plans,
@@ -106,7 +106,7 @@ def plan_list(
             },
             "show_empty_state": len(plans.items if hasattr(plans, "items") else plans) == 0
             and bool(query or type or coach_id),
-            "empty_message": _("هیچ برنامه‌ای با این مشخصات پیدا نشد"),
+            "empty_message": _("No plan found with these criteria"),
             "is_template": is_template_bool,
             "page": page,
             "total_pages": total_pages,
@@ -154,7 +154,7 @@ def plan_new_form(request: Request, template: str = Query("false")):
         request=request,
         name="forms/plans_form.html",
         context={
-            "title": _("قالب برنامه جدید") if is_template else _("برنامه جدید"),
+            "title": _("New plan template") if is_template else _("New plan"),
             "tenant": tenant,
             "user": user,
             "plan": None,
@@ -203,7 +203,7 @@ def show_plan_detail(request: Request, id: str):
         request=request,
         name="pages/owner/plan/plan_detail.html",
         context={
-            "title": _("جزئیات برنامه"),
+            "title": _("Plan details"),
             "tenant": request.state.tenant,
             "user": user,
             "plan": plan_data,
@@ -255,7 +255,7 @@ def plan_edit_form(request: Request, id: str):
         request=request,
         name="forms/plans_form.html",
         context={
-            "title": _("ویرایش برنامه"),
+            "title": _("Edit plan"),
             "tenant": tenant_name,
             "user": user,
             "plan": plan_data,
@@ -345,7 +345,10 @@ def template_apply(
         # 🟢 SUCCESS: Modal closes, Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {
             "closeModal": True,
-            "show-toast": {"message": _("برنامه با موفقیت از قالب ایجاد شد"), "type": "success"},
+            "show-toast": {
+                "message": _("Plan created from template successfully"),
+                "type": "success",
+            },
             "delayed-redirect": {"url": f"/plans/{new_plan.id}"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -353,11 +356,11 @@ def template_apply(
     except Exception as e:
         error_msg = str(e)
         logger.error("template.apply_failed", error=error_msg, template_id=id, tenant=tenant)
-        user_message = _("خطا در برقراری ارتباط با پایگاه داده.")
+        user_message = _("Error connecting to the database.")
         if "404" in error_msg:
-            user_message = _("قالب یا شاگرد مورد نظر یافت نشد!")
+            user_message = _("Template or trainee not found!")
         elif "400" in error_msg:
-            user_message = _("اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید.")
+            user_message = _("Invalid input. Please check the dates.")
 
         # 🔴 ERROR: Modal stays open, Toast shows
         trigger_data = {"show-toast": {"message": user_message, "type": "error"}}
@@ -388,20 +391,20 @@ def plan_create(
 
     # --- Input validation ---
     if type not in ALLOWED_PLAN_TYPES:
-        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر است"), "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("Invalid plan type"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if status and status not in ALLOWED_PLAN_STATUS:
         status = "active"
     if days_per_week is not None and not (1 <= days_per_week <= 7):
         trigger_data = {
-            "show-toast": {"message": _("تعداد روزهای هفته باید بین ۱ تا ۷ باشد"), "type": "error"}
+            "show-toast": {"message": _("Days per week must be between 1 and 7"), "type": "error"}
         }
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if trainee and not is_template_bool:
         try:
             get_trainee_by_id(pb, tenant, trainee)
         except Exception:
-            trigger_data = {"show-toast": {"message": _("شاگرد یافت نشد"), "type": "error"}}
+            trigger_data = {"show-toast": {"message": _("Trainee not found"), "type": "error"}}
             return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if coach:
         # Verify coach belongs to tenant
@@ -439,9 +442,9 @@ def plan_create(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         success_msg = (
-            _("قالب جدید با موفقیت ذخیره شد")
+            _("New template saved successfully")
             if is_template_bool
-            else _("برنامه جدید با موفقیت ایجاد شد")
+            else _("New plan created successfully")
         )
         redirect_url = "/plans?is_template=true" if is_template_bool else "/plans"
 
@@ -458,7 +461,7 @@ def plan_create(
         # 🔴 ERROR: Stays on page, Toast shows
         trigger_data = {
             "show-toast": {
-                "message": _("خطا در ایجاد. لطفا فیلدها را بررسی کنید."),
+                "message": _("Error creating. Please check the fields."),
                 "type": "error",
             }
         }
@@ -492,24 +495,26 @@ def plan_update(
     try:
         existing = get_plan_by_id(pb, tenant, id)
     except Exception:
-        trigger_data = {"show-toast": {"message": _("برنامه یافت نشد"), "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("Plan not found"), "type": "error"}}
         return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if getattr(user, "role", None) == "coach" and getattr(existing, "coach", None) != user.id:
-        trigger_data = {"show-toast": {"message": _("دسترسی غیرمجاز"), "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("Access denied"), "type": "error"}}
         return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
     if type not in ALLOWED_PLAN_TYPES:
-        trigger_data = {"show-toast": {"message": _("نوع برنامه نامعتبر"), "type": "error"}}
+        trigger_data = {"show-toast": {"message": _("Invalid plan type"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if status and status not in ALLOWED_PLAN_STATUS:
         status = getattr(existing, "status", "active")
     if days_per_week is not None and not (1 <= days_per_week <= 7):
-        trigger_data = {"show-toast": {"message": _("تعداد روزهای هفته نامعتبر"), "type": "error"}}
+        trigger_data = {
+            "show-toast": {"message": _("Invalid number of days per week"), "type": "error"}
+        }
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if trainee and not is_template_bool:
         try:
             get_trainee_by_id(pb, tenant, trainee)
         except Exception:
-            trigger_data = {"show-toast": {"message": _("شاگرد یافت نشد"), "type": "error"}}
+            trigger_data = {"show-toast": {"message": _("Trainee not found"), "type": "error"}}
             return HTMLResponse(status_code=404, headers={"HX-Trigger": json.dumps(trigger_data)})
     if coach:
         try:
@@ -543,7 +548,7 @@ def plan_update(
 
         # 🟢 SUCCESS: Toast shows, Browser waits 1.2s, then Navigates
         trigger_data = {
-            "show-toast": {"message": _("تغییرات با موفقیت ذخیره شد"), "type": "success"},
+            "show-toast": {"message": _("Changes saved successfully"), "type": "success"},
             "delayed-redirect": {"url": f"/plans/{id}"},
         }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -551,7 +556,9 @@ def plan_update(
     except Exception as e:
         logger.error("plan.update_failed", error=str(e), plan_id=id, tenant=tenant)
         # 🔴 ERROR: Stays on page, Toast shows
-        trigger_data = {"show-toast": {"message": _("خطا در بروزرسانی اطلاعات."), "type": "error"}}
+        trigger_data = {
+            "show-toast": {"message": _("Error updating information."), "type": "error"}
+        }
         return HTMLResponse(status_code=204, headers={"HX-Trigger": json.dumps(trigger_data)})
 
 
@@ -560,7 +567,7 @@ def plan_confirm_delete(request: Request, id: str):
     return templates.TemplateResponse(
         request=request,
         name="modals/confirm_delete.html",
-        context={"delete_url": f"/plans/{id}", "title": _("حذف برنامه")},
+        context={"delete_url": f"/plans/{id}", "title": _("Delete plan")},
     )
 
 
@@ -570,12 +577,12 @@ def plan_delete(request: Request, id: str):
         pb = request.state.pb
         tenant_id = request.state.tenant.id
         delete_plan(pb, tenant_id, id)
-        headers = hx_toast(_("برنامه با موفقیت حذف شد."), "success")
+        headers = hx_toast(_("Plan deleted successfully."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/plans"}
         headers["HX-Trigger"] = json.dumps(trigger_dict)
         return HTMLResponse(content="", status_code=200, headers=headers)
     except Exception as e:
         logger.error("plan.delete_failed", error=str(e), plan_id=id)
-        headers = hx_toast(_("خطا در حذف برنامه."), "error")
+        headers = hx_toast(_("Error deleting plan."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

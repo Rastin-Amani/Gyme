@@ -40,7 +40,7 @@ def new_progress_log_form(request: Request, trainee_id: str):
         request=request,
         name="forms/progress_logs.html",
         context={
-            "title": _("ثبت ارزیابی اولیه"),
+            "title": _("Record initial assessment"),
             "tenant": tenant,
             "user": user,
             "trainee": trainee,
@@ -77,14 +77,14 @@ async def save_progress_log(
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
             return HTMLResponse(
-                content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"), "error")
+                content="", status_code=403, headers=hx_toast(_("Access denied"), "error")
             )
         # Verify trainee belongs to tenant
         try:
             get_trainee_by_id(pb, tenant_id, trainee_id)
         except Exception:
             return HTMLResponse(
-                content="", status_code=404, headers=hx_toast(_("شاگرد یافت نشد"), "error")
+                content="", status_code=404, headers=hx_toast(_("Trainee not found"), "error")
             )
 
         # 🟢 Helper function to safely convert strings to floats with bounds
@@ -143,7 +143,7 @@ async def save_progress_log(
             if len(valid_files) > MAX_FILES:
                 raise HTTPException(
                     status_code=400,
-                    detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES),
+                    detail=_("Maximum {max_files} files allowed").format(max_files=MAX_FILES),
                 )
             file_uploads = []
             for photo in valid_files:
@@ -151,16 +151,17 @@ async def save_progress_log(
                 fname = str(photo.filename)[:100]
                 # Prevent path traversal
                 if "/" in fname or "\\" in fname or ".." in fname:
-                    raise HTTPException(status_code=400, detail=_("نام فایل نامعتبر"))
+                    raise HTTPException(status_code=400, detail=_("Invalid file name"))
                 ext = os.path.splitext(fname)[1].lower()
                 if ext not in VALID_EXTS:
                     raise HTTPException(
-                        status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname)
+                        status_code=400,
+                        detail=_("Extension {fname} is not allowed").format(fname=fname),
                     )
                 if photo.content_type not in VALID_TYPES:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(
+                        detail=_("Format {filename} is not allowed (JPEG, PNG, WebP, GIF)").format(
                             filename=photo.filename
                         ),
                     )
@@ -169,10 +170,10 @@ async def save_progress_log(
                 if len(contents) > MAX_FILE_SIZE:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename),
+                        detail=_("{filename} is larger than 5MB").format(filename=photo.filename),
                     )
                 if len(contents) < 10:
-                    raise HTTPException(status_code=400, detail=_("فایل خراب است"))
+                    raise HTTPException(status_code=400, detail=_("Corrupted file"))
                 # Magic check (basic)
                 head = contents[:4]
                 is_image = any(head.startswith(m) for m in MAGIC)
@@ -180,13 +181,13 @@ async def save_progress_log(
                 if not is_image and photo.content_type == "image/webp":
                     # allow, as RIFF check above
                     if not contents[:4] == b"RIFF":
-                        raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
+                        raise HTTPException(status_code=400, detail=_("Invalid image file"))
                 elif not is_image and photo.content_type != "image/webp":
                     # Require magic for others
                     if not any(
                         contents.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8"]
                     ):
-                        raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
+                        raise HTTPException(status_code=400, detail=_("Invalid image file"))
                 # Sanitize filename
                 safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", fname)
                 file_uploads.append((safe_name, contents, photo.content_type))
@@ -198,7 +199,7 @@ async def save_progress_log(
         update_trainee(pb, trainee_id, {"height": parsed_height, "weight": parsed_weight})
 
         # 3. Success! Delayed Redirect to Trainee Details
-        headers = hx_toast(_("ارزیابی با موفقیت ثبت شد. در حال انتقال..."), "success")
+        headers = hx_toast(_("Assessment recorded successfully. Redirecting..."), "success")
 
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": f"/trainees/{trainee_id}"}
@@ -211,7 +212,7 @@ async def save_progress_log(
 
         logger = get_logger(__name__)
         logger.error("progress_log.create_failed", error=str(e), trainee_id=trainee_id)
-        headers = hx_toast(_("خطا در ثبت اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید."), "error")
+        headers = hx_toast(_("Error saving assessment. Please check the values."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
 
@@ -236,14 +237,14 @@ def edit_progress_log_form(request: Request, log_id: str):
 
         logger = get_logger(__name__)
         logger.error("progress_log.fetch_failed", error=str(e), log_id=log_id)
-        headers = hx_toast(_("خطا در بارگذاری اطلاعات ارزیابی."), "error")
+        headers = hx_toast(_("Error loading assessment."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)
 
     return templates.TemplateResponse(
         request=request,
         name="modals/progress_log_edit.html",
         context={
-            "title": _("ویرایش ارزیابی"),
+            "title": _("Edit assessment"),
             "tenant": tenant,
             "user": user,
             "trainee": trainee,
@@ -281,14 +282,14 @@ async def save_progress_log_edit(
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
             return HTMLResponse(
-                content="", status_code=403, headers=hx_toast(_("دسترسی غیرمجاز"), "error")
+                content="", status_code=403, headers=hx_toast(_("Access denied"), "error")
             )
         # Verify log belongs to tenant
         try:
             get_progress_log_with_tenant_check(pb, tenant_id, log_id)
         except Exception:
             return HTMLResponse(
-                content="", status_code=404, headers=hx_toast(_("ارزیابی یافت نشد"), "error")
+                content="", status_code=404, headers=hx_toast(_("Assessment not found"), "error")
             )
 
         # 🟢 Helper function to safely convert strings to floats with bounds
@@ -339,22 +340,23 @@ async def save_progress_log_edit(
             if len(valid_files) > MAX_FILES:
                 raise HTTPException(
                     status_code=400,
-                    detail=_("حداکثر {max_files} فایل مجاز است").format(max_files=MAX_FILES),
+                    detail=_("Maximum {max_files} files allowed").format(max_files=MAX_FILES),
                 )
             file_uploads = []
             for photo in valid_files:
                 fname = str(photo.filename)[:100]
                 if "/" in fname or "\\" in fname or ".." in fname:
-                    raise HTTPException(status_code=400, detail=_("نام فایل نامعتبر"))
+                    raise HTTPException(status_code=400, detail=_("Invalid file name"))
                 ext = os.path.splitext(fname)[1].lower()
                 if ext not in VALID_EXTS:
                     raise HTTPException(
-                        status_code=400, detail=_("پسوند {fname} مجاز نیست").format(fname=fname)
+                        status_code=400,
+                        detail=_("Extension {fname} is not allowed").format(fname=fname),
                     )
                 if photo.content_type not in VALID_TYPES:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("فرمت {filename} مجاز نیست (JPEG, PNG, WebP, GIF)").format(
+                        detail=_("Format {filename} is not allowed (JPEG, PNG, WebP, GIF)").format(
                             filename=photo.filename
                         ),
                     )
@@ -362,15 +364,15 @@ async def save_progress_log_edit(
                 if len(contents) > MAX_FILE_SIZE:
                     raise HTTPException(
                         status_code=400,
-                        detail=_("{filename} بزرگتر از ۵MB است").format(filename=photo.filename),
+                        detail=_("{filename} is larger than 5MB").format(filename=photo.filename),
                     )
                 if len(contents) < 10:
-                    raise HTTPException(status_code=400, detail=_("فایل خراب است"))
+                    raise HTTPException(status_code=400, detail=_("Corrupted file"))
                 head = contents[:4]
                 if not any(
                     head.startswith(m) for m in [b"\xff\xd8\xff", b"\x89PNG", b"GIF8", b"RIFF"]
                 ):
-                    raise HTTPException(status_code=400, detail=_("فایل تصویری نامعتبر"))
+                    raise HTTPException(status_code=400, detail=_("Invalid image file"))
                 safe_name = re.sub(r"[^a-zA-Z0-9._-]", "_", fname)
                 file_uploads.append((safe_name, contents, photo.content_type))
 
@@ -385,7 +387,7 @@ async def save_progress_log_edit(
         update_trainee(pb, log.trainee, {"height": parsed_height, "weight": parsed_weight})
 
         # 3. Success! Close modal and refresh
-        headers = hx_toast(_("ارزیابی با موفقیت به‌روزرسانی شد."), "success")
+        headers = hx_toast(_("Assessment updated successfully."), "success")
 
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["closeModal"] = True
@@ -399,7 +401,5 @@ async def save_progress_log_edit(
 
         logger = get_logger(__name__)
         logger.error("progress_log.update_failed", error=str(e), log_id=log_id)
-        headers = hx_toast(
-            _("خطا در به‌روزرسانی اطلاعات ارزیابی. لطفا مقادیر را بررسی کنید."), "error"
-        )
+        headers = hx_toast(_("Error updating assessment. Please check the values."), "error")
         return HTMLResponse(content="", status_code=200, headers=headers)

@@ -23,7 +23,7 @@ def login_user(identity: str, password: str, tenant: str, pb=None):
 
     except Exception as e:
         logger.warning("login_failed", identity=identity, tenant=tenant, error=str(e))
-        return {"ok": False, "error": _("اطلاعات اشتباه است!")}
+        return {"ok": False, "error": _("Invalid credentials!")}
 
 
 def create_user(
@@ -69,7 +69,7 @@ def create_user(
         return {
             "ok": False,
             "error": _(
-                "ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر دارد)"
+                "Could not create the user. (The email may already be in use or the password is too short)"
             ),
         }
 
@@ -138,4 +138,4 @@ def update_user_password(
 
     except Exception as e:
         logger.warning("password_change_failed", user_id=user_id, error=str(e))
-        return {"ok": False, "error": _("پسورد فعلی اشتباه است یا خطایی رخ داد.")}
+        return {"ok": False, "error": _("Current password is incorrect or an error occurred.")}

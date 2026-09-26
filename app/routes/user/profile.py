@@ -18,7 +18,7 @@ def plan_list(request: Request):
         request=request,
         name="pages/user/profile/profile.html",
         context={
-            "title": _("پروفایل"),
+            "title": _("Profile"),
             "tenant": tenant,
             "user": user,
         },

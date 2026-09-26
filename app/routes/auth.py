@@ -43,7 +43,7 @@ def login_page(request: Request):
         request=request,
         name="pages/auth/login.html",
         context={
-            "title": _("ورود"),
+            "title": _("Log in"),
             "tenant": tenant,
         },
     )
@@ -89,16 +89,14 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
     # 1. Safe Tenant Extraction 🏢
     tenant = getattr(request.state, "tenant", None)
     if not tenant:
-        headers = hx_toast(_("خطای سیستم: باشگاه یافت نشد!"), "error")
+        headers = hx_toast(_("System error: Gym not found!"), "error")
         return HTMLResponse(content="", headers=headers, status_code=400)
 
     # Rate limiting per IP + identity
     client_ip = request.client.host if request.client else "unknown"
     rate_key = f"{client_ip}:{identity}:{tenant.id}"
     if _is_rate_limited(rate_key):
-        headers = hx_toast(
-            _("تعداد تلاش‌های ورود بیش از حد مجاز است. لطفاً چند دقیقه صبر کنید."), "error"
-        )
+        headers = hx_toast(_("Too many login attempts. Please wait a few minutes."), "error")
         return HTMLResponse(content="", headers=headers, status_code=429)
     _record_attempt(rate_key)
 
@@ -106,14 +104,14 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
     identity = str(identity).strip()[:254]
     password = str(password)[:128]
     if not identity or not password:
-        headers = hx_toast(_("ایمیل و رمز عبور الزامی است"), "error")
+        headers = hx_toast(_("Email and password are required"), "error")
         return HTMLResponse(content="", headers=headers, status_code=400)
     # Optional email format check, but allow username if needed
     if "@" in identity:
         try:
             identity = validate_email(identity)
         except ValueError:
-            headers = hx_toast(_("فرمت ایمیل نامعتبر است"), "error")
+            headers = hx_toast(_("Invalid email format"), "error")
             return HTMLResponse(content="", headers=headers, status_code=400)
 
     # 2. Attempt Authentication 🔐
@@ -121,7 +119,7 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
 
     # 3. Handle Failure with HTMX Toasts 🚨
     if not result.get("ok"):
-        error_msg = result.get("error", _("ایمیل یا پسورد اشتباه است."))
+        error_msg = result.get("error", _("Wrong email or password."))
 
         # Attach the beautiful DaisyUI toast to the response headers!
         headers = hx_toast(error_msg, "error")
@@ -160,24 +158,24 @@ def handle_change_password(
     tenant = getattr(request.state, "tenant", None)
 
     if not user or not pb:
-        headers = hx_toast(_("شما وارد نشده‌اید!"), "error")
+        headers = hx_toast(_("You are not logged in!"), "error")
         headers["HX-Redirect"] = "/login"
         return HTMLResponse(content="", headers=headers)
 
     if new_password != confirm_password:
-        headers = hx_toast(_("پسورد جدید و تکرار آن یکسان نیستند."), "warning")
+        headers = hx_toast(_("New password and its confirmation do not match."), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
 
     if len(new_password) < 8:
-        headers = hx_toast(_("پسورد باید حداقل ۸ کاراکتر باشد."), "warning")
+        headers = hx_toast(_("Password must be at least 8 characters."), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
     if len(new_password) > 72:
-        headers = hx_toast(_("پسورد خیلی طولانی است"), "warning")
+        headers = hx_toast(_("Password is too long"), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
     # Password complexity: at least one upper/lower/digit optional but enforce not common
     # Prevent reusing same as old is handled by PB; also prevent identity reuse
     if new_password.lower() in str(getattr(user, "email", "")).lower():
-        headers = hx_toast(_("پسورد نباید مشابه ایمیل باشد"), "warning")
+        headers = hx_toast(_("Password must not be similar to the email"), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
 
     collection_name = getattr(user, "collectionName", "users")
@@ -202,7 +200,7 @@ def handle_change_password(
     login_result = login_user(identity, new_password, tenant.id)
 
     # 3. Setup Success Response & Redirect
-    headers = hx_toast(_("پسورد با موفقیت تغییر کرد! 🔒"), "success")
+    headers = hx_toast(_("Password changed successfully! 🔒"), "success")
     target_url = "/user/dashboard" if getattr(user, "role", None) == "trainee" else "/dashboard"
     headers["HX-Redirect"] = target_url
 

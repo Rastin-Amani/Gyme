@@ -33,7 +33,7 @@ def owner_dashboard(request: Request, timeframe: str = "all"):
     )
 
     context = {
-        "title": _("داشبورد مدیریت"),
+        "title": _("Management dashboard"),
         "stats": stats,
         "timeframe": timeframe,
         "tenant": tenant,

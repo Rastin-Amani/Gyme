@@ -27,7 +27,7 @@ def plan_list(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="pages/user/plan/plans.html",
-        context={"title": _("لیست برنامه‌ها"), "tenant": tenant_name, "user": user, "plans": plans},
+        context={"title": _("Plans"), "tenant": tenant_name, "user": user, "plans": plans},
     )
 
 
@@ -58,7 +58,7 @@ def show_plan_detail(request: Request, id: str):
         request=request,
         name="pages/user/plan/plan_detail.html",
         context={
-            "title": _("جزئیات برنامه"),
+            "title": _("Plan details"),
             "tenant": tenant_name,
             "user": user,
             "plan": plan_data,
