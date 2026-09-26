@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "EB Garamond";
+        src: url("assets/fonts/EBGaramond-Variable.woff2") format("woff2");
+        font-weight: 400 800;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "EB Garamond Italic";
+        src: url("assets/fonts/EBGaramond-Italic-Variable.woff2") format("woff2");
+        font-weight: 400 800;
+        font-style: italic;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: "Figtree";
+        src: url("assets/fonts/Figtree-Variable.woff2") format("woff2");
+        font-weight: 300 900;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #1a1a1a;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        isolation: isolate;
+        font-family: "Figtree", ui-sans-serif, system-ui, sans-serif;
+      }
+
+      /* fonts */
+      .display {
+        font-family: "EB Garamond", ui-serif, Georgia, serif;
+      }
+      .display-i {
+        font-family: "EB Garamond Italic", "EB Garamond", Georgia, serif;
+        font-style: italic;
+      }
+      .fa {
+        font-family: "Figtree", sans-serif;
+      }
+
+      /* palettes */
+      .ink { color: #1a1a1a; }
+      .cream { color: #ffffeb; }
+      .forest { color: #034f46; }
+      .lavender { color: #f0d7ff; }
+      .muted-text { color: #5f5f56; }
+      .ember { color: #ffa946; }
+
+      /* generic clip scaffold */
+      .scene {
+        overflow: hidden;
+      }
+      .scene-inner {
+        position: absolute;
+        inset: 0;
+      }
+      .bg {
+        position: absolute;
+        inset: 0;
+      }
+      .glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        pointer-events: none;
+      }
+      .ghost {
+        position: absolute;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      /* ---------------- phone (device-frame geometry, Gyme theme) ---------------- */
+      .phone {
+        position: absolute;
+        left: 50%;
+        top: 30px;
+        margin-left: -216px;
+        width: 432px;
+        height: 936px;
+        border-radius: 52px;
+        padding: 12px;
+        background: #e4e4d0;
+        border: 2px solid #1a1a1a;
+      }
+      .phone .screen {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 40px;
+        overflow: hidden;
+        background: #ffffeb;
+        border: 2px solid #1a1a1a;
+        display: flex;
+        flex-direction: column;
+      }
+      .statusbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 22px 0;
+        font-size: 21px;
+        color: #1a1a1a;
+        direction: ltr;
+      }
+      .app-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px 10px;
+        direction: ltr;
+      }
+      .tenant-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        border: 2px solid #1a1a1a;
+        background: #f0d7ff;
+        display: grid;
+        place-items: center;
+        font-family: "Figtree", sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: #1a1a1a;
+      }
+      .tenant-name {
+        font-family: "Figtree", sans-serif;
+        font-weight: 700;
+        font-size: 26px;
+        color: #034f46;
+      }
+      .header-dots {
+        margin-left: auto;
+        font-size: 24px;
+        color: #5f5f56;
+        letter-spacing: 2px;
+      }
+      .dock {
+        margin-top: auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        height: 64px;
+        border-top: 2px solid #cfcfae;
+        background: #ffffeb;
+        direction: ltr;
+        font-family: "Figtree", sans-serif;
+        font-size: 21px;
+        color: #5f5f56;
+      }
+      .dock .active {
+        color: #034f46;
+        font-weight: 700;
+      }
+
+      /* greeting (scene 1) */
+      .greet-body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+        padding: 20px 26px;
+        direction: ltr;
+      }
+      .greet-name {
+        font-family: "EB Garamond", "Figtree", serif;
+        font-weight: 600;
+        font-size: 64px;
+        color: #034f46;
+        line-height: 1.05;
+      }
+      .greet-rest {
+        color: #1a1a1a;
+      }
+      .greet-emoji {
+        font-size: 44px;
+      }
+      .greet-sub {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+        align-self: flex-start;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 6px 16px;
+        background: #f0d7ff;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+        font-size: 22px;
+        color: #1a1a1a;
+      }
+
+      /* plan screen (scene 3) */
+      .plan-body {
+        flex: 1;
+        overflow: hidden;
+        padding: 6px 18px 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        padding: 6px 2px 10px;
+      }
+      .tab {
+        flex: 1;
+        text-align: center;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 8px 6px;
+        background: #ffffeb;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        color: #1a1a1a;
+      }
+      .tab.active {
+        background: #034f46;
+        color: #ffffeb;
+      }
+      .cat-divider {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 8px 0 6px;
+        font-family: "Figtree", sans-serif;
+        font-weight: 700;
+        font-size: 17px;
+        letter-spacing: 0.14em;
+        color: #5f5f56;
+      }
+      .cat-divider::after {
+        content: "";
+        flex: 1;
+        height: 2px;
+        background: #cfcfae;
+      }
+      .plan-card {
+        border: 2px solid rgba(26, 26, 26, 0.75);
+        border-radius: 24px;
+        background: #ffffeb;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .plan-card .name {
+        font-family: "Figtree", sans-serif;
+        font-weight: 700;
+        font-size: 25px;
+        color: #1a1a1a;
+        margin-bottom: 6px;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .badge {
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 3px 10px;
+        background: #ffffeb;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+        font-size: 17px;
+        color: #1a1a1a;
+      }
+      .badge.lav {
+        background: #f0d7ff;
+      }
+      .done-wrap {
+        position: relative;
+        padding: 10px 18px 14px;
+      }
+      .done-btn {
+        position: relative;
+        width: 100%;
+        height: 58px;
+        border: 2px solid #1a1a1a;
+        border-radius: 14px;
+        background: #f0d7ff;
+        font-family: "Figtree", sans-serif;
+        font-weight: 800;
+        font-size: 26px;
+        color: #1a1a1a;
+        display: grid;
+        place-items: center;
+        cursor: pointer;
+        transform-origin: 50% 50%;
+      }
+      .ember-ring {
+        position: absolute;
+        inset: -8px;
+        border: 3px solid #ffa946;
+        border-radius: 22px;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .contact {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 84px;
+        height: 84px;
+        margin: -42px 0 0 -42px;
+        border-radius: 50%;
+        border: 2px solid #1a1a1a;
+        background: rgba(240, 215, 255, 0.6);
+        opacity: 0;
+        pointer-events: none;
+      }
+      .done-label {
+        white-space: nowrap;
+      }
+      .done-check {
+        position: absolute;
+        right: 26px;
+        top: 50%;
+        width: 46px;
+        height: 46px;
+        margin-top: -23px;
+        border-radius: 50%;
+        background: #034f46;
+        color: #ffffeb;
+        display: grid;
+        place-items: center;
+        font-size: 26px;
+        font-weight: 800;
+        opacity: 0;
+      }
+
+      /* scene 2 — monogram tiles */
+      .tiles {
+        display: flex;
+        gap: 64px;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      .tile {
+        width: 190px;
+      }
+      .tile .mono {
+        width: 190px;
+        height: 190px;
+        border-radius: 32px;
+        border: 2px solid #1a1a1a;
+        background: #f0d7ff;
+        display: grid;
+        place-items: center;
+        font-family: "Figtree", sans-serif;
+        font-weight: 800;
+        font-size: 96px;
+        color: #1a1a1a;
+      }
+      .tile .gym {
+        margin-top: 14px;
+        text-align: center;
+        font-family: "Figtree", sans-serif;
+        font-weight: 700;
+        font-size: 28px;
+        color: #1a1a1a;
+      }
+      .tile .tag {
+        margin-top: 6px;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 3px 12px;
+        background: #ffffeb;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+        font-size: 18px;
+        color: #034f46;
+      }
+      .tile .tag-wrap {
+        text-align: center;
+        margin-top: 8px;
+      }
+
+      /* scene 2 hairline rules */
+      .rule {
+        position: absolute;
+        left: 120px;
+        width: 1680px;
+        height: 2px;
+        background: rgba(26, 26, 26, 0.55);
+      }
+
+      /* scene 4 — lockup */
+      .wave {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .wave i {
+        width: 6px;
+        height: 40px;
+        border-radius: 3px;
+        background: #ffffeb;
+        display: inline-block;
+      }
+      .wave.lav i {
+        background: #f0d7ff;
+      }
+
+      /* shared */
+      .caption {
+        text-align: center;
+      }
+      .eyebrow {
+        letter-spacing: 0.42em;
+        font-family: "Figtree", sans-serif;
+        font-weight: 600;
+      }
+      .headline {
+        line-height: 1.04;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="19.5"
+      data-width="1920"
+      data-height="1080"
+    >
+      <!-- ============ SCENE 1 — HOOK : welcome back, champion [0, 3.5] ============ -->
+      <section id="scene-1" class="scene clip" data-start="0" data-duration="3.5" data-track-index="0">
+        <div id="s1-inner" class="scene-inner">
+          <div id="s1-bg" class="bg" style="background: #1a1a1a"></div>
+          <div id="s1-glow" class="glow" style="left: 50%; top: 6%; width: 980px; height: 900px; margin-left: -490px; background: radial-gradient(circle, rgba(240, 215, 255, 0.16), rgba(240, 215, 255, 0) 66%);"></div>
+          <div id="s1-ghost" class="ghost fa" style="right: 110px; top: 70px; font-size: 200px; font-weight: 800; color: #ffffeb; opacity: 0.05;" data-layout-allow-occlusion="true">Welcome</div>
+          <div id="s1-ghost2" class="ghost fa" style="left: 90px; bottom: 80px; font-size: 120px; font-weight: 800; color: #ffa946; opacity: 0.05;">Gyme</div>
+
+          <div id="phone1" class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>●●● ▮▮▯</span></div>
+              <div class="app-header">
+                <div class="tenant-avatar">A</div>
+                <span class="tenant-name">Aspen Gym</span>
+                <span class="header-dots">•••</span>
+              </div>
+              <div class="greet-body">
+                <div class="greet-name">Champion</div>
+                <div class="greet-rest greet-name" style="font-weight: 500; font-size: 52px; color: #1a1a1a; padding-top: 4px;">welcome back</div>
+                <div class="greet-emoji">👋🏻</div>
+                <div class="greet-sub">Your plan for today is ready</div>
+              </div>
+              <div class="dock">
+                <span>Profile</span><span class="active">Today</span><span>Plans</span>
+              </div>
+            </div>
+          </div>
+          <div id="s1-caption" class="display-i cream caption" style="position: absolute; left: 0; right: 0; bottom: 42px; font-size: 44px; opacity: 0; text-shadow: 0 2px 18px rgba(0,0,0,.6);">Welcome back, champion.</div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 2 — REVEAL : every gym gets its own app [3.5, 8.0] ============ -->
+      <section id="scene-2" class="scene clip" data-start="3.5" data-duration="4.5" data-track-index="1">
+        <div id="s2-inner" class="scene-inner">
+          <div id="s2-bg" class="bg" style="background: #ffffeb"></div>
+          <div id="s2-glow" class="glow" style="left: 50%; top: -260px; width: 1200px; height: 900px; margin-left: -600px; background: radial-gradient(circle, rgba(240, 215, 255, 0.55), rgba(240, 215, 255, 0) 62%);"></div>
+          <div class="rule" style="top: 64px;"></div>
+          <div class="rule" style="bottom: 64px;"></div>
+          <div id="s2-ghost" class="ghost fa" style="left: 130px; bottom: 110px; font-size: 130px; font-weight: 800; color: #034f46; opacity: 0.05;">App</div>
+
+          <div id="s2-eyebrow" class="eyebrow forest" style="position: absolute; left: 0; right: 0; top: 150px; text-align: center; font-size: 26px; opacity: 0;">GYME</div>
+          <h1 id="s2-headline" class="display ink headline" style="position: absolute; left: 0; right: 0; top: 250px; text-align: center; font-size: 104px; font-weight: 500; letter-spacing: -0.01em; opacity: 0; padding: 0 140px;">Every gym gets its own <em style="font-family:'EB Garamond Italic','EB Garamond',serif; font-style: italic; color: #034f46;">app</em>.</h1>
+          <div id="s2-sub" class="fa forest" style="position: absolute; left: 0; right: 0; top: 470px; text-align: center; font-size: 46px; font-weight: 600; opacity: 0;">Your gym. Your name. Your app.</div>
+
+          <div id="s2-tiles" class="tiles" style="position: absolute; left: 0; right: 0; top: 610px;">
+            <div class="tile" id="tile-1">
+              <div class="mono">A</div>
+              <div class="gym">Aspen</div>
+              <div class="tag-wrap"><span class="tag">own app</span></div>
+            </div>
+            <div class="tile" id="tile-2">
+              <div class="mono">B</div>
+              <div class="gym">Birch</div>
+              <div class="tag-wrap"><span class="tag">own app</span></div>
+            </div>
+            <div class="tile" id="tile-3">
+              <div class="mono">M</div>
+              <div class="gym">Maple</div>
+              <div class="tag-wrap"><span class="tag">own app</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 3 — HIGHLIGHT : the plan, one tap, day done [8.0, 16.0] ============ -->
+      <section id="scene-3" class="scene clip" data-start="8.0" data-duration="8.0" data-track-index="2">
+        <div id="s3-inner" class="scene-inner">
+          <div id="s3-bg" class="bg" style="background: #1a1a1a"></div>
+          <div id="s3-glow" class="glow" style="left: 50%; top: 4%; width: 980px; height: 960px; margin-left: -490px; background: radial-gradient(circle, rgba(255, 169, 70, 0.12), rgba(255, 169, 70, 0) 62%);"></div>
+          <div id="s3-ghost" class="ghost fa" style="right: 120px; bottom: 90px; font-size: 140px; font-weight: 800; color: #ffffeb; opacity: 0.05;">Done</div>
+
+          <div id="phone2" class="phone">
+            <div class="screen">
+              <div class="statusbar"><span>9:41</span><span>●●● ▮▮▯</span></div>
+              <div class="app-header">
+                <div class="tenant-avatar">A</div>
+                <span class="tenant-name">Aspen Gym</span>
+                <span class="header-dots">•••</span>
+              </div>
+              <div class="plan-body">
+                <div class="tabs">
+                  <div class="tab">Nutrition 🥑</div>
+                  <div class="tab active">Training 💪🏻</div>
+                  <div class="tab">Steroids 💊</div>
+                </div>
+                <div class="cat-divider">Warm-up</div>
+                <div class="plan-card" id="card-1">
+                  <div class="name">Squat</div>
+                  <div class="badges">
+                    <span class="badge">4 sets</span>
+                    <span class="badge">×12 reps</span>
+                  </div>
+                </div>
+                <div class="cat-divider">Main</div>
+                <div class="plan-card" id="card-2">
+                  <div class="name">Bench Press</div>
+                  <div class="badges">
+                    <span class="badge">4 sets</span>
+                    <span class="badge">×10 reps</span>
+                    <span class="badge lav">70 kg</span>
+                    <span class="badge">90 sec</span>
+                  </div>
+                </div>
+                <div class="plan-card" id="card-3">
+                  <div class="name">Deadlift</div>
+                  <div class="badges">
+                    <span class="badge">4 sets</span>
+                    <span class="badge">×8 reps</span>
+                    <span class="badge lav">90 kg</span>
+                    <span class="badge">120 sec</span>
+                  </div>
+                </div>
+              </div>
+              <div class="done-wrap">
+                <button class="done-btn" id="done-btn" type="button">
+                  <span class="done-label" id="done-label">Done</span>
+                </button>
+                <div class="ember-ring" id="ember-ring"></div>
+                <div class="done-check" id="done-check">✓</div>
+                <div class="contact" id="contact"></div>
+              </div>
+              <div class="dock">
+                <span>Profile</span><span class="active">Today</span><span>Plans</span>
+              </div>
+            </div>
+          </div>
+          <div id="s3-caption" class="display-i cream caption" style="position: absolute; left: 0; right: 0; bottom: 42px; font-size: 52px; opacity: 0; text-shadow: 0 2px 18px rgba(0,0,0,.6);">One tap. Day done.</div>
+        </div>
+      </section>
+
+      <!-- ============ SCENE 4 — OUTRO : lockup [16.0, 19.5] ============ -->
+      <section id="scene-4" class="scene clip" data-start="16.0" data-duration="3.5" data-track-index="3">
+        <div id="s4-inner" class="scene-inner">
+          <div id="s4-bg" class="bg" style="background: #1a1a1a"></div>
+          <div id="s4-glow" class="glow" style="left: 50%; top: 30%; width: 1100px; height: 700px; margin-left: -550px; background: radial-gradient(circle, rgba(240, 215, 255, 0.14), rgba(240, 215, 255, 0) 64%);"></div>
+          <div id="s4-glow2" class="glow" style="left: 50%; bottom: -320px; width: 1300px; height: 700px; margin-left: -650px; background: radial-gradient(circle, rgba(255, 169, 70, 0.12), rgba(255, 169, 70, 0) 62%);"></div>
+
+          <div id="s4-logo-line" style="position: absolute; left: 0; right: 0; top: 340px; text-align: center; display: flex; justify-content: center; align-items: center; gap: 56px; opacity: 0;">
+            <div class="wave" id="wave-l" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <span class="display cream" style="font-size: 156px; font-weight: 500; letter-spacing: 0.02em;">Gyme</span>
+            <div class="wave" id="wave-r" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          </div>
+          <div id="s4-jimi" class="fa lavender" style="position: absolute; left: 0; right: 0; top: 560px; text-align: center; font-size: 48px; font-weight: 700; opacity: 0;">Your gym. Your name. Your app.</div>
+          <div id="s4-tag" style="position: absolute; left: 0; right: 0; top: 700px; text-align: center; opacity: 0;">
+            <div class="display-i cream caption" style="font-size: 40px;">Every gym, its own app. Every trainee, a champion.</div>
+            <div class="fa muted-text caption" style="font-size: 26px; margin-top: 14px; color: #f0d7ff;">Training · Nutrition · Daily plans</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= AUDIO ================= -->
+      <audio id="bg-music" data-start="0" data-duration="19.5" data-track-index="10" data-volume="1" data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:0.6,&quot;v&quot;:0.32},{&quot;t&quot;:12.9,&quot;v&quot;:0.32},{&quot;t&quot;:13.15,&quot;v&quot;:0.18},{&quot;t&quot;:13.85,&quot;v&quot;:0.32},{&quot;t&quot;:18.5,&quot;v&quot;:0.32},{&quot;t&quot;:19.5,&quot;v&quot;:0}]}]}" src="assets/music/music.mp3"></audio>
+      <audio id="sfx-settle-1" data-start="1.15" data-duration="0.12" data-track-index="11" data-volume="0.55" src="assets/sfx/impact/impactSoft_medium_000.ogg"></audio>
+      <audio id="sfx-tile-1" data-start="5.34" data-duration="0.06" data-track-index="12" data-volume="0.5" src="assets/sfx/ui/rollover2.ogg"></audio>
+      <audio id="sfx-tile-2" data-start="6.0" data-duration="0.06" data-track-index="12" data-volume="0.5" src="assets/sfx/ui/rollover2.ogg"></audio>
+      <audio id="sfx-tile-3" data-start="6.56" data-duration="0.06" data-track-index="12" data-volume="0.5" src="assets/sfx/ui/rollover2.ogg"></audio>
+      <audio id="sfx-settle-2" data-start="8.74" data-duration="0.12" data-track-index="13" data-volume="0.55" src="assets/sfx/impact/impactSoft_medium_000.ogg"></audio>
+      <audio id="sfx-card-1" data-start="9.83" data-duration="0.11" data-track-index="14" data-volume="0.5" src="assets/sfx/interface/drop_001.ogg"></audio>
+      <audio id="sfx-card-2" data-start="10.37" data-duration="0.11" data-track-index="14" data-volume="0.5" src="assets/sfx/interface/drop_001.ogg"></audio>
+      <audio id="sfx-card-3" data-start="10.93" data-duration="0.11" data-track-index="14" data-volume="0.5" src="assets/sfx/interface/drop_001.ogg"></audio>
+      <audio id="sfx-tap" data-start="13.11" data-duration="0.01" data-track-index="15" data-volume="0.6" src="assets/sfx/interface/click_002.ogg"></audio>
+      <audio id="sfx-done" data-start="13.45" data-duration="0.21" data-track-index="16" data-volume="0.5" src="assets/sfx/impact/impactGlass_light_001.ogg"></audio>
+      <audio id="sfx-logo" data-start="17.47" data-duration="1.0" data-track-index="17" data-volume="0.5" src="assets/sfx/impact/impactBell_heavy_000.ogg"></audio>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const eOut = "power3.out";
+      const eInOut = "power2.inOut";
+
+      /* ---------------- Scene 1 — hook [0.2 → 3.45] ---------------- */
+      // phone rise-and-settle
+      tl.fromTo(
+        "#phone1",
+        { y: 150, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.9, ease: "power3.out" },
+        0.2,
+      );
+      // settle micro-pop (device-settled ≈ 1.15; SFX settle-1 at 1.15)
+      tl.fromTo("#phone1", { scale: 1.015 }, { scale: 1, duration: 0.35, ease: "power2.inOut", immediateRender: false }, 1.1);
+      // idle float (finite)
+      tl.to("#phone1", { y: -7, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 2.5);
+      // greeting reveal (fast-in + hold)
+      tl.fromTo("#phone1 .greet-name", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: eOut }, 1.25);
+      tl.fromTo("#phone1 .greet-rest", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: eOut }, 1.45);
+      tl.fromTo("#phone1 .greet-emoji", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)", }, 1.65);
+      tl.fromTo("#phone1 .greet-sub", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: eOut }, 1.95);
+      tl.fromTo("#s1-caption", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 2.4);
+      // ambient glow breathe
+      tl.fromTo("#s1-glow", { opacity: 0.7 }, { opacity: 1, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0.4);
+      // scene fade out
+      tl.to("#s1-inner", { opacity: 0, duration: 0.45, ease: "power2.inOut" }, 3.0);
+
+      /* ---------------- Scene 2 — reveal [3.55 → 7.95] ---------------- */
+      tl.fromTo("#s2-inner", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 3.55);
+      tl.fromTo("#s2-eyebrow", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: eOut }, 4.05);
+      tl.fromTo("#s2-headline", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: eOut }, 4.3);
+      tl.fromTo("#s2-sub", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: eOut }, 4.75);
+      // monograms — beat-grid: 5.34 / 6.00 / 6.56 (tiles + SFX at each)
+      tl.fromTo("#tile-1", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 5.34);
+      tl.fromTo("#tile-2", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 6.0);
+      tl.fromTo("#tile-3", { x: 60, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 6.56);
+      tl.fromTo("#s2-glow", { opacity: 0.7 }, { opacity: 1, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.9);
+      tl.to("#s2-inner", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 7.55);
+
+      /* ---------------- Scene 3 — highlight [8.05 → 15.9] ---------------- */
+      tl.fromTo("#s3-inner", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, 8.05);
+      // phone rise — beat-locked: 8.74 (settle on the strong cue, SFX settle-2 at 8.74)
+      tl.fromTo("#phone2", { y: 150, opacity: 0 }, { y: 0, opacity: 1, duration: 0.72, ease: "power3.out" }, 8.02);
+      tl.fromTo("#phone2", { scale: 1.015 }, { scale: 1, duration: 0.35, ease: "power2.inOut", immediateRender: false }, 8.75);
+      tl.to("#phone2", { y: -7, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 10.4);
+      // tabs already on screen; cards — beat-grid: 9.83 / 10.37 / 10.93 (card SFX at each)
+      tl.fromTo("#card-1", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 9.83);
+      tl.fromTo("#card-2", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 10.37);
+      tl.fromTo("#card-3", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 10.93);
+      // ambient ember breathe
+      tl.fromTo("#s3-glow", { opacity: 0.7 }, { opacity: 1, duration: 1.6, ease: "sine.inOut", yoyo: true, repeat: 1 }, 8.4);
+      // finger arrives
+      tl.fromTo("#contact", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.5, ease: eOut }, 12.35);
+      tl.to("#contact", { y: -10, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 2 }, 12.6);
+      // press — beat-locked: 13.11 (tap SFX)
+      tl.to("#done-btn", { scale: 0.93, duration: 0.2, ease: "power4.in" }, 13.11);
+      tl.to("#contact", { scale: 0.8, duration: 0.2, ease: "power4.in" }, 13.11);
+      // release → new state (label swap, check pop, ember ring, glass SFX at 13.45)
+      tl.to("#done-btn", { scale: 1, duration: 0.3, ease: "back.out(1.7)" }, 13.33);
+      tl.add(() => { document.getElementById("done-label").textContent = "Done ✓"; }, 13.33);
+      tl.to("#contact", { opacity: 0, scale: 1.1, duration: 0.35, ease: "power2.in" }, 13.33);
+      tl.to("#ember-ring", { opacity: 1, scale: 1, duration: 0.1, ease: "none" }, 13.4);
+      tl.to("#ember-ring", { opacity: 0, scale: 1.18, duration: 0.55, ease: "power2.out" }, 13.55);
+      tl.fromTo("#done-check", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2.4)" }, 13.45);
+      tl.fromTo("#s3-caption", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 14.1);
+      tl.to("#s3-caption", { opacity: 0, duration: 0.4, ease: "power2.in" }, 15.2);
+      tl.to("#s3-inner", { opacity: 0, duration: 0.4, ease: "power2.inOut" }, 15.5);
+
+      /* ---------------- Scene 4 — outro lockup [16.05 → 19.4] ---------------- */
+      tl.fromTo("#s4-inner", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 16.05);
+      // wordmark — beat-locked: 17.47 (logo SFX) ; enter just before, settle on the cue
+      tl.fromTo("#s4-logo-line", { opacity: 0, y: 20, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "power3.out" }, 16.87);
+      tl.fromTo("#s4-jimi", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.55, ease: eOut }, 17.7);
+      tl.fromTo("#s4-tag", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: eOut }, 18.2);
+      // waveform bars (finite ripple, staggered)
+      tl.fromTo("#wave-l i", { scaleY: 0.5 }, { scaleY: 1, duration: 0.5, ease: "sine.inOut", stagger: 0.09, yoyo: true, repeat: 1 }, 17.0);
+      tl.fromTo("#wave-r i", { scaleY: 0.5 }, { scaleY: 1, duration: 0.5, ease: "sine.inOut", stagger: 0.09, yoyo: true, repeat: 1 }, 17.2);
+      tl.fromTo("#s4-glow", { opacity: 0.6 }, { opacity: 1, duration: 1.8, ease: "sine.inOut", yoyo: true, repeat: 1 }, 16.3);
+      // gentle end — fade to near black
+      tl.to("#s4-inner", { opacity: 0, duration: 0.5, ease: "power2.inOut" }, 18.9);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1 @@
+Gyme — every gym gets its own app. Your gym, your name, your app: training, nutrition, and the daily plan on your trainees' phones — one tap and the day is done. Built with FastAPI, HTMX, and PocketBase; installable as a homescreen PWA, in four languages.
