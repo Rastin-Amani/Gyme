@@ -16,6 +16,7 @@ dist/
 *.egg-info/
 
 .env
+.env.local
 *.sqlite3
 
 .coverage
