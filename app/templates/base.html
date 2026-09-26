@@ -17,7 +17,7 @@
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
 
-        <title>{{ title or _('جیمی') }}</title>
+        <title>{{ title or _('Gyme') }}</title>
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v={{ app_version }}" />
         
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
@@ -40,7 +40,7 @@
         <script>
             (function() {
                 var BANNER_ID = 'offline-banner';
-                var BANNER_TEXT = {{ _('⚠️ شما آفلاین هستید — داده‌های ذخیره‌شده نمایش داده می‌شود') | tojson }};
+                var BANNER_TEXT = {{ _('⚠️ You are offline — showing saved data') | tojson }};
                 function createBanner() {
                     var el = document.createElement('div');
                     el.id = BANNER_ID;
@@ -233,7 +233,7 @@
                                 if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
                                     document.dispatchEvent(new CustomEvent('show-toast', {
                                         detail: {
-                                            message: {{ _('نسخه جدید در دسترس است. برای بروزرسانی کلیک کنید.') | tojson }},
+                                            message: {{ _('A new version is available. Click to update.') | tojson }},
                                             type: 'info',
                                         },
                                     }));
@@ -366,13 +366,13 @@
             {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
                 {% set splash_bg = request.state.tenant.brand_colors.base_100 %}
             {% else %}
-                {% set splash_bg = '#1a1a1a' %}
+                {% set splash_bg = '#e2e2df' %}  {# Caldera pumice — canvas #}
             {% endif %}
 
             {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
                 {% set splash_text = request.state.tenant.brand_colors.base_content %}
             {% else %}
-                {% set splash_text = '#ffffeb' %}
+                {% set splash_text = '#070607' %}  {# Caldera obsidian — element text #}
             {% endif %}
 
             generateIOSSplashScreen(

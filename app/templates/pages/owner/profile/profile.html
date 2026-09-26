@@ -2,16 +2,16 @@
 {% block dashboard_content %}
     <div class="max-w-150">
         <div
-            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex-row-reverse rounded-[2rem]"
+            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex rounded-[2.5rem]"
         >
             <a
                 href="/change-password"
                 class="btn btn-sm border-2 border-base-content"
             >
-                {{ _('تغییر رمز عبور') }}
+                {{ _('Change password') }}
             </a>
             <div class="text-center">
-                <h1 class="font-display font-normal text-2xl leading-tight text-right ml-4">
+                <h1 class="font-display font-normal text-2xl leading-tight text-left ml-4">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
                 </h1>
             </div>
@@ -19,19 +19,19 @@
         <!-- Info Grid -->
         <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
             <div>
-                <span class="text-fog block text-xs mb-1">{{ _('ایمیل') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('Email') }}</span>
                 <span class="font-medium">{{ user.email }}</span>
             </div>
             <div>
-                <span class="text-fog block text-xs mb-1">{{ _('وضعیت') }}</span>
-                <span class="font-medium">{{ _('فعال') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('Status') }}</span>
+                <span class="font-medium">{{ _('Active') }}</span>
             </div>
             <div>
-                <span class="text-fog block text-xs mb-1">{{ _('تاریخ ساخت حساب') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('Account created') }}</span>
                 <span class="font-medium">{{ tenant.created | jalali_date or '-' }}</span>
             </div>
             <div>
-                <span class="text-fog block text-xs mb-1">{{ _('تاریخ آخرین آپدیت') }}</span>
+                <span class="text-fog block text-xs mb-1">{{ _('Last updated') }}</span>
                 <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
             </div>
         </div>
@@ -40,14 +40,14 @@
         {% if user.role == 'owner' %}
             <div>
                 <div class="mt-4" id="items-list-container">
-                    <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('اطلاعات و تنظیمات اپلیکیشن') }}</div>
+                    <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('App information and settings') }}</div>
                     <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
                         <div>
-                            <span class="text-fog block text-xs mb-1">{{ _('دامنه') }}</span>
+                            <span class="text-fog block text-xs mb-1">{{ _('Domain') }}</span>
                             <span class="font-medium">{{ tenant.domain }}</span>
                         </div>
                         <div>
-                            <span class="text-fog block text-xs mb-1">{{ _('تم') }}</span>
+                            <span class="text-fog block text-xs mb-1">{{ _('Theme') }}</span>
                             <span class="font-medium">{{ tenant.theme or '-' }}</span>
                         </div>
                         <div></div>
@@ -57,15 +57,15 @@
         {% endif %}
 
         {% if user.role == "owner" %}
-            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('مدیریت') }}</div>
+            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('Management') }}</div>
             <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem]">
                 <div class="card-body p-4">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="font-semibold">{{ _('مربی‌ها') }}</h3>
-                            <p class="text-sm text-fog">{{ _('مدیریت مربی‌های مجموعه') }}</p>
+                            <h3 class="font-semibold">{{ _('Coaches') }}</h3>
+                            <p class="text-sm text-fog">{{ _("Manage your gym's coaches") }}</p>
                         </div>
-                        <a href="/coaches" class="btn btn-primary btn-sm border-2 border-base-content">{{ _('مشاهده') }}</a>
+                        <a href="/coaches" class="btn btn-primary btn-sm border-2 border-base-content">{{ _('View') }}</a>
                     </div>
                 </div>
             </div>

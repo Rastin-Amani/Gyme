@@ -1,16 +1,16 @@
 {% set input_name = name | default("date") %}
 {% set input_label = label | default("") %}
-{% set placeholder = placeholder | default(_("انتخاب تاریخ")) %}
-{% set min_year = min_year | default(1330) %}
-{% set max_year = max_year | default(1407) %}
-{% set modal_title = modal_title | default(_("انتخاب تاریخ")) %}
-{% set confirm_text = confirm_text | default(_("تایید")) %}
-{% set cancel_text = cancel_text | default(_("بستن")) %}
+{% set placeholder = placeholder | default(_("Select date")) %}
+{% set min_year = min_year | default(1900) %}
+{% set max_year = max_year | default(2100) %}
+{% set modal_title = modal_title | default(_("Select date")) %}
+{% set confirm_text = confirm_text | default(_("Confirm")) %}
+{% set cancel_text = cancel_text | default(_("Close")) %}
 {% set required = required | default("-") %}
 
 <div
     class="form-control w-full"
-    x-data="jalaliDatePicker('{{ value | default('') }}', {{ min_year }}, {{ max_year }})"
+    x-data="gregorianDatePicker('{{ value | default('') }}', {{ min_year }}, {{ max_year }})"
 >
     <!-- Hidden input for FastAPI/HTMX form submission -->
     <input type="hidden" name="{{ input_name }}" x-model="gregorianDate" />
@@ -24,11 +24,11 @@
                 readonly
                 x-model="formattedDate"
                 placeholder="{{ placeholder }}"
-                class="input w-full font-sans cursor-pointer validator"
+                class="input w-full font-sans cursor-pointer text-left validator"
                 @click="openModal()"
                 {{ required }}
             />
-            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
         </label>
     {% endif %}
 
@@ -66,155 +66,47 @@
 
         <!-- Changed from <form method="dialog"> to <div> -->
         <div class="modal-backdrop" @click="closeModal()">
-            <button class="cursor-default">{{ _('close') }}</button>
+            <button class="cursor-default">{{ _('Close') }}</button>
         </div>
     </dialog>
 </div>
 
 <!-- Scripts injected once per page -->
-<!-- Scripts injected once per page -->
 <script>
-    if (typeof window.JalaliDatePickerLoaded === 'undefined') {
-        window.JalaliDatePickerLoaded = true;
+    if (typeof window.GregorianDatePickerLoaded === 'undefined') {
+        window.GregorianDatePickerLoaded = true;
 
-        const persianMonths = [
-            'فروردین',
-            'اردیبهشت',
-            'خرداد',
-            'تیر',
-            'مرداد',
-            'شهریور',
-            'مهر',
-            'آبان',
-            'آذر',
-            'دی',
-            'بهمن',
-            'اسفند',
+        const gregorianMonths = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
         ];
 
-        function toPersianNumber(value) {
-            return value.toString().replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[d]);
-        }
-        function formatJalali(jy, jm, jd) {
-            return `${toPersianNumber(jy)}/${toPersianNumber(jm.toString().padStart(2, '0'))}/${toPersianNumber(jd.toString().padStart(2, '0'))}`;
+        function isLeapGregorianYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
         }
 
-        function isLeapJalaliYear(jy) {
-            const breaks = [
-                -61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262,
-                2324, 2394, 2456, 3178,
-            ];
-            let bl = breaks.length,
-                jp = breaks[0],
-                jm,
-                jump,
-                leap,
-                n;
-            if (jy < jp || jy >= breaks[bl - 1]) return false;
-            for (let i = 1; i < bl; i++) {
-                jm = breaks[i];
-                jump = jm - jp;
-                if (jy < jm) break;
-                jp = jm;
-            }
-            n = jy - jp;
-            if (jump - n < 6) n = n - jump + Math.floor((jump + 4) / 33) * 33;
-            leap = (((n + 1) % 33) - 1) % 4;
-            if (leap === -1) leap = 4;
-            return leap === 0;
+        function getGregorianMonthLength(year, month) {
+            return new Date(year, month, 0).getDate();
         }
 
-        function getJalaliMonthLength(year, month) {
-            if (month <= 6) return 31;
-            if (month <= 11) return 30;
-            return isLeapJalaliYear(year) ? 30 : 29;
-        }
-
-        function toJalali(date) {
-            const gy = date.getFullYear(),
-                gm = date.getMonth() + 1,
-                gd = date.getDate();
-            const gdm = [
-                0,
-                31,
-                (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
-                31,
-                30,
-                31,
-                30,
-                31,
-                31,
-                30,
-                31,
-                30,
-                31,
-            ];
-            let gy2 = gm > 2 ? gy + 1 : gy;
-            let days =
-                355666 +
-                365 * gy +
-                Math.floor((gy2 + 3) / 4) -
-                Math.floor((gy2 + 99) / 100) +
-                Math.floor((gy2 + 399) / 400) +
-                gd;
-            for (let i = 0; i < gm; i++) days += gdm[i];
-            let jy = -1595 + 33 * Math.floor(days / 12053);
-            days %= 12053;
-            jy += 4 * Math.floor(days / 1461);
-            days %= 1461;
-            if (days > 365) {
-                jy += Math.floor((days - 1) / 365);
-                days = (days - 1) % 365;
-            }
-            const jm = days < 186 ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
-            const jd = 1 + (days < 186 ? days % 31 : (days - 186) % 30);
-            return { jy, jm, jd };
-        }
-
-        function jalaliToGregorian(jy, jm, jd) {
-            jy += 1595;
-            let days =
-                -355668 + 365 * jy + Math.floor(jy / 33) * 8 + Math.floor(((jy % 33) + 3) / 4) + jd;
-            if (jm < 7) days += (jm - 1) * 31;
-            else days += (jm - 7) * 30 + 186;
-            let gy = 400 * Math.floor(days / 146097);
-            days %= 146097;
-            if (days > 36524) {
-                gy += 100 * Math.floor(--days / 36524);
-                days %= 36524;
-                if (days >= 365) days++;
-            }
-            gy += 4 * Math.floor(days / 1461);
-            days %= 1461;
-            if (days > 365) {
-                gy += Math.floor((days - 1) / 365);
-                days = (days - 1) % 365;
-            }
-            let gd = days + 1;
-            const sal_a = [
-                0,
-                31,
-                (gy % 4 === 0 && gy % 100 !== 0) || gy % 400 === 0 ? 29 : 28,
-                31,
-                30,
-                31,
-                30,
-                31,
-                31,
-                30,
-                31,
-                30,
-                31,
-            ];
-            let gm;
-            for (gm = 1; gm <= 12 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
-            return { gy, gm, gd };
+        function formatGregorian(gy, gm, gd) {
+            return `${gy}/${String(gm).padStart(2, '0')}/${String(gd).padStart(2, '0')}`;
         }
 
         function createRange(start, end) {
             return Array.from({ length: end - start + 1 }, (_, i) => ({
                 value: start + i,
-                text: toPersianNumber(start + i),
+                text: String(start + i),
             }));
         }
 
@@ -299,7 +191,7 @@
         }
 
         const registerAlpineComponent = () => {
-            Alpine.data('jalaliDatePicker', (initialValue, minYear, maxYear) => ({
+            Alpine.data('gregorianDatePicker', (initialValue, minYear, maxYear) => ({
                 gregorianDate: initialValue || '',
                 formattedDate: '',
                 isInitialized: false,
@@ -311,10 +203,16 @@
                     if (this.gregorianDate) {
                         const parts = this.gregorianDate.split('-');
                         if (parts.length === 3) {
-                            const { jy, jm, jd } = toJalali(
-                                new Date(parts[0], parts[1] - 1, parts[2].split(' ')[0])
+                            const d = new Date(
+                                parts[0],
+                                parts[1] - 1,
+                                parts[2].split(' ')[0]
                             );
-                            this.formattedDate = formatJalali(jy, jm, jd);
+                            this.formattedDate = formatGregorian(
+                                d.getFullYear(),
+                                d.getMonth() + 1,
+                                d.getDate()
+                            );
                         }
                     }
                 },
@@ -331,36 +229,42 @@
                 },
 
                 initSelectors() {
-                    let today = toJalali(new Date());
+                    let today = new Date();
                     if (this.gregorianDate) {
                         const parts = this.gregorianDate.split('-');
-                        if (parts.length === 3)
-                            today = toJalali(
-                                new Date(parts[0], parts[1] - 1, parts[2].split(' ')[0])
+                        if (parts.length === 3) {
+                            today = new Date(
+                                parts[0],
+                                parts[1] - 1,
+                                parts[2].split(' ')[0]
                             );
+                        }
                     }
 
                     this.yearSelector = new IosSelector({
                         el: this.$refs.yearRef,
                         source: createRange(minYear, maxYear),
-                        selectedIndex: today.jy - minYear,
+                        selectedIndex: today.getFullYear() - minYear,
                     });
                     this.monthSelector = new IosSelector({
                         el: this.$refs.monthRef,
-                        source: persianMonths.map((m, i) => ({ value: i + 1, text: m })),
-                        selectedIndex: today.jm - 1,
+                        source: gregorianMonths.map((m, i) => ({ value: i + 1, text: m })),
+                        selectedIndex: today.getMonth(),
                     });
-                    const daysInMonth = getJalaliMonthLength(today.jy, today.jm);
+                    const daysInMonth = getGregorianMonthLength(
+                        today.getFullYear(),
+                        today.getMonth() + 1
+                    );
                     this.daySelector = new IosSelector({
                         el: this.$refs.dayRef,
                         source: createRange(1, daysInMonth),
-                        selectedIndex: today.jd - 1,
+                        selectedIndex: today.getDate() - 1,
                     });
 
                     const updateDays = () => {
                         const y = parseInt(this.yearSelector.getValue()),
                             m = parseInt(this.monthSelector.getValue());
-                        const days = createRange(1, getJalaliMonthLength(y, m));
+                        const days = createRange(1, getGregorianMonthLength(y, m));
                         const currentDayIndex = this.daySelector.selectedIndex;
                         this.daySelector = new IosSelector({
                             el: this.$refs.dayRef,
@@ -375,12 +279,11 @@
                 },
 
                 confirmDate() {
-                    const jy = this.yearSelector.getValue(),
-                        jm = this.monthSelector.getValue(),
-                        jd = this.daySelector.getValue();
-                    const { gy, gm, gd } = jalaliToGregorian(jy, jm, jd);
+                    const gy = this.yearSelector.getValue(),
+                        gm = this.monthSelector.getValue(),
+                        gd = this.daySelector.getValue();
                     this.gregorianDate = `${gy}-${String(gm).padStart(2, '0')}-${String(gd).padStart(2, '0')}`;
-                    this.formattedDate = formatJalali(jy, jm, jd);
+                    this.formattedDate = formatGregorian(gy, gm, gd);
                     this.closeModal();
                 },
             }));

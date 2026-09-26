@@ -8,58 +8,49 @@
 >
     <div class="grid grid-cols-2 gap-4 items-baseline">
         <label class="floating-label">
-            <span>{{ _('نام') }}</span>
+            <span>{{ _('First name') }}</span>
             <input
                 type="text"
                 name="first_name"
                 required
                 class="input w-full validator"
-                placeholder="{{ _('نام') }}"
+                placeholder="{{ _('First name') }}"
                 value="{{ coach.first_name if coach else '' }}"
             />
-            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
         </label>
         <label class="floating-label">
-            <span>{{ _('نام خانوادگی') }}</span>
+            <span>{{ _('Last name') }}</span>
             <input
                 type="text"
                 name="last_name"
                 required
                 class="input w-full validator"
-                placeholder="{{ _('نام خانوادگی') }}"
+                placeholder="{{ _('Last name') }}"
                 value="{{ coach.last_name if coach else '' }}"
             />
-            <div class="validator-hint hidden">{{ _('این فیلد اجباریه.') }}</div>
+            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
         </label>
     </div>
     <div class="form-control">
         <label class="input w-full validator">
-            <span class="label">{{ _('ایمیل') }}</span>
+            <span class="label">{{ _('Email') }}</span>
             <input
                 type="email"
                 name="email"
                 value="{{ coach.email if coach else '' }}"
                 {{ 'readonly' if coach else '' }}
-                placeholder="test@gyme.cloud"
+                placeholder="e.g. test@gyme.cloud"
                 required
             />
         </label>
-        <div class="validator-hint hidden">{{ _('ایمیل صحیح وارد کنید.') }}</div>
+        <div class="validator-hint hidden">{{ _('Enter a valid email address.') }}</div>
     </div>
-    <label class="floating-label">
-        <span>{{ _('شماره موبایل') }}</span>
-        <input
-            type="tel"
-            name="phone"
-            required
-            minlength="11"
-            maxlength="11"
-            pattern="[0-9]*"
-            class="input w-full text-right tabular-nums validator"
-            placeholder="{{ _('شماره موبایل') }}"
-            value="{{ coach.phone if coach else '' }}"
-        />
-    </label>
+    {% if coach %}
+        {% include 'components/phone_field.html' with phone_value=coach.phone %}
+    {% else %}
+        {% include 'components/phone_field.html' %}
+    {% endif %}
 
     <div class="flex flex-col gap-2 mt-6">
         {% if coach %}
@@ -71,15 +62,15 @@
             hx-swap="innerHTML"
             hx-boost="false"
         >
-            {{ _('حذف مربی') }}
+            {{ _('Delete coach') }}
         </button>
         {% endif %}
         <div class="flex justify-end gap-2">
             <a href="/coaches" class="btn btn-ghost border-2 border-base-content/20" hx-boost="false">
-                {{ _('انصراف') }}
+                {{ _('Cancel') }}
             </a>
             <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content">
-                {{ _('ذخیره تغییرات') if coach else _('ثبت مربی') }}
+                {{ _('Save changes') if coach else _('Add coach') }}
             </button>
         </div>
     </div>

@@ -2,38 +2,38 @@
 {% block dashboard_content %}
     <div class="max-w-150 pb-24">
         <div
-            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex-row-reverse rounded-[2rem]"
+            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex rounded-[2.5rem]"
         >
             {% if plan.is_template | string | lower == 'true' %}
                 <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('Edit') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
                         class="btn btn-sm btn-error btn-soft"
                     >
-                        {{ _('حذف') }}
+                        {{ _('Delete') }}
                     </button>
                 </div>
                 <div class="text-center min-w-0">
-                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('قالب:') }}</span>
+                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('Template:') }}</span>
                     <h1 class="font-display font-normal text-2xl leading-tight truncate">
-                        {{ plan.template_name or _('بدون نام') }}
+                        {{ plan.template_name or _('Untitled') }}
                     </h1>
                 </div>
             {% else %}
                 <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('Edit') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
                         class="btn btn-sm btn-error btn-soft"
                     >
-                        {{ _('حذف') }}
+                        {{ _('Delete') }}
                     </button>
                 </div>
                 <div class="text-center min-w-0">
-                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('برنامه‌ی') }}</span>
+                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('Plan:') }}</span>
                     <h1 class="font-display font-normal text-2xl leading-tight truncate">
                         {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
                     </h1>
@@ -43,28 +43,28 @@
 
         <div class="grid grid-cols-3 gap-4 text-sm mb-4 text-center">
             <div>
-                <span class="text-fog block text-xs">{{ _('نوع') }}</span>
+                <span class="text-fog block text-xs">{{ _('Type') }}</span>
                 <span class="font-semibold">
                     {% if plan.type == 'diet' %}
-                        {{ _('غذایی') }}
+                        {{ _('Diet') }}
                     {% elif plan.type =='training' %}
-                        {{ _('ورزشی') }}
+                        {{ _('Training') }}
                     {% else %}
-                        {{ _('استروئید') }}
+                        {{ _('Steroid') }}
                     {% endif %}
                 </span>
             </div>
             <div>
-                <span class="text-fog block text-xs">{{ _('روز در هفته') }}</span>
+                <span class="text-fog block text-xs">{{ _('Days per week') }}</span>
                 <span class="font-semibold">{{ plan.days_per_week or '-' }}</span>
             </div>
             <div>
-                <span class="text-fog block text-xs">{{ _('وضعیت') }}</span>
+                <span class="text-fog block text-xs">{{ _('Status') }}</span>
                 <span class="font-semibold">
                     {% if plan.status == 'active' %}
-                        <span class="badge badge-success badge-soft">{{ _('فعال') }}</span>
+                        <span class="badge badge-success badge-soft">{{ _('Active') }}</span>
                     {% elif plan.status == 'inactive' %}
-                        <span class="badge badge-error badge-soft">{{ _('غیرفعال') }}</span>
+                        <span class="badge badge-error badge-soft">{{ _('Inactive') }}</span>
                     {% else %}
                         -
                     {% endif %}
@@ -73,23 +73,23 @@
 
             {% if plan.is_template | string | lower != 'true' %}
                 <div>
-                    <span class="text-fog block text-xs">{{ _('مربی') }}</span>
+                    <span class="text-fog block text-xs">{{ _('Coach') }}</span>
                     <span class="font-semibold">
                         {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
                     </span>
                 </div>
                 <div>
-                    <span class="text-fog block text-xs">{{ _('تاریخ شروع') }}</span>
+                    <span class="text-fog block text-xs">{{ _('Start date') }}</span>
                     <span class="font-semibold">{{ plan.start_date | jalali_date or '-' }}</span>
                 </div>
                 <div>
-                    <span class="text-fog block text-xs">{{ _('تاریخ پایان') }}</span>
+                    <span class="text-fog block text-xs">{{ _('End date') }}</span>
                     <span class="font-semibold">{{ plan.end_date | jalali_date or '-' }}</span>
                 </div>
             {% endif %}
 
             {% if plan.notes and plan.notes != "" %}
-                <div class="bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1.5rem] p-4 col-span-3 text-right mt-2">
+                <div class="bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1.5rem] p-4 col-span-3 text-left mt-2">
                     <p class="text-sm">{{ plan.notes }}</p>
                 </div>
             {% endif %}
@@ -104,12 +104,12 @@
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
-                {{ _('اعمال برای شاگرد') }}
+                {{ _('Apply to trainee') }}
             </button>
         {% endif %}
 
         <div class="mt-6">
-            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('آیتم‌های برنامه') }}</div>
+            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('Plan items') }}</div>
             <button
                 class="btn btn-primary btn-soft btn-s w-full mb-4 border-2 border-base-content"
                 type="button"
@@ -118,7 +118,7 @@
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
-                {{ _('افزودن آیتم') }}
+                {{ _('Add item') }}
             </button>
             <div
                 id="items-list-content"
@@ -134,10 +134,10 @@
                         {% if plan.type == 'diet' %}
                             <div class="flex justify-between items-center gap-2">
                                 <div class="max-w-3/4">
-                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('غذا') }}</span>
+                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('Meal') }}</span>
                                     <h3 class="font-semibold text-sm mt-2">{{ item.meal_name }}</h3>
                                     <p class="text-sm text-fog mt-1">
-                                        {{ item.name }} · {{ _('مقدار:') }} {{ item.quantity }}
+                                        {{ item.name }} · {{ _('Quantity:') }} {{ item.quantity }}
                                     </p>
                                 </div>
                                 <button
@@ -149,18 +149,18 @@
                                     hx-boost="false"
                                     hx-select="unset"
                                 >
-                                    {{ _('ویرایش') }}
+                                    {{ _('Edit') }}
                                 </button>
                             </div>
                             {% if item.notes %}
-                                <p class="text-xs text-fog mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
+                                <p class="text-xs text-fog mt-2">{{ _('Notes:') }} {{ item.notes }}</p>
                             {% endif %}
                         {% elif plan.type == 'steroid' %}
                             <div class="flex justify-between items-center gap-2">
                                 <div>
-                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('دارو/مکمل') }}</span>
+                                    <span class="badge badge-soft border-2 border-base-content/20">{{ _('Medication/Supplement') }}</span>
                                     <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
-                                    <p class="text-sm text-fog mt-1">{{ _('روز مصرف:') }} {{ item.seq or '-' }}</p>
+                                    <p class="text-sm text-fog mt-1">{{ _('Day:') }} {{ item.seq or '-' }}</p>
                                 </div>
                                 <button
                                     type="button"
@@ -171,19 +171,19 @@
                                     hx-boost="false"
                                     hx-select="unset"
                                 >
-                                    {{ _('ویرایش') }}
+                                    {{ _('Edit') }}
                                 </button>
                             </div>
                             {% if item.notes %}
-                                <p class="text-xs text-fog mt-2">{{ _('توضیحات:') }} {{ item.notes }}</p>
+                                <p class="text-xs text-fog mt-2">{{ _('Notes:') }} {{ item.notes }}</p>
                             {% endif %}
                         {% elif plan.type == 'training' %}
                             <div class="flex justify-between items-center gap-2">
                                 <div>
-                                    <span class="badge badge-accent border-2 border-base-content">{{ _('روز') }} {{ item.seq }}</span>
+                                    <span class="badge badge-accent border-2 border-base-content">{{ _('Day') }} {{ item.seq }}</span>
                                     <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
                                     <p class="text-sm text-fog mt-1">
-                                        {{ _('ست:') }} {{ item.sets }} · {{ _('تکرار:') }} {{ item.reps }} · {{ _('وزن:') }}
+                                        {{ _('Sets:') }} {{ item.sets }} · {{ _('Reps:') }} {{ item.reps }} · {{ _('Weight:') }}
                                         {{ item.weight }}kg
                                     </p>
                                 </div>
@@ -196,7 +196,7 @@
                                     hx-boost="false"
                                     hx-select="unset"
                                 >
-                                    {{ _('ویرایش') }}
+                                    {{ _('Edit') }}
                                 </button>
                             </div>
                         {% else %}
@@ -207,7 +207,7 @@
                     <div class="bg-base-100 border-2 border-dashed border-base-content/30 rounded-[1.5rem] p-8 text-center card">
                         <p class="text-sm text-fog">
                             <span class="status status-secondary ml-1"></span>
-                            {{ _('هیچ آیتمی ثبت نشده.') }}
+                            {{ _('No items recorded.') }}
                         </p>
                     </div>
                 {% endfor %}

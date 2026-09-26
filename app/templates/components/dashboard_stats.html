@@ -1,5 +1,5 @@
 <div class="w-full">
-    <h2 class="text-xs font-semibold tracking-widest text-fog mb-4">{{ _('شاگردان') }} 👥</h2>
+    <h2 class="text-xs font-semibold tracking-widest text-fog mb-4">{{ _('Trainees') }} 👥</h2>
     <div class="stats stats-vertical lg:stats-horizontal border-2 border-base-content bg-base-100 w-full">
         <div class="stat">
             <div class="stat-figure text-success w-6">
@@ -17,7 +17,7 @@
                     ></path>
                 </svg>
             </div>
-            <div class="stat-title text-fog">{{ _('شاگردهای فعال') }}</div>
+            <div class="stat-title text-fog">{{ _('Active trainees') }}</div>
             <div class="stat-value font-display font-normal text-4xl text-success" data-count-up="{{ stats.active_trainees }}">{{ stats.active_trainees }}</div>
         </div>
 
@@ -37,30 +37,30 @@
                     ></path>
                 </svg>
             </div>
-            <div class="stat-title text-fog">{{ _('شاگردهای غیرفعال') }}</div>
+            <div class="stat-title text-fog">{{ _('Inactive trainees') }}</div>
             <div class="stat-value font-display font-normal text-4xl text-fog" data-count-up="{{ stats.inactive_trainees }}">{{ stats.inactive_trainees }}</div>
         </div>
     </div>
 </div>
 
 <div class="w-full">
-    <h2 class="text-xs font-semibold tracking-widest text-fog mb-4">{{ _('برنامه‌های ثبت شده') }} 📋</h2>
+    <h2 class="text-xs font-semibold tracking-widest text-fog mb-4">{{ _('Registered plans') }} 📋</h2>
     <div class="stats stats-vertical border-2 border-base-content bg-base-100 w-full">
         <div class="stat">
             <div class="stat-figure text-2xl">💪🏻</div>
-            <div class="stat-title text-fog">{{ _('تمرینی') }}</div>
+            <div class="stat-title text-fog">{{ _('Training') }}</div>
             <div class="stat-value font-display font-normal text-4xl" data-count-up="{{ stats.training_plans }}">{{ stats.training_plans }}</div>
         </div>
 
         <div class="stat">
             <div class="stat-figure text-2xl">🥑</div>
-            <div class="stat-title text-fog">{{ _('غذایی') }}</div>
+            <div class="stat-title text-fog">{{ _('Diet') }}</div>
             <div class="stat-value font-display font-normal text-4xl" data-count-up="{{ stats.diet_plans }}">{{ stats.diet_plans }}</div>
         </div>
 
         <div class="stat">
             <div class="stat-figure text-2xl">💊</div>
-            <div class="stat-title text-fog">{{ _('استروئیدی') }}</div>
+            <div class="stat-title text-fog">{{ _('Steroid') }}</div>
             <div class="stat-value font-display font-normal text-4xl" data-count-up="{{ stats.steroid_plans }}">{{ stats.steroid_plans }}</div>
         </div>
     </div>

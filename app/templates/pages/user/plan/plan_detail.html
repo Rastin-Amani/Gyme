@@ -4,42 +4,42 @@
 
 {% block dashboard_content %}
     <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24 max-w-3xl mx-auto">
-        <div class="items-center justify-between bg-base-100 border-2 border-base-content p-4 mb-4 card flex-row-reverse rounded-[2rem]">
+        <div class="items-center justify-between bg-base-100 border-2 border-base-content p-4 mb-4 card flex rounded-[2.5rem]">
             <div>
                 {% if plan.status == 'active' %}
                     <span class="badge badge-success badge-sm badge-soft font-medium border-2 border-base-content/20"
-                        >{{ _('فعال') }}</span
+                        >{{ _('Active') }}</span
                     >
                 {% elif plan.status == 'draft' %}
                     <span class="badge badge-ghost badge-sm font-medium border-2 border-base-content/20"
-                        >{{ _('پیش‌نویس') }}</span
+                        >{{ _('Draft') }}</span
                     >
                 {% elif plan.status == 'inactive' %}
                     <span class="badge badge-error badge-sm badge-soft font-medium border-2 border-base-content/20"
-                        >{{ _('غیرفعال') }}</span
+                        >{{ _('Inactive') }}</span
                     >
                 {% else %}
                     <span class="badge badge-ghost badge-sm border-2 border-base-content/20">{{ plan.status }}</span>
                 {% endif %}
             </div>
-            <div class="text-right flex-1 px-4">
+            <div class="text-left flex-1 px-4">
                 <h1 class="font-display font-normal text-2xl leading-tight text-base-content">
                     {% if plan.type == 'training' %}
-                        {{ _('برنامه تمرینی') }}
+                        {{ _('Training plan') }}
                     {% elif plan.type == 'diet' %}
-                        {{ _('برنامه غذایی') }}
+                        {{ _('Diet plan') }}
                     {% elif plan.type == 'steroid' %}
-                        {{ _('برنامه استروئیدی') }}
+                        {{ _('Steroid plan') }}
                     {% else %}
-                        {{ _('جزئیات برنامه') }}
+                        {{ _('Plan details') }}
                     {% endif %}
                 </h1>
                 <div class="text-xs text-fog font-medium mt-1">
                     {% if plan.start_date %}
-                        {{ _('از') }} {{ plan.start_date | jalali_date }}
+                        {{ _('From') }} {{ plan.start_date | jalali_date }}
                     {% endif %}
                     {% if plan.end_date %}
-                        {{ _('تا') }} {{ plan.end_date | jalali_date }}
+                        {{ _('To') }} {{ plan.end_date | jalali_date }}
                     {% endif %}
                 </div>
             </div>
@@ -78,7 +78,7 @@
                             class="tab transition-all px-6 whitespace-nowrap font-medium {% if loop.first %}tab-active{% endif %}"
                             onclick="showSeq('{{ seq }}')"
                         >
-                            {{ _('روز') }} {{ seq }}
+                            {{ _('Day') }} {{ seq }}
                         </a>
                     {% endfor %}
                 </div>
@@ -94,7 +94,7 @@
                 >
                     {# --- 🥑 DIET PLAN RENDER --- #}
                     {% if plan.type == 'diet' %}
-                        {% set meal_categories = ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+                        {% set meal_categories = ['Fasting', 'Breakfast', 'Snack', 'Pre-workout', 'Post-workout', 'Lunch', 'Dinner'] %}
 
                         {% for category in meal_categories %}
                             {% set category_items = day_items | selectattr('meal_name', 'equalto', category) | list %}
@@ -136,7 +136,7 @@
                                 <div
                                     class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                                 >
-                                    {{ _('سایر') }}
+                                    {{ _('Other') }}
                                 </div>
                             {% for i in other_items %}
                                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
@@ -163,7 +163,7 @@
 
                         {# --- 💪🏻 TRAINING PLAN RENDER --- #}
                     {% elif plan.type == 'training' %}
-                        {% set training_categories = ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+                        {% set training_categories = ['Warm-up', 'Corrective', 'Main', 'Cardio', 'Cool-down'] %}
 
                         {% for category in training_categories %}
                             {% set category_items = day_items | selectattr('category', 'equalto', category) | list %}
@@ -175,7 +175,7 @@
                                 </div>
                                 {% for i in category_items %}
                                     <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
-                                        <div class="card-body p-4 text-right justify-between gap-4">
+                                        <div class="card-body p-4 text-left justify-between gap-4">
                                             <div class="flex justify-between items-center">
                                                 <span class="font-semibold text-base">
                                                     {{ i.name }}
@@ -191,18 +191,18 @@
                                                         <span class="font-black text-sm">
                                                             {{ i.sets }}
                                                         </span>
-                                                        {{ _('ست') }} ×
+                                                        {{ _('Sets') }} ×
                                                         <span class="font-black text-sm">
                                                             {{ i.reps }}
                                                         </span>
-                                                        {{ _('تکرار') }}
+                                                        {{ _('Reps') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if i.weight %}
                                                     <div
                                                         class="badge badge-primary badge-soft px-3 py-3 font-medium border-2 border-base-content/20"
                                                     >
-                                                        {{ i.weight }} {{ _('کیلوگرم') }}
+                                                        {{ i.weight }} {{ _('kg') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if i.rest_seconds %}
@@ -222,7 +222,7 @@
                                                                 d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
                                                             />
                                                         </svg>
-                                                        {{ i.rest_seconds }} {{ _('ثانیه استراحت') }}
+                                                        {{ i.rest_seconds }} {{ _('sec rest') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -247,11 +247,11 @@
                             <div
                                 class="divider divider-start text-xs font-semibold tracking-widest text-fog"
                             >
-                                {{ _('سایر حرکات') }}
+                                {{ _('Other exercises') }}
                             </div>
                             {% for i in other_training_items %}
                                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
-                                    <div class="card-body p-4 text-right justify-between gap-4">
+                                    <div class="card-body p-4 text-left justify-between gap-4">
                                         <div class="flex justify-between items-center">
                                             <span class="font-semibold text-base">{{ i.name }}</span>
                                         </div>
@@ -263,25 +263,25 @@
                                                     <span class="font-black text-sm">
                                                         {{ i.sets }}
                                                     </span>
-                                                    {{ _('ست') }} ×
+                                                    {{ _('Sets') }} ×
                                                     <span class="font-black text-sm">
                                                         {{ i.reps }}
                                                     </span>
-                                                    {{ _('تکرار') }}
+                                                    {{ _('Reps') }}
                                                 </div>
                                             {% endif %}
                                             {% if i.weight %}
                                                 <div
                                                     class="badge badge-primary badge-soft px-3 py-3 font-medium border-2 border-base-content/20"
                                                 >
-                                                    {{ i.weight }} {{ _('کیلوگرم') }}
+                                                    {{ i.weight }} {{ _('kg') }}
                                                 </div>
                                             {% endif %}
                                             {% if i.rest_seconds %}
                                                 <div
                                                     class="badge badge-secondary badge-soft px-3 py-3 font-medium gap-1 border-2 border-base-content/20"
                                                 >
-                                                    {{ i.rest_seconds }} {{ _('ثانیه') }}
+                                                    {{ i.rest_seconds }} {{ _('sec') }}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -329,12 +329,12 @@
             {% endfor %}
         {% else %}
             <div
-                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem] p-10 text-center flex flex-col items-center justify-center mt-6"
+                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem] p-10 text-center flex flex-col items-center justify-center mt-6"
             >
                 <div class="text-4xl mb-4 opacity-50">📭</div>
-                <h3 class="font-display font-normal text-2xl">{{ _('آیتمی یافت نشد') }}</h3>
+                <h3 class="font-display font-normal text-2xl">{{ _('No items found') }}</h3>
                 <p class="text-sm text-fog mt-2">
-                    {{ _('هنوز هیچ آیتمی برای این برنامه ثبت نشده است.') }}
+                    {{ _('No items have been added to this plan yet.') }}
                 </p>
             </div>
         {% endif %}

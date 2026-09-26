@@ -3,14 +3,14 @@
 <div id="coaches-content" data-settle>
     <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
-            <h1 class="font-display font-normal text-3xl leading-tight">{{ _('مربی‌ها') }}</h1>
-            <p class="text-sm text-fog mt-1">{{ _('مدیریت مربی‌های ثبت‌شده') }}</p>
+            <h1 class="font-display font-normal text-3xl leading-tight">{{ _('Coaches') }}</h1>
+            <p class="text-sm text-fog mt-1">{{ _('Manage registered coaches') }}</p>
         </div>
-        <a href="/coaches/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('مربی جدید') }}</a>
+        <a href="/coaches/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('New coach') }}</a>
     </header>
 
     <div id="coaches-table-container">
-        <div class="card bg-base-100 border-2 border-base-content rounded-[2rem]">
+        <div class="card bg-base-100 border-2 border-base-content rounded-[2.5rem]">
             <div class="card-body p-0">
                 {% if coaches and coaches|length > 0 %}
                 <ul class="divide-y divide-base-content/15">
@@ -23,8 +23,8 @@
                             <span class="font-semibold text-sm block truncate">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</span>
                             <span class="text-xs text-fog block truncate">{{ coach.email or '' }}</span>
                         </div>
-                        <a href="/coaches/{{ coach.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('مشاهده مربی') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40 rtl:rotate-180">
+                        <a href="/coaches/{{ coach.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('View coach') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </a>
@@ -32,21 +32,21 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="bg-base-100 rounded-[2rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
+                <div class="bg-base-100 rounded-[2.5rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
                     <span class="status status-secondary animate-bounce"></span>
-                    <p class="text-sm text-fog font-medium mt-2">{{ _('هنوز مربی‌ای ثبت نکردید!') }}</p>
+                    <p class="text-sm text-fog font-medium mt-2">{{ _("You haven't added any coaches yet!") }}</p>
                 </div>
                 {% endif %}
             </div>
         </div>
 
         {% if total_pages > 1 %}
-        <nav class="join flex justify-center mt-4" aria-label="{{ _('صفحه‌بندی') }}">
+        <nav class="join flex justify-center mt-4" aria-label="{{ _('Pagination') }}">
             <a class="btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
-               {% if page > 1 %}href="/coaches?page={{ page - 1 }}" hx-get="/coaches?page={{ page - 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('قبلی') }}">«</a>
-            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}</button>
+               {% if page > 1 %}href="/coaches?page={{ page - 1 }}" hx-get="/coaches?page={{ page - 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Previous') }}">«</a>
+            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</button>
             <a class="btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
-               {% if page < total_pages %}href="/coaches?page={{ page + 1 }}" hx-get="/coaches?page={{ page + 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('بعدی') }}">»</a>
+               {% if page < total_pages %}href="/coaches?page={{ page + 1 }}" hx-get="/coaches?page={{ page + 1 }}" hx-target="#coaches-content" hx-select="#coaches-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Next') }}">»</a>
         </nav>
         {% endif %}
     </div>

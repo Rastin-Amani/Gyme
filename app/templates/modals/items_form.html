@@ -6,19 +6,18 @@
     hx-boost="false"
     hx-swap="none"
     hx-on:htmx:after-request="if(event.detail.successful){console.log('modal success, triggering refresh');document.getElementById('modal-container').innerHTML='';htmx.trigger(document.body,'performListRefresh');}"
-    class="flex flex-col gap-4 text-right"
-    dir="rtl"
+    class="flex flex-col gap-4"
 >
     {% if plan_type == 'training' %}
         <div class="form-control w-full flex flex-col gap-4">
             <label class="floating-label">
-                <span>{{ _('نام حرکت') }}</span>
+                <span>{{ _('Exercise name') }}</span>
                 <input
                     list="exercise-options"
                     type="text"
                     name="item_name"
                     value="{{ item.name or '' }}"
-                    placeholder="{{ _('نام حرکت (انتخاب یا تایپ کنید)') }}"
+                    placeholder="{{ _('Exercise name (select or type)') }}"
                     class="input w-full validator"
                     autocomplete="on"
                     required
@@ -29,12 +28,12 @@
                     <option value="{{ name }}"></option>
                 {% endfor %}
             </datalist>
-            <p class="validator-hint text-error text-xs mt-1 hidden">{{ _('این فیلد اجباری است.') }}</p>
+            <p class="validator-hint text-error text-xs mt-1 hidden">{{ _('This field is required.') }}</p>
 
             <label class="floating-label">
-                <span>{{ _('دسته‌بندی حرکت') }}</span>
+                <span>{{ _('Exercise category') }}</span>
                 <select name="category" class="select w-full" required>
-                    {% for cat in ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+                    {% for cat in ['Warm-up', 'Corrective', 'Main', 'Cardio', 'Cool-down'] %}
                         <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>
                             {{ _(cat) }}
                         </option>
@@ -45,40 +44,40 @@
 
         <div class="grid grid-cols-3 gap-4">
             <label class="floating-label">
-                <span>{{ _('روز') }}</span>
+                <span>{{ _('Day') }}</span>
                 <input type="number" name="seq" value="{{ item.seq or 1 }}" class="input w-full" />
             </label>
-            <p class="validator-hint text-error text-xs hidden">{{ _('این فیلد اجباریه.') }}</p>
+            <p class="validator-hint text-error text-xs hidden">{{ _('This field is required.') }}</p>
             <label class="floating-label">
-                <span>{{ _('ترتیب') }}</span>
+                <span>{{ _('Order') }}</span>
                 <input type="number" name="order" value="{{ item.order or 1 }}" class="input w-full" />
             </label>
             <label class="floating-label">
-                <span>{{ _('ست') }}</span>
+                <span>{{ _('Sets') }}</span>
                 <input type="number" name="sets" value="{{ item.sets or '' }}" class="input w-full" />
             </label>
         </div>
 
         <div class="grid grid-cols-3 gap-2">
             <label class="floating-label">
-                <span>{{ _('تکرار') }}</span>
+                <span>{{ _('Reps') }}</span>
                 <input type="number" name="reps" value="{{ item.reps or '' }}" class="input w-full" />
             </label>
             <label class="floating-label">
-                <span>{{ _('وزنه') }}</span>
+                <span>{{ _('Weight') }}</span>
                 <input type="number" step="0.1" name="weight" value="{{ item.weight or '' }}" class="input w-full" />
             </label>
             <label class="floating-label">
-                <span>{{ _('استراحت (s)') }}</span>
+                <span>{{ _('Rest (s)') }}</span>
                 <input type="number" name="rest_seconds" value="{{ item.rest_seconds or '' }}" class="input w-full" />
             </label>
         </div>
     {% elif plan_type == 'diet' %}
         <label class="floating-label">
-            <span>{{ _('نام وعده') }}</span>
+            <span>{{ _('Meal') }}</span>
             <select name="meal_name" class="select w-full" required>
-                <option value="" {% if not item %}selected{% endif %} disabled>{{ _('انتخاب وعده...') }}</option>
-                {% for category in ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+                <option value="" {% if not item %}selected{% endif %} disabled>{{ _('Select a meal...') }}</option>
+                {% for category in ['Fasting', 'Breakfast', 'Snack', 'Pre-workout', 'Post-workout', 'Lunch', 'Dinner'] %}
                     <option value="{{ category }}" {% if item.meal_name == category %}selected{% endif %}>
                         {{ _(category) }}
                     </option>
@@ -86,13 +85,13 @@
             </select>
         </label>
         <label class="floating-label">
-            <span>{{ _('نام غذا') }}</span>
+            <span>{{ _('Food name') }}</span>
             <input
                 list="food-options"
                 type="text"
                 name="food_name"
                 value="{{ item.food_name or '' }}"
-                placeholder="{{ _('نام غذا (انتخاب یا تایپ کنید)') }}"
+                placeholder="{{ _('Food name (select or type)') }}"
                 class="input w-full"
                 autocomplete="off"
             />
@@ -103,29 +102,29 @@
             {% endfor %}
         </datalist>
         <label class="floating-label">
-            <span>{{ _('مقدار / واحد') }}</span>
+            <span>{{ _('Quantity / unit') }}</span>
             <input type="text" name="quantity" value="{{ item.quantity or '' }}" class="input w-full" />
         </label>
     {% elif plan_type == 'steroid' %}
         <label class="floating-label">
-            <span>{{ _('نام مکمل/دارو') }}</span>
+            <span>{{ _('Supplement/medication name') }}</span>
             <input type="text" name="name" value="{{ item.name or '' }}" class="input w-full" />
         </label>
         <div class="grid grid-cols-2 gap-4">
             <label class="floating-label">
-                <span>{{ _('نوع') }}</span>
+                <span>{{ _('Type') }}</span>
                 <select name="type" class="select w-full">
-                    <option value="supplement" {% if item.type == 'supplement' %}selected{% endif %}>{{ _('مکمل') }}</option>
-                    <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>{{ _('استروئید') }}</option>
+                    <option value="supplement" {% if item.type == 'supplement' %}selected{% endif %}>{{ _('Supplement') }}</option>
+                    <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>{{ _('Steroid') }}</option>
                 </select>
             </label>
             <label class="floating-label">
-                <span>{{ _('دوز') }}</span>
+                <span>{{ _('Dosage') }}</span>
                 <input type="text" name="dosage" value="{{ item.dosage or '' }}" class="input w-full" />
             </label>
         </div>
         <label class="floating-label">
-            <span>{{ _('زمان/تکرار مصرف') }}</span>
+            <span>{{ _('Timing / frequency') }}</span>
             <input type="text" name="frequency" value="{{ item.frequency or '' }}" class="input w-full" />
         </label>
     {% endif %}
@@ -133,7 +132,7 @@
     {% if item.notes and item.notes.strip() %}
         <textarea name="notes" class="textarea h-12 w-full">{{ item.notes.strip() }}</textarea>
     {% else %}
-        <textarea name="notes" class="textarea h-12 w-full" placeholder="{{ _('یادداشت') }}"></textarea>
+        <textarea name="notes" class="textarea h-12 w-full" placeholder="{{ _('Notes') }}"></textarea>
     {% endif %}
 
     <div class="hidden">
@@ -141,9 +140,9 @@
         <input type="hidden" name="plan" value="{{ plan_id }}" />
     </div>
 
-    <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+    <div class="modal-action flex gap-3 mt-6">
         <button type="button" class="btn btn-ghost border-2 border-base-content/20 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
-            {{ _('لغو') }}
+            {{ _('Cancel') }}
         </button>
         {% if item %}
             <button
@@ -154,11 +153,11 @@
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
-                {{ _('حذف') }}
+                {{ _('Delete') }}
             </button>
         {% endif %}
         <button type="submit" class="btn btn-primary border-2 border-base-content flex-3">
-            {{ _('بروزرسانی') if item else _('افزودن به لیست') }}
+            {{ _('Update') if item else _('Add to list') }}
         </button>
     </div>
 </form>

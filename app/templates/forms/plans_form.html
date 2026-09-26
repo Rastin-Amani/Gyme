@@ -9,11 +9,11 @@
             {% if is_template %}
                 <div class="form-control">
                     <label class="input w-full">
-                        <span class="label">{{ _('نام قالب') }}</span>
+                        <span class="label">{{ _('Template name') }}</span>
                         <input
                             type="text"
                             name="template_name"
-                            placeholder="{{ _('مثل: برنامه کتو') }}"
+                            placeholder="{{ _('e.g. Keto plan') }}"
                             value="{{ plan.template_name or '' }}"
                         />
                     </label>
@@ -22,19 +22,19 @@
 
             <div class="form-control">
                 <label class="select w-full">
-                    <span class="label">{{ _('نوع برنامه') }}</span>
+                    <span class="label">{{ _('Plan type') }}</span>
                     <select name="type">
                         <option
                             value="training"
                             {{ 'selected' if plan.type == 'training' else '' }}
                         >
-                            {{ _('تمرینی') }}
+                            {{ _('Training') }}
                         </option>
                         <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>
-                            {{ _('غذایی') }}
+                            {{ _('Diet') }}
                         </option>
                         <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>
-                            {{ _('استروئیدی') }}
+                            {{ _('Steroid') }}
                         </option>
                     </select>
                 </label>
@@ -43,7 +43,7 @@
             <!-- Coach selector -->
             <div class="form-control">
                 <label class="select w-full">
-                    <span class="label">{{ _('مربی') }}</span>
+                    <span class="label">{{ _('Coach') }}</span>
                     <select name="coach" class="select w-full">
                         {% for coach in coaches %}
                             <option
@@ -61,7 +61,7 @@
             {% if not is_template %}
                 <div class="form-control">
                     <label class="select w-full">
-                        <span class="label">{{ _('شاگرد') }}</span>
+                        <span class="label">{{ _('Trainee') }}</span>
                         <select name="trainee" class="select w-full">
                             {% for trainee in trainees %}
                                 <option
@@ -78,12 +78,12 @@
             {% if not is_template %}
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        {% with name="start_date", label=_("تاریخ شروع"), placeholder=_("تاریخ شروع"), value=plan.start_date %}
+                        {% with name="start_date", label=_("Start date"), placeholder=_("Start date"), value=plan.start_date %}
                             {% include 'components/datepicker.html' %}
                         {% endwith %}
                     </div>
                     <div>
-                        {% with name="end_date", label=_("تاریخ پایان"), placeholder= _("تاریخ پایان"), value=plan.end_date %}
+                        {% with name="end_date", label=_("End date"), placeholder= _("End date"), value=plan.end_date %}
                             {% include 'components/datepicker.html' %}
                         {% endwith %}
                     </div>
@@ -93,7 +93,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="form-control">
                     <label class="input">
-                        <span class="label">{{ _('روز در هفته') }}</span>
+                        <span class="label">{{ _('Days per week') }}</span>
                         <input
                             type="number"
                             name="days_per_week"
@@ -103,19 +103,19 @@
                 </div>
                 <div class="form-control">
                     <label class="input select">
-                        <span class="label">{{ _('وضعیت') }}</span>
+                        <span class="label">{{ _('Status') }}</span>
                         <select name="status">
                             <option
                                 value="active"
                                 {{ 'selected' if plan.status == 'active' else '' }}
                             >
-                                {{ _('فعال') }}
+                                {{ _('Active') }}
                             </option>
                             <option
                                 value="inactive"
                                 {{ 'selected' if plan.status == 'inactive' else '' }}
                             >
-                                {{ _('غیرفعال') }}
+                                {{ _('Inactive') }}
                             </option>
                         </select>
                     </label>
@@ -133,27 +133,27 @@
                 <textarea
                     name="notes"
                     class="textarea h-12 w-full"
-                    placeholder="{{ _('یادداشت') }}"
+                    placeholder="{{ _('Notes') }}"
                 ></textarea>
             {% endif %}
         </div>
 
         <!-- Actions -->
-        <div class="flex flex-col-reverse justify-end gap-2 mt-6">
+        <div class="flex flex-col justify-end gap-2 mt-6">
             <a
                 href="{{ '/plans?is_template=true' if is_template else '/plans' }}"
                 class="btn btn-ghost border-2 border-base-content/20"
                 hx-boost="false"
             >
-                {{ _('انصراف') }}
+                {{ _('Cancel') }}
             </a>
             <button type="submit" class="w-full btn btn-primary border-2 border-base-content">
                 {% if plan %}
-                    {{ _('ویرایش برنامه') }}
+                    {{ _('Update plan') }}
                 {% elif is_template %}
-                    {{ _('ذخیره قالب') }}
+                    {{ _('Save template') }}
                 {% else %}
-                    {{ _('ثبت برنامه') }}
+                    {{ _('Create plan') }}
                 {% endif %}
             </button>
             {% if plan %}
@@ -165,7 +165,7 @@
                     hx-swap="innerHTML"
                     hx-boost="false"
                 >
-                    {{ _('حذف') }}
+                    {{ _('Delete') }}
                 </button>
             {% endif %}
         </div>

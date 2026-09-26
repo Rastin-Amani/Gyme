@@ -1,19 +1,18 @@
-<dialog id="apply-template-modal" class="modal modal-bottom sm:modal-middle modal-open text-right" hx-boost="false">
+<dialog id="apply-template-modal" class="modal modal-bottom sm:modal-middle modal-open" hx-boost="false">
     <div class="modal-box bg-base-100 border-2 border-base-content max-h-[85vh] overflow-y-auto pb-8">
         <div class="w-12 h-1.5 bg-base-content/30 rounded-full mx-auto mb-6 sm:hidden"></div>
         <p class="font-display font-normal text-xl text-base-content my-4">
-            {{ _('اعمال') }} {{ template.template_name or (_('قالب') ~ ' ' ~ template.type) }}
+            {{ _('Apply') }} {{ template.template_name or (_('Template') ~ ' ' ~ template.type) }}
         </p>
         <form
             hx-post="/templates/{{ template.id }}/apply"
             hx-boost="false"
             hx-swap="none"
             hx-on:htmx:after-request="if(event.detail.successful){document.getElementById('modal-container').innerHTML='';}"
-            class="flex flex-col gap-4 text-right"
-            dir="rtl"
+            class="flex flex-col gap-4"
         >
             <label class="floating-label">
-                <span>{{ _('مربی') }}</span>
+                <span>{{ _('Coach') }}</span>
                 <select name="coach" class="select w-full">
                     {% for coach in coaches %}
                         <option value="{{ coach.id }}" {% if loop.first %}selected{% endif %}>
@@ -23,9 +22,9 @@
                 </select>
             </label>
             <label class="floating-label">
-                <span>{{ _('انتخاب شاگرد') }}</span>
+                <span>{{ _('Select trainee') }}</span>
                 <select name="trainee" class="select w-full" required>
-                    <option value="" selected disabled>{{ _('شاگرد را انتخاب کنید...') }}</option>
+                    <option value="" selected disabled>{{ _('Select a trainee...') }}</option>
                     {% for trainee in trainees %}
                         <option value="{{ trainee.id }}">
                             {{ (trainee.expand['user'].first_name ~ ' ' ~ trainee.expand['user'].last_name) if trainee.expand and 'user' in trainee.expand else '' }}
@@ -34,21 +33,21 @@
                 </select>
             </label>
             <div class="grid grid-cols-2 gap-4">
-                {% with name="start_date", label=_("تاریخ شروع"), placeholder=_("تاریخ شروع"), required="required" %}
+                {% with name="start_date", label=_("Start date"), placeholder=_("Start date"), required="required" %}
                     {% include 'components/datepicker.html' %}
                 {% endwith %}
-                {% with name="end_date", label=_("تاریخ پایان"), placeholder=_("تاریخ پایان"), required="required" %}
+                {% with name="end_date", label=_("End date"), placeholder=_("End date"), required="required" %}
                     {% include 'components/datepicker.html' %}
                 {% endwith %}
             </div>
-            <textarea name="notes" class="textarea h-16 w-full" placeholder="{{ _('یادداشت') }}"></textarea>
+            <textarea name="notes" class="textarea h-16 w-full" placeholder="{{ _('Notes') }}"></textarea>
             <input type="hidden" name="template_id" value="{{ template.id }}" />
-            <div class="modal-action flex flex-row-reverse gap-3 mt-6">
+            <div class="modal-action flex gap-3 mt-6">
                 <button type="button" class="btn btn-ghost border-2 border-base-content/20 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
-                    {{ _('لغو') }}
+                    {{ _('Cancel') }}
                 </button>
                 <button type="submit" class="btn btn-primary border-2 border-base-content flex-[2]">
-                    {{ _('ایجاد برنامه') }}
+                    {{ _('Create plan') }}
                 </button>
             </div>
         </form>

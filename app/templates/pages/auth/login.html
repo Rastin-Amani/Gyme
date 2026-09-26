@@ -7,7 +7,7 @@
         class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral p-6"
     >
         <div
-            class="bg-base-100 rounded-[2rem] w-full max-w-sm p-6 pb-8 border-2 border-base-content transform transition-all duration-300 animate-slide-up"
+            class="bg-base-100 rounded-[2.5rem] w-full max-w-sm p-6 pb-8 border-2 border-base-content transform transition-all duration-300 animate-slide-up"
         >
             <div class="flex flex-col items-center text-center gap-3">
                 <img
@@ -17,54 +17,52 @@
                     onerror="this.style.display='none'"
                 />
                 <div>
-                    <p class="font-display text-3xl font-normal text-base-content">{{ _('نصب اپلیکیشن') }}</p>
+                    <p class="font-display text-3xl font-normal text-base-content">{{ _('Install the app') }}</p>
                     <p class="text-sm text-base-content/60 mt-1 leading-relaxed">
-                        {{ _('وب اپلیکیشن را به صفحه اصلی خود اضافه کنید.') }}
+                        {{ _('Add the web app to your home screen.') }}
                     </p>
                 </div>
                 <div
-                    class="text-right w-full space-y-3 bg-base-200 rounded-box p-4 text-sm mt-2 border border-base-300"
+                    class="text-left w-full space-y-3 bg-base-200 rounded-box p-4 text-sm mt-2 border border-base-300"
                 >
                     <div class="flex items-start gap-3">
                         <span
                             class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
-                            ۱
+                            1
                         </span>
                         <span>
-                            {{ _('در نوار پایین دکمه') }}
+                            {{ _('Tap the') }}
                             <strong>Share</strong>
                             <span class="inline-block align-middle text-lg leading-none">⎋</span>
-                            {{ _('را انتخاب کنید.') }}
+                            {{ _('button in the bottom bar.') }}
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
                         <span
                             class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
-                            ۲
+                            2
                         </span>
                         <span>
-                            {{ _('در منوی باز شده، گزینه') }}
-                            <strong>Add to Home Screen</strong>
-                            {{ _('را انتخاب کنید.') }}
+                            {{ _('In the menu that opens, choose') }}
+                            <strong>Add to Home Screen</strong>.
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
                         <span
                             class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
                         >
-                            ۳
+                            3
                         </span>
                         <span>
-                            {{ _('در مرحله بعد، روی') }}
-                            <strong>Add</strong>
-                            {{ _('کلیک کنید.') }}
+                            {{ _('In the next step, tap') }}
+                            <strong>Add</strong>.
                         </span>
                     </div>
                 </div>
                 <button onclick="dismissInstallOverlay()" class="btn btn-primary w-full mt-1">
-                    {{ _('متوجه شدم') }}
+                    {{ _('Got it') }}
                 </button>
             </div>
         </div>
@@ -98,56 +96,74 @@
     <div
         class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8"
     >
+        <!-- Caldera hero: halftone dot motif (violet → ember) with a chalk
+             display title; the form card overlaps its base. -->
         <div
-            class="card bg-base-100 border-2 border-base-content w-full max-w-sm rounded-[2rem] z-10"
+            class="halftone w-full max-w-sm rounded-[2.5rem] border-2 border-base-content p-8 pt-10 pb-24 relative overflow-hidden"
+        >
+            <div class="flex items-start gap-4">
+                {% if tenant and tenant.logo %}
+                    {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                    <div class="avatar">
+                        <div
+                            class="w-16 h-16 rounded-full border-2 border-chalk bg-chalk/90 p-1"
+                        >
+                            <img
+                                src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
+                                alt="{{ tenant.name }}"
+                                class="rounded-full object-cover"
+                            />
+                        </div>
+                    </div>
+                {% else %}
+                    <div
+                        class="w-16 h-16 rounded-[1rem] bg-ember text-obsidian border-2 border-base-content flex items-center justify-center text-3xl font-display"
+                    >
+                        {{ tenant.name[:1] if tenant else "G" }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <h1
+                class="font-display text-chalk text-5xl sm:text-6xl leading-[0.95] mt-6"
+            >
+                {{ tenant.name if tenant else _("Gyme") }}
+            </h1>
+
+            <div class="mt-5">
+                <span
+                    class="badge border-0 bg-sulfur text-obsidian px-4 py-3 text-xs font-semibold rounded-full"
+                >
+                    {{ _('User panel') }}
+                </span>
+            </div>
+        </div>
+
+        <!-- Limestone form card overlapping the hero -->
+        <div
+            class="card bg-base-100 border-2 border-base-content w-full max-w-sm rounded-[2.5rem] -mt-14 z-10"
         >
             <div class="card-body p-6 sm:p-8">
-                <div class="text-center mb-5 flex flex-col items-center">
-                    {% if tenant and tenant.logo %}
-                        {% set pb_url = request.state.pb.base_url.rstrip("/") %}
-                        <div class="avatar mb-5 transition-transform hover:scale-105 duration-300">
-                            <div
-                                class="w-20 h-20 rounded-[1.5rem] border-2 border-base-content bg-base-100 p-1"
-                            >
-                                <img
-                                    src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
-                                    alt="{{ tenant.name }}"
-                                    class="rounded-[1rem] object-cover"
-                                />
-                            </div>
-                        </div>
-                    {% else %}
-                        <div class="avatar placeholder mb-5">
-                            <div
-                                class="bg-lavender-whisper text-vast-ink rounded-[1.5rem] w-20 h-20 border-2 border-base-content flex items-center justify-center text-3xl font-medium"
-                            >
-                                {{ tenant.name[:1] if tenant else "G" }}
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <h1 class="font-display font-normal text-4xl leading-[1.1] text-base-content">
-                        {{ tenant.name if tenant else _("جیمی") }}
-                    </h1>
-                    <p class="text-xs font-semibold tracking-wide text-secondary mt-2">
-                        {{ _('پنل کاربری') }}
-                    </p>
-                </div>
+                <h2
+                    class="font-display font-normal text-2xl leading-none text-base-content mb-5"
+                >
+                    {{ _('Log in') }}
+                </h2>
 
                 <form method="post" action="/login" class="space-y-4">
                     <div class="form-control">
                         <label class="floating-label">
-                            <span>{{ _('ایمیل') }}</span>
+                            <span>{{ _('Email') }}</span>
                             <input
                                 name="identity"
                                 class="input w-full validator transition-colors"
-                                placeholder="{{ _('ایمیل') }}"
+                                placeholder="{{ _('Email') }}"
                                 type="email"
                                 required
                                 autofocus
                             />
                             <div class="validator-hint hidden text-xs mt-1">
-                                {{ _('ایمیل معتبر نیست.') }}
+                                {{ _('Enter a valid email address.') }}
                             </div>
                         </label>
                     </div>
@@ -155,16 +171,16 @@
                     <div class="form-control">
                         <div class="relative w-full">
                             <label class="floating-label w-full">
-                                <span>{{ _('رمز عبور') }}</span>
+                                <span>{{ _('Password') }}</span>
                                 <input
                                     name="password"
                                     class="input w-full validator pl-12 transition-colors"
-                                    placeholder="{{ _('رمز عبور') }}"
+                                    placeholder="{{ _('Password') }}"
                                     type="password"
                                     required
                                 />
                                 <div class="validator-hint hidden text-xs mt-1">
-                                    {{ _('رمز عبور الزامی است.') }}
+                                    {{ _('Password is required.') }}
                                 </div>
                             </label>
 
@@ -214,21 +230,26 @@
                             href="#"
                             class="text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors"
                         >
-                            {{ _('رمز عبور را فراموش کردید؟') }}
+                            {{ _('Forgot your password?') }}
                         </a>
                     </div>
 
                     <div class="pt-4">
                         <button type="submit" class="btn btn-primary w-full h-12 text-base font-semibold">
-                            {{ _('ورود') }}
+                            {{ _('Log in') }}
                         </button>
                     </div>
                 </form>
 
-                <div class="flex items-center justify-center gap-2 mt-6 text-secondary/70">
-                    <span class="waveform h-3"><i></i><i></i><i></i><i></i><i></i></span>
-                    <span class="text-[0.7rem] font-medium text-fog">{{ tenant.name if tenant else _("جیمی") }} / Gyme</span>
-                    <span class="waveform h-3"><i></i><i></i><i></i><i></i><i></i></span>
+                <div class="mt-6">
+                    <div class="flex items-center justify-center gap-3" aria-hidden="true">
+                        <span class="h-px flex-1 border-t-2 border-dotted border-base-content/30"></span>
+                        <span class="sparks"><i></i><i></i><i></i></span>
+                        <span class="h-px flex-1 border-t-2 border-dotted border-base-content/30"></span>
+                    </div>
+                    <p class="text-center text-[0.7rem] font-medium text-fog mt-3">
+                        {{ tenant.name if tenant else _("Gyme") }} / Gyme
+                    </p>
                 </div>
             </div>
         </div>

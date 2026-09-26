@@ -1,9 +1,9 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
 <div class="max-w-150 mx-auto">
-    {# ── Header ─────────────────────────────────────────────────────────── #}
-    <div class="card flex-row-reverse items-center justify-between border-2 border-base-content bg-base-100 rounded-[2rem] p-4 mb-4">
-        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+    {# Header #}
+    <div class="card flex items-center justify-between border-2 border-base-content bg-base-100 rounded-[2.5rem] p-4 mb-4">
+        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('Edit') }}</a>
         <div class="text-center min-w-0">
             <div class="flex items-center justify-center gap-3 mb-2">
                 <h1 class="font-display font-normal text-2xl leading-tight truncate">
@@ -24,15 +24,15 @@
         <div class="w-16"></div>
     </div>
 
-    {# ── محور اطلاعات ────────────────────────────────────────────────────── #}
-    {% set gender_map = {'male': _('آقا'), 'female': _('خانم')} %}
+    {# Info section #}
+    {% set gender_map = {'male': _('Male'), 'female': _('Female')} %}
     <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
-        <div><span class="text-fog block text-xs mb-1">{{ _('تلفن') }}</span><span class="font-semibold">{% if trainee.expand and 'user' in trainee.expand %}{{ trainee.expand['user'].phone or '-' }}{% else %}-{% endif %}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('جنسیت') }}</span><span class="font-semibold">{{ gender_map.get(trainee.gender, gender_map.get(trainee.gender, _('-'))) }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('تاریخ تولد') }}</span><span class="font-semibold">{{ trainee.birthdate|jalali_date or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('قد') }}</span><span class="font-semibold">{{ trainee.height or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('وزن') }}</span><span class="font-semibold">{{ trainee.weight or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('گروه خونی') }}</span><span class="font-semibold">{{ trainee.blood_type or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Phone') }}</span><span class="font-semibold">{% if trainee.expand and 'user' in trainee.expand %}{{ trainee.expand['user'].phone or '-' }}{% else %}-{% endif %}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Gender') }}</span><span class="font-semibold">{{ gender_map.get(trainee.gender, gender_map.get(trainee.gender, _('-'))) }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Date of birth') }}</span><span class="font-semibold">{{ trainee.birthdate|jalali_date or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Height') }}</span><span class="font-semibold">{{ trainee.height or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Weight') }}</span><span class="font-semibold">{{ trainee.weight or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Blood type') }}</span><span class="font-semibold">{{ trainee.blood_type or '-' }}</span></div>
     </div>
 
     {% if trainee.notes %}
@@ -41,21 +41,21 @@
     </div>
     {% endif %}
 
-    {# ── اطلاعات تکمیلی ──────────────────────────────────────────────────── #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('اطلاعات تکمیلی') }}</div>
+    {# Additional info #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('Additional information') }}</div>
     <div class="grid gap-4 text-sm mb-2">
-        {% if trainee.training_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('سابقه تمرینی') }}</span><span class="font-medium">{{ trainee.training_history|jalali_year }}</span></div>{% endif %}
-        {% if trainee.steroid_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('مصرف استروئید') }}</span><span class="font-medium">{{ trainee.steroid_history }}</span></div>{% endif %}
-        {% if trainee.supplement_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('مصرف مکمل') }}</span><span class="font-medium">{{ trainee.supplement_history }}</span></div>{% endif %}
-        {% if trainee.limitations %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('ناهنجاری‌ها و بیماری‌ها') }}</span><span class="font-medium">{{ trainee.limitations }}</span></div>{% endif %}
+        {% if trainee.training_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Training history') }}</span><span class="font-medium">{{ trainee.training_history|jalali_year }}</span></div>{% endif %}
+        {% if trainee.steroid_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Steroid history') }}</span><span class="font-medium">{{ trainee.steroid_history }}</span></div>{% endif %}
+        {% if trainee.supplement_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Supplement history') }}</span><span class="font-medium">{{ trainee.supplement_history }}</span></div>{% endif %}
+        {% if trainee.limitations %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Abnormalities and illnesses') }}</span><span class="font-medium">{{ trainee.limitations }}</span></div>{% endif %}
     </div>
 
-    {# ── تاریخچه ─────────────────────────────────────────────────────────── #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('تاریخچه') }}</div>
+    {# History #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('History') }}</div>
 
     {% if progress_logs %}
         {% for log in progress_logs %}
-        <div class="collapse collapse-arrow border-2 border-base-content/20 rounded-[2rem] bg-base-100 mb-3">
+        <div class="collapse collapse-arrow border-2 border-base-content/20 rounded-[2.5rem] bg-base-100 mb-3">
             <input type="checkbox" aria-label="{{ log.created|jalali_date }}" />
             <div class="collapse-title font-bold text-sm flex items-center gap-2">
                 📋 {{ log.created|jalali_date }}
@@ -64,11 +64,11 @@
             <div class="collapse-content">
                 <div class="grid grid-cols-2 gap-3 mt-2">
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('قد') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Height') }}</span>
                         <span class="font-display text-2xl font-normal">{{ log.height or '-' }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('وزن') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Weight') }}</span>
                         <span class="font-display text-2xl font-normal">{{ log.weight or '-' }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
@@ -76,35 +76,35 @@
                         <span class="font-display text-2xl font-normal">{{ log.bmi|round(1) if log.bmi else '-' }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('درصد چربی بدن') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Body fat %') }}</span>
                         <span class="font-display text-2xl font-normal">{{ log.bfp|round(1) if log.bfp else '-' }}%</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('جرم عضلانی') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.lbm|round(1) if log.lbm else '-' }} {{ _('کیلوگرم') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Lean body mass') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.lbm|round(1) if log.lbm else '-' }} {{ _('kg') }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('متابولیسم پایه') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.bmr|int if log.bmr else '-' }} {{ _('کیلوکالری') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Basal metabolic rate') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.bmr|int if log.bmr else '-' }} {{ _('kcal') }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('متابولیسم با فعالیت') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.tdee|int if log.tdee else '-' }} {{ _('کیلوکالری') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Activity-adjusted metabolism') }}</span>
+                        <span class="font-display text-2xl font-normal">{{ log.tdee|int if log.tdee else '-' }} {{ _('kcal') }}</span>
                     </div>
                     <div class="text-center p-3 bg-lavender-whisper/25 border-2 border-base-content/15 rounded-[1rem]">
-                        <span class="text-fog block text-xs mb-1">{{ _('نسبت کمر به لگن') }}</span>
+                        <span class="text-fog block text-xs mb-1">{{ _('Waist-to-hip ratio') }}</span>
                         <span class="font-display text-2xl font-normal">{{ log.whr|round(2) if log.whr else '-' }}</span>
                     </div>
                 </div>
 
                 {% if log.progress_photos %}
-                <p class="text-xs text-fog mt-4 mb-2">{{ _('تصاویر پیشرفت') }} ({{ log.progress_photos|length }})</p>
+                <p class="text-xs text-fog mt-4 mb-2">{{ _('Progress photos') }} ({{ log.progress_photos|length }})</p>
                 <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {% for photo in log.progress_photos %}
                     <div class="relative rounded-[1rem] border-2 border-base-content/15 overflow-hidden cursor-pointer group">
                         <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="block cursor-pointer">
                             <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
-                                 alt="{{ _('تصویر پیشرفت') }}"
+                                 alt="{{ _('Progress photo') }}"
                                  class="w-full h-24 object-cover transition group-hover:scale-110 lazy"
                                  loading="lazy" />
                         </label>
@@ -115,7 +115,7 @@
 
                 {% if log.notes %}
                 <div class="mt-3 p-4 bg-lavender-whisper/30 border-2 border-base-content/15 rounded-[1rem]">
-                    <span class="text-fog text-xs block mb-1">{{ _('یادداشت‌ها') }}</span>
+                    <span class="text-fog text-xs block mb-1">{{ _('Notes') }}</span>
                     <p class="text-sm text-base-content/80">{{ log.notes }}</p>
                 </div>
                 {% endif %}
@@ -129,16 +129,16 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
                         </svg>
-                        {{ _('ویرایش') }}
+                        {{ _('Edit') }}
                     </button>
                 </div>
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <div class="bg-base-100 rounded-[2rem] p-8 text-center border-2 border-dashed border-base-content/30">
+        <div class="bg-base-100 rounded-[2.5rem] p-8 text-center border-2 border-dashed border-base-content/30">
             <span class="status status-secondary animate-bounce"></span>
-            <p class="text-sm text-fog font-medium mt-2">{{ _('لاگی ثبت نشده!') }}</p>
+            <p class="text-sm text-fog font-medium mt-2">{{ _('No assessments recorded yet!') }}</p>
         </div>
     {% endif %}
 
@@ -147,12 +147,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            {{ _('ثبت لاگ پیشرفت') }}
+            {{ _('Record assessment') }}
         </a>
     </div>
 
-    {# ── برنامه‌ها ────────────────────────────────────────────────────────── #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('برنامه‌ها') }}</div>
+    {# Plans #}
+    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('Plans') }}</div>
     {% set plan_list = plans.items if plans.items is defined else plans %}
     {% if plan_list %}
         {% for plan in plan_list %}
@@ -162,24 +162,24 @@
                     <div class="flex items-center gap-2">
                         {% if plan.type == 'training' %}💪🏻{% elif plan.type == 'diet' %}🥑{% else %}💊{% endif %}
                         <h3 class="font-bold text-sm truncate">
-                            {% if plan.type == 'training' %}{{ _('برنامه تمرینی') }}{% elif plan.type == 'diet' %}{{ _('برنامه غذایی') }}{% else %}{{ _('برنامه استروئیدی') }}{% endif %}
+                            {% if plan.type == 'training' %}{{ _('Training plan') }}{% elif plan.type == 'diet' %}{{ _('Diet plan') }}{% else %}{{ _('Steroid plan') }}{% endif %}
                         </h3>
                     </div>
                     <div class="text-xs text-fog mt-2 flex flex-col gap-1">
-                        <span>{{ _('وضعیت') }}: {% if plan.status == 'active' %}{{ _('فعال') }}{% elif plan.status == 'inactive' %}{{ _('غیرفعال') }}{% else %}{{ _('پیش‌نویس') }}{% endif %}</span>
-                        <span>{{ _('شروع') }}: {{ plan.start_date|jalali_date or '-' }} — {{ _('پایان') }}: {{ plan.end_date|jalali_date or '-' }}</span>
+                        <span>{{ _('Status') }}: {% if plan.status == 'active' %}{{ _('Active') }}{% elif plan.status == 'inactive' %}{{ _('Inactive') }}{% else %}{{ _('Draft') }}{% endif %}</span>
+                        <span>{{ _('Start') }}: {{ plan.start_date|jalali_date or '-' }} — {{ _('End') }}: {{ plan.end_date|jalali_date or '-' }}</span>
                     </div>
                 </div>
-                <a href="/plans/{{ plan.id }}" class="btn btn-sm btn-ghost text-secondary border-2 border-base-content/30 shrink-0">{{ _('مشاهده') }}</a>
+                <a href="/plans/{{ plan.id }}" class="btn btn-sm btn-ghost text-secondary border-2 border-base-content/30 shrink-0">{{ _('View') }}</a>
             </div>
         </div>
         {% endfor %}
     {% else %}
-        <p class="text-sm text-fog text-center py-4">{{ _('برنامه‌ای ثبت نشده!') }}</p>
+        <p class="text-sm text-fog text-center py-4">{{ _('No plans recorded yet!') }}</p>
     {% endif %}
 </div>
 
-{# ── Photo lightbox modals (checkbox style) ───────────────────────────────── #}
+{# Photo lightbox modals (checkbox style) #}
 {% if progress_logs %}
     {% for log in progress_logs %}
         {% if log.progress_photos %}
@@ -190,10 +190,10 @@
                     <label for="modal-{{ log.id }}-{{ loop.index0 }}"
                            class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white bg-vast-ink border-2 border-base-content z-[10000] cursor-pointer">✕</label>
                     <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
-                         alt="{{ _('تصویر کامل پیشرفت') }}"
+                         alt="{{ _('Full progress photo') }}"
                          class="max-w-full max-h-[85vh] object-contain rounded-box" />
                 </div>
-                <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-backdrop bg-black/50 cursor-pointer">{{ _('بستن') }}</label>
+                <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-backdrop bg-black/50 cursor-pointer">{{ _('Close') }}</label>
             </div>
             {% endfor %}
         {% endif %}

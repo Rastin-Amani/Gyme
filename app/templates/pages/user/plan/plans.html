@@ -6,9 +6,9 @@
     <div class="max-w-3xl mx-auto">
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="font-display font-normal text-3xl leading-tight">{{ _('برنامه‌های من') }}</h1>
+                <h1 class="font-display font-normal text-3xl leading-tight">{{ _('My plans') }}</h1>
                 <p class="text-sm text-fog mt-2">
-                    {{ _('مشاهده و پیگیری برنامه‌های اختصاصی مربی برای شما') }}
+                    {{ _('View and track the plans your coach created for you') }}
                 </p>
             </div>
         </div>
@@ -45,13 +45,13 @@
                                                 class="font-bold text-base sm:text-lg text-base-content whitespace-nowrap"
                                             >
                                                 {% if plan.type == 'training' %}
-                                                    {{ _('برنامه تمرینی') }}
+                                                    {{ _('Training plan') }}
                                                 {% elif plan.type == 'diet' %}
-                                                    {{ _('برنامه غذایی') }}
+                                                    {{ _('Diet plan') }}
                                                 {% elif plan.type == 'steroid' %}
-                                                    {{ _('برنامه استروئیدی') }}
+                                                    {{ _('Steroid plan') }}
                                                 {% else %}
-                                                    {{ _('برنامه نامشخص') }}
+                                                    {{ _('Unknown plan') }}
                                                 {% endif %}
                                             </h3>
 
@@ -59,19 +59,19 @@
                                                 <span
                                                     class="badge badge-success badge-sm badge-soft font-medium"
                                                 >
-                                                    {{ _('فعال') }}
+                                                    {{ _('Active') }}
                                                 </span>
                                             {% elif plan.status == 'draft' %}
                                                 <span
                                                     class="badge badge-ghost badge-sm font-medium"
                                                 >
-                                                    {{ _('پیش‌نویس') }}
+                                                    {{ _('Draft') }}
                                                 </span>
                                             {% elif plan.status == 'inactive' %}
                                                 <span
                                                     class="badge badge-error badge-sm badge-soft font-medium"
                                                 >
-                                                    {{ _('غیرفعال') }}
+                                                    {{ _('Inactive') }}
                                                 </span>
                                             {% else %}
                                                 <span
@@ -103,7 +103,7 @@
                                                         />
                                                     </svg>
                                                     <span>
-                                                        {{ _('شروع') }}:
+                                                        {{ _('Start') }}:
                                                         {{ plan.start_date | jalali_date }}
                                                     </span>
                                                 </div>
@@ -127,7 +127,7 @@
                                                         />
                                                     </svg>
                                                     <span>
-                                                        {{ _('پایان') }}:
+                                                        {{ _('End') }}:
                                                         {{ plan.end_date | jalali_date }}
                                                     </span>
                                                 </div>
@@ -136,7 +136,7 @@
                                     </div>
                                 </div>
 
-                                <div class="flex-shrink-0 mr-auto sm:mr-0">
+                                <div class="flex-shrink-0">
                                     <a
                                         href="/user/plans/{{ plan.id }}"
                                         class="btn btn-square border-2 border-base-content transition-colors"
@@ -163,7 +163,7 @@
             </div>
         {% else %}
             <div
-                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem] p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
+                class="card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem] p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
             >
                 <div
                     class="w-16 h-16 bg-lavender-whisper border-2 border-base-content rounded-full flex items-center justify-center mb-4 text-3xl"
@@ -171,12 +171,12 @@
                     📭
                 </div>
                 <h3 class="font-display font-normal text-2xl text-base-content">
-                    {{ _('برنامه‌ای ثبت نشده!') }}
+                    {{ _('No plans recorded yet!') }}
                 </h3>
                 <p class="text-sm text-fog mt-2 max-w-xs mx-auto">
                     {{
                         _(
-                            'در حال حاضر مربی شما هیچ برنامه‌ای برای شما ثبت نکرده است. به محض ایجاد برنامه جدید، در اینجا نمایش داده می‌شود.'
+                            "Your coach hasn't created any plans for you yet. As soon as a new plan is created, it will show up here."
                         )
                     }}
                 </p>
@@ -184,7 +184,7 @@
                     class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 border-2 border-base-content/20 px-3 py-1.5 rounded-full"
                 >
                     <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
-                    {{ _('منتظر دریافت برنامه...') }}
+                    {{ _('Waiting for your plan...') }}
                 </span>
             </div>
         {% endif %}

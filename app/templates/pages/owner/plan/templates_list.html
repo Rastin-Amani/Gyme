@@ -1,23 +1,23 @@
 {% if plans and plans|length > 0 %}
     {% for t in plans %}
-        <article class="card bg-base-100 border-2 border-base-content rounded-[2rem] mb-4 card-body p-5">
+        <article class="card bg-base-100 border-2 border-base-content rounded-[2.5rem] mb-4 card-body p-5">
             <div class="flex items-center justify-between gap-2">
                 <div class="min-w-0">
                     <h3 class="font-display font-normal text-xl leading-tight truncate">
-                        {{ t.template_name or (_('قالب') ~ ' ' ~ t.type) }}
+                        {{ t.template_name or (_('Template') ~ ' ' ~ t.type) }}
                     </h3>
                     <p class="text-xs text-fog mt-1">
                         {% if t.type == 'diet' %}
-                            {{ _('غذایی') }}
+                            {{ _('Diet') }}
                         {% elif t.type == 'training' %}
-                            {{ _('تمرینی') }}
+                            {{ _('Training') }}
                         {% else %}
-                            {{ _('استروئید') }}
+                            {{ _('Steroid') }}
                         {% endif %}
-                        | {{ t.days_per_week or '—' }} {{ _('روز در هفته') }}
+                        | {{ t.days_per_week or '—' }} {{ _('days per week') }}
                     </p>
                 </div>
-                <a href="/plans/{{ t.id }}" class="btn btn-sm btn-ghost border-2 border-base-content/30 text-secondary shrink-0">{{ _('مشاهده') }}</a>
+                <a href="/plans/{{ t.id }}" class="btn btn-sm btn-ghost border-2 border-base-content/30 text-secondary shrink-0">{{ _('View') }}</a>
             </div>
 
             {% if t.notes %}
@@ -32,20 +32,20 @@
                     hx-swap="innerHTML"
                     hx-boost="false"
                 >
-                    {{ _('اعمال برای شاگرد') }}
+                    {{ _('Apply to trainee') }}
                 </button>
             </div>
         </article>
     {% endfor %}
 {% else %}
     <div class="col-span-full">
-        <div class="bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem] p-8 text-center">
+        <div class="bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem] p-8 text-center">
             <p class="text-sm text-fog">
                 <span class="status status-secondary ml-1"></span>
-                {{ _('هنوز قالبی ساخته نشده.') }}
+                {{ _('No templates created yet.') }}
             </p>
             <a href="/plans/new?template=true" class="btn btn-sm btn-primary border-2 border-base-content mt-4">
-                {{ _('ساخت قالب جدید') }}
+                {{ _('Create new template') }}
             </a>
         </div>
     </div>

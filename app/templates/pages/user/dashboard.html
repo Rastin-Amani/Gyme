@@ -5,9 +5,9 @@
         <div class="flex flex-col gap-4 pb-6">
             <h1 class="font-display font-normal text-3xl md:text-4xl leading-tight">
                 <span class="text-secondary font-medium">
-                    {{ user.first_name if user else _('قهرمان') }}
+                    {{ user.first_name if user else _('Champion') }}
                 </span>
-                {{ _('خوش اومدی') }} 👋🏻
+                {{ _('Welcome back') }} 👋🏻
             </h1>
             <div role="alert" class="alert alert-warning alert-soft border-2 border-base-content/20">
                 <svg
@@ -24,7 +24,7 @@
                     />
                 </svg>
                 <span class="text-sm">
-                    {{ _('برای کارکرد صحیح اپ، بعد از پایان هر روز حتما تیک انجام شد را بزنید!') }}
+                    {{ _('For the app to work correctly, make sure to mark "Done" at the end of each day!') }}
                 </span>
             </div>
         </div>
@@ -51,7 +51,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'diet' %}tab-active{% endif %}"
                         onclick="showTab('diet')"
                     >
-                        {{ _('تغذیه') }} 🥑
+                        {{ _('Diet') }} 🥑
                     </a>
                 {% endif %}
 
@@ -62,7 +62,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'training' %}tab-active{% endif %}"
                         onclick="showTab('training')"
                     >
-                        {{ _('تمرین') }} 💪🏻
+                        {{ _('Training') }} 💪🏻
                     </a>
                 {% endif %}
 
@@ -73,7 +73,7 @@
                         class="tab transition-all px-6 {% if active_tab == 'steroid' %}tab-active{% endif %}"
                         onclick="showTab('steroid')"
                     >
-                        {{ _('استروئید') }} 💊
+                        {{ _('Steroid') }} 💊
                     </a>
                 {% endif %}
             </div>
@@ -84,12 +84,12 @@
                 {# 🟢 FIXED: Loop filters out empty plans automatically! #}
                 {% for p in plans['diet'] if p['items'] %}
                     <div class="mb-6">
-                        {% set meal_categories = ['ناشتا', 'صبحانه', 'میان وعده', 'قبل از تمرین', 'بعد از تمرین', 'ناهار', 'شام'] %}
+                        {% set meal_categories = ['Fasting', 'Breakfast', 'Snack', 'Pre-workout', 'Post-workout', 'Lunch', 'Dinner'] %}
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            <span class="js-done-label">{{ _('انجام شد') }}</span>
+                            <span class="js-done-label">{{ _('Done') }}</span>
                         </button>
                         {% for category in meal_categories %}
                             {% set category_items = p['items'] | selectattr('meal_name', 'equalto', category) | list %}
@@ -129,7 +129,7 @@
                         {% set other_items = p['items'] | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
                             <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
-                                {{ _('سایر') }}
+                                {{ _('Other') }}
                             </div>
                             {% for item in other_items %}
                                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
@@ -156,13 +156,13 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all diet plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                        {{ _('آیتمی وجود ندارد') }} 📭
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                        {{ _('No items yet') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                    {{ _('برنامه غذایی ندارید') }} 📭
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    {{ _('No diet plan') }} 📭
                 </div>
             {% endif %}
         </section>
@@ -176,11 +176,11 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            <span class="js-done-label">{{ _('انجام شد') }}</span>
+                            <span class="js-done-label">{{ _('Done') }}</span>
                         </button>
 
                         {# Jinja2 logic to group training items chronologically #}
-                        {% set training_categories = ['گرم کردن', 'حرکات اصلاحی', 'اصلی', 'هوازی', 'سرد کردن'] %}
+                        {% set training_categories = ['Warm-up', 'Corrective', 'Main', 'Cardio', 'Cool-down'] %}
 
                         {% for category in training_categories %}
                             {% set category_items = p['items'] | selectattr('category', 'equalto', category) | list %}
@@ -191,7 +191,7 @@
                                 </div>
                                 {% for item in category_items %}
                                     <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
-                                        <div class="card-body p-4 text-right justify-between gap-4">
+                                        <div class="card-body p-4 text-left justify-between gap-4">
                                             <div class="flex flex-col gap-2">
                                                 <div class="flex justify-between">
                                                     <span class="font-semibold">{{ item.name }}</span>
@@ -205,25 +205,25 @@
                                                         <span class="font-bold">
                                                             {{ item.sets }}
                                                         </span>
-                                                        {{ _('ست') }} ×
+                                                        {{ _('Sets') }} ×
                                                         <span class="font-bold">
                                                             {{ item.reps }}
                                                         </span>
-                                                        {{ _('تکرار') }}
+                                                        {{ _('Reps') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.weight %}
                                                     <div
                                                         class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                     >
-                                                        {{ item.weight }} {{ _('کیلوگرم') }}
+                                                        {{ item.weight }} {{ _('kg') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.rest_seconds %}
                                                     <div
                                                         class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                     >
-                                                        {{ item.rest_seconds }} {{ _('ثانیه') }}
+                                                        {{ item.rest_seconds }} {{ _('sec') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
@@ -246,11 +246,11 @@
                         {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
                             <div class="divider divider-start text-xs font-semibold tracking-widest text-fog">
-                                {{ _('سایر') }}
+                                {{ _('Other') }}
                             </div>
                             {% for item in other_training_items %}
                                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] mb-3">
-                                    <div class="card-body p-4 text-right justify-between gap-4">
+                                    <div class="card-body p-4 text-left justify-between gap-4">
                                         <div class="flex flex-col gap-2">
                                             <div class="flex justify-between">
                                                 <span class="font-semibold">{{ item.name }}</span>
@@ -262,23 +262,23 @@
                                             {% if item.sets and item.reps %}
                                                 <div class="badge badge-soft border-2 border-base-content/20 justify-end">
                                                     <span class="font-bold">{{ item.sets }}</span>
-                                                    {{ _('ست') }} ×
+                                                    {{ _('Sets') }} ×
                                                     <span class="font-bold">{{ item.reps }}</span>
-                                                    {{ _('تکرار') }}
+                                                    {{ _('Reps') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.weight %}
                                                 <div
                                                     class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                 >
-                                                    {{ item.weight }} {{ _('کیلوگرم') }}
+                                                    {{ item.weight }} {{ _('kg') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.rest_seconds %}
                                                 <div
                                                     class="badge badge-primary badge-sm badge-soft border-2 border-base-content/20"
                                                 >
-                                                    {{ item.rest_seconds }} {{ _('ثانیه') }}
+                                                    {{ item.rest_seconds }} {{ _('sec') }}
                                                 </div>
                                             {% endif %}
                                         </div>
@@ -298,13 +298,13 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all training plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                        {{ _('آیتمی وجود ندارد') }} 📭
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                        {{ _('No items yet') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                    {{ _('برنامه تمرینی ندارید') }} 📭
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    {{ _('No training plan') }} 📭
                 </div>
             {% endif %}
         </section>
@@ -318,7 +318,7 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
-                            <span class="js-done-label">{{ _('انجام شد') }}</span>
+                            <span class="js-done-label">{{ _('Done') }}</span>
                         </button>
                         {% for item in p['items'] %}
                             <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem]">
@@ -330,13 +330,13 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all steroid plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                        {{ _('آیتمی وجود ندارد') }} 📭
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                        {{ _('No items yet') }} 📭
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2rem]">
-                    {{ _('برنامه استروئیدی ندارید') }} 📭
+                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    {{ _('No steroid plan') }} 📭
                 </div>
             {% endif %}
         </section>

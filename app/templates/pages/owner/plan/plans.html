@@ -12,7 +12,7 @@
                 hx-select="#plans-content"
                 hx-push-url="true"
             >
-                {{ _('برنامه‌ها') }}
+                {{ _('Plans') }}
             </a>
             <a
                 href="/plans?is_template=true"
@@ -23,7 +23,7 @@
                 hx-select="#plans-content"
                 hx-push-url="true"
             >
-                {{ _('قالب‌ها') }}
+                {{ _('Templates') }}
             </a>
         </div>
 
@@ -31,25 +31,25 @@
         <div class="flex items-center justify-between mb-6">
             <div>
                 <h1 class="font-display text-3xl font-normal leading-tight">
-                    {% if is_template %}{{ _('قالب‌ها') }}{% else %}{{ _('برنامه‌ها') }}{% endif %}
+                    {% if is_template %}{{ _('Templates') }}{% else %}{{ _('Plans') }}{% endif %}
                 </h1>
                 <p class="text-sm text-fog"></p>
             </div>
 
             {% if is_template %}
-                <a href="/plans/new?template=true" class="btn btn-primary border-2 border-base-content">{{ _('قالب جدید') }}</a>
+                <a href="/plans/new?template=true" class="btn btn-primary border-2 border-base-content">{{ _('New template') }}</a>
             {% else %}
-                <a href="/plans/new" class="btn btn-primary border-2 border-base-content">{{ _('برنامه جدید') }}</a>
+                <a href="/plans/new" class="btn btn-primary border-2 border-base-content">{{ _('New plan') }}</a>
             {% endif %}
         </div>
 
         <!-- Search / Filter (only for active plans) -->
         {% if not is_template %}
             <div
-                class="collapse collapse-arrow border-2 border-base-content bg-base-100 rounded-[2rem] mb-6"
+                class="collapse collapse-arrow border-2 border-base-content bg-base-100 rounded-[2.5rem] mb-6"
             >
                 <input type="checkbox" />
-                <div class="collapse-title text-md font-semibold">{{ _('جستجو و فیلتر') }}</div>
+                <div class="collapse-title text-md font-semibold">{{ _('Search and filter') }}</div>
                 <div class="collapse-content">
                     <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                         <label class="form-control floating-label">
@@ -57,7 +57,7 @@
                                 type="text"
                                 name="query"
                                 id="search-input"
-                                placeholder="{{ _('جستجو (نام شاگرد، نام مربی...)') }}"
+                                placeholder="{{ _('Search (trainee name, coach name...)') }}"
                                 class="input w-full peer"
                                 value="{{ search_query or '' }}"
                                 hx-get="/plans?page=1"
@@ -67,7 +67,7 @@
                                 hx-push-url="true"
                                 hx-trigger="keyup changed delay:500ms, search"
                             />
-                            <span class="label-text">{{ _('جستجو (نام شاگرد، نام مربی...)') }}</span>
+                            <span class="label-text">{{ _('Search (trainee name, coach name...)') }}</span>
                         </label>
 
                         <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
@@ -87,28 +87,28 @@
                                         value=""
                                         {% if not filter_params.type %}selected{% endif %}
                                     >
-                                        {{ _('همه') }}
+                                        {{ _('All') }}
                                     </option>
                                     <option
                                         value="diet"
                                         {% if filter_params.type == 'diet' %}selected{% endif %}
                                     >
-                                        {{ _('غذایی') }}
+                                        {{ _('Diet') }}
                                     </option>
                                     <option
                                         value="training"
                                         {% if filter_params.type == 'training' %}selected{% endif %}
                                     >
-                                        {{ _('ورزشی') }}
+                                        {{ _('Training') }}
                                     </option>
                                     <option
                                         value="steroid"
                                         {% if filter_params.type == 'steroid' %}selected{% endif %}
                                     >
-                                        {{ _('استروئید') }}
+                                        {{ _('Steroid') }}
                                     </option>
                                 </select>
-                                <span class="label-text">{{ _('نوع برنامه') }}</span>
+                                <span class="label-text">{{ _('Plan type') }}</span>
                             </label>
                         </div>
 
@@ -118,7 +118,7 @@
                             class="btn btn-primary btn-soft btn-block mt-2"
                             onclick="clearAllFilters()"
                         >
-                            {{ _('پاک کردن فیلترها') }}
+                            {{ _('Clear filters') }}
                         </button>
                     </form>
                 </div>
@@ -158,13 +158,13 @@
                                             </span>
                                             <span class="text-xs text-fog block">
                                                 {% if plan.type == 'diet' %}
-                                                    {{ _('غذایی') }}
+                                                    {{ _('Diet') }}
                                                 {% elif plan.type == 'training' %}
-                                                    {{ _('ورزشی') }}
+                                                    {{ _('Training') }}
                                                 {% else %}
-                                                    {{ _('استروئید') }}
+                                                    {{ _('Steroid') }}
                                                 {% endif %}
-                                                · {{ plan.days_per_week or '-' }} {{ _('روز/هفته') }}
+                                                · {{ plan.days_per_week or '-' }} {{ _('days/week') }}
                                             </span>
                                         </div>
 
@@ -174,7 +174,7 @@
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 opacity-40 rtl:rotate-180"
+                                                class="h-5 w-5 opacity-40"
                                                 viewBox="0 0 20 20"
                                                 fill="currentColor"
                                             >
@@ -191,7 +191,7 @@
                         {% else %}
                             <div class="text-center py-12 px-4">
                                 <div
-                                    class="bg-base-100 rounded-[2rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30"
+                                    class="bg-base-100 rounded-[2.5rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30"
                                 >
                                     <p class="text-base text-fog">
                                         {% if is_search_result or show_empty_state %}
@@ -201,7 +201,7 @@
                                             <span
                                                 class="status status-secondary animate-bounce ml-1"
                                             ></span>
-                                            {{ _('هنوز برنامه‌ای ثبت نکردید!') }}
+                                            {{ _("You haven't created any plans yet!") }}
                                         {% endif %}
                                     </p>
                                 </div>
@@ -225,7 +225,7 @@
                         «
                     </a>
                     <button class="join-item btn btn-sm btn-disabled pointer-events-none">
-                        {{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}
+                        {{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}
                     </button>
                     <a
                         href="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"

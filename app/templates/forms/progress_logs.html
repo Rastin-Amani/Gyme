@@ -7,7 +7,7 @@
         <div class="flex items-center gap-3 mb-4">
             <div class="flex flex-col">
                 <span class="text-sm text-fog font-medium">
-                    {{ _('لطفاً پارامترهای بدنی را وارد کنید. محاسبات خودکار انجام می‌شود.') }}
+                    {{ _('Please enter your body measurements. Calculations will be done automatically.') }}
                 </span>
             </div>
         </div>
@@ -29,7 +29,7 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('قد') }}</span>
+                                <span class="label">{{ _('Height') }}</span>
                                 <input
                                     type="number"
                                     id="val_height"
@@ -42,7 +42,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('وزن') }}</span>
+                                <span class="label">{{ _('Weight') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -56,7 +56,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('دور سینه') }}</span>
+                                <span class="label">{{ _('Chest') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -67,7 +67,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('دور کمر') }}</span>
+                                <span class="label">{{ _('Waist') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -79,7 +79,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('دور باسن') }}</span>
+                                <span class="label">{{ _('Hips') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -91,7 +91,7 @@
                         </div>
                         <div class="form-control">
                             <label class="input">
-                                <span class="label">{{ _('دور بازو') }}</span>
+                                <span class="label">{{ _('Arms') }}</span>
                                 <input
                                     type="number"
                                     step="0.1"
@@ -103,13 +103,13 @@
                     </div>
                     <div class="form-control">
                         <label class="select w-full">
-                            <span class="label">{{ _('سطح فعالیت') }}</span>
+                            <span class="label">{{ _('Activity level') }}</span>
                             <select id="val_activity" class="select w-full calc-trigger">
-                                <option value="1.2">{{ _('بدون تحرک (پشت میز)') }}</option>
-                                <option value="1.375">{{ _('سبک (۱ تا ۳ روز ورزش)') }}</option>
-                                <option value="1.55" selected>{{ _('متوسط (۳ تا ۵ روز ورزش)') }}</option>
-                                <option value="1.725">{{ _('شدید (۶ تا ۷ روز ورزش)') }}</option>
-                                <option value="1.9">{{ _('بسیار شدید (ورزشکار حرفه‌ای)') }}</option>
+                                <option value="1.2">{{ _('Sedentary (desk job)') }}</option>
+                                <option value="1.375">{{ _('Light (1-3 days of exercise)') }}</option>
+                                <option value="1.55" selected>{{ _('Moderate (3-5 days of exercise)') }}</option>
+                                <option value="1.725">{{ _('Intense (6-7 days of exercise)') }}</option>
+                                <option value="1.9">{{ _('Very intense (professional athlete)') }}</option>
                             </select>
                         </label>
                     </div>
@@ -117,7 +117,7 @@
             </div>
             <div class="grid grid-cols-2 gap-4 mb-8">
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
-                    <div class="text-xs font-semibold text-fog mb-3">{{ _('شاخص توده بدنی (BMI)') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-3">{{ _('Body mass index (BMI)') }}</div>
                     <div
                         id="bmi-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -129,7 +129,7 @@
                 </div>
 
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
-                    <div class="text-xs font-semibold text-fog mb-3">{{ _('درصد چربی (BFP)') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-3">{{ _('Body fat percentage (BFP)') }}</div>
                     <div
                         id="bfp-gauge"
                         class="radial-progress text-base-content/20 transition-all duration-500 font-black"
@@ -141,19 +141,19 @@
                 </div>
 
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('توده بدون چربی (LBM)') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Lean body mass (LBM)') }}</div>
                     <div id="lbm-display" class="font-display font-normal text-2xl text-info mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('وزن چربی') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Fat mass') }}</div>
                     <div id="fat-mass-display" class="font-display font-normal text-2xl text-warning mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('متابولیسم (BMR)') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Metabolism (BMR)') }}</div>
                     <div id="bmr-display" class="font-display font-normal text-2xl text-base-content mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
                         Kcal / Day
@@ -161,7 +161,7 @@
                 </div>
 
                 <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('کالری نگهداری (TDEE)') }}</div>
+                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Maintenance calories (TDEE)') }}</div>
                     <div id="tdee-display" class="font-display font-normal text-2xl text-success mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
                         Kcal / Day
@@ -173,7 +173,7 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text text-fog mb-2">{{ _('تصاویر پیشرفت (اختیاری)') }}</span>
+                            <span class="label-text text-fog mb-2">{{ _('Progress photos (optional)') }}</span>
                         </label>
                         <input
                             type="file"
@@ -197,11 +197,11 @@
                 <textarea
                     name="notes"
                     class="textarea h-12 w-full"
-                    placeholder="{{ _('یادداشت‌های ارزیابی') }}"
+                    placeholder="{{ _('Assessment notes') }}"
                 ></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full border-2 border-base-content">{{ _('ثبت ارزیابی') }}</button>
+            <button type="submit" class="btn btn-primary w-full border-2 border-base-content">{{ _('Save assessment') }}</button>
         </form>
     </div>
 
@@ -264,22 +264,22 @@
             if (bmi < 18.5) {
                 bmiGauge.className =
                     'radial-progress text-info transition-all duration-500 font-black';
-                bmiStatus.innerText = {{ _('کمبود وزن') | tojson }};
+                bmiStatus.innerText = {{ _('Underweight') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-info font-bold';
             } else if (bmi < 25) {
                 bmiGauge.className =
                     'radial-progress text-success transition-all duration-500 font-black';
-                bmiStatus.innerText = {{ _('نرمال') | tojson }};
+                bmiStatus.innerText = {{ _('Normal') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-success font-bold';
             } else if (bmi < 30) {
                 bmiGauge.className =
                     'radial-progress text-warning transition-all duration-500 font-black';
-                bmiStatus.innerText = {{ _('اضافه وزن') | tojson }};
+                bmiStatus.innerText = {{ _('Overweight') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-warning font-bold';
             } else {
                 bmiGauge.className =
                     'radial-progress text-error transition-all duration-500 font-black';
-                bmiStatus.innerText = {{ _('چاقی') | tojson }};
+                bmiStatus.innerText = {{ _('Obesity') | tojson }};
                 bmiStatus.className = 'text-xs mt-3 text-error font-bold';
             }
 
@@ -312,37 +312,37 @@
 
             if (gender === 'male') {
                 if (bfp < 6) {
-                    bfpText = {{ _('چربی ضروری') | tojson }};
+                    bfpText = {{ _('Essential fat') | tojson }};
                     bfpColor = 'text-info';
                 } else if (bfp < 14) {
-                    bfpText = {{ _('ورزشکار') | tojson }};
+                    bfpText = {{ _('Athletic') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 18) {
-                    bfpText = {{ _('تناسب اندام') | tojson }};
+                    bfpText = {{ _('Fit') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 25) {
-                    bfpText = {{ _('قابل قبول') | tojson }};
+                    bfpText = {{ _('Acceptable') | tojson }};
                     bfpColor = 'text-warning';
                 } else {
-                    bfpText = {{ _('چاقی') | tojson }};
+                    bfpText = {{ _('Obesity') | tojson }};
                     bfpColor = 'text-error';
                 }
             } else {
                 // Female thresholds
                 if (bfp < 14) {
-                    bfpText = {{ _('چربی ضروری') | tojson }};
+                    bfpText = {{ _('Essential fat') | tojson }};
                     bfpColor = 'text-info';
                 } else if (bfp < 21) {
-                    bfpText = {{ _('ورزشکار') | tojson }};
+                    bfpText = {{ _('Athletic') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 25) {
-                    bfpText = {{ _('تناسب اندام') | tojson }};
+                    bfpText = {{ _('Fit') | tojson }};
                     bfpColor = 'text-success';
                 } else if (bfp < 32) {
-                    bfpText = {{ _('قابل قبول') | tojson }};
+                    bfpText = {{ _('Acceptable') | tojson }};
                     bfpColor = 'text-warning';
                 } else {
-                    bfpText = {{ _('چاقی') | tojson }};
+                    bfpText = {{ _('Obesity') | tojson }};
                     bfpColor = 'text-error';
                 }
             }
@@ -438,10 +438,10 @@
                 // Reset if total would exceed max
                 if (selectedFiles.length + incoming.length > MAX_FILES) {
                     showValidation(
-                        {{ _('حداکثر {0} فایل مجاز است ({1} انتخاب شده)') | tojson }}
-                            .replace('{0}', MAX_FILES)
-                            .replace('{1}', selectedFiles.length)
-                    );
+                            {{ _('Maximum {0} files allowed ({1} selected)') | tojson }}
+                                .replace('{0}', MAX_FILES)
+                                .replace('{1}', selectedFiles.length)
+                        );
                     this.value = '';
                     return;
                 }
@@ -449,13 +449,13 @@
                 // Validate each incoming file
                 for (const file of incoming) {
                     if (!VALID_TYPES.includes(file.type)) {
-                        showValidation({{ _('فقط JPEG, PNG, WebP, GIF مجاز هستند') | tojson }});
+                        showValidation({{ _('Only JPEG, PNG, WebP, GIF are allowed') | tojson }});
                         this.value = '';
                         return;
                     }
                     if (file.size > MAX_FILE_SIZE) {
                         showValidation(
-                            {{ _('هر فایل حداکثر ۵MB ({0} {1}MB)') | tojson }}
+                            {{ _('Each file must be at most 5MB ({0} {1}MB)') | tojson }}
                                 .replace('{0}', file.name)
                                 .replace('{1}', (file.size / 1024 / 1024).toFixed(1))
                         );

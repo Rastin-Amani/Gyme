@@ -3,23 +3,23 @@
 <div id="trainees-content" data-settle>
     <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
-            <h1 class="font-display font-normal text-3xl leading-tight">{% if search_query %}«{{ search_query }}»{% else %}{{ _('شاگردها') }}{% endif %}</h1>
-            <p class="text-sm text-fog mt-1">{{ _('مدیریت شاگردهای ثبت‌شده') }}</p>
+            <h1 class="font-display font-normal text-3xl leading-tight">{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
+            <p class="text-sm text-fog mt-1">{{ _('Manage registered trainees') }}</p>
         </div>
-        <a href="/trainees/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('شاگرد جدید') }}</a>
+        <a href="/trainees/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('New trainee') }}</a>
     </header>
 
-    <div class="collapse collapse-arrow border-2 border-base-content rounded-[2rem] mb-6 bg-base-100">
-        <input type="checkbox" aria-label="{{ _('جستجو و فیلتر') }}" />
+    <div class="collapse collapse-arrow border-2 border-base-content rounded-[2.5rem] mb-6 bg-base-100">
+        <input type="checkbox" aria-label="{{ _('Search and filter') }}" />
         <div class="collapse-title font-bold text-sm flex items-center gap-2">
-            {{ _('جستجو و فیلتر') }}
-            <span class="waveform h-4 text-secondary"><i></i><i></i><i></i><i></i><i></i></span>
+            {{ _('Search and filter') }}
+            <span class="sparks"><i></i><i></i><i></i></span>
         </div>
         <div class="collapse-content">
             <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
                 <label class="input w-full validator">
-                    <span class="label">{{ _('جستجو') }} ({{ _('نام، ایمیل...') }})</span>
-                    <input type="search" id="search-input" name="query" placeholder="{{ _('جستجو...') }}" class="w-full peer"
+                    <span class="label">{{ _('Search') }} ({{ _('name, email...') }})</span>
+                    <input type="search" id="search-input" name="query" placeholder="{{ _('Search...') }}" class="w-full peer"
                            value="{{ search_query or '' }}"
                            hx-get="/trainees/search?page=1"
                            hx-target="#trainees-content"
@@ -29,7 +29,7 @@
                 </label>
                 <div class="grid sm:grid-cols-2 gap-4">
                     <label class="select w-full">
-                        <span class="label">{{ _('جنسیت') }}</span>
+                        <span class="label">{{ _('Gender') }}</span>
                         <select id="gender-filter" name="gender"
                                 class="w-full"
                                 hx-get="/trainees/filter?page=1"
@@ -38,13 +38,13 @@
                                 hx-swap="outerHTML"
                                 hx-trigger="change"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']">
-                            <option value="" {% if not filter_params.gender %}selected{% endif %}>{{ _('همه') }}</option>
-                            <option value="male" {% if filter_params.gender == 'male' %}selected{% endif %}>{{ _('آقا') }}</option>
-                            <option value="female" {% if filter_params.gender == 'female' %}selected{% endif %}>{{ _('خانم') }}</option>
+                            <option value="" {% if not filter_params.gender %}selected{% endif %}>{{ _('All') }}</option>
+                            <option value="male" {% if filter_params.gender == 'male' %}selected{% endif %}>{{ _('Male') }}</option>
+                            <option value="female" {% if filter_params.gender == 'female' %}selected{% endif %}>{{ _('Female') }}</option>
                         </select>
                     </label>
                     <label class="select w-full">
-                        <span class="label">{{ _('وضعیت') }}</span>
+                        <span class="label">{{ _('Status') }}</span>
                         <select id="status-filter" name="status" class="w-full"
                                 hx-get="/trainees/filter?page=1"
                                 hx-target="#trainees-content"
@@ -52,21 +52,21 @@
                                 hx-swap="outerHTML"
                                 hx-trigger="change"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']">
-                            <option value="" {% if not filter_params.status %}selected{% endif %}>{{ _('همه') }}</option>
-                            <option value="active" {% if filter_params.status == 'active' %}selected{% endif %}>{{ _('فعال') }}</option>
-                            <option value="inactive" {% if filter_params.status == 'inactive' %}selected{% endif %}>{{ _('غیرفعال') }}</option>
+                            <option value="" {% if not filter_params.status %}selected{% endif %}>{{ _('All') }}</option>
+                            <option value="active" {% if filter_params.status == 'active' %}selected{% endif %}>{{ _('Active') }}</option>
+                            <option value="inactive" {% if filter_params.status == 'inactive' %}selected{% endif %}>{{ _('Inactive') }}</option>
                         </select>
                     </label>
                 </div>
                 <button type="button" class="btn btn-primary btn-soft btn-block mt-2 border-2 border-base-content" onclick="clearAllFilters()">
-                    {{ _('پاک کردن فیلترها') }}
+                    {{ _('Clear filters') }}
                 </button>
             </form>
         </div>
     </div>
 
     <div id="trainees-table-container">
-        <div class="card bg-base-100 border-2 border-base-content rounded-[2rem]">
+        <div class="card bg-base-100 border-2 border-base-content rounded-[2.5rem]">
             <div class="card-body p-0">
                 {% if trainees and trainees|length > 0 %}
                 <ul class="divide-y divide-base-content/15">
@@ -84,8 +84,8 @@
                             </span>
                             {% if trainee.expand and 'user' in trainee.expand %}<span class="text-xs text-fog block truncate">{{ trainee.expand['user'].email or '' }}</span>{% endif %}
                         </div>
-                        <a href="/trainees/{{ trainee.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('مشاهده شاگرد') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40 rtl:rotate-180">
+                        <a href="/trainees/{{ trainee.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('View trainee') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </a>
@@ -93,11 +93,11 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="bg-base-100 rounded-[2rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
+                <div class="bg-base-100 rounded-[2.5rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
                     <div class="flex items-center justify-center gap-2">
                         <span class="status status-secondary {% if not search_query %}animate-bounce{% endif %}"></span>
                         <p class="text-sm text-fog font-medium">
-                            {{ empty_message or _('هنوز شاگردی ثبت نکردید!') }}
+                            {{ empty_message or _("You haven't added any trainees yet!") }}
                         </p>
                     </div>
                 </div>
@@ -106,13 +106,13 @@
         </div>
 
         {% if total_pages > 1 %}
-        <nav class="join flex justify-center mt-4" aria-label="{{ _('صفحه‌بندی') }}">
+        <nav class="join flex justify-center mt-4" aria-label="{{ _('Pagination') }}">
             {% set page_qs = '&search_query=' ~ (search_query|urlencode if search_query else '') ~ '&gender=' ~ (filter_params.gender|urlencode if filter_params.gender else '') ~ '&status=' ~ (filter_params.status|urlencode if filter_params.status else '') ~ '&min_birthdate=' ~ (filter_params.min_birthdate|urlencode if filter_params.min_birthdate else '') ~ '&max_birthdate=' ~ (filter_params.max_birthdate|urlencode if filter_params.max_birthdate else '') %}
             <a class="btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
-               {% if page > 1 %}href="/trainees?page={{ page - 1 }}" hx-get="/trainees?page={{ page - 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('قبلی') }}">«</a>
-            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('صفحه') }} {{ page }} {{ _('از') }} {{ total_pages }}</button>
+               {% if page > 1 %}href="/trainees?page={{ page - 1 }}" hx-get="/trainees?page={{ page - 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Previous') }}">«</a>
+            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</button>
             <a class="btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
-               {% if page < total_pages %}href="/trainees?page={{ page + 1 }}" hx-get="/trainees?page={{ page + 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('بعدی') }}">»</a>
+               {% if page < total_pages %}href="/trainees?page={{ page + 1 }}" hx-get="/trainees?page={{ page + 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Next') }}">»</a>
         </nav>
         {% endif %}
     </div>

@@ -1,8 +1,8 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
 <div class="max-w-150 mx-auto">
-    <div class="card flex-row-reverse items-center justify-between border-2 border-base-content bg-base-100 rounded-[2rem] p-4 mb-4">
-        <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('ویرایش') }}</a>
+    <div class="card flex items-center justify-between border-2 border-base-content bg-base-100 rounded-[2.5rem] p-4 mb-4">
+        <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm border-2 border-base-content">{{ _('Edit') }}</a>
         <div class="text-center min-w-0">
             <div class="flex items-center justify-center gap-3 mb-2">
                 <h1 class="font-display font-normal text-2xl leading-tight truncate">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</h1>
@@ -18,8 +18,8 @@
     </div>
 
     <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-        <div><span class="text-fog block text-xs mb-1">{{ _('تلفن') }}</span><span class="font-semibold">{{ coach.phone or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('ایمیل') }}</span><span class="font-semibold truncate">{{ coach.email or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Phone') }}</span><span class="font-semibold">{{ coach.phone or '-' }}</span></div>
+        <div><span class="text-fog block text-xs mb-1">{{ _('Email') }}</span><span class="font-semibold truncate">{{ coach.email or '-' }}</span></div>
     </div>
 </div>
 {% endblock %}
