@@ -1,5 +1,10 @@
 # Gyme
 
+[![CI](https://img.shields.io/github/actions/workflow/status/Rastin-Amani/Gyme/ci.yml?branch=main&label=CI&logo=github)](https://github.com/Rastin-Amani/Gyme/actions)
+[![License: ISC](https://img.shields.io/github/license/Rastin-Amani/Gyme)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/Rastin-Amani/Gyme)](https://github.com/Rastin-Amani/Gyme/releases)
+[![Docker (GHCR)](https://img.shields.io/badge/Docker-GHCR-2496ED?logo=docker&logoColor=white)](https://github.com/Rastin-Amani/pkgs/container/gyme)
+
 **Gyme** is a multi-tenant gym coaching platform: each gym gets its own branded,
 installable web app (PWA) where owners and coaches manage trainees and deliver
 training, nutrition, and supplement plans — and trainees follow their daily plan
@@ -10,6 +15,7 @@ Persian (RTL, Jalali dates), Spanish, Turkish, and Armenian are also supported.
 - **Status:** actively developed; automated tests ship under `tests/`
   (`tests/test_i18n.py`, plus the 22-test security regression suite in
   `tests_security_regression.py`)
+- **Links:** [Releases](https://github.com/Rastin-Amani/Gyme/releases) · [Discussion](https://github.com/Rastin-Amani/Gyme/discussions) · [Security policy](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 ---
 
@@ -168,15 +174,35 @@ Highlights:
 
 A `Dockerfile` is provided (Python 3.11-slim, uvicorn on port 8000 with proxy
 header support). Static assets must be built before the image is built because
-Node/Vite files are excluded from the image. Full runbook:
+Node/Vite files are excluded from the image.
+
+Pre-built images are published to **GHCR** on every push to `main` (tag `latest`)
+and on version tags (e.g. `v0.9.1`):
+
+```bash
+docker pull ghcr.io/rastin-amani/gyme:latest
+
+# Point the container at your PocketBase instance (required)
+export PB_URL="http://127.0.0.1:8090"
+
+docker run --rm -p 8000:8000 \
+  -e PB_URL="$PB_URL" \
+  -e ENV=production \
+  ghcr.io/rastin-amani/gyme:latest
+```
+
+Browse it on a hostname that matches a `tenants` record (add `127.0.0.1 yourgym.local`
+to your hosts file and open `http://yourgym.local:8000`). Set `ALLOWED_HOSTS`
+in production.
+
+Full runbook:
 [docs/06-configuration-deployment.md](docs/06-configuration-deployment.md).
 
 ## Contributing
 
-There is no formal contribution process yet. Keep changes consistent with the
-existing patterns (routes thin, logic in services, Persian msgids + gettext
-`_("…")` in UI strings, HTMX + toast interaction style), and run `ruff check .`
-and `black .` before submitting.
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup,
+code conventions (thin routes, logic in services, gettext `_("…")` UI strings),
+and the PR checklist (`make test`, `ruff check .`, `black .`).
 
 
 ## Internationalization (i18n)
