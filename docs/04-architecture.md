@@ -33,8 +33,8 @@ Component inventory:
 | Middleware | `app/middleware.py` | Tenant resolution, authentication, access logs |
 | Routers | `app/routes/**` (+ `app/routes/user/**`) | HTTP endpoints; form parsing; HTMX header responses |
 | Services | `app/services/**` | All PocketBase queries/filters and business rules |
-| Templates | `app/templates/**` | base/layout/page/form/modal/component hierarchy (LTR/RTL per locale) |
-| Template env | `app/templates.py` | Jinja2 environment, `_`/`ngettext`/`locale` globals + locale-aware `jalali_date` / `jalali_year` filters |
+| Templates | `app/templates/**` | base/layout/page/form/modal/component hierarchy (LTR) |
+| Template env | `app/templates.py` | Jinja2 environment, `_`/`ngettext`/`locale` globals + locale-aware date filters |
 | PB clients | `app/pb.py` | `PB_URL` config, `get_pb()` factory |
 | Logging | `app/logging_config.py` | structlog pipeline with request context |
 | Static assets | `app/static/**` | Vite-built `app.css`/`app.js`, workbox chunks, fonts, swagger assets |
@@ -100,7 +100,7 @@ Step-by-step behavior (all verifiable in `middleware.py`):
 Authenticated traffic to an unknown domain will pass the middleware but crash
 in route handlers that dereference `request.state.tenant.id`; unauthenticated
 traffic lands on the login page, and submitting login there yields the
-«خطای سیستم: باشگاه یافت نشد!» toast (handled explicitly in `routes/auth.py`).
+"System error: Gym not found!" toast (handled explicitly in `routes/auth.py`).
 
 ## 3. Authentication & session model
 
@@ -227,12 +227,12 @@ base.html                     lang/dir from locale, theme vars, offline banner,
 ```
 
 Jinja2 globals/filters: `app_version` global; `_` and `ngettext` from gettext
-(exposed globally) plus a `locale` proxy; `jalali_date` and `jalali_year`
-filters convert PocketBase datetime strings (`YYYY-MM-DD[ HH:MM:SS(.f)]`,
-optional trailing `Z`). These filters are **locale-aware**: they produce
-Jalali output only when the active locale is `fa`; otherwise they fall back to
-a Gregorian year / Babel medium date (aliases `loc_year` / `loc_date`). On bad
-input they return the raw string with a `date_parse_error` warning.
+(exposed globally) plus a `locale` proxy; date filters (`loc_date` / `loc_year`,
+aliased as `jalali_date` / `jalali_year` for backwards compatibility) convert
+PocketBase datetime strings (`YYYY-MM-DD[ HH:MM:SS(.f)]`, optional trailing
+`Z`) to the Gregorian calendar — a Babel medium date / year for the active
+locale, falling back to `%Y-%m-%d`. On bad input they return the raw string
+with a `date_parse_error` warning.
 
 Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
 'custom'` else `tenant.theme` (default `gyme`); custom tenants may inject a
@@ -270,7 +270,7 @@ Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
   - images (any origin — covers PocketBase photo URLs): cache-first, add to
     image cache on success;
   - navigations/HTML: network-first; on failure fall back to cached copy of
-    that URL, then cached `/offline/`, then an inline RTL offline response
+    that URL, then cached `/offline/`, then an inline offline response
     (503).
 - `base.html` shows/hides the offline banner from `navigator.onLine` events and
   re-attaches it after HTMX body swaps via MutationObserver.
@@ -315,8 +315,8 @@ architecture-relevant ones:
   module-level singletons whose `auth_store` mutates during login — acceptable
   today because those paths don't rely on stored state afterwards, but it is a
   latent concurrency hazard.
-- Template filters (`jalali_date` / `jalali_year`) exist in `templates.py` and
-  are only Jalali under `fa`; other locales get Gregorian/Babel output (see
+- Template date filters (`loc_date` / `loc_year`, aliased `jalali_date` /
+  `jalali_year`) render Gregorian dates in `templates.py` for every locale (see
   [02-getting-started.md](02-getting-started.md) i18n note).
 - One query reads coaches from a `coaches` collection (`routes/plan.py`
   plan-list filter dropdown) while everywhere else coaches are `users` with

@@ -24,8 +24,8 @@
 > outside production; unknown-tenant requests on private routes are redirected
 > to `/login`; deleting a trainee now cascades to its linked user record.
 > A GitHub Actions workflow (`ruff`, `black --check`, `pytest`) and an ISC
-> `LICENSE` were added. Regression coverage grew to 54 tests
-> (`tests/test_security_regression.py` + `tests/test_known_issue_fixes.py`).
+> `LICENSE` were added. Regression coverage grew to 55 tests
+> (`tests/test_i18n.py` + `tests/test_security_regression.py` + `tests/test_known_issue_fixes.py`).
 
 > Goal was not “unhackable” but **understand trust boundaries, close realistic holes, add repeatable checks, and leave residual-risk transparency**.
 
@@ -156,7 +156,7 @@ Container --> Host --> Reverse proxy --> Internet
 - **Test:** `test_progress_log_file_validation_names`
 
 #### 10. Stored XSS via Toast `innerHTML`
-- **Where:** `templates/base.html:toast.innerHTML = `<span>${message}</span>`` with server message (e.g., `f"ممنون {name}!"` where name is user input).
+- **Where:** `templates/base.html:toast.innerHTML = `<span>${message}</span>`` with server message (e.g., `f"Thanks {name}!"` where name is user input).
 - **Impact:** attacker names gym `"><svg onload=alert(1)>` could inject when lead thanked, or any error toast reflecting input.
 - **Fix:** now constructs DOM via `createElement` + `textContent = String(message).slice(0,500)` for auto-escape; icon remains trusted innerHTML (static). Also brand_theme CSS values escaped and length-limited.
 - **Test:** `test_xss_toast_fix`
@@ -263,7 +263,7 @@ test_rate_limiting_present PASS
 
 4. **CSP uses `unsafe-inline`/`unsafe-eval`:** needed for current inline toast/SW scripts + Alpine. Long-term: add nonce per request via middleware and `templates.py` context.
 
-5. **Pandas CSV load at import:** `app/routes/item.py` loads `data/Persian_*` at module import without validation. Ensure `data/` is trusted, not writable; consider lazy load.
+5. **Pandas CSV load at import:** `app/routes/item.py` loads `data/Fitness_Exercises_Dataset.csv` / `data/Diet_Foods_Dataset.csv` at module import without validation. Ensure `data/` is trusted, not writable; consider lazy load.
 
 6. **Dependencies:** `pocketbase==0.17.1`, `starlette`, `fastapi`, `pandas` — add `pip-audit` / Dependabot in CI, pin `requirements.txt` hashes.
 

@@ -18,7 +18,7 @@ other documents reference these numbers. Statuses: **OPEN** (still true),
 3. Hard-refresh once; afterwards the service worker's stale-while-revalidate
    strategy self-heals CSS/JS on the next load (see `app/static/sw.js`).
 
-### Login shows «خطای سیستم: باشگاه یافت نشد!»
+### Login shows "System error: Gym not found!"
 
 The hostname you're browsing is not any gym's domain.
 
@@ -28,7 +28,7 @@ The hostname you're browsing is not any gym's domain.
    `middleware.py` resolves tenants by Host header; `routes/auth.py` returns
    this exact toast when `request.state.tenant` is missing.
 
-### Login fails («ایمیل یا پسورد اشتباه است.») although credentials seem right
+### Login fails ("Wrong email or password.") although credentials seem right
 
 1. Confirm the account belongs to *this* gym: logins from another tenant's
    account are deliberately rejected (`login_cross_tenant_denied`,
@@ -40,7 +40,7 @@ The hostname you're browsing is not any gym's domain.
    reset it in PocketBase admin (issue #3).
 4. Note the login rate limit: 5 wrong attempts within 5 minutes for the same
    IP+identity+gym trips the in-memory limiter, which then blocks further
-   attempts (toast «تعداد تلاشهای ورود بیش از حد مجاز است…», `429`). Wait out
+   attempts (toast "Too many login attempts. Please wait a few minutes.", `429`). Wait out
    the window or restart the app to clear it (dev only).
 
 ### Everything errors right after a deployment
@@ -55,11 +55,11 @@ The hostname you're browsing is not any gym's domain.
 
 ### Creating a trainee fails
 
-Toast «ثبت‌نام کاربر انجام نشد. (احتمالا ایمیل تکراری است یا کمتر از ۸ کاراکتر
-دارد)» means the underlying `users.create` failed: duplicate email, invalid
-email format, or (legacy message reuse) email shorter than 8 characters — the
-message predates 0.9.0, when the initial password equaled the email; passwords
-are now generated randomly. Evidence: `routes/trainee.py`,
+Toast "Could not create the user. (The email may already be in use or the
+password is too short)" means the underlying `users.create` failed: duplicate
+email, invalid email format, or (legacy message reuse) email shorter than 8
+characters — the message predates 0.9.0, when the initial password equaled the
+email; passwords are now generated randomly. Evidence: `routes/trainee.py`,
 `services/auth.create_user`.
 
 ### Deleting a plan item always shows an error
@@ -70,7 +70,7 @@ PocketBase and respond `204` + `closeModal` + `refreshList`. If you still see
 an error toast, hard-refresh to drop a stale service worker (see issue #1 for
 history).
 
-### Trainee sees every exercise grouped under «سایر»
+### Trainee sees every exercise grouped under "Other"
 
 Known bug, issue #2: the movement category chosen in the item modal is not
 persisted, so the trainee dashboard's grouping finds nothing. Items still
@@ -96,7 +96,7 @@ Expected when `ENV=production`. Set `ENV` to something else (or unset) in
 non-production environments. Exception: `GET /dashboard/debug-coach-stats`
 exists in all environments (issue #12).
 
-### Owner taps «ویرایش حساب» on the profile page and lands on the plan list
+### Owner taps "Change password" on the profile page and lands on the plan list
 
 Known navigation bug, issue #6.
 
@@ -108,7 +108,7 @@ Known navigation bug, issue #6.
 
 - **Evidence (historical):** the DELETE handler previously called `delete_item()`
   without importing it, raising `NameError` inside the handler's own `except`,
-  converting it into the toast «مشکلی پیش آمد. لطفا دوباره تلاش کنید.» — logged
+  converting it into the toast "Something went wrong. Please try again." — logged
   as `item.delete_failed`.
 - **Current code:** `routes/item.py` performs a lazy import
   `from app.services.item import delete_item` **inside** the DELETE handler
@@ -121,11 +121,11 @@ Known navigation bug, issue #6.
 ### #2 — Movement category of training items is silently discarded · **MEDIUM** → **RESOLVED in 0.9.1**
 
 - **Evidence (historical):** `modals/items_form.html` posts a required select
-  `name="category"` (values گرم کردن / حرکات اصلاحی / اصلی / هوازی / سرد کردن),
+  `name="category"` (values Warm-up / Corrective / Main / Cardio / Cool-down),
   but neither `item_create` nor `item_update` in `routes/item.py` declared a
   `category` Form parameter, so FastAPI dropped it. The trainee dashboard
   (`pages/user/dashboard.html`) groups training items by `item.category`,
-  sending un-categorized items to the «سایر» bucket.
+  sending un-categorized items to the "Other" bucket.
 - **Current code:** both `item_create` and `item_update` declare
   `category: str = Form(None)` and include `"category": category` in the
   training payload dict (diet/steroid payloads are untouched).
@@ -179,7 +179,7 @@ Known navigation bug, issue #6.
 - **Fix (applied):** none needed; keep the reverse proxy terminating TLS and
   set `ENV=production`.
 
-### #6 — Owner profile button «ویرایش حساب» navigates wrongly · **LOW** → **RESOLVED in 0.9.1**
+### #6 — Owner profile button "Change password" navigates wrongly · **LOW** → **RESOLVED in 0.9.1**
 
 - **Evidence (historical):** `pages/owner/profile/profile.html` rendered
   `href="/plans/edit"` for owners; that path matches `GET /plans/{id}` with
@@ -294,7 +294,7 @@ Known navigation bug, issue #6.
   `black --check .`, and `pytest -q` on push/PR; an ISC `LICENSE` matches the
   `package.json` `"license": "ISC"` declaration. The security regression suite
   now lives at `tests/test_security_regression.py` and the suite has grown to
-  54 tests (8 i18n + 22 security + 24 known-issue-fix regressions).
+  55 tests (9 i18n + 22 security + 24 known-issue-fix regressions).
 - **Impact (today):** none — CI gates lint/format/tests and the project has an
   explicit license.
 - **Fix (applied):** workflow + LICENSE committed; covered by

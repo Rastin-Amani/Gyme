@@ -9,7 +9,7 @@
 installable web app (PWA) where owners and coaches manage trainees and deliver
 training, nutrition, and supplement plans — and trainees follow their daily plan
 from their phone. The UI is multilingual with **English as the default language**;
-Persian (RTL, Jalali dates), Spanish, Turkish, and Armenian are also supported.
+Spanish, Turkish, and Armenian are also supported.
 
 - **Current version:** 0.9.1 (`app/main.py` `APP_VERSION`)
 - **Status:** actively developed; automated tests ship under `tests/`
@@ -28,7 +28,7 @@ The tenant's members log in with an email/password managed by the gym:
   **plans** (training / diet / steroid) from reusable **templates**, and record
   body-metric assessments (**progress logs**) with photos.
 - **Trainees** get a personal "Today" dashboard that shows today's slice of each
-  plan and a big **"انجام شد"** (Done) button that advances them to the next day.
+  plan and a big **Done** button that advances them to the next day.
 
 The server renders HTML (Jinja2 + Tailwind/daisyUI); interactivity comes from
 HTMX partial swaps with toast notifications. All data lives in an external
@@ -113,7 +113,7 @@ FastAPI (app/main.py)
    │                    ── validates pb_auth cookie via PocketBase auth_refresh()
    ├── Routers (app/routes/**)        thin HTTP layer
    ├── Services (app/services/**)     PocketBase queries & business rules
-   └── Jinja2 templates (i18n, RTL for fa, Jalali dates for fa)
+   └── Jinja2 templates (i18n, locale-aware date filters)
    ▼
 PocketBase (external)  ── collections: tenants, users, trainees, plans,
                           training_items, diet_items, steroid_items,
@@ -131,7 +131,7 @@ Deeper material: [docs/04-architecture.md](docs/04-architecture.md),
 app/
 ├── main.py            # FastAPI app assembly, version, docs gating
 ├── middleware.py      # TenantMiddleware (tenancy + auth + request logging)
-├── templates.py       # Jinja2 env + Jalali date filters
+├── templates.py       # Jinja2 env + locale-aware date filters
 ├── pb.py              # PocketBase client factory (PB_URL)
 ├── utils.py           # hx_toast helper (HTMX toast headers)
 ├── logging_config.py  # structlog setup (console dev / JSON prod)
@@ -139,9 +139,7 @@ app/
 ├── services/          # PocketBase access & business logic
 ├── templates/         # base, layouts, pages, forms, modals, components
 └── static/            # built CSS/JS (Vite), service worker, fonts, swagger assets
-data/                  # Persian exercise & food CSV datasets (dropdown sources)
-exercises.json         # exercise dataset w/ Persian translations (data prep)
-translate_exercises.py # offline script that builds exercises.json translations
+data/                  # English exercise & food CSV datasets (dropdown sources)
 Dockerfile             # python:3.11-slim, uvicorn on :8000
 ```
 
@@ -151,7 +149,6 @@ Dockerfile             # python:3.11-slim, uvicorn on :8000
 | --- | --- |
 | [Product overview](docs/01-overview.md) | Everyone — what Gyme is and what it does |
 | [Getting started](docs/02-getting-started.md) | Developers setting up a dev environment |
-| [User guide (فارسی)](docs/03-user-guide-fa.md) | Gym owners, coaches, trainees |
 | [Architecture](docs/04-architecture.md) | Technical deep dive |
 | [API reference](docs/05-api-reference.md) | All HTTP routes |
 | [Configuration & deployment](docs/06-configuration-deployment.md) | Operators |
@@ -167,7 +164,7 @@ Highlights:
   never displays — staff must share or reset it before the new user can log in.
 - A **rate limit** is enforced on the login route but not on password changes.
 - CI (GitHub Actions: ruff, black --check, pytest), an ISC `LICENSE`, and a
-  54-test suite (i18n + security regression + known-issue fixes) ship with the
+  55-test suite (i18n + security regression + known-issue fixes) ship with the
   repo.
 
 ## Deployment
@@ -207,11 +204,11 @@ and the PR checklist (`make test`, `ruff check .`, `black .`).
 
 ## Internationalization (i18n)
 
-Languages (cookie-based): **en** (default, LTR), **fa** (RTL, source msgids), **es**, **tr**, **hy**.
+Languages (cookie-based): **en** (default, LTR, source msgids), **es**, **tr**, **hy**.
 
 - Switcher sets `locale` cookie for 1 year via `GET /locale/{code}?next=...` and full page reload.
-- `<html lang dir>` follows the locale — RTL flips automatically for `fa`.
-- UI strings: `_("…")` in Jinja and Python (Persian msgids + gettext catalogs under `app/locales/`).
+- `<html lang dir>` follows the locale — every locale is LTR.
+- UI strings: `_("…")` in Jinja and Python (English msgids + gettext catalogs under `app/locales/`).
 
 ```bash
 make i18n-extract   # refresh messages.pot

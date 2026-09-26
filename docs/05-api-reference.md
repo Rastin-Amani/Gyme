@@ -46,12 +46,12 @@ items per page (20 for coaches). Responses carry `page`, `total_pages`,
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
 | GET | `/login` | Login page with tenant branding | Already-authenticated users are sent to `/dashboard` (which then forwards trainees onward) |
-| POST | `/login` | Password login against PocketBase `users` | Fields: `identity`* (email), `password`*. Wrong credentials ⇒ toast «ایمیل یا پسورد اشتباه است.»; an account belonging to a *different* gym ⇒ the raw service error string `Invalid tenant access` is shown as the toast (logged as `login_cross_tenant_denied`). Success: `303` to `/user/dashboard` (role `trainee`) else `/dashboard`; sets `pb_auth` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` conditional on prod/https). **Rate limited** in-memory to 5 attempts per 5 minutes per IP+identity+tenant; on limit a `429` toast «تعداد تلاشهای ورود بیش از حد مجاز است. لطفاً چند دقیقه صبر کنید.» is shown and further attempts for that key are blocked until the window expires (the key is cleared on successful login) |
+| POST | `/login` | Password login against PocketBase `users` | Fields: `identity`* (email), `password`*. Wrong credentials ⇒ toast "Wrong email or password."; an account belonging to a *different* gym ⇒ the raw service error string `Invalid tenant access` is shown as the toast (logged as `login_cross_tenant_denied`). Success: `303` to `/user/dashboard` (role `trainee`) else `/dashboard`; sets `pb_auth` cookie (`HttpOnly`, `SameSite=Lax`, `Secure` conditional on prod/https). **Rate limited** in-memory to 5 attempts per 5 minutes per IP+identity+tenant; on limit a `429` toast "Too many login attempts. Please wait a few minutes." is shown and further attempts for that key are blocked until the window expires (the key is cleared on successful login) |
 | GET | `/logout` | Logout (no-op page) | Clears the `pb_auth` cookie + auth store, `303 → /login` |
 | POST | `/logout` | Logout | Same clearing as GET; `303` + `HX-Redirect: /login` |
 | GET | `/change-password` | Change-password page | Requires login (`303 /login` otherwise) |
-| POST | `/change-password` | Rotate password | Fields: `old_password`*, `new_password`*, `confirm_password`*. Server checks match, length 8–72 chars, and that the new password is not a substring of the account email (toasts «پسورد جدید و تکرار آن یکسان نیستند.» / «پسورد باید حداقل ۸ کاراکتر باشد.» / «پسورد خیلی طولانی است» / «پسورد نباید مشابه ایمیل باشد»). On PocketBase success (toast «پسورد با موفقیت تغییر کرد! 🔒») it re-authenticates with the new password, resets the cookie, and answers `HX-Redirect` to the role's dashboard; if re-auth fails the stale cookie is cleared and the redirect goes to `/login` |
-| GET | `/locale/{code}?next=…` | Switch language | `code` must be in the enabled locales (`fa`,`en`,`es`,`tr`,`hy`) else `404`; sets the `locale` cookie (1 year) and `303`s to `next` (open-redirect guarded) |
+| POST | `/change-password` | Rotate password | Fields: `old_password`*, `new_password`*, `confirm_password`*. Server checks match, length 8–72 chars, and that the new password is not a substring of the account email (toasts "New password and its confirmation do not match." / "Password must be at least 8 characters." / "Password is too long" / "Password must not be similar to the email"). On PocketBase success (toast "Password changed successfully! 🔒") it re-authenticates with the new password, resets the cookie, and answers `HX-Redirect` to the role's dashboard; if re-auth fails the stale cookie is cleared and the redirect goes to `/login` |
+| GET | `/locale/{code}?next=…` | Switch language | `code` must be in the enabled locales (`en`,`es`,`tr`,`hy`) else `404`; sets the `locale` cookie (1 year) and `303`s to `next` (open-redirect guarded) |
 | GET | `/healthz` | Liveness | Served by middleware before tenant lookup; returns `{"status": "ok"}` with **no PocketBase call** |
 
 ## Owner / coach area
@@ -71,7 +71,7 @@ items per page (20 for coaches). Responses carry `page`, `total_pages`,
 | GET | `/trainees?page&query&gender&status&min_birthdate&max_birthdate` | List page (5/page) |
 | GET | `/trainees/search?query&page&gender&status&min_birthdate&max_birthdate` | Same rendering flagged as search result |
 | GET | `/trainees/filter?gender&status&min_birthdate&max_birthdate&page` | Filter-only variant |
-| GET | `/trainees/new` | Create form («ثبت شاگرد جدید») |
+| GET | `/trainees/new` | Create form ("New trainee") |
 | POST | `/trainees/new` | Create account + profile (see below) |
 | GET | `/trainees/{id}` | Detail page incl. plans, progress logs, photo file URLs |
 | GET | `/trainees/{id}/edit` | Edit form |
@@ -88,8 +88,8 @@ Behavior details:
 
 - **Create** runs two writes: `services/auth.create_user` (random initial
   password — never the email — and `role="trainee"`), then `trainees.create`
-  (status defaults `active`). Success responds with toast «شاگرد با موفقیت ثبت
-  شد. در حال انتقال...» plus `delayed-redirect` to
+  (status defaults `active`). Success responds with toast "Trainee registered
+  successfully. Redirecting..." plus `delayed-redirect` to
   `/progress-log/new/{trainee_id}`. The random password is **not displayed in
   the UI**; staff must share/reset it via PocketBase admin. User-creation
   failure surfaces the duplicate/short-email toast (a legacy message);
@@ -97,7 +97,7 @@ Behavior details:
 - **Update** writes the contact fields to the linked `users` record and the
   rest to the `trainees` record, then `delayed-redirect` to the detail page.
 - **Delete** removes only the `trainees` record (the auth user remains),
-  toasting «شاگرد با موفقیت حذف شد.» and redirecting to `/trainees`.
+  toasting "Trainee deleted successfully." and redirecting to `/trainees`.
 - Coach scoping: when the caller has role `coach`, listing/search/filtering is
   restricted to trainee ids found on that coach's plans.
 
@@ -118,8 +118,8 @@ Behavior details:
 
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
-| GET | `/plans?page&query&type&coach_id&is_template` | Plan list (5/page); `is_template=true` renders «قالب‌های برنامه» | Coaches forced to their own plans. Search matches `template_name` or expanded trainee names. The coach filter dropdown reads `users` with `role="coach"` (issue #4 resolved in 0.9.1) |
-| GET | `/plans/new?template=false` | Create form; `template=true` shows «نام قالب» instead of trainee selector | Coach `<select>` lists current user first + tenant coaches from `users` |
+| GET | `/plans?page&query&type&coach_id&is_template` | Plan list (5/page); `is_template=true` renders "Plan templates" | Coaches forced to their own plans. Search matches `template_name` or expanded trainee names. The coach filter dropdown reads `users` with `role="coach"` (issue #4 resolved in 0.9.1) |
+| GET | `/plans/new?template=false` | Create form; `template=true` shows "Template name" instead of trainee selector | Coach `<select>` lists current user first + tenant coaches from `users` |
 | POST | `/plans` | Create plan or template | Fields: `type`* (`training`\|`diet`\|`steroid`), `trainee`, `start_date`, `end_date`, `days_per_week`, `status`, `notes`, `is_template` (`true/on/1/yes`), `template_name`, `coach`. Templates null-out `trainee`/`template_name` handling accordingly; default status `active` |
 | GET | `/plans/{id}` | Plan detail with its items | Items read from `{type}_items` collection sorted by `seq`,`order` |
 | GET | `/plans/{id}/edit` | Edit form | |
@@ -127,11 +127,10 @@ Behavior details:
 | GET | `/plans/{id}/confirm-delete` | Delete confirmation modal | |
 | DELETE | `/plans/{id}` | Delete plan (items remain orphaned in PocketBase) | |
 | GET | `/templates/{id}/apply` | Apply-template modal (coach, trainee, dates, notes) | Template must have `is_template=true` |
-| POST | `/templates/{id}/apply` | Instantiate template | Fields: `trainee`*, `start_date`, `end_date`, `notes`, `coach` (defaults to caller). Copies plan header + every item into `{type}_items` under the new plan id. Success `204` + `closeModal` + toast + delayed redirect to the new plan. Error toasts distinguish 404 («قالب یا شاگرد مورد نظر یافت نشد!») vs 400 («اطلاعات وارد شده نامعتبر است. تاریخ‌ها را بررسی کنید.») vs generic DB error |
+| POST | `/templates/{id}/apply` | Instantiate template | Fields: `trainee`*, `start_date`, `end_date`, `notes`, `coach` (defaults to caller). Copies plan header + every item into `{type}_items` under the new plan id. Success `204` + `closeModal` + toast + delayed redirect to the new plan. Error toasts distinguish 404 ("Template or trainee not found!") vs 400 ("Invalid input. Please check the dates.") vs generic DB error |
 
-> Note: the owner profile page links «ویرایش حساب» to `/plans/edit`, which is
-> captured by `GET /plans/{id}` with `id="edit"`, fails the lookup, and lands
-> on the plan list (known issue #6).
+> Note: the owner profile page links "Change password" to `/change-password`
+> (known issue #6, resolved in 0.9.1).
 
 ### Plan items
 
@@ -141,7 +140,7 @@ of fields is persisted:
 
 | plan_type | Persisted item fields |
 | --- | --- |
-| `training` | `name` ← form `item_name`, `seq`, `order`, `sets`, `reps`, `weight`, `rest_seconds`, `category` (گرم کردن / حرکات اصلاحی / اصلی / هوازی / سرد کردن), `notes` |
+| `training` | `name` ← form `item_name`, `seq`, `order`, `sets`, `reps`, `weight`, `rest_seconds`, `category` (Warm-up / Corrective / Main / Cardio / Cool-down), `notes` |
 | `diet` | `name` ← form `food_name`, `meal_name`, `quantity`, `seq`, `order`, `notes` |
 | `steroid` | `name` ← form `name`, `type`, `dosage`, `frequency`, `seq`, `order`, `notes` |
 
@@ -155,13 +154,13 @@ of fields is persisted:
 | DELETE | `/items/{id}?plan_type={t}` | Delete item | ✅ Works in 0.9.1 (delete bug fixed in 0.9.0 via a lazy in-handler import — see known issue #1). Responds `204` + `closeModal` + `refreshList`. |
 
 Success responses here are `204` with `closeModal` (+ `refreshList` on
-update/delete) and a Persian success toast.
+update/delete) and an English success toast.
 
 ### Progress logs (assessments)
 
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
-| GET | `/progress-log/new/{trainee_id}` | Initial assessment form («ثبت ارزیابی اولیه») | Unknown trainee → redirect `/trainees` |
+| GET | `/progress-log/new/{trainee_id}` | Initial assessment form ("Record initial assessment") | Unknown trainee → redirect `/trainees` |
 | POST | `/trainees/{trainee_id}/progress-log` | Create log | See field handling below |
 | GET | `/progress-log/{log_id}/edit` | Edit modal (`modals/progress_log_edit.html`) | |
 | POST | `/progress-log/{log_id}` | Update log | Responds with `HX-Trigger-After-Swap` carrying `closeModal` + `performListRefresh` |
@@ -173,7 +172,7 @@ Fields accepted as **strings** and parsed defensively (`safe_float`, blank →
 
 Photo upload rules enforced server-side: max **5 files**, each ≤ **5 MB**,
 content types limited to `image/jpeg`, `image/png`, `image/webp`, `image/gif`
-(violations raise `HTTPException 400` with a Persian message). Files attach to
+(violations raise `HTTPException 400` with an English message). Files attach to
 the `progress_photos` field of the `progress_logs` record.
 
 Both create and update also sync `height`/`weight` onto the linked `trainees`
@@ -202,7 +201,7 @@ detail page.
 | --- | --- | --- | --- |
 | GET | `/manifest.json` | Per-tenant web app manifest | Icons from tenant logo via PocketBase thumbs (`192x192f`, `512x512f`) or bundled fallbacks; standalone portrait, theme/background `#1d232a`, `start_url=/login` |
 | GET | `/sw.js` | Service worker source | `__CACHE_VERSION__` substituted with `APP_VERSION` at request time; served with `Service-Worker-Allowed: /`, `Cache-Control: no-cache` |
-| GET | `/offline/` | Offline fallback page (inline RTL HTML) | Cached by the service worker |
+| GET | `/offline/` | Offline fallback page (inline HTML) | Cached by the service worker |
 | GET | `/favicon.ico` | Redirects to 32×32 thumb of tenant logo, else static favicon | |
 
 ## Static assets

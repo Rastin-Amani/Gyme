@@ -33,7 +33,7 @@ The `tenants` collection drives per-domain behavior and all branding:
 | Field | Used by | Meaning |
 | --- | --- | --- |
 | `domain` | middleware | Exact hostname (without port) that maps requests to this gym. One record per served hostname |
-| `name` | header, login card, manifest | Display name («باشگاه» fallback in UI) |
+| `name` | header, login card, manifest | Display name ("Gym" fallback in UI) |
 | `logo` (file) | login, dashboard header, favicon redirect, manifest icons, iOS splash | Served via PocketBase thumbnails (`?thumb=…`) |
 | `theme` | `base.html` `data-theme` | daisyUI theme name: default `gyme`; `custom` enables CSS-variable injection; `light` also supported |
 | `brand_theme` | `base.html` `<style>` block when `theme == "custom"` | Map of CSS variable names → values (`_` rendered as `-`) |

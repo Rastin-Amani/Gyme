@@ -23,7 +23,7 @@ each environment resolves gyms by `Host` header (see
 ## Before you open a PR
 
 ```bash
-make test        # 54-test suite: i18n + security regression + known-issue fixes
+make test        # 55-test suite: i18n + security regression + known-issue fixes
 ruff check .
 black .
 ```
@@ -35,7 +35,7 @@ against the local app only — no network calls.
 
 - Keep routes thin: business logic and PocketBase queries live in
   `app/services/`.
-- UI strings are Persian msgids behind gettext: `_("…")` in Jinja templates
+- UI strings are English msgids behind gettext: `_("…")` in Jinja templates
   (`{{ _("...") }}`) and Python. Update catalogs with the i18n Makefile targets
   (`make i18n-extract`, `make i18n-update`, `make i18n-compile`).
 - Minimum Python is 3.11; type hints are welcome on new code.

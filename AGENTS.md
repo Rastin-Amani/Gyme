@@ -58,9 +58,9 @@ black .
 ### Stack
 - **Backend**: FastAPI (Python 3.11+)
 - **Frontend**: HTMX + Alpine.js + Tailwind CSS 4, built with Vite
-- **Templates**: Jinja2 (locale-aware `jalali_year` / `jalali_date` filters; `_` / `ngettext` gettext)
+- **Templates**: Jinja2 (locale-aware date filters; `_` / `ngettext` gettext)
 - **DB**: PocketBase (via SDK)
-- **i18n**: gettext catalogs under `app/locales/` (default locale **en**; `fa` is RTL and the source of msgids; `es`/`tr`/`hy` also enabled)
+- **i18n**: gettext catalogs under `app/locales/` (default locale **en**, which is also the source of msgids; `es`/`tr`/`hy` also enabled; all locales are LTR)
 
 ### Key Directories
 ```
@@ -82,7 +82,7 @@ app/
 - **Static**: `app/static/main.js` + `app/static/main.css` (Vite inputs)
 
 ### Quirks
-- **Jalali Dates**: `jalali_year`, `jalali_date` filters in `templates.py` (also aliased `loc_year`, `loc_date`) — Jalali only when the active locale is `fa`; otherwise Gregorian/Babel.
+- **Dates**: `loc_year` / `loc_date` filters in `templates.py` (also aliased `jalali_year` / `jalali_date`) render Gregorian dates via Babel (fallback `%Y-%m-%d`).
 - **Swagger**: Disabled in production (`ENV=production` / `IS_PROD`).
 - **Tenant Middleware**: Applied globally via `TenantMiddleware`; `GET /healthz` is served before any PocketBase call.
 - **Auth cookie**: `pb_auth` via `app/security.set_auth_cookie` — `Secure` conditional on prod/https; login rate-limited 5 attempts/5 min per IP+identity+tenant.

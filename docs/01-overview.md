@@ -19,19 +19,18 @@ the app on its own domain. Inside a gym:
   training, nutrition, and supplement plan with a single "Done" action per day.
 
 The user interface is **multilingual**: English is the default language, and
-Persian (Farsi) with right-to-left layout and Jalali (Solar Hijri) date display,
 Spanish, Turkish, and Armenian are also available. Visitors switch language with
-a selector in the header; the choice is stored in a `locale` cookie. Date
-filters render Jalali dates when the UI language is Persian and Gregorian
-(Babel medium format) otherwise.
+a selector in the header; the choice is stored in a `locale` cookie. Every
+locale is left-to-right, and dates render in the Gregorian calendar (Babel
+medium format).
 
 ## Who it is for
 
 | Persona | What they do in Gyme |
 | --- | --- |
-| Gym owner (مالک) | Runs the gym's app: manages coaches and trainees, oversees all plans and statistics, sees tenant settings |
-| Coach (مربی) | Manages only their own trainees and their plans; records assessments |
-| Trainee (شاگرد) | Follows daily plans, views own profile — read-only consumer of plans |
+| Gym owner | Runs the gym's app: manages coaches and trainees, oversees all plans and statistics, sees tenant settings |
+| Coach | Manages only their own trainees and their plans; records assessments |
+| Trainee | Follows daily plans, views own profile — read-only consumer of plans |
 
 ## The problems it solves
 
@@ -91,11 +90,11 @@ Plans come in three types, each with its own item structure:
 
 | Plan type | Item fields |
 | --- | --- |
-| Training (تمرینی) | Exercise name (autocomplete from a Persian exercise dataset), movement category (warm-up/main/etc.), day number, order, sets, reps, weight, rest seconds, notes |
-| Diet (غذایی) | Meal name (ناشتا، صبحانه، میان وعده، قبل از تمرین، بعد از تمرین، ناهار، شام), food name (autocomplete from Persian food dataset), quantity/unit, day, order, notes |
-| Steroid/supplement (استروئیدی) | Name, type (مکمل/استروئید), dosage, frequency, day, order, notes |
+| Training | Exercise name (autocomplete from an English exercise dataset), movement category (warm-up/main/etc.), day number, order, sets, reps, weight, rest seconds, notes |
+| Diet | Meal name (Fasting, Breakfast, Snack, Pre-workout, Post-workout, Lunch, Dinner), food name (autocomplete from an English food dataset), quantity/unit, day, order, notes |
+| Steroid/supplement | Name, type (Supplement/Steroid), dosage, frequency, day, order, notes |
 
-- Exercise and food name suggestions are served from Persian datasets bundled in
+- Exercise and food name suggestions are served from English datasets bundled in
   `data/*.csv`.
 - Plans have start/end dates, days-per-week, status (active/inactive/draft), a
   responsible coach, and notes.
@@ -119,9 +118,9 @@ Plans come in three types, each with its own item structure:
 - **Owner dashboard:** counters for active/inactive trainees and per-type plan
   counts, filterable to this week/month/all time; a per-coach breakdown showing
   plan totals, active plans, plans currently in progress, and distinct trainees.
-- **Trainee "Today" dashboard:** tabs for تغذیه (nutrition), تمرین (training),
-  استروئید (steroid) — only tabs with plans appear. Each plan card shows today's
-  items grouped by meal or exercise category and an **«انجام شد»** button that
+- **Trainee "Today" dashboard:** tabs for Diet (nutrition), Training,
+  Steroid — only tabs with plans appear. Each plan card shows today's
+  items grouped by meal or exercise category and a **Done** button that
   advances the plan to its next day (wrapping around at the end). A warning
   banner reminds trainees to press it every day.
 
@@ -164,4 +163,4 @@ Stated so readers don't assume otherwise:
 - Python 3.11+ runtime and (for development/rebuilds only) Node.js.
 
 See [02-getting-started.md](02-getting-started.md) for setup and
-[03-user-guide-fa.md](03-user-guide-fa.md) for the end-user manual (فارسی).
+[04-architecture.md](04-architecture.md) for the technical deep dive.

@@ -25,7 +25,7 @@ pip install -r app/requirements.txt
 ```
 
 Installed stack: FastAPI, uvicorn, pocketbase (SDK), Jinja2, python-multipart,
-python-dotenv, pydantic-settings, requests, jdatetime, jalali_core, pandas,
+python-dotenv, pydantic-settings, requests, pandas,
 openpyxl, structlog.
 
 ## 2. Frontend assets
@@ -105,7 +105,7 @@ and browse `http://yourgym.local:8000`. This matters because tenancy is derived
 from the `Host` header:
 
 - Unknown host → tenant is unresolved → login attempts show
-  «خطای سیستم: باشگاه یافت نشد!».
+  "System error: Gym not found!".
 - `/` always redirects into the app: `/dashboard` when logged in, otherwise
   `/login` (the marketing site lives in a separate application).
 
