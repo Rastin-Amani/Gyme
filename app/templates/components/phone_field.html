@@ -1,0 +1,38 @@
+{% set phone_name = phone_name | default("phone") %}
+{% set phone_label = phone_label | default(_("Phone number")) %}
+{% set phone_value = phone_value | default("") %}
+{% set phone_required = phone_required | default("required") %}
+
+<div
+    class="form-control w-full"
+    x-data="phoneField('{{ phone_value }}')"
+>
+    <label class="floating-label">
+        <span class="label-text">{{ phone_label }}</span>
+        <div class="flex w-full gap-2">
+            <select
+                class="select w-28 shrink-0 tabular-nums validator"
+                aria-label="{{ _('Country code') }}"
+                x-model="dialCode"
+                @change="sync()"
+                {{ phone_required }}
+            >
+                <template x-for="c in countries" :key="c.dial + c.name">
+                    <option :value="'+' + c.dial" x-text="c.flag + ' +' + c.dial"></option>
+                </template>
+            </select>
+            <input
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                class="input w-full tabular-nums text-left validator"
+                placeholder="{{ _('Phone number') }}"
+                x-model="nationalNumber"
+                @input="onNationalInput($event)"
+                {{ phone_required }}
+            />
+        </div>
+        <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
+    </label>
+    <input type="hidden" name="{{ phone_name }}" x-model="phone" value="{{ phone_value }}" />
+</div>

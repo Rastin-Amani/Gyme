@@ -89,8 +89,8 @@ def test_email_validation():
 def test_phone_validation():
     from app.security import validate_phone
 
-    assert validate_phone("09123456789") == "09123456789"
-    assert validate_phone("+989123456789") == "+989123456789"
+    assert validate_phone("2025550123") == "2025550123"
+    assert validate_phone("+12025550123") == "+12025550123"
     try:
         validate_phone("not-a-phone")
         assert False
