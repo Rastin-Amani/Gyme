@@ -1,7 +1,6 @@
 import os
-from fastapi.templating import Jinja2Templates
-import jdatetime
 from datetime import datetime
+from fastapi.templating import Jinja2Templates
 
 from app.i18n import _, get_locale, locale_proxy, ngettext
 
@@ -16,7 +15,6 @@ templates.env.globals["ngettext"] = ngettext
 templates.env.globals["locale"] = locale_proxy
 
 
-# Define the filter
 def _parse_dt(date_str):
     """Normalize PB timestamps (str or datetime) to a naive datetime; None on failure."""
     if not date_str:
@@ -39,23 +37,19 @@ def _parse_dt(date_str):
         return None
 
 
-def to_jalali_year(date_str):
+def to_locale_year(date_str):
+    """Gregorian year (LTR/Gregorian rendering)."""
     parsed = _parse_dt(date_str)
     if not parsed:
         return date_str or ""
-    # Locale-aware: Jalali only for fa; others use Gregorian year
-    if get_locale().code == "fa":
-        return jdatetime.datetime.fromgregorian(datetime=parsed).year
     return parsed.year
 
 
-def to_jalali_date(date_str):
+def to_locale_date(date_str):
+    """Gregorian date (medium format via Babel when available, else ISO)."""
     parsed = _parse_dt(date_str)
     if not parsed:
         return date_str or ""
-    if get_locale().code == "fa":
-        return jdatetime.datetime.fromgregorian(datetime=parsed).strftime("%Y/%m/%d")
-    # Gregorian fallback for LTR locales (medium format via Babel if available)
     try:
         from babel.dates import format_date
 
@@ -64,9 +58,9 @@ def to_jalali_date(date_str):
         return parsed.strftime("%Y-%m-%d")
 
 
-# Register the filters (names kept for template compatibility; behavior is locale-aware)
-templates.env.filters["jalali_year"] = to_jalali_year
-templates.env.filters["jalali_date"] = to_jalali_date
-# Alias for clarity in new templates
-templates.env.filters["loc_year"] = to_jalali_year
-templates.env.filters["loc_date"] = to_jalali_date
+# Register the filters (names kept for template compatibility; always Gregorian)
+templates.env.filters["jalali_year"] = to_locale_year
+templates.env.filters["jalali_date"] = to_locale_date
+# Aliases for clarity in templates
+templates.env.filters["loc_year"] = to_locale_year
+templates.env.filters["loc_date"] = to_locale_date

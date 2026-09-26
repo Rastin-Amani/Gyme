@@ -6,8 +6,6 @@ python-multipart
 python-dotenv
 pydantic-settings
 requests
-jdatetime
-jalali_core
 pandas
 openpyxl
 structlog
