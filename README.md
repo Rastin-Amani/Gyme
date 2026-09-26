@@ -11,7 +11,7 @@ training, nutrition, and supplement plans — and trainees follow their daily pl
 from their phone. The UI is multilingual with **English as the default language**;
 Spanish, Turkish, and Armenian are also supported.
 
-- **Current version:** 0.9.1 (`app/main.py` `APP_VERSION`)
+- **Current version:** 1.0.0 (`app/main.py` `APP_VERSION`)
 - **Status:** actively developed; automated tests ship under `tests/`
   (`tests/test_i18n.py`, plus the 22-test security regression suite in
   `tests_security_regression.py`)

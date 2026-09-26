@@ -1,7 +1,7 @@
 # 01 — Product Overview
 
 **Verification status:** written against the current implementation (app version
-0.9.1, `main` branch). All features described here are traceable to code in this
+1.0.0, `main` branch). All features described here are traceable to code in this
 repository; where behavior depends on data configured in the external PocketBase
 instance, that is called out explicitly.
 

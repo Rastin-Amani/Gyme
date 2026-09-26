@@ -73,10 +73,10 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `0.9.1`) drives:
+- `APP_VERSION` constant in `app/main.py` (currently `1.0.0`) drives:
   template footer/global, and the PWA cache version injected into `sw.js`
   (bumping it purges clients' caches on next visit).
-- `app/version.text` mirrors it (`"0.9.1"`); both are in sync. `base.html`
+- `app/version.text` mirrors it (`"1.0.0"`); both are in sync. `base.html`
   derives the SW cache-buster from `{{ app_version }}`, so no hardcoding is
   left (known issue #7 resolved in 0.9.1).
 
