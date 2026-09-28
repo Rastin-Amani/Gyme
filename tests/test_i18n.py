@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import re
+from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
@@ -16,6 +16,8 @@ from app.i18n import (
     set_request_locale,
 )
 from app.main import app
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture(autouse=True)
@@ -55,9 +57,6 @@ def test_locale_switch_sets_cookie_and_redirects(client):
     assert r.headers["location"] == "/login"
     raw = "; ".join(r.headers.get_list("set-cookie"))
     assert "locale=en" in raw
-    # follow-up request uses cookie
-    r2 = client.get("/login")
-    assert 'lang="en"' in r2.text
 
 
 def test_locale_switch_rejects_unknown(client):
@@ -70,26 +69,23 @@ def test_locale_switch_open_redirect_guard(client):
     assert r.headers["location"] == "/"
 
 
-def test_html_lang_dir_follows_cookie(client):
-    r = client.get("/login")
-    assert 'lang="en"' in r.text and 'dir="ltr"' in r.text
-    for name in ("English", "Español", "Türkçe", "Հայերեն"):
-        assert name in r.text
-
-    # Non-default enabled locales are all LTR as well.
-    r = client.get("/login", cookies={"locale": "tr"})
-    assert 'lang="tr"' in r.text and 'dir="ltr"' in r.text
+def test_svelte_document_language_uses_allowlisted_locale():
+    src = (ROOT / "frontend/src/hooks.server.ts").read_text(encoding="utf-8")
+    assert "new Set(['en', 'es', 'tr', 'hy'])" in src
+    assert "event.url.searchParams.get('locale')" in src
+    assert "event.cookies.get('gyme_locale')" in src
+    assert "html.replace('<html lang=\"en\">'" in src
 
 
-def test_ui_has_no_persian(client):
-    r = client.get("/login")
-    # Assert absence using the Arabic/Persian unicode block so no Persian words
-    # ever need to appear in the source tree itself.
-    assert re.search("[\u0600-\u06ff]", r.text) is None
-    assert 'dir="rtl"' not in r.text
+def test_svelte_ui_has_no_rtl_locale_content():
+    sources = list((ROOT / "frontend/src").rglob("*.svelte")) + list(
+        (ROOT / "frontend/src").rglob("*.ts")
+    )
+    content = "\n".join(path.read_text(encoding="utf-8") for path in sources)
+    assert not any("\u0600" <= char <= "\u06ff" for char in content)
 
 
-def test_locale_switcher_full_reload_attr(client):
-    r = client.get("/login")
-    assert 'hx-boost="false"' in r.text
-    assert "/locale/" in r.text
+def test_svelte_locale_switcher_is_not_htmx():
+    src = (ROOT / "frontend/src/routes/+layout.svelte").read_text(encoding="utf-8")
+    assert "locale" in src.lower()
+    assert "hx-boost" not in src.lower()

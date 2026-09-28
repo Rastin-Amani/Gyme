@@ -5,6 +5,7 @@ Run: pytest tests_security_regression.py -v
 """
 
 import re
+from pathlib import Path
 
 
 def test_pb_escape_basic():
@@ -211,24 +212,9 @@ def test_middleware_has_csrf_and_security_headers():
     assert "is_valid_host" in src
 
 
-def test_xss_toast_fix():
-    with open("app/templates/base.html") as f:
-        content = f.read()
-    # Should use textContent, not innerHTML for message
-    assert "textContent" in content
-    # Old vulnerable pattern should not exist as sole message insertion
-    # Check that toast.innerHTML with ${message} direct is gone
-    # Allow icon innerHTML but message should be textContent
-    assert "msgSpan.textContent" in content or "textContent = String(message" in content
-
-
-def test_open_redirect_client_guard():
-    with open("app/templates/base.html") as f:
-        content = f.read()
-    assert "delayed-redirect" in content
-    # Should have guard for // and ://
-    assert "startsWith('//')" in content or "startsWith" in content
-    assert "includes('://')" in content or "includes" in content
+def test_svelte_components_do_not_insert_raw_html():
+    components = Path("frontend/src").rglob("*.svelte")
+    assert all("{@html" not in path.read_text(encoding="utf-8") for path in components)
 
 
 def test_password_not_email():
@@ -242,14 +228,14 @@ def test_password_not_email():
 
 
 def test_logout_exists():
-    with open("app/routes/auth.py") as f:
+    with open("app/routes/api.py") as f:
         src = f.read()
-    assert "/logout" in src
+    assert '@router.post("/auth/logout"' in src
     assert "clear_auth_cookie" in src
 
 
 def test_secure_cookie_helper_used():
-    with open("app/routes/auth.py") as f:
+    with open("app/routes/api.py") as f:
         src = f.read()
     assert "set_auth_cookie" in src
     assert "secure=False" not in src or "set_auth_cookie" in src  # no hardcoded insecure
@@ -266,9 +252,9 @@ def test_plan_update_requires_tenant():
 
 
 def test_rate_limiting_present():
-    with open("app/routes/auth.py") as f:
+    with open("app/routes/api.py") as f:
         src = f.read()
-    assert "rate" in src.lower() or "Rate" in src
+    assert "is_login_rate_limited" in src
     assert "_login_attempts" in src
 
 
