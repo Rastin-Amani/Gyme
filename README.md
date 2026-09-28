@@ -88,7 +88,7 @@ browser UI; FastAPI stays on port 8000 for the private API hop. See
 | `PB_URL` | `http://127.0.0.1:8090` in development; required in production | Base URL of the PocketBase instance |
 | `ENV` | `dev` | Set to `production` to disable Swagger docs and `/debug/*` routes and switch logs to JSON |
 | `ALLOWED_HOSTS` | *(unset)* | Optional comma-separated allowlist passed to Starlette `TrustedHostMiddleware`; in production a warning is logged when it is unset |
-| `BACKEND_URL` | `http://backend:8000` | FastAPI origin used by the SvelteKit same-origin API proxy (set to `http://127.0.0.1:8000` for local development) |
+| `BACKEND_URL` | `http://127.0.0.1:8000` | FastAPI origin used by the SvelteKit same-origin API proxy (the production image sets the internal loopback address; use `http://127.0.0.1:8000` for local development) |
 
 > Note: `python-dotenv` is listed in requirements but never invoked — `.env`
 > files are **not** loaded automatically; export variables in the shell.
@@ -159,8 +159,8 @@ app/
 ├── services/          # PocketBase access & business logic
 └── static/swagger/    # development API docs assets
 data/                  # bundled exercise and food CSV datasets
-Dockerfile             # FastAPI image
-compose.yaml           # frontend + backend for Dokploy
+Dockerfile             # single production image: SvelteKit + FastAPI
+docker-entrypoint.sh   # runs both services; exits if either one dies
 ```
 
 ## Documentation
@@ -189,26 +189,26 @@ Highlights:
 
 ## Deployment
 
-A two-service `compose.yaml` builds the SvelteKit frontend and FastAPI backend
-for Dokploy. Set `PB_URL` and `ALLOWED_HOSTS`; expose only the frontend service
-on port 3000. PocketBase remains external.
-
-The GitHub workflow publishes the root `Dockerfile` image to **GHCR** on pushes
-to `main` (tag `latest`) and version tags. That image is the FastAPI backend,
-not the complete Compose deployment. `compose.yaml` builds both services from
-source:
+The root `Dockerfile` builds one production container: the SvelteKit SSR
+server (public port **3000**) and the FastAPI backend (loopback-only port
+8000, unreachable from outside the container) run together, supervised by
+`docker-entrypoint.sh`, which exits the container if either service stops.
+No Compose file is involved. Set `PB_URL` and `ALLOWED_HOSTS` at runtime;
+PocketBase remains external.
 
 ```bash
 PB_URL="https://your-pocketbase.example" \
 ALLOWED_HOSTS="gym.example.com" \
-  docker compose -f compose.yaml up --build -d
+  docker build -t gyme . && docker run -p 3000:3000 gyme
 ```
 
-Route the public hostname to the frontend service (port 3000); it must match a
-`tenants` record. The FastAPI service remains private to the Compose network.
+The GitHub workflow publishes this same image to **GHCR** on pushes to `main`
+(tag `latest`) and version tags.
 
-Full runbook:
-[docs/06-configuration-deployment.md](docs/06-configuration-deployment.md).
+For Dokploy, create a **Dockerfile** application pointing at this repository
+and expose port 3000; see
+[docs/06-configuration-deployment.md](docs/06-configuration-deployment.md) for
+the exact settings. The public hostname must match a `tenants` record.
 
 ## Contributing
 

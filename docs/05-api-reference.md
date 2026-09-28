@@ -18,7 +18,7 @@ validation, authentication, tenant isolation, permissions, and persistence.
   it are accepted only from the configured trusted proxy peer for `/api/v1`.
 - Tenant context comes from the public hostname and is resolved by FastAPI.
   Forwarded host, protocol, and client-IP headers are trusted only from the
-  exact frontend peer on the private Compose network. Never expose the backend
+  in-container loopback peer (the SvelteKit BFF). Never expose the backend
   port publicly or trust arbitrary forwarded headers.
 - Success and failure responses use JSON and meaningful HTTP status codes.
   Common failures include 401 (not authenticated), 403 (not permitted/CSRF),

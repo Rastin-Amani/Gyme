@@ -28,9 +28,11 @@ UI; FastAPI's development Swagger page is API documentation only.
 2. The proxy forwards the browser cookie and request origin context, plus the
    public host/protocol and client address. FastAPI trusts forwarded values only
    when the immediate peer matches `TRUSTED_PROXIES`.
-3. `compose.yaml` assigns the frontend `172.28.0.2`; the backend sets
-   `TRUSTED_PROXIES=172.28.0.2/32` and exposes port 8000 only inside the Compose
-   network. Do not publish that backend port or broaden proxy trust.
+3. In the production container FastAPI binds `127.0.0.1:8000` only, so the
+   backend port is never reachable from outside the container, and
+   `TRUSTED_PROXIES` keeps its loopback default (`127.0.0.1,::1`) — the
+   in-container SvelteKit BFF is the only peer allowed to supply forwarded
+   headers. Do not publish the backend port or broaden proxy trust.
 4. FastAPI resolves the tenant by exact public hostname against PocketBase's
    `tenants.domain`, validates the `pb_auth` token with PocketBase, then applies
    tenant and role checks in the API routes/services.
@@ -78,10 +80,11 @@ backend API locale support are allowlisted; all enabled locales are LTR.
 
 - `npm --prefix frontend run check` type-checks the SvelteKit project;
   `npm --prefix frontend run build` creates the adapter-node server.
-- `frontend/Dockerfile` builds and runs the Node SSR frontend on port 3000.
-  The root `Dockerfile` builds FastAPI on port 8000.
-- `compose.yaml` contains only `frontend` and `backend`; only the frontend is
-  exposed for public routing. PocketBase is external.
+- The root `Dockerfile` builds both services into one image: the Node SSR
+  frontend (public port 3000) and FastAPI (loopback-only port 8000), started
+  by `docker-entrypoint.sh`, which exits the container if either service stops.
+- Only port 3000 is exposed; the image healthcheck probes both processes.
+  PocketBase is external.
 - For local development, run FastAPI on port 8000 and SvelteKit on port 5173;
   set `BACKEND_URL=http://127.0.0.1:8000` and use a hostname present in the
   `tenants` collection.

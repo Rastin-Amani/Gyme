@@ -57,8 +57,8 @@ the configured proxy peer; local direct development defaults to loopback trust.
 | `PB_URL` | `http://127.0.0.1:8090` | PocketBase base URL. Required when `ENV=production`. |
 | `ENV` | `dev` | `production` disables Swagger and debug routes and enables production logging/security behavior. |
 | `ALLOWED_HOSTS` | unset | Optional comma-separated FastAPI host allowlist. |
-| `TRUSTED_PROXIES` | `127.0.0.1,::1` | Immediate peer addresses/CIDRs allowed to supply forwarded headers. Compose sets the frontend peer to `172.28.0.2/32`. |
-| `BACKEND_URL` | `http://backend:8000` | FastAPI origin for SvelteKit; use `http://127.0.0.1:8000` locally. |
+| `TRUSTED_PROXIES` | `127.0.0.1,::1` | Immediate peer addresses/CIDRs allowed to supply forwarded headers. The production container needs no override: the in-container SvelteKit BFF is the loopback peer. |
+| `BACKEND_URL` | `http://127.0.0.1:8000` | FastAPI origin for SvelteKit; the production image sets the same loopback address. |
 
 `.env` files are not loaded automatically; export variables or configure the
 process environment.

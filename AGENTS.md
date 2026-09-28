@@ -6,8 +6,9 @@
 - Frontend: SvelteKit, Svelte 5, TypeScript, `@sveltejs/adapter-node`.
 - Styling: Tailwind CSS 4 and the existing Caldera visual tokens in
   `frontend/src/routes/app.css`.
-- Production: one Compose app with private FastAPI `backend` and public Node SSR
-  `frontend` services. PocketBase is external.
+- Production: one Docker container from the root `Dockerfile` running public
+  Node SSR on port 3000 and FastAPI on loopback port 8000, supervised by
+  `docker-entrypoint.sh`. PocketBase is external.
 - Internationalization: Svelte UI dictionaries in `frontend/src/lib/i18n.ts`;
   FastAPI/PWA messages use gettext catalogs in `app/locales/`. Enabled locales
   are en, es, tr, and hy, all LTR.
@@ -48,8 +49,8 @@ black --check .
 ```
 
 The Node adapter output is `frontend/build/`; it is generated and should not be
-committed. For a production-like deployment, use `docker compose -f compose.yaml
-up --build` with `PB_URL` configured.
+committed. For a production-like deployment, build the root `Dockerfile` with
+`PB_URL` configured and publish only port 3000.
 
 ### Backend gettext catalogs
 
@@ -78,8 +79,8 @@ Browser
 - `pb_auth` remains HttpOnly; never expose PocketBase tokens or credentials to
   client-side JavaScript.
 - FastAPI middleware trusts forwarded host/protocol/client-IP data only from
-  the exact frontend proxy peer configured in Compose. Do not broaden proxy
-  trust or publish backend port 8000.
+  the in-container loopback BFF peer. Do not broaden proxy trust or expose
+  backend port 8000.
 - `/healthz` does not access PocketBase. `/docs`, OpenAPI and JSON debug routes
   are development-only. Keep tenant resolution and open-redirect checks intact.
 - The SvelteKit catch-all route currently dispatches the existing public URL
@@ -107,7 +108,8 @@ frontend/
 ├── src/service-worker.ts
 └── package.json        # SvelteKit + adapter-node dependencies
 tests/                  # Python/API/security/i18n tests
-compose.yaml            # Exactly the frontend and backend services
+Dockerfile             # Single production image: frontend + backend
+docker-entrypoint.sh   # Starts both services; exits if either dies
 ```
 
 ## Security and behavior constraints
@@ -132,4 +134,4 @@ compose.yaml            # Exactly the frontend and backend services
 - `frontend/package.json`: frontend scripts and dependencies.
 - `Makefile`: Python tests and backend i18n targets.
 - `docs/04-architecture.md`: request/security and data-flow details.
-- `docs/06-configuration-deployment.md`: Dokploy/Compose runbook.
+- `docs/06-configuration-deployment.md`: Docker/Dokploy runbook.

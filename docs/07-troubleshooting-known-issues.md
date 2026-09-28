@@ -8,13 +8,15 @@ These checks describe the current SvelteKit frontend and FastAPI JSON API.
   with `npm --prefix frontend run dev` (port 5173).
 - Check frontend build/type errors with `npm --prefix frontend run check` and
   `npm --prefix frontend run build`.
-- In Compose, route the browser to the Node frontend service on port 3000. The
-  root FastAPI `Dockerfile` is the private API service, not the browser UI.
+- In the production container, route the browser to port 3000 (the SvelteKit
+  Node server). Port 8000 is the FastAPI backend bound to loopback inside the
+  container, not the browser UI.
 
 ## API requests fail or show service unavailable
 
-- Confirm FastAPI is running at the configured `BACKEND_URL` (`127.0.0.1:8000`
-  for local development; `backend:8000` inside Compose).
+- Confirm FastAPI is running at the configured `BACKEND_URL`
+  (`127.0.0.1:8000` for local development and inside the production
+  container).
 - Confirm `PB_URL` reaches the external PocketBase service. It defaults to
   `http://127.0.0.1:8090` outside production and is required when
   `ENV=production`.
@@ -26,9 +28,10 @@ These checks describe the current SvelteKit frontend and FastAPI JSON API.
 - The current browser hostname must exactly match a `domain` value in
   PocketBase's `tenants` collection. For local development, use a local hosts
   entry and visit the SvelteKit server using that tenant hostname.
-- In Compose, ensure the reverse proxy forwards the public host and protocol to
-  SvelteKit. The frontend-to-backend request supplies those values to FastAPI;
-  forwarded headers are trusted only from the configured immediate proxy peer.
+- In the single-container deployment, ensure the reverse proxy forwards the
+  public host and protocol to SvelteKit on port 3000. The
+  frontend-to-backend request supplies those values to FastAPI; forwarded
+  headers are trusted only from the in-container loopback BFF peer.
 - Confirm the user belongs to the resolved tenant and the PocketBase auth
   collection/API rules allow the requested operations.
 - Login is limited to 5 attempts per IP, identity, and tenant per 5 minutes.
