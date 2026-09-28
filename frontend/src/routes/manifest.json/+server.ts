@@ -7,7 +7,7 @@ export const GET: RequestHandler = async (event) => {
 	if (!response.ok) return new Response(null, { status: response.status });
 
 	const manifest = await response.json();
-	const backend = (env.BACKEND_URL || 'http://backend:8000').replace(/\/+$/, '');
+	const backend = (env.BACKEND_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
 	const backendOrigin = new URL(backend).origin;
 	for (const icon of manifest.icons ?? []) {
 		const source = new URL(icon.src, event.url);

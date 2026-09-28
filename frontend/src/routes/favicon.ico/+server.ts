@@ -5,7 +5,7 @@ import { faviconFallback, fetchTenantResource } from '$lib/server/tenant-pwa';
 export const GET: RequestHandler = async (event) => {
 	const response = await fetchTenantResource(event, '/favicon.ico');
 	const location = response.headers.get('location');
-	if (location && faviconFallback(location, env.BACKEND_URL || 'http://backend:8000')) {
+	if (location && faviconFallback(location, env.BACKEND_URL || 'http://127.0.0.1:8000')) {
 		return new Response(null, { status: 302, headers: { Location: '/favicon.svg', 'Cache-Control': 'private, no-cache' } });
 	}
 	const headers = new Headers({ 'Cache-Control': 'private, no-cache' });

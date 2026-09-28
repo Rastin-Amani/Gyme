@@ -11,7 +11,7 @@ const forwarded = new Set([
 ]);
 
 const proxy: RequestHandler = async ({ request, params, url, getClientAddress }) => {
-	const backend = (env.BACKEND_URL || 'http://backend:8000').replace(/\/+$/, '');
+	const backend = (env.BACKEND_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
 	if (!params.path || params.path.split('/').some((part) => !part || part === '.' || part === '..' || /[%\\]/.test(part))) {
 		return new Response('Invalid API path', { status: 400 });
 	}

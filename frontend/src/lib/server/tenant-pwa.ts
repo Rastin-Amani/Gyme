@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function fetchTenantResource(event: RequestEvent, path: string) {
-	const backend = (env.BACKEND_URL || 'http://backend:8000').replace(/\/+$/, '');
+	const backend = (env.BACKEND_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
 	const headers = new Headers({
 		'X-Forwarded-Host': event.url.host,
 		'X-Forwarded-Proto': event.url.protocol.slice(0, -1)
