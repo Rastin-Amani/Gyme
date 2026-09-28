@@ -1,0 +1,10 @@
+{
+  "name": "Gyme Coaching",
+  "short_name": "Gyme",
+  "description": "Training plans and progress, together.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#f7f6f2",
+  "theme_color": "#e2e2df",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
