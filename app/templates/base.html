@@ -18,6 +18,12 @@
         <link rel="icon" href="/favicon.ico" />
 
         <title>{{ title or _('Gyme') }}</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Inter:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
         <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v={{ app_version }}" />
         
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
@@ -89,15 +95,15 @@
     >
         {% block body_start %}{% endblock %}
         <div
-            class="mx-auto w-full max-w-150 min-h-screen bg-base-100 border-x border-base-300/80 selection:bg-primary selection:text-primary-content"
+            class="app-shell min-h-screen bg-base-100 border-x border-base-300/80 selection:bg-primary selection:text-primary-content"
         >
             
             <div
                 id="top-progress-bar"
-                class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 pointer-events-none max-w-150 mx-auto"
+                class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 pointer-events-none"
             ></div>
 
-            <main id="main-content" class="px-4">
+            <main id="main-content" class="px-4 sm:px-6 lg:px-8">
                 {% block content %}{% endblock %}
 
                 <div id="modal-container"></div>
