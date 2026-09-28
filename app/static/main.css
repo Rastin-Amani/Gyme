@@ -263,8 +263,19 @@
     }
 }
 
-/* ── Native dropdown disclosure (language switcher) ────────────────────────── */
-details.dropdown[open] > .dropdown-content {
+/* ── Alpine helpers ────────────────────────────────────────────────────────── */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Subtle continuity for partial swaps: fresh content eases in instead of
+   flashing. Respects prefers-reduced-motion via the global media query. */
+#page-content.htmx-swapping {
+    opacity: 0.4;
+    transition: opacity 150ms ease-out;
+}
+
+/* ── Native dropdown disclosure (language switcher) ────────────────────────── */details.dropdown[open] > .dropdown-content {
     opacity: 1;
     scale: 1;
     display: block;

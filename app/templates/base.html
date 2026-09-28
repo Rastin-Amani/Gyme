@@ -82,7 +82,11 @@
         </script>
     </head>
 
-    <body class="bg-base-200 font-sans! antialiased" hx-boost="true">
+    <body
+        class="bg-base-200 font-sans! antialiased"
+        hx-boost="false"
+        x-data
+    >
         {% block body_start %}{% endblock %}
         <div
             class="mx-auto w-full max-w-150 min-h-screen bg-base-100 border-x border-base-300/80 selection:bg-primary selection:text-primary-content"
@@ -203,7 +207,8 @@
                     }, 4000);
                 });
 
-                // 🟢 2. Delayed Redirect Listener (Solves the Race Condition!) - with open-redirect guard
+                // 🟢 2. Delayed Redirect Listener — partial app navigation when possible,
+                // so the shell (header/dock/modal/toast/Alpine) stays mounted.
                 document.addEventListener('delayed-redirect', function (evt) {
                     let targetUrl = evt.detail.url || '/dashboard';
                     // Allow only internal relative paths: must start with / and not //, no :// , no backslash
@@ -211,7 +216,11 @@
                         targetUrl = '/dashboard';
                     }
                     setTimeout(() => {
-                        window.location.href = targetUrl;
+                        if (window.gymeNav && document.getElementById('page-content')) {
+                            window.gymeNav(targetUrl);
+                        } else {
+                            window.location.href = targetUrl;
+                        }
                     }, 500); // Gives the toast 0.5 seconds to shine before moving
                 });
 

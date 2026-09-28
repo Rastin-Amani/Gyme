@@ -25,7 +25,7 @@
             </button>
         </div>
 
-        <div class="text-sm font-medium opacity-70 ps-2">{{ title }}</div>
+        <div class="text-sm font-medium opacity-70 ps-2" id="header-title">{{ title }}</div>
 
         <div class="flex flex-auto items-center justify-end gap-4 ms-2">
             {% include "components/locale_switcher.html" %}
@@ -48,7 +48,6 @@
         </div>
     </header>
     <div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
-    <div id="modal-container"></div>
 
     {% if user %}
         <!-- Persistent Navigation -->
@@ -57,7 +56,7 @@
             class="dock text-xs max-w-150 mx-auto bg-base-100 border-t-2 border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16"
         >
             {% if user and user.role in ['coach', 'owner'] %}
-                <a href="/dashboard">
+                <a href="/dashboard" hx-get="/dashboard" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -74,7 +73,7 @@
                     </svg>
                     {{ _('Dashboard') }}
                 </a>
-                <a href="/plans">
+                <a href="/plans" hx-get="/plans" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -91,7 +90,7 @@
                     </svg>
                     {{ _('Plans') }}
                 </a>
-                <a href="/trainees/new">
+                <a href="/trainees/new" hx-get="/trainees/new" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -108,7 +107,7 @@
                     </svg>
                     {{ _('Add trainee') }}
                 </a>
-                <a href="/trainees">
+                <a href="/trainees" hx-get="/trainees" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -125,7 +124,7 @@
                     </svg>
                     {{ _('Trainees') }}
                 </a>
-                <a href="/profile">
+                <a href="/profile" hx-get="/profile" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -148,7 +147,7 @@
                     {{ _('Profile') }}
                 </a>
             {% elif user and user.role == 'trainee' %}
-                <a href="/user/plans">
+                <a href="/user/plans" hx-get="/user/plans" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -165,7 +164,7 @@
                     </svg>
                     {{ _('Plans') }}
                 </a>
-                <a href="/user/dashboard">
+                <a href="/user/dashboard" hx-get="/user/dashboard" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -182,7 +181,7 @@
                     </svg>
                     {{ _('Today') }}
                 </a>
-                <a href="/user/profile">
+                <a href="/user/profile" hx-get="/user/profile" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -231,10 +230,16 @@
                             link.removeAttribute('aria-current');
                         }
                     });
+                    // Sync header title from partial content (persistent shell)
+                    var titled = document.querySelector('#page-content [data-page-title]');
+                    var headerTitle = document.getElementById('header-title');
+                    if (titled && headerTitle) headerTitle.textContent = titled.dataset.pageTitle;
                 }
+                window.__gymeSetActiveDock = setActiveDock;
                 setActiveDock();
                 document.addEventListener('htmx:afterSettle', setActiveDock);
                 document.addEventListener('htmx:afterSwap', setActiveDock);
+                document.addEventListener('htmx:pushedIntoHistory', setActiveDock);
             })();
         </script>
     {% endif %}
