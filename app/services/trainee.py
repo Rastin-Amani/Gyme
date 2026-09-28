@@ -78,9 +78,9 @@ def list_trainees(
             trainee_ids = [p.trainee for p in plans if hasattr(p, "trainee") and p.trainee]
             if trainee_ids:
                 # Escape each id
-                trainee_ids_str = " || ".join(
-                    [f'id="{pb_escape(tid)}"' for tid in trainee_ids[:200]]
-                )
+                # ponytail: the OR filter grows with the coach's roster; use a
+                # PocketBase back-relation filter if this becomes too long.
+                trainee_ids_str = " || ".join(f'id="{pb_escape(tid)}"' for tid in trainee_ids)
                 filter_str = (
                     f"({filter_str}) && ({trainee_ids_str})" if filter_str else f"{trainee_ids_str}"
                 )
