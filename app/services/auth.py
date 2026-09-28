@@ -1,9 +1,29 @@
+import time
+from collections import defaultdict
+
 from app.pb import get_pb
 from fastapi import Request
 from structlog import get_logger
 from app.i18n import _
 
 logger = get_logger(__name__)
+
+# ponytail: process-local rate limits; use shared storage when running multiple workers.
+_login_attempts = defaultdict(list)
+LOGIN_MAX_ATTEMPTS = 5
+LOGIN_WINDOW_SEC = 300
+
+
+def is_login_rate_limited(key: str) -> bool:
+    now = time.time()
+    _login_attempts[key] = [
+        stamp for stamp in _login_attempts[key] if now - stamp < LOGIN_WINDOW_SEC
+    ]
+    return len(_login_attempts[key]) >= LOGIN_MAX_ATTEMPTS
+
+
+def record_login_attempt(key: str):
+    _login_attempts[key].append(time.time())
 
 
 def login_user(identity: str, password: str, tenant: str, pb=None):

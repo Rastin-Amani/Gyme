@@ -5,20 +5,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
-from app.routes import auth
-from .routes import dashboard
-from .routes import trainee
+from app.routes import api
 from .routes import debug
-from .routes import plan
-from .routes import item
-from .routes import coach
-from app.routes import progress_logs
-from .routes import profile
-from .routes.user import dashboard as user_dashboard
-from .routes.user import profile as user_profile
-from .routes.user import plan as user_plan
 from .routes import pwa
-from .templates import templates
+from .routes import dashboard, trainee, plan, item, coach, profile
+from app.routes import auth, progress_logs
+from app.routes.user import dashboard as user_dashboard
+from app.routes.user import profile as user_profile
+from app.routes.user import plan as user_plan
+from app.templates import templates
 
 # logging config
 try:
@@ -46,6 +41,9 @@ app = FastAPI(
     # Security: hide server header via docs? Starlette adds server header by default; we remove later via middleware
 )
 
+APP_VERSION = "1.0.0"
+templates.env.globals["app_version"] = APP_VERSION
+
 # Trusted hosts & proxy headers are handled in TenantMiddleware + uvicorn proxy_headers; add explicit trusted hosts if configured
 allowed_hosts_env = os.getenv("ALLOWED_HOSTS", "")
 if allowed_hosts_env:
@@ -64,9 +62,6 @@ else:
             "ALLOWED_HOSTS not set in production - relying on tenant host validation only"
         )
 
-APP_VERSION = "1.0.0"
-templates.env.globals["app_version"] = APP_VERSION
-
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
@@ -77,7 +72,6 @@ app.add_middleware(TenantMiddleware)
 app.include_router(dashboard.router)
 if not IS_PROD:
     app.include_router(debug.router)
-    # Debug diagnostics are never exposed in production
     dashboard.router.add_api_route(
         "/dashboard/debug-coach-stats",
         dashboard.debug_coach_stats,
@@ -94,16 +88,13 @@ app.include_router(profile.router)
 app.include_router(user_dashboard.router)
 app.include_router(user_profile.router)
 app.include_router(user_plan.router)
+app.include_router(api.router)
 app.include_router(pwa.router)
 
 
 @app.get("/locale/{code}", include_in_schema=False)
 def switch_locale(code: str, next: str = "/"):
-    """Persist an explicit language choice (allowlisted) and return to the page.
-
-    GET with a cookie side effect on purpose: a UI preference, not a data
-    mutation — keeps the switcher plain links (keyboard accessible, no JS).
-    """
+    """Persist an allowlisted language choice and safely return to the app."""
     if code not in ENABLED_LOCALES:
         return JSONResponse({"error": {"code": "unsupported_locale"}}, status_code=404)
     next_url = next

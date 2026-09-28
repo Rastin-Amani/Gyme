@@ -1,38 +1,38 @@
 import time
 import uuid
 import os
+import ipaddress
 from urllib.parse import urlparse
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.concurrency import run_in_threadpool
 from fastapi import Request
-from fastapi.responses import RedirectResponse, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from structlog import get_logger
 
 from app.services.tenants import get_tenant_by_domain
 from app.pb import get_pb
 from app.logging_config import bind_request_context, clear_request_context
 from app.security import is_valid_host
-from app.i18n import LOCALE_COOKIE, _, set_request_locale
+from app.i18n import LOCALE_COOKIE, set_request_locale
 
-# 🟢 1. Define routes that anyone can access without a token.
-# Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
+# Public FastAPI API and infrastructure routes; the browser UI is served by SvelteKit.
 PUBLIC_PATHS = [
     "/login",
     "/logout",
-    "/static",  # Required so your CSS/JS loads on the login page!
-    "/manifest.json",  # Required for your PWA
-    "/sw.js",  # Required for offline caching
+    "/static",
+    "/docs",
+    "/openapi.json",
+    "/manifest.json",
     "/favicon.ico",
-    "/locale",  # language switcher (cookie + redirect)
+    "/locale",
+    "/api/v1/auth/login",
+    "/api/v1/auth/logout",
+    "/api/v1/tenant/branding",
+    "/api/v1/locale",
 ]
 
 IS_PROD = os.getenv("ENV", "dev").lower() == "production"
-
-CSRF_EXEMPT_PATHS = [
-    "/login",
-    "/logout",
-]
 
 logger = get_logger(__name__)
 
@@ -51,9 +51,59 @@ def _load_auth(pb, token: str):
 
 def _host_matches(header_value: str, host_header: str) -> bool:
     try:
-        return (urlparse(header_value).hostname or "").lower() == host_header
+        parsed = urlparse(header_value)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.username:
+            return False
+        return parsed.netloc.lower().rstrip(".") == host_header.lower().rstrip(".")
     except Exception:
         return False
+
+
+def _is_trusted_proxy(request: Request) -> bool:
+    """Trust forwarded host/proto only when the immediate peer is configured."""
+    peer = getattr(request.client, "host", "") if request.client else ""
+    try:
+        address = ipaddress.ip_address(peer)
+    except ValueError:
+        return False
+    for entry in os.getenv("TRUSTED_PROXIES", "127.0.0.1,::1").split(","):
+        try:
+            if address in ipaddress.ip_network(entry.strip(), strict=False):
+                return True
+        except ValueError:
+            continue
+    return False
+
+
+def _client_ip(request: Request, trusted_proxy: bool) -> str:
+    if trusted_proxy:
+        forwarded = request.headers.get("x-real-client-ip", "").strip()
+        try:
+            return str(ipaddress.ip_address(forwarded))
+        except ValueError:
+            pass
+    return getattr(request.client, "host", "unknown") if request.client else "unknown"
+
+
+def _api_error(request: Request, status_code: int, detail: str):
+    response = JSONResponse(status_code=status_code, content={"detail": detail})
+    response.headers.update(
+        {
+            "X-Content-Type-Options": "nosniff",
+            "X-Frame-Options": "DENY",
+            "Referrer-Policy": "strict-origin-when-cross-origin",
+            "Cache-Control": "no-store, private",
+        }
+    )
+    if (
+        request.url.scheme == "https"
+        or request.headers.get("x-forwarded-proto") == "https"
+        or IS_PROD
+    ):
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=63072000; includeSubDomains; preload"
+        )
+    return response
 
 
 class TenantMiddleware(BaseHTTPMiddleware):
@@ -73,9 +123,15 @@ class TenantMiddleware(BaseHTTPMiddleware):
         request.state.req_id = req_id
 
         # ---- Tenant detection (with Host validation) ----
-        # Use X-Forwarded-Host when behind trusted proxy, fallback to Host
-        raw_host = request.headers.get("x-forwarded-host") or request.headers.get("host", "")
-        host = raw_host.split(":")[0].strip().lower()
+        trusted_proxy = _is_trusted_proxy(request)
+        request.state.client_ip = _client_ip(request, trusted_proxy)
+        # Forwarded host/proto are attacker-controlled unless the direct peer is trusted.
+        raw_host = (
+            request.headers.get("x-forwarded-host", "").split(",", 1)[0].strip()
+            if trusted_proxy and request.headers.get("x-forwarded-host")
+            else request.headers.get("host", "")
+        )
+        host = (urlparse("//" + raw_host).hostname or "").strip().lower()
         # Validate host to prevent header injection
         if not is_valid_host(host):
             # Do not attempt tenant lookup for clearly invalid hosts
@@ -94,6 +150,8 @@ class TenantMiddleware(BaseHTTPMiddleware):
         # Bind request context for all logs in this request
         bind_request_context(req_id=req_id, tenant_id=tenant_id)
 
+        is_api = path == "/api/v1" or path.startswith("/api/v1/")
+
         # ---- Auth detection ----
         pb = get_pb()
         request.state.pb = pb
@@ -103,14 +161,14 @@ class TenantMiddleware(BaseHTTPMiddleware):
         is_authenticated = False
         token = request.cookies.get("pb_auth")
 
-        # Only spend the PB auth roundtrip where auth state is actually used:
-        # private routes, "/" (redirect decision) and "/login" (redirect-if-authed).
-        # Static assets / manifest / sw.js / logout never read request.state.user.
-        needs_auth = (
-            not (path == "/" or any(path.startswith(p) for p in PUBLIC_PATHS))
-            or path == "/"
-            or path == "/login"
-        )
+        is_public = any(path == p or path.startswith(p + "/") for p in PUBLIC_PATHS)
+        needs_auth = not is_public or path in {
+            "/",
+            "/login",
+            "/logout",
+            "/api/v1/auth/login",
+            "/api/v1/auth/logout",
+        }
 
         if token and needs_auth:
             # Basic token hygiene: limit length to prevent DoS on auth_refresh
@@ -120,6 +178,8 @@ class TenantMiddleware(BaseHTTPMiddleware):
             else:
                 try:
                     user = await run_in_threadpool(_load_auth, pb, token)
+                    if tenant_id and str(getattr(user, "tenant", "")) != str(tenant_id):
+                        raise ValueError("Authenticated user belongs to another tenant")
                     request.state.user = user
                     request.state.role = getattr(user, "role", "trainee")
                     is_authenticated = True
@@ -132,78 +192,38 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
         # ---- CSRF defense for state-changing authenticated requests ----
         method = request.method
-        if is_authenticated and method in ("POST", "PUT", "PATCH", "DELETE"):
-            is_exempt = any(path == p or path.startswith(p) for p in CSRF_EXEMPT_PATHS)
-            if not is_exempt:
-                # Defense 1: custom header (HTMX sends HX-Request, fetch callers must send X-Requested-With)
-                has_custom_header = (
-                    request.headers.get("hx-request") == "true"
-                    or request.headers.get("x-requested-with") == "XMLHttpRequest"
-                    or request.headers.get("hx-boosted") is not None
+        csrf_required = is_authenticated or path == "/api/v1/auth/login"
+        if csrf_required and method in ("POST", "PUT", "PATCH", "DELETE"):
+            origin = request.headers.get("origin", "")
+            referer = request.headers.get("referer", "")
+            external_host = raw_host.lower()
+            scheme = (
+                request.headers.get("x-forwarded-proto", "").split(",", 1)[0].strip().lower()
+                if trusted_proxy
+                else request.url.scheme
+            )
+            if scheme not in {"http", "https"}:
+                scheme = request.url.scheme
+            source = origin or referer
+            same_origin = bool(
+                source
+                and _host_matches(source, external_host)
+                and urlparse(source).scheme == scheme
+            )
+            # Only the trusted SvelteKit BFF may omit browser Origin/Referer.
+            bff_request = trusted_proxy and is_api and not origin and not referer
+            if not same_origin and not bff_request:
+                logger.warning(
+                    "csrf_blocked",
+                    path=path,
+                    method=method,
+                    origin=origin,
+                    referer=referer,
+                    host=external_host,
                 )
-                # Defense 2: Origin / Referer must match Host when present
-                origin = request.headers.get("origin", "")
-                referer = request.headers.get("referer", "")
-                host_header = request.headers.get("host", "").split(":")[0].lower()
-                origin_ok = True
-                referer_ok = True
-                if origin:
-                    origin_ok = _host_matches(origin, host_header)
-                elif referer:
-                    referer_ok = _host_matches(referer, host_header)
-                # Block if neither custom header nor valid origin/referer
-                # Allow if either custom header present OR origin/referer matches
-                if not has_custom_header and not (origin_ok and referer_ok):
-                    # If both origin and referer missing and no custom header, treat as potential CSRF
-                    # Still allow same-origin form POST without HX header if Origin matches Host (browser sends Origin for POST)
-                    # If browser didn't send Origin/Referer, we require custom header
-                    if not origin and not referer and not has_custom_header:
-                        logger.warning("csrf_blocked_missing_headers", path=path, method=method)
-                        # For HTMX requests, return toast error; for normal, 403
-                        if request.headers.get("hx-request"):
-                            from fastapi.responses import HTMLResponse
-                            import json
-
-                            headers = {
-                                "HX-Trigger": json.dumps(
-                                    {
-                                        "show-toast": {
-                                            "message": _("Invalid request (CSRF)"),
-                                            "type": "error",
-                                        }
-                                    }
-                                )
-                            }
-                            return HTMLResponse(content="", status_code=403, headers=headers)
-                        return JSONResponse(
-                            status_code=403, content={"detail": "CSRF validation failed"}
-                        )
-                if not origin_ok or not referer_ok:
-                    logger.warning(
-                        "csrf_blocked_origin_mismatch",
-                        path=path,
-                        origin=origin,
-                        referer=referer,
-                        host=host_header,
-                    )
-                    if request.headers.get("hx-request"):
-                        from fastapi.responses import HTMLResponse
-                        import json
-
-                        headers = {
-                            "HX-Trigger": json.dumps(
-                                {
-                                    "show-toast": {
-                                        "message": _("Invalid request (CSRF)"),
-                                        "type": "error",
-                                    }
-                                }
-                            )
-                        }
-                        return HTMLResponse(content="", status_code=403, headers=headers)
-                    return JSONResponse(
-                        status_code=403, content={"detail": "CSRF validation failed"}
-                    )
+                if is_api:
+                    return _api_error(request, 403, "CSRF validation failed")
+                return HTMLResponse("Forbidden", status_code=403)
 
         # ---- 🟢 2. The Global Redirect Logic ----
         # The marketing site lives outside this app; "/" always points into the app.
@@ -213,26 +233,17 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 status_code=303,
             )
 
-        # Explicitly allow the exact public paths, THEN check the subfolders
-        is_public = any(path.startswith(p) for p in PUBLIC_PATHS)
-
         # Unknown host / unresolved tenant on a private route: never let the
         # request reach handlers that dereference request.state.tenant.id.
         if tenant is None and not is_public and path != "/":
-            if request.headers.get("hx-request") == "true":
-                resp = HTMLResponse(content="", status_code=401)
-                resp.headers["HX-Redirect"] = "/login"
-                return resp
+            if is_api:
+                return _api_error(request, 404, "Tenant not found")
             return RedirectResponse(url="/login", status_code=303)
 
         # If they aren't logged in AND they are trying to access a private route
-        if not is_authenticated and not is_public:
-            # 303 (See Other) is the standard for redirecting state changes safely
-            if request.headers.get("hx-request") == "true":
-                # For HTMX, instruct client to redirect via header rather than 303 HTML
-                resp = HTMLResponse(content="", status_code=401)
-                resp.headers["HX-Redirect"] = "/login"
-                return resp
+        if not is_authenticated and not is_public and path != "/":
+            if is_api:
+                return _api_error(request, 401, "Authentication required")
             return RedirectResponse(url="/login", status_code=303)
 
         # ---- Request lifecycle log ----
@@ -287,11 +298,10 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 )
         except Exception:
             pass
-        # Minimal CSP that allows current stack: HTMX, Alpine, Tailwind CDN not needed but allow self + inline styles/scripts hashed? Keep permissive but block object-src
-        # Current app uses inline scripts for toasts etc., so unsafe-inline required temporarily. Harden gradually via nonces.
+        # SvelteKit hydration uses inline scripts; no legacy external frontend scripts are allowed.
         csp = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; "
+            "script-src 'self' 'unsafe-inline'; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "img-src 'self' data: https: blob:; "
             "font-src 'self' data: https:; "
