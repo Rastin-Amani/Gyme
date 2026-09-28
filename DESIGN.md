@@ -37,6 +37,7 @@ Calm premium gym SaaS. Paper canvas, deep pine actions, warm stone text. Replace
 - `.ledger-row`: hairline dividers, hover bg canvas, `.ledger-go` chevron slides +4px and turns pine.
 - `.avatar-ring`: pine-wash circle, 1px ring, status dot (success/fog) with paper outline.
 - Header: sticky top, paper/88 blur, 1px ink/12% bottom hairline, min-height 56px.
+- Shell: fixed 1140px max (`app-shell`), 16/24/32px gutters; desktop sidebar 240px + content, mobile bottom dock.
 - Dock: fixed bottom, safe-area padding, 4 items max (owner/coach) / 3 (trainee), active = ink 700 + pine dot.
 - Buttons: btn-primary pine, arrow nudges +3px on hover; loading state keeps width.
 - Tabs (Today): segmented rail (canvas, 1px hairline, 16px) with pine active pill via Alpine `:class` only — no JS change.
