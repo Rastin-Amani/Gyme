@@ -1,16 +1,16 @@
 <div class="w-full">
     {% if coach_stats|length == 0 %}
-        <div class="card border-2 border-dashed border-base-content/30 bg-base-100 rounded-[2.5rem] p-8 text-center">
+        <div class="card border border-dashed border-base-300 bg-base-100 rounded-2xl p-8 text-center">
             <span class="text-sm text-fog font-medium">{{ _('No coaches found.') }}</span>
         </div>
     {% else %}
         {% for coach in coach_stats %}
-            <div class="item-card card border-2 border-base-content bg-base-100 rounded-[2rem] mb-3 overflow-hidden">
+            <div class="item-card card border border-base-300 bg-base-100 rounded-2xl mb-3 overflow-hidden">
                 <div class="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
                     <span class="font-bold text-base truncate">{{ coach.name }}</span>
-                    <span class="seal shrink-0">{{ coach.active_plans }} {{ _('Plans') }}</span>
+                    <span class="badge badge-soft badge-secondary shrink-0 text-xs">{{ coach.active_plans }} {{ _('Plans') }}</span>
                 </div>
-                <div class="grid grid-cols-3 {% if coach.steroid_count > 0 %}grid-cols-4{% endif %} border-t-2 border-base-content/10 divide-x divide-base-content/10">
+                <div class="grid grid-cols-3 {% if coach.steroid_count > 0 %}grid-cols-4{% endif %} border-t border-base-300 divide-x divide-base-300">
                     <div class="py-3.5 text-center">
                         <div class="font-display text-3xl font-normal" data-count-up="{{ coach.trainee_count }}">{{ coach.trainee_count }}</div>
                         <div class="text-[0.7rem] font-semibold text-fog mt-0.5">{{ _('Trainees') }}</div>
@@ -35,7 +35,7 @@
 
         <!-- Footer summary -->
         <div
-            class="rounded-full px-5 py-2.5 bg-neutral text-neutral-content flex justify-between text-xs font-semibold"
+            class="rounded-xl px-5 py-2.5 bg-neutral text-neutral-content flex justify-between text-xs font-semibold"
         >
             <span>{{ coach_stats|length }} {{ _('Coach') }}</span>
             <span>{{ coach_stats|map(attribute='trainee_count')|sum }} {{ _('Trainee') }}</span>

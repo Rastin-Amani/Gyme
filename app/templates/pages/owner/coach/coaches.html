@@ -6,24 +6,24 @@
             <h1 class="font-display font-normal text-3xl leading-tight">{{ _('Coaches') }}</h1>
             <p class="text-sm text-fog mt-1">{{ _('Manage registered coaches') }}</p>
         </div>
-        <a href="/coaches/new" class="btn btn-primary border-2 border-base-content shrink-0">{{ _('New coach') }}</a>
+        <a href="/coaches/new" class="btn btn-primary border border-base-300 shrink-0">{{ _('New coach') }}</a>
     </header>
 
     <div id="coaches-table-container">
-        <div class="card bg-base-100 border-2 border-base-content rounded-[2.5rem]">
+        <div class="card bg-base-100 border border-base-300 rounded-2xl">
             <div class="card-body p-0">
                 {% if coaches and coaches|length > 0 %}
-                <ul class="divide-y divide-base-content/15">
+                <ul class="divide-y divide-base-300">
                     {% for coach in coaches %}
                     <li class="flex items-center gap-3 px-4 py-3 active:bg-base-200">
-                        <div class="w-11 h-11 rounded-full bg-lavender-whisper border-2 border-base-content flex items-center justify-center text-sm font-semibold text-vast-ink shrink-0">
+                        <div class="w-11 h-11 rounded-full bg-lavender-whisper border border-base-300 flex items-center justify-center text-sm font-semibold text-vast-ink shrink-0">
                             {{ coach.first_name[0] if coach.first_name else '?' }}
                         </div>
                         <div class="min-w-0 flex-1">
                             <span class="font-semibold text-sm block truncate">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</span>
                             <span class="text-xs text-fog block truncate">{{ coach.email or '' }}</span>
                         </div>
-                        <a href="/coaches/{{ coach.id }}" class="btn btn-sm btn-square border-2 border-base-content" aria-label="{{ _('View coach') }}">
+                        <a href="/coaches/{{ coach.id }}" class="btn btn-sm btn-square border border-base-300" aria-label="{{ _('View coach') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-5 w-5 opacity-40">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
@@ -32,7 +32,7 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="bg-base-100 rounded-[2.5rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
+                <div class="bg-base-100 rounded-2xl p-10 max-w-md mx-auto border border-dashed border-base-300 text-center my-8">
                     <span class="status status-secondary animate-bounce"></span>
                     <p class="text-sm text-fog font-medium mt-2">{{ _("You haven't added any coaches yet!") }}</p>
                 </div>

@@ -1,9 +1,9 @@
 <dialog id="delete-confirmation-modal" class="modal modal-bottom sm:modal-middle modal-open" hx-boost="false">
-    <div class="modal-box bg-base-100 border-2 border-base-content">
+    <div class="modal-box bg-base-100 border border-base-300">
         <h3 class="font-display font-normal text-2xl text-error mb-2">{{ title }}</h3>
         <p class="py-4">{{ _('Are you sure? This action cannot be undone.') }}</p>
         <div class="modal-action flex justify-end gap-3">
-            <button type="button" class="btn btn-ghost border-2 border-base-content/20" onclick="this.closest('dialog').remove()">
+            <button type="button" class="btn btn-ghost border border-base-300" onclick="this.closest('dialog').remove()">
                 {{ _('Cancel') }}
             </button>
             <form
@@ -13,7 +13,7 @@
                 hx-boost="false"
                 hx-on::after-request="this.closest('dialog').remove()"
             >
-                <button type="submit" class="btn btn-error border-2 border-base-content/20" hx-disabled-elt="this">
+                <button type="submit" class="btn btn-error border border-base-300" hx-disabled-elt="this">
                     {{ _('Delete') }}
                 </button>
             </form>

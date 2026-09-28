@@ -2,36 +2,13 @@
 
 {% block dashboard_content %}
     <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24" x-data="{ tab: '{{ active_tab }}' }" data-page-title="{{ title }}">
-        <div class="flex flex-col gap-4 pb-6">
-            <div class="halftone halftone-drift border-2 border-base-content rounded-[2.5rem] p-6 text-chalk relative overflow-hidden">
-                <p class="text-chalk/70 text-xs font-bold tracking-widest">{{ _('Today') }}</p>
-                <h1 class="font-display font-normal text-3xl md:text-4xl leading-tight mt-1">
+        <div class="page-head">
+            <div>
+                <h1>
                     {{ _('Welcome back') }},
-                    <span class="text-sulfur">{{ user.first_name if user else _('Champion') }}</span>
+                    {{ user.first_name if user else _('Champion') }}
                 </h1>
-                <div class="flex items-center gap-2 mt-3 text-chalk/80 text-xs font-medium">
-                    <span class="sparks" aria-hidden="true"><i></i><i></i><i></i></span>
-                    {{ _('Tap Done when the day is complete.') }}
-                </div>
-            </div>
-            <div role="alert" class="alert alert-warning alert-soft border-2 border-base-content rounded-[1.5rem]">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="stroke-current shrink-0 h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                </svg>
-                <span class="text-sm">
-                    {{ _('For the app to work correctly, make sure to mark "Done" at the end of each day!') }}
-                </span>
+                <p class="page-sub">{{ _('Tap Done when the day is complete.') }}</p>
             </div>
         </div>
 
@@ -49,7 +26,7 @@
             <div
                 role="tablist"
                 aria-label="{{ _('Plan types') }}"
-                class="today-rail tabs bg-base-200 border-2 border-base-content rounded-full p-1.5 justify-between !overflow-x-auto !flex !flex-nowrap gap-1"
+                class="today-rail tabs bg-base-200 border border-base-300 rounded-2xl p-1.5 justify-between !overflow-x-auto !flex !flex-nowrap gap-1"
             >
                 {% if plans['diet'] %}
                     <a
@@ -100,7 +77,7 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             hx-swap="none"
                             hx-disabled-elt="this"
-                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn min-h-12 text-base font-bold"
+                            class="btn btn-primary w-full mb-4 js-done-btn min-h-12 text-base font-bold"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
@@ -109,10 +86,10 @@
                             {% set category_items = p['items'] | selectattr('meal_name', 'equalto', category) | list %}
 
                             {% if category_items %}
-                                <div class="flex items-center gap-2 mt-6 mb-3"><span class="seal">
+                                <div class="flex items-center gap-2 mt-6 mb-3"><span class="section-label">
                                     {{ _(category) }}</span></div>
                                 {% for item in category_items %}
-                                    <div class="item-card card bg-base-100 border-2 border-base-content/25 rounded-[1.5rem] mb-3">
+                                    <div class="item-card card bg-base-100 border border-base-300 rounded-xl mb-3">
                                         <div
                                             class="card-body p-3 flex-row items-center justify-between"
                                         >
@@ -128,7 +105,7 @@
                                             </div>
                                             {% if item.quantity %}
                                                 <div
-                                                    class="badge badge-primary badge-sm font-bold border-2 border-base-content rounded-full"
+                                                    class="badge badge-primary badge-sm font-bold border border-base-300"
                                                 >
                                                     {{ item.quantity }}
                                                 </div>
@@ -141,11 +118,11 @@
 
                         {% set other_items = p['items'] | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
-                            <div class="flex items-center gap-2 mt-6 mb-3"><span class="seal">
+                            <div class="flex items-center gap-2 mt-6 mb-3"><span class="section-label">
                                 {{ _('Other') }}
-                            </div>
+                            </span></div>
                             {% for item in other_items %}
-                                <div class="item-card card bg-base-100 border-2 border-base-content/25 rounded-[1.5rem] mb-3">
+                                <div class="item-card card bg-base-100 border border-base-300 rounded-xl mb-3">
                                     <div
                                         class="card-body p-3 flex-row items-center justify-between"
                                     >
@@ -158,7 +135,7 @@
                                             {% endif %}
                                         </div>
                                         {% if item.quantity %}
-                                            <div class="badge badge-ghost badge-sm font-semibold border-2 border-base-content/25 rounded-full">
+                                            <div class="badge badge-ghost badge-sm font-semibold border border-base-300">
                                                 {{ item.quantity }}
                                             </div>
                                         {% endif %}
@@ -169,12 +146,12 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all diet plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                         {{ _('No items yet') }}
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                <div class="text-center py-10 text-fog card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                     {{ _('No diet plan') }}
                 </div>
             {% endif %}
@@ -189,7 +166,7 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             hx-swap="none"
                             hx-disabled-elt="this"
-                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn min-h-12 text-base font-bold"
+                            class="btn btn-primary w-full mb-4 js-done-btn min-h-12 text-base font-bold"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
@@ -202,10 +179,10 @@
                             {% set category_items = p['items'] | selectattr('category', 'equalto', category) | list %}
 
                             {% if category_items %}
-                                <div class="flex items-center gap-2 mt-6 mb-3"><span class="seal">
+                                <div class="flex items-center gap-2 mt-6 mb-3"><span class="section-label">
                                     {{ _(category) }}</span></div>
                                 {% for item in category_items %}
-                                    <div class="item-card card bg-base-100 border-2 border-base-content/25 rounded-[1.5rem] mb-3">
+                                    <div class="item-card card bg-base-100 border border-base-300 rounded-xl mb-3">
                                         <div class="card-body p-4 text-left justify-between gap-4">
                                             <div class="flex flex-col gap-2">
                                                 <div class="flex justify-between">
@@ -216,7 +193,7 @@
                                                 class="flex gap-3 justify-start items-center flex-wrap"
                                             >
                                                 {% if item.sets and item.reps %}
-                                                    <div class="badge badge-neutral badge-sm font-semibold border-2 border-base-content rounded-full justify-end">
+                                                    <div class="badge badge-neutral badge-sm font-semibold border border-base-300 justify-end">
                                                         <span class="font-bold">
                                                             {{ item.sets }}
                                                         </span>
@@ -229,21 +206,21 @@
                                                 {% endif %}
                                                 {% if item.weight %}
                                                     <div
-                                                        class="badge badge-primary badge-sm font-bold border-2 border-base-content rounded-full"
+                                                        class="badge badge-primary badge-sm font-bold border border-base-300"
                                                     >
                                                         {{ item.weight }} {{ _('kg') }}
                                                     </div>
                                                 {% endif %}
                                                 {% if item.rest_seconds %}
                                                     <div
-                                                        class="badge badge-primary badge-sm font-bold border-2 border-base-content rounded-full"
+                                                        class="badge badge-primary badge-sm font-bold border border-base-300"
                                                     >
                                                         {{ item.rest_seconds }} {{ _('sec') }}
                                                     </div>
                                                 {% endif %}
                                             </div>
                                             {% if item.notes %}
-                                                <div class="bg-lavender-whisper/30 border-2 border-base-content/15 w-full card rounded-[1rem]">
+                                                <div class="bg-lavender-whisper/30 border border-base-300 w-full card rounded-xl">
                                                     <span
                                                         class="text-xs text-base-content/80 py-4 px-2"
                                                     >
@@ -260,11 +237,11 @@
                         {# Catch-all for training items with missing or custom categories #}
                         {% set other_training_items = p['items'] | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
-                            <div class="flex items-center gap-2 mt-6 mb-3"><span class="seal">
+                            <div class="flex items-center gap-2 mt-6 mb-3"><span class="section-label">
                                 {{ _('Other') }}
-                            </div>
+                            </span></div>
                             {% for item in other_training_items %}
-                                <div class="item-card card bg-base-100 border-2 border-base-content/25 rounded-[1.5rem] mb-3">
+                                <div class="item-card card bg-base-100 border border-base-300 rounded-xl mb-3">
                                     <div class="card-body p-4 text-left justify-between gap-4">
                                         <div class="flex flex-col gap-2">
                                             <div class="flex justify-between">
@@ -275,7 +252,7 @@
                                             class="flex gap-3 justify-start items-center flex-wrap"
                                         >
                                             {% if item.sets and item.reps %}
-                                                <div class="badge badge-neutral badge-sm font-semibold border-2 border-base-content rounded-full justify-end">
+                                                <div class="badge badge-neutral badge-sm font-semibold border border-base-300 justify-end">
                                                     <span class="font-bold">{{ item.sets }}</span>
                                                     {{ _('Sets') }} ×
                                                     <span class="font-bold">{{ item.reps }}</span>
@@ -284,21 +261,21 @@
                                             {% endif %}
                                             {% if item.weight %}
                                                 <div
-                                                    class="badge badge-primary badge-sm font-bold border-2 border-base-content rounded-full"
+                                                    class="badge badge-primary badge-sm font-bold border border-base-300"
                                                 >
                                                     {{ item.weight }} {{ _('kg') }}
                                                 </div>
                                             {% endif %}
                                             {% if item.rest_seconds %}
                                                 <div
-                                                    class="badge badge-primary badge-sm font-bold border-2 border-base-content rounded-full"
+                                                    class="badge badge-primary badge-sm font-bold border border-base-300"
                                                 >
                                                     {{ item.rest_seconds }} {{ _('sec') }}
                                                 </div>
                                             {% endif %}
                                         </div>
                                         {% if item.notes %}
-                                            <div class="bg-lavender-whisper/30 border-2 border-base-content/15 w-full card rounded-[1rem]">
+                                            <div class="bg-lavender-whisper/30 border border-base-300 w-full card rounded-xl">
                                                 <span
                                                     class="text-xs text-base-content/80 py-4 px-2"
                                                 >
@@ -313,12 +290,12 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all training plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                         {{ _('No items yet') }}
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                <div class="text-center py-10 text-fog card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                     {{ _('No training plan') }}
                 </div>
             {% endif %}
@@ -333,13 +310,13 @@
                             hx-post="/user/plans/{{ p['id'] }}/done"
                             hx-swap="none"
                             hx-disabled-elt="this"
-                            class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn min-h-12 text-base font-bold"
+                            class="btn btn-primary w-full mb-4 js-done-btn min-h-12 text-base font-bold"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
                         </button>
                         {% for item in p['items'] %}
-                            <div class="item-card card bg-base-100 border-2 border-base-content/25 rounded-[1.5rem]">
+                            <div class="item-card card bg-base-100 border border-base-300 rounded-xl">
                                 <div class="card-body">
                                     <span class="font-semibold">{{ item.name }}</span>
                                 </div>
@@ -348,12 +325,12 @@
                     </div>
                 {% else %}
                     {# This triggers ONLY if all steroid plans are empty #}
-                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                    <div class="text-center py-6 text-fog text-sm card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                         {{ _('No items yet') }}
                     </div>
                 {% endfor %}
             {% else %}
-                <div class="text-center py-10 text-fog card bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem]">
+                <div class="text-center py-10 text-fog card bg-base-100 border border-dashed border-base-300 rounded-2xl">
                     {{ _('No steroid plan') }}
                 </div>
             {% endif %}

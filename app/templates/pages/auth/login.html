@@ -7,13 +7,13 @@
         class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral p-6"
     >
         <div
-            class="bg-base-100 rounded-[2.5rem] w-full max-w-sm p-6 pb-8 border-2 border-base-content transform transition-all duration-300 animate-slide-up"
+            class="bg-base-100 rounded-2xl w-full max-w-sm p-6 pb-8 border border-base-300 transform transition-all duration-300 animate-slide-up"
         >
             <div class="flex flex-col items-center text-center gap-3">
                 <img
                     src="/apple-touch-icon-180x180.png"
                     alt=""
-                    class="w-20 h-20 rounded-box border-2 border-base-content"
+                    class="w-20 h-20 rounded-box border border-base-300"
                     onerror="this.style.display='none'"
                 />
                 <div>
@@ -96,56 +96,29 @@
     <div
         class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8"
     >
-        <!-- Caldera hero: halftone dot motif (violet → ember) with a chalk
-             display title; the form card overlaps its base. -->
+        <!-- Login card -->
         <div
-            class="halftone halftone-drift w-full max-w-sm rounded-[2.5rem] border-2 border-base-content p-8 pt-10 pb-24 relative overflow-hidden"
-        >
-            <div class="flex items-start gap-4">
-                {% if tenant and tenant.logo %}
-                    {% set pb_url = request.state.pb.base_url.rstrip("/") %}
-                    <div class="avatar">
-                        <div
-                            class="w-16 h-16 rounded-full border-2 border-chalk bg-chalk/90 p-1"
-                        >
-                            <img
-                                src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
-                                alt="{{ tenant.name }}"
-                                class="rounded-full object-cover"
-                            />
-                        </div>
-                    </div>
-                {% else %}
-                    <div
-                        class="w-16 h-16 rounded-[1rem] bg-ember text-obsidian border-2 border-base-content flex items-center justify-center text-3xl font-display"
-                    >
-                        {{ tenant.name[:1] if tenant else "G" }}
-                    </div>
-                {% endif %}
-            </div>
-
-            <h1
-                class="font-display text-chalk text-5xl sm:text-6xl leading-[0.95] mt-6"
-            >
-                {{ tenant.name if tenant else _("Gyme") }}
-            </h1>
-
-            <div class="mt-5">
-                <span
-                    class="badge border-0 bg-sulfur text-obsidian px-4 py-3 text-xs font-semibold rounded-full"
-                >
-                    {{ _('User panel') }}
-                </span>
-            </div>
-        </div>
-
-        <!-- Limestone form card overlapping the hero -->
-        <div
-            class="card bg-base-100 border-2 border-base-content w-full max-w-sm rounded-[2.5rem] -mt-14 z-10"
+            class="card bg-base-100 border border-base-300 w-full max-w-sm rounded-2xl"
         >
             <div class="card-body p-6 sm:p-8">
+                <div class="mb-4">
+                    {% if tenant and tenant.logo %}
+                        {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                        <img
+                            src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
+                            alt="{{ tenant.name }}"
+                            class="w-12 h-12 rounded-xl border border-base-300 object-cover"
+                        />
+                    {% else %}
+                        <div
+                            class="w-12 h-12 rounded-xl bg-primary text-primary-content flex items-center justify-center text-xl font-bold"
+                        >
+                            {{ tenant.name[:1] if tenant else "G" }}
+                        </div>
+                    {% endif %}
+                </div>
                 <h2
-                    class="font-display font-normal text-2xl leading-none text-base-content mb-5"
+                    class="font-display text-2xl leading-none text-base-content mb-5"
                 >
                     {{ _('Log in') }}
                 </h2>
@@ -243,11 +216,7 @@
                 </form>
 
                 <div class="mt-6">
-                    <div class="flex items-center justify-center gap-3" aria-hidden="true">
-                        <span class="h-px flex-1 border-t-2 border-dotted border-base-content/30"></span>
-                        <span class="sparks"><i></i><i></i><i></i></span>
-                        <span class="h-px flex-1 border-t-2 border-dotted border-base-content/30"></span>
-                    </div>
+                    <div class="h-px bg-base-300"></div>
                     <p class="text-center text-[0.7rem] font-medium text-fog mt-3">
                         {{ tenant.name if tenant else _("Gyme") }} / Gyme
                     </p>

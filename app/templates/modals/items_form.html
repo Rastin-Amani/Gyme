@@ -141,13 +141,13 @@
     </div>
 
     <div class="modal-action flex gap-3 mt-6">
-        <button type="button" class="btn btn-ghost border-2 border-base-content/20 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
+        <button type="button" class="btn btn-ghost border border-base-300 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
             {{ _('Cancel') }}
         </button>
         {% if item %}
             <button
                 type="button"
-                class="btn btn-error btn-soft border-2 border-base-content/20 flex-1"
+                class="btn btn-error btn-soft border border-base-300 flex-1"
                 hx-get="/items/{{ item.id }}/confirm-delete"
                 hx-target="#modal-container"
                 hx-swap="innerHTML"
@@ -156,7 +156,7 @@
                 {{ _('Delete') }}
             </button>
         {% endif %}
-        <button type="submit" class="btn btn-primary border-2 border-base-content flex-3" hx-disabled-elt="this">
+        <button type="submit" class="btn btn-primary border border-base-300 flex-3" hx-disabled-elt="this">
             {{ _('Update') if item else _('Add to list') }}
         </button>
     </div>

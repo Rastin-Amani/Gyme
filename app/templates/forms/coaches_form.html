@@ -57,7 +57,7 @@
         {% if coach %}
         <button
             type="button"
-            class="btn btn-error btn-soft w-full border-2 border-base-content/20"
+            class="btn btn-error btn-soft w-full border border-base-300"
             hx-get="/coaches/{{ coach.id }}/confirm-delete"
             hx-target="#modal-container"
             hx-swap="innerHTML"
@@ -67,10 +67,10 @@
         </button>
         {% endif %}
         <div class="flex justify-end gap-2">
-            <a href="/coaches" class="btn btn-ghost border-2 border-base-content/20" hx-boost="false">
+            <a href="/coaches" class="btn btn-ghost border border-base-300" hx-boost="false">
                 {{ _('Cancel') }}
             </a>
-            <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content" hx-disabled-elt="this">
+            <button type="submit" class="btn btn-primary flex-1 border border-base-300" hx-disabled-elt="this">
                 {{ _('Save changes') if coach else _('Add coach') }}
             </button>
         </div>

@@ -1,6 +1,6 @@
 {% if plans and plans|length > 0 %}
     {% for t in plans %}
-        <article class="card bg-base-100 border-2 border-base-content rounded-[2.5rem] mb-4 card-body p-5">
+        <article class="card bg-base-100 border border-base-300 rounded-2xl mb-4 card-body p-5">
             <div class="flex items-center justify-between gap-2">
                 <div class="min-w-0">
                     <h3 class="font-display font-normal text-xl leading-tight truncate">
@@ -17,7 +17,7 @@
                         | {{ t.days_per_week or '—' }} {{ _('days per week') }}
                     </p>
                 </div>
-                <a href="/plans/{{ t.id }}" class="btn btn-sm btn-ghost border-2 border-base-content/30 text-secondary shrink-0">{{ _('View') }}</a>
+                <a href="/plans/{{ t.id }}" class="btn btn-sm btn-ghost border border-base-300 text-secondary shrink-0">{{ _('View') }}</a>
             </div>
 
             {% if t.notes %}
@@ -26,7 +26,7 @@
 
             <div class="flex mt-4">
                 <button
-                    class="btn btn-s btn-primary btn-soft flex-1 border-2 border-base-content"
+                    class="btn btn-s btn-primary btn-soft flex-1 border border-base-300"
                     hx-get="/templates/{{ t.id }}/apply"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
@@ -39,12 +39,12 @@
     {% endfor %}
 {% else %}
     <div class="col-span-full">
-        <div class="bg-base-100 border-2 border-dashed border-base-content/30 rounded-[2.5rem] p-8 text-center">
+        <div class="bg-base-100 border border-dashed border-base-300 rounded-2xl p-8 text-center">
             <p class="text-sm text-fog">
                 <span class="status status-secondary ml-1"></span>
                 {{ _('No templates created yet.') }}
             </p>
-            <a href="/plans/new?template=true" class="btn btn-sm btn-primary border-2 border-base-content mt-4">
+            <a href="/plans/new?template=true" class="btn btn-sm btn-primary border border-base-300 mt-4">
                 {{ _('Create new template') }}
             </a>
         </div>

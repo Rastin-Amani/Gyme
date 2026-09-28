@@ -1,24 +1,23 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
 <div id="trainees-content" data-settle data-page-title="{{ title }}">
-    <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
+    <header class="page-head">
         <div>
             <div class="flex items-center gap-2.5 flex-wrap">
-                <h1 class="font-display font-normal text-3xl leading-tight">{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
-                {% if trainees %}<span class="seal">{{ trainees|length }}</span>{% endif %}
+                <h1>{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
+                {% if trainees %}<span class="badge badge-soft badge-secondary text-xs">{{ trainees|length }}</span>{% endif %}
             </div>
-            <p class="text-sm text-fog mt-1">{{ _('Manage registered trainees') }}</p>
+            <p class="page-sub">{{ _('Manage registered trainees') }}</p>
         </div>
-        <a href="/trainees/new" class="btn btn-primary border-2 border-base-content shrink-0 min-h-11">{{ _('New trainee') }}
+        <a href="/trainees/new" class="btn btn-primary border border-base-300 shrink-0 min-h-11">{{ _('New trainee') }}
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
         </a>
     </header>
 
-    <div class="collapse collapse-arrow border-2 border-base-content rounded-[2.5rem] mb-6 bg-base-100">
+    <div class="collapse collapse-arrow border border-base-300 rounded-2xl mb-6 bg-base-100 sticky top-14 z-30">
         <input type="checkbox" aria-label="{{ _('Search and filter') }}" />
         <div class="collapse-title font-bold text-sm flex items-center gap-2">
             {{ _('Search and filter') }}
-            <span class="sparks"><i></i><i></i><i></i></span>
         </div>
         <div class="collapse-content">
             <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
@@ -66,7 +65,7 @@
                         </select>
                     </label>
                 </div>
-                <button type="button" class="btn btn-primary btn-soft btn-block mt-2 border-2 border-base-content" onclick="clearAllFilters()">
+                <button type="button" class="btn btn-primary btn-soft btn-block mt-2 border border-base-300" onclick="clearAllFilters()">
                     {{ _('Clear filters') }}
                 </button>
             </form>
@@ -74,14 +73,14 @@
     </div>
 
     <div id="trainees-table-container">
-        <div class="card bg-base-100 border-2 border-base-content rounded-[2.5rem] overflow-hidden">
+        <div class="card bg-base-100 border border-base-300 rounded-2xl overflow-hidden">
             <div class="card-body p-0">
                 {% if trainees and trainees|length > 0 %}
-                <ul class="divide-y divide-base-content/10">
+                <ul class="divide-y divide-base-300">
                     {% for trainee in trainees %}
                     <li class="ledger-row flex items-center gap-3 px-4 py-3 min-h-[68px]">
                         {% set first = (trainee.expand['user'].first_name[0] if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name else '?') %}
-                        <div class="seal-avatar w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0" {% if trainee.status|default('active') != 'active' %}data-status="inactive"{% endif %} aria-hidden="true">
+                        <div class="avatar-ring w-11 h-11 rounded-full text-sm" {% if trainee.status|default('active') != 'active' %}data-status="inactive"{% endif %} aria-hidden="true">
                             {{ first }}
                         </div>
                         <div class="min-w-0 flex-1">
@@ -92,7 +91,7 @@
                             </span>
                             {% if trainee.expand and 'user' in trainee.expand %}<span class="text-xs text-fog block truncate">{{ trainee.expand['user'].email or '' }}</span>{% endif %}
                         </div>
-                        <a href="/trainees/{{ trainee.id }}" class="ledger-go btn btn-sm btn-square border-2 border-base-content min-h-11 min-w-11" aria-label="{{ _('View trainee') }}">
+                        <a href="/trainees/{{ trainee.id }}" class="ledger-go btn btn-ghost btn-sm btn-square min-h-11 min-w-11" aria-label="{{ _('View trainee') }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
@@ -101,13 +100,15 @@
                     {% endfor %}
                 </ul>
                 {% else %}
-                <div class="bg-base-100 rounded-[2.5rem] p-10 max-w-md mx-auto border-2 border-dashed border-base-content/30 text-center my-8">
-                    <div class="flex items-center justify-center gap-2">
-                        <span class="status status-secondary {% if not search_query %}animate-bounce{% endif %}"></span>
-                        <p class="text-sm text-fog font-medium">
-                            {{ empty_message or _("You haven't added any trainees yet!") }}
-                        </p>
-                    </div>
+                <div class="text-center py-10">
+                    <p class="text-sm text-fog font-medium">
+                        {{ empty_message or _("You haven't added any trainees yet!") }}
+                    </p>
+                    {% if not search_query %}
+                    <a href="/trainees/new" class="btn btn-primary btn-sm mt-4">{{ _('New trainee') }}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
+                    </a>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

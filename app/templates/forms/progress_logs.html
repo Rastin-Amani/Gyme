@@ -116,7 +116,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center">
                     <div class="text-xs font-semibold text-fog mb-3">{{ _('Body mass index (BMI)') }}</div>
                     <div
                         id="bmi-gauge"
@@ -128,7 +128,7 @@
                     <div id="bmi-status" class="text-xs mt-3 font-bold">-</div>
                 </div>
 
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center">
                     <div class="text-xs font-semibold text-fog mb-3">{{ _('Body fat percentage (BFP)') }}</div>
                     <div
                         id="bfp-gauge"
@@ -140,19 +140,19 @@
                     <div id="bfp-status" class="text-xs mt-3 font-bold">-</div>
                 </div>
 
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
                     <div class="text-xs font-semibold text-fog mb-2">{{ _('Lean body mass (LBM)') }}</div>
                     <div id="lbm-display" class="font-display font-normal text-2xl text-info mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
                     <div class="text-xs font-semibold text-fog mb-2">{{ _('Fat mass') }}</div>
                     <div id="fat-mass-display" class="font-display font-normal text-2xl text-warning mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
                 </div>
 
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
                     <div class="text-xs font-semibold text-fog mb-2">{{ _('Metabolism (BMR)') }}</div>
                     <div id="bmr-display" class="font-display font-normal text-2xl text-base-content mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
@@ -160,7 +160,7 @@
                     </div>
                 </div>
 
-                <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem] p-4 text-center items-center justify-center">
+                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
                     <div class="text-xs font-semibold text-fog mb-2">{{ _('Maintenance calories (TDEE)') }}</div>
                     <div id="tdee-display" class="font-display font-normal text-2xl text-success mt-2">0</div>
                     <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
@@ -201,7 +201,7 @@
                 ></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full border-2 border-base-content" hx-disabled-elt="this">{{ _('Save assessment') }}</button>
+            <button type="submit" class="btn btn-primary w-full border border-base-300" hx-disabled-elt="this">{{ _('Save assessment') }}</button>
         </form>
     </div>
 
@@ -408,7 +408,7 @@
                         const div = document.createElement('div');
                         div.className = 'relative group';
                         div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border-2 border-base-content/20" />
+                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border border-base-300" />
                             <button type="button" data-index="${index}"
                                 class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
                             >✕</button>

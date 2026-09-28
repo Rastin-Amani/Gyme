@@ -142,12 +142,12 @@
         <div class="flex flex-col justify-end gap-2 mt-6">
             <a
                 href="{{ '/plans?is_template=true' if is_template else '/plans' }}"
-                class="btn btn-ghost border-2 border-base-content/20"
+                class="btn btn-ghost border border-base-300"
                 hx-boost="false"
             >
                 {{ _('Cancel') }}
             </a>
-            <button type="submit" class="w-full btn btn-primary border-2 border-base-content" hx-disabled-elt="this">
+            <button type="submit" class="w-full btn btn-primary border border-base-300" hx-disabled-elt="this">
                 {% if plan %}
                     {{ _('Update plan') }}
                 {% elif is_template %}
@@ -159,7 +159,7 @@
             {% if plan %}
                 <button
                     type="button"
-                    class="btn btn-error btn-soft w-full border-2 border-base-content/20"
+                    class="btn btn-error btn-soft w-full border border-base-300"
                     hx-get="/plans/{{ plan.id }}/confirm-delete"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"

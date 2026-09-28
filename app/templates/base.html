@@ -375,13 +375,13 @@
             {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
                 {% set splash_bg = request.state.tenant.brand_colors.base_100 %}
             {% else %}
-                {% set splash_bg = '#e2e2df' %}  {# Caldera pumice — canvas #}
+                {% set splash_bg = '#F1F0EB' %}  {# Slate Pine — canvas #}
             {% endif %}
 
             {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
                 {% set splash_text = request.state.tenant.brand_colors.base_content %}
             {% else %}
-                {% set splash_text = '#070607' %}  {# Caldera obsidian — element text #}
+                {% set splash_text = '#1A1E1C' %}  {# Slate Pine — ink #}
             {% endif %}
 
             generateIOSSplashScreen(

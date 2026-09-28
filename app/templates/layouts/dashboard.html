@@ -29,14 +29,14 @@
 
         <div class="flex flex-auto items-center justify-end gap-3 ms-2">
             {% include "components/locale_switcher.html" %}
-            <span class="badge badge-secondary rounded-full px-3 py-2 text-xs font-bold max-w-32 truncate">
+            <span class="badge badge-secondary px-3 py-2 text-xs font-bold max-w-32 truncate">
                 {{ tenant.name if tenant else _('Gym') }}
             </span>
 
             {% if tenant and tenant.logo %}
                 {% set pb_url = request.state.pb.base_url.rstrip("/") %}
                 <div class="avatar">
-                    <div class="w-10 h-10 rounded-xl border-2 border-base-content bg-base-100">
+                    <div class="w-10 h-10 rounded-xl border border-base-300 bg-base-100">
                         <img
                             src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=100x100f"
                             alt="{{ tenant.name }}"
@@ -53,7 +53,7 @@
         <!-- Persistent Navigation -->
         <nav
             id="bottom-dock"
-            class="dock text-[0.7rem] font-medium max-w-150 mx-auto bg-base-100 border-t-2 border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-stretch min-h-16 py-1"
+            class="dock text-[0.7rem] font-medium max-w-150 mx-auto bg-base-100 border-t border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-stretch min-h-16 py-1"
         >
             {% if user and user.role in ['coach', 'owner'] %}
                 <a href="/dashboard" hx-get="/dashboard" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
@@ -89,23 +89,6 @@
                         />
                     </svg>
                     {{ _('Plans') }}
-                </a>
-                <a href="/trainees/new" hx-get="/trainees/new" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-5 mb-1 opacity-50"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 4.5v15m7.5-7.5h-15"
-                        />
-                    </svg>
-                    {{ _('Add trainee') }}
                 </a>
                 <a href="/trainees" hx-get="/trainees" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">
                     <svg

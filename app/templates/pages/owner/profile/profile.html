@@ -2,11 +2,11 @@
 {% block dashboard_content %}
     <div class="max-w-150" data-page-title="{{ title }}">
         <div
-            class="items-center justify-between border-2 border-base-content bg-base-100 p-4 mb-4 card flex rounded-[2.5rem]"
+            class="items-center justify-between border border-base-300 bg-base-100 p-4 mb-4 card flex rounded-2xl"
         >
             <a
                 href="/change-password"
-                class="btn btn-sm border-2 border-base-content"
+                class="btn btn-sm border border-base-300"
             >
                 {{ _('Change password') }}
             </a>
@@ -58,14 +58,14 @@
 
         {% if user.role == "owner" %}
             <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('Management') }}</div>
-            <div class="card bg-base-100 border-2 border-base-content/20 rounded-[1.5rem]">
+            <div class="card bg-base-100 border border-base-300 rounded-xl">
                 <div class="card-body p-4">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="font-semibold">{{ _('Coaches') }}</h3>
                             <p class="text-sm text-fog">{{ _("Manage your gym's coaches") }}</p>
                         </div>
-                        <a href="/coaches" class="btn btn-primary btn-sm border-2 border-base-content">{{ _('View') }}</a>
+                        <a href="/coaches" class="btn btn-primary btn-sm border border-base-300">{{ _('View') }}</a>
                     </div>
                 </div>
             </div>
