@@ -99,7 +99,7 @@
         <!-- Caldera hero: halftone dot motif (violet → ember) with a chalk
              display title; the form card overlaps its base. -->
         <div
-            class="halftone w-full max-w-sm rounded-[2.5rem] border-2 border-base-content p-8 pt-10 pb-24 relative overflow-hidden"
+            class="halftone halftone-drift w-full max-w-sm rounded-[2.5rem] border-2 border-base-content p-8 pt-10 pb-24 relative overflow-hidden"
         >
             <div class="flex items-start gap-4">
                 {% if tenant and tenant.logo %}
@@ -235,8 +235,9 @@
                     </div>
 
                     <div class="pt-4">
-                        <button type="submit" class="btn btn-primary w-full h-12 text-base font-semibold">
+                        <button type="submit" class="btn btn-primary w-full min-h-12 text-base font-bold">
                             {{ _('Log in') }}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
                         </button>
                     </div>
                 </form>

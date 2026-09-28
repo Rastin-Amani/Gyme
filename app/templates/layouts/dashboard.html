@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <!-- Content area that gets swapped -->
-    <header class="py-4 flex bg-base-100 items-center text-center mx-auto max-w-150">
+    <header class="app-header py-3 flex items-center text-center mx-auto max-w-150 px-2">
         <div class="flex items-center">
             <button
-                class="btn btn-ghost btn-circle btn-sm"
+                class="btn btn-ghost btn-circle btn-sm min-h-11 min-w-11"
                 aria-label="{{ _('Back to previous page') }}"
                 onclick="history.back()"
             >
@@ -25,11 +25,11 @@
             </button>
         </div>
 
-        <div class="text-sm font-medium opacity-70 ps-2" id="header-title">{{ title }}</div>
+        <div class="text-sm font-semibold ps-2 truncate" id="header-title">{{ title }}</div>
 
-        <div class="flex flex-auto items-center justify-end gap-4 ms-2">
+        <div class="flex flex-auto items-center justify-end gap-3 ms-2">
             {% include "components/locale_switcher.html" %}
-            <span class="font-bold text-base text-secondary">
+            <span class="badge badge-secondary rounded-full px-3 py-2 text-xs font-bold max-w-32 truncate">
                 {{ tenant.name if tenant else _('Gym') }}
             </span>
 
@@ -47,13 +47,13 @@
             {% endif %}
         </div>
     </header>
-    <div id="page-content" class="px-2 pt-4 pb-24">{% block dashboard_content %}{% endblock %}</div>
+    <div id="page-content" class="px-3 pt-5 pb-28">{% block dashboard_content %}{% endblock %}</div>
 
     {% if user %}
         <!-- Persistent Navigation -->
         <nav
             id="bottom-dock"
-            class="dock text-xs max-w-150 mx-auto bg-base-100 border-t-2 border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-center h-16"
+            class="dock text-[0.7rem] font-medium max-w-150 mx-auto bg-base-100 border-t-2 border-base-300 fixed bottom-0 left-0 right-0 z-50 flex justify-around items-stretch min-h-16 py-1"
         >
             {% if user and user.role in ['coach', 'owner'] %}
                 <a href="/dashboard" hx-get="/dashboard" hx-target="#page-content" hx-select="#page-content" hx-swap="innerHTML show:window:top" hx-push-url="true">

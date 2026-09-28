@@ -1,32 +1,32 @@
 <div class="w-full">
     {% if coach_stats|length == 0 %}
-        <div class="alert border-2 border-base-content/20 bg-base-200 rounded-[1.5rem]">
-            <span>{{ _('No coaches found.') }}</span>
+        <div class="card border-2 border-dashed border-base-content/30 bg-base-100 rounded-[2.5rem] p-8 text-center">
+            <span class="text-sm text-fog font-medium">{{ _('No coaches found.') }}</span>
         </div>
     {% else %}
         {% for coach in coach_stats %}
-            <div class="border-2 border-base-content/20 rounded-[1.5rem] mb-3 bg-base-100">
-                <div class="flex items-center justify-between px-4 pt-4 pb-2">
-                    <span class="font-bold text-base">{{ coach.name }}</span>
-                    <span class="badge badge-secondary badge-sm">{{ coach.active_plans }} {{ _('Plans') }}</span>
+            <div class="item-card card border-2 border-base-content bg-base-100 rounded-[2rem] mb-3 overflow-hidden">
+                <div class="flex items-center justify-between gap-3 px-5 pt-4 pb-3">
+                    <span class="font-bold text-base truncate">{{ coach.name }}</span>
+                    <span class="seal shrink-0">{{ coach.active_plans }} {{ _('Plans') }}</span>
                 </div>
-                <div class="flex gap-0 border-t border-base-content/15 mx-4">
-                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                <div class="grid grid-cols-3 {% if coach.steroid_count > 0 %}grid-cols-4{% endif %} border-t-2 border-base-content/10 divide-x divide-base-content/10">
+                    <div class="py-3.5 text-center">
                         <div class="font-display text-3xl font-normal" data-count-up="{{ coach.trainee_count }}">{{ coach.trainee_count }}</div>
-                        <div class="text-xs text-fog">👥 {{ _('Trainees') }}</div>
+                        <div class="text-[0.7rem] font-semibold text-fog mt-0.5">{{ _('Trainees') }}</div>
                     </div>
-                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                    <div class="py-3.5 text-center">
                         <div class="font-display text-3xl font-normal" data-count-up="{{ coach.diet_count }}">{{ coach.diet_count }}</div>
-                        <div class="text-xs text-fog">🍎 {{ _('Diet') }}</div>
+                        <div class="text-[0.7rem] font-semibold text-fog mt-0.5">{{ _('Diet') }}</div>
                     </div>
-                    <div class="flex-1 py-3 text-center border-l border-base-content/15 last:border-l-0">
+                    <div class="py-3.5 text-center">
                         <div class="font-display text-3xl font-normal" data-count-up="{{ coach.training_count }}">{{ coach.training_count }}</div>
-                        <div class="text-xs text-fog">💪 {{ _('Training') }}</div>
+                        <div class="text-[0.7rem] font-semibold text-fog mt-0.5">{{ _('Training') }}</div>
                     </div>
                     {% if coach.steroid_count > 0 %}
-                        <div class="flex-1 py-3 text-center last:border-l-0">
+                        <div class="py-3.5 text-center">
                             <div class="font-display text-3xl font-normal" data-count-up="{{ coach.steroid_count }}">{{ coach.steroid_count }}</div>
-                            <div class="text-xs text-fog">💉 {{ _('Medication') }}</div>
+                            <div class="text-[0.7rem] font-semibold text-fog mt-0.5">{{ _('Medication') }}</div>
                         </div>
                     {% endif %}
                 </div>
@@ -35,11 +35,11 @@
 
         <!-- Footer summary -->
         <div
-            class="border-2 border-base-content/15 rounded-[1.5rem] px-4 py-3 bg-base-200 flex justify-between text-xs text-base-content/70"
+            class="rounded-full px-5 py-2.5 bg-neutral text-neutral-content flex justify-between text-xs font-semibold"
         >
-            <span>🏋️ {{ coach_stats|length }} {{ _('Coach') }}</span>
-            <span>👥 {{ coach_stats|map(attribute='trainee_count')|sum }} {{ _('Trainee') }}</span>
-            <span>📋 {{ coach_stats|map(attribute='active_plans')|sum }} {{ _('Plans') }}</span>
+            <span>{{ coach_stats|length }} {{ _('Coach') }}</span>
+            <span>{{ coach_stats|map(attribute='trainee_count')|sum }} {{ _('Trainee') }}</span>
+            <span>{{ coach_stats|map(attribute='active_plans')|sum }} {{ _('Plans') }}</span>
         </div>
     {% endif %}
 </div>

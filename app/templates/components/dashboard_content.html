@@ -5,22 +5,26 @@
 
     {% if show_coach_stats %}
         <details
-            class="collapse collapse-arrow border-2 border-base-content rounded-[2.5rem] bg-lavender-whisper/40"
+            class="collapse collapse-arrow border-2 border-base-content rounded-[2.5rem] bg-base-100"
             open
         >
-            <summary class="collapse-title font-bold text-sm flex items-center gap-2">
-                <span class="text-base">🏋️</span>
+            <summary class="collapse-title font-bold text-sm flex items-center gap-2 min-h-11">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5 text-ember" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.392 0-4.62-.63-6.547-1.727-.102-.06-.202-.125-.3-.192m5.032-5.659a4.5 4.5 0 1 0 .141-8.99 4.5 4.5 0 0 0-.141 8.99Zm-2.578 7.144A11.944 11.944 0 0 1 3 18c0-.34.016-.676.046-1.006.115-1.276.472-2.512 1.045-3.638l3.498 3.498a.75.75 0 0 0 1.06 0l.531-.531a.75.75 0 0 0 0-1.06l-2.578-2.579a11.96 11.96 0 0 1 3.232-3.879l3.498 3.498a.75.75 0 0 0 1.06 0l.531-.531a.75.75 0 0 0 0-1.06l-2.578-2.579c.265-.285.54-.558.824-.82a9.062 9.062 0 0 1 3.268-.723Z" />
+                </svg>
                 <span>{{ _('Coach performance') }}</span>
-                <span class="badge badge-secondary badge-sm">{{ coach_stats|length }}</span>
+                <span class="seal">{{ coach_stats|length }}</span>
             </summary>
             <div class="collapse-content">{% include "components/coach_stats.html" %}</div>
         </details>
     {% endif %}
 
     {% if is_owner_coach %}
-        <div class="border-2 border-base-content rounded-[2.5rem] bg-lavender-whisper/40 p-4">
+        <div class="border-2 border-base-content rounded-[2.5rem] bg-base-100 p-4">
             <div class="flex items-center gap-2 mb-3">
-                <span class="text-base">🏋️</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5 text-ember" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.392 0-4.62-.63-6.547-1.727-.102-.06-.202-.125-.3-.192m5.032-5.659a4.5 4.5 0 1 0 .141-8.99 4.5 4.5 0 0 0-.141 8.99Z" />
+                </svg>
                 <span class="font-bold text-sm">{{ _('Your performance') }}</span>
             </div>
             {% include "components/coach_stats.html" %}
