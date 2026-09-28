@@ -132,12 +132,13 @@ def mark_plan_done(plan_id: str, request: Request):
         )
 
     # 3. Return an HTMX response to trigger the UI update ⚡
-    response = Response(status_code=200)
+    # Granular: no HX-Refresh (that reloads the whole app shell). The button
+    # already updated optimistically (motion.js); just confirm via toast —
+    # the next dashboard load reconciles with server truth.
+    from app.utils import hx_toast
+    from app.i18n import _ as _i18n
 
-    # Use HX-Refresh to smoothly reload the current dashboard page
-    response.headers["HX-Refresh"] = "true"
-
-    # OR, if you strictly want to use HX-Redirect to a specific URL:
-    # response.headers["HX-Redirect"] = "/user/dashboard"
+    headers = hx_toast(_i18n("Day marked as done."), "success")
+    response = Response(status_code=200, headers=headers)
 
     return response
