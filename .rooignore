@@ -56,7 +56,7 @@ htmlcov/
 
 
 # -----------------------------
-# Node / Vite
+# Node / SvelteKit
 # -----------------------------
 node_modules/
 dist/
