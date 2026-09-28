@@ -1,5 +1,7 @@
 # Caldera Evolved — redesign notes
 
+> **SUPERSEDED** — the Slate Pine retheme (see `docs/retheme-slate-pine.md`) replaced this palette wholesale; kept for history.
+
 UI/UX-only pass. No Alpine changes (`app/static/main.js` untouched),
 no new npm deps, no routes/forms/HTMX logic changes, all `hx-*`,
 `x-data`/`@click`/`:class`/`$store`, form names and `_()` msgids preserved.

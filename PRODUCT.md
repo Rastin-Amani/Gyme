@@ -28,7 +28,7 @@ Routes: /dashboard, /trainees(+/new, /search, /filter), /plans(+templates), /coa
 
 ## Brand Commitments
 
-Caldera: "forge fire on warm limestone". Canvas pumice #e2e2df, surface limestone #f7f6f2, ink obsidian #070607, chalk #fff, ember #fc5000 (only aggressive accent, owns CTAs), plasma violet #524ae9 (hero halftone only), sulfur #f5f28e (tags only). Anton display + DM Sans UI. Triple-radius (800px pills / 100px fields / 40px surfaces). 2px obsidian borders, shadowless flat. Halftone dot motif + ember spark trio. Evolve, don't replace.
+Slate Pine: "calm paper, deep pine". Canvas #FAFAF8/#F1F0EB, hairline #E4E2DA, ink #1A1E1C, pine #1C4A3C (only actionable color — owns CTAs, active states, focus, selection), stone #57534E secondary, moss #A3B18A accent used sparingly. System sans display 700/800 tight tracking (no webfont fetch). Flat: 1px hairlines, 12/16px radii, no shadows/gradients/glass, no pills except avatar/status/toggle. Hairline ledger rows, KPI strip, segmented pine tab rail. (Supersedes Caldera Evolved — see `docs/retheme-slate-pine.md`.)
 
 ## Evidence on Hand
 
