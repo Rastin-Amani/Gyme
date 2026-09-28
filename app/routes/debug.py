@@ -96,7 +96,7 @@ def debug_user_test(request: Request):
         except Exception:
             items = []
 
-        # 🟢 Map to native dict to keep Jinja2 templates happy
+        # 🟢 Map PocketBase records to native dicts for JSON diagnostics
         plan_dict = {
             "id": getattr(p, "id", None),
             "title": getattr(p, "title", None),

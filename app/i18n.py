@@ -10,7 +10,7 @@
 - ``get_locale()`` — request-scoped locale, set by middleware via contextvar.
 
 No URL prefixes by design: authenticated dashboard; the explicit user choice
-travels in the ``locale`` cookie and every relative link/HTMX URL keeps
+travels in the ``locale`` cookie and every relative link/SvelteKit navigation keeps
 working unchanged.
 
 All enabled locales are left-to-right; the interface is always LTR.
