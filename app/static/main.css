@@ -1,19 +1,15 @@
 /* ────────────────────────────────────────────────────────────────────────────
-   GYME — Design system (Caldera)
+   GYME — Design system (Caldera Evolved)
    "forge fire on warm limestone"
 
-   Canvas  #e2e2df (pumice)        Accent  #fc5000 (ember)   — the one aggressive chromatic
+   Canvas  #e2e2df (pumice)        Accent  #fc5000 (ember)   — the one actionable color
    Surface #f7f6f2 (limestone)              #524ae9 (plasma violet) — hero halftone only
-   Ink     #070607 (obsidian)              #f5f28e (sulfur)        — tags/labels only
+   Ink     #070607 (obsidian)              #f5f28e (sulfur)        — section seals only
    Chalk   #ffffff (chalk) — text on dark surfaces
 
-   Rules:
-   - Shadowless: hierarchy comes from surface contrast (pumice canvas → limestone
-     cards → ember features → obsidian lines), not depth.
-   - Triple-radius: 800px pills (buttons, badges, tags) / 100px inputs / 40px surfaces.
-   - Anton (condensed ultrabold) for display headings; DM Sans Medium for UI text.
-   - Ember is the only aggressive accent; plasma violet never touches controls;
-     sulfur never leaves tag/badge duty.
+   Evolve, don't replace: same tokens, same triple-radius, same shadowless
+   forge. This pass fixes hierarchy, rhythm, states, browser surfaces, and
+   motion — DaisyUI primitives only, no new deps, no zoom/scale-up hovers.
    ---------------------------------------------------------------------------- */
 
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
@@ -113,6 +109,64 @@
     --text-heading-2xl--line-height: 1.05;
 }
 
+/* ── Base rhythm ──────────────────────────────────────────────────────────── */
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: color-mix(in oklab, var(--color-ember) 25%, transparent);
+}
+
+body {
+    text-rendering: optimizeLegibility;
+    caret-color: var(--color-ember);
+}
+
+h1, h2, h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* Tabular numerals for every count-up / stat readout */
+[data-count-up],
+.stat-value,
+.tabular {
+    font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ── Browser surfaces carry the design ────────────────────────────────────── */
+::selection {
+    background: var(--color-ember);
+    color: var(--color-obsidian);
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-ember);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-base-200);
+}
+::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-obsidian) 35%, var(--color-base-300));
+    border-radius: 800px;
+    border: 2px solid var(--color-base-200);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ember);
+}
+* {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklab, var(--color-obsidian) 35%, var(--color-base-300)) var(--color-base-200);
+}
+
 /* ── Signature: halftone dot pattern (violet → ember, ember dot grid) ────────
    The system's most recognizable motif. Applied to hero-scale blocks with
    border-2 border-base-content and rounded-[2.5rem]. */
@@ -127,6 +181,75 @@
         ),
         radial-gradient(var(--color-ember) 1.6px, transparent 1.7px);
     background-size: auto, 13px 13px;
+}
+
+/* Slow ember drift on hero chambers — position only, never zoom */
+@utility halftone-drift {
+    animation: halftone-drift 14s ease-in-out infinite alternate;
+}
+
+@keyframes halftone-drift {
+    from {
+        background-position: 0 0, 0 0;
+    }
+    to {
+        background-position: 0 0, 13px 6px;
+    }
+}
+
+/* ── Section seals: sulfur tags that label ledger sections ────────────────── */
+@utility seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: var(--color-sulfur);
+    color: var(--color-obsidian);
+    border: 2px solid var(--color-obsidian);
+    border-radius: 800px;
+    padding: 0.2rem 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* Ledger rows: hairline-separated, calm hover wash, chevron nudge */
+@utility ledger-row {
+    transition: background-color 160ms ease, translate 160ms ease;
+}
+@media (hover: hover) {
+    .ledger-row:hover {
+        background-color: color-mix(in oklab, var(--color-ember) 7%, var(--color-base-100));
+    }
+    .ledger-row:hover .ledger-go {
+        translate: 4px 0;
+        color: var(--color-ember);
+    }
+}
+.ledger-go {
+    transition: translate 160ms ease, color 160ms ease;
+}
+
+/* Ember avatar seal with status dot */
+@utility seal-avatar {
+    position: relative;
+    background: color-mix(in oklab, var(--color-ember) 14%, var(--color-base-100));
+    border: 2px solid var(--color-obsidian);
+}
+.seal-avatar::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: -2px;
+    bottom: -2px;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 800px;
+    background: var(--color-success);
+    border: 2px solid var(--color-base-100);
+}
+.seal-avatar[data-status='inactive']::after {
+    background: var(--color-fog);
 }
 
 /* ── Motion: one small, coherent vocabulary ───────────────────────────────── */
@@ -150,6 +273,46 @@
     50% {
         opacity: 1;
         transform: scale(1.05);
+    }
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.5rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes modal-pop {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 200% 0;
+    }
+    to {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes done-morph {
+    0% {
+        background-color: var(--color-success);
+    }
+    100% {
+        background-color: var(--color-success);
     }
 }
 
@@ -188,22 +351,58 @@
     }
 }
 
-/* ── Motion: tactile press + accent moments ───────────────────────────────── */
-/* Buttons compress while pressed; DaisyUI's hover color transition is kept
-   intact by re-listing the same properties plus `scale`. */
+/* ── Tactile press + accent moments (translate only, never zoom) ──────────── */
 .btn {
-    transition-property: color, background-color, border-color, box-shadow, scale;
-    transition-duration: 200ms, 200ms, 200ms, 200ms, 100ms;
+    transition-property: color, background-color, border-color, box-shadow, scale, translate;
+    transition-duration: 200ms, 200ms, 200ms, 200ms, 100ms, 150ms;
     transition-timing-function: cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1),
-        cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), ease-out;
+        cubic-bezier(0, 0, 0.2, 1), cubic-bezier(0, 0, 0.2, 1), ease-out, ease-out;
 }
 
 .btn:not(:disabled):active {
     scale: 0.97;
 }
 
-/* Bottom dock — gentle lift + color shift on the interactive items */
+/* Primary CTA arrow nudge */
+.btn-primary .btn-arrow {
+    transition: translate 180ms ease;
+}
+@media (hover: hover) {
+    .btn-primary:hover .btn-arrow {
+        translate: 4px 0;
+    }
+}
+
+/* Done morphs to success green once the server confirms */
+.btn-done-success {
+    animation: done-morph 0.01s forwards;
+}
+
+/* Skeleton shimmer while an HTMX fragment loads (existing content stays) */
+.htmx-request .shimmer-on-load,
+#page-content.htmx-swapping .shimmer-on-load {
+    background: linear-gradient(
+        100deg,
+        var(--color-base-200) 40%,
+        var(--color-base-100) 50%,
+        var(--color-base-200) 60%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.1s linear infinite;
+}
+
+/* Bottom dock — gentle lift + ember active dot */
+.dock {
+    padding-bottom: env(safe-area-inset-bottom);
+}
 .dock a {
+    position: relative;
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     transition:
         color 150ms ease,
         opacity 150ms ease,
@@ -219,6 +418,90 @@
 .dock a:active {
     translate: 0 0;
     scale: 0.95;
+}
+
+.dock a[aria-current='page'] {
+    color: var(--color-obsidian);
+    font-weight: 700;
+}
+.dock a[aria-current='page']::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 800px;
+    background: var(--color-ember);
+}
+.dock a:not([aria-current='page']) {
+    color: var(--color-fog);
+}
+
+/* Segmented Today rail: ember pill slides via Alpine :class only */
+.today-rail .tab {
+    min-height: 44px;
+    border-radius: 800px;
+    font-weight: 600;
+    color: var(--color-fog);
+    transition: background-color 180ms ease, color 180ms ease, translate 180ms ease;
+}
+.today-rail .tab:hover {
+    color: var(--color-obsidian);
+    translate: 0 -1px;
+}
+.today-rail .tab-active {
+    background: var(--color-ember);
+    color: var(--color-obsidian);
+    border: 2px solid var(--color-obsidian);
+}
+
+/* Item cards: calm wash + 2px rise on hover, press compresses */
+.item-card {
+    transition: background-color 160ms ease, translate 160ms ease, border-color 160ms ease;
+}
+@media (hover: hover) {
+    .item-card:hover {
+        translate: 0 -2px;
+        border-color: var(--color-obsidian);
+        background-color: color-mix(in oklab, var(--color-ember) 4%, var(--color-base-100));
+    }
+}
+.item-card:active {
+    translate: 0 0;
+}
+
+/* Forms: ember focus ring, calm validator errors */
+.input:focus,
+.select:focus,
+.textarea:focus {
+    border-color: var(--color-obsidian);
+    outline: 3px solid color-mix(in oklab, var(--color-ember) 55%, transparent);
+    outline-offset: 1px;
+}
+.validator-hint {
+    color: var(--color-error);
+}
+
+/* Toasts + modals */
+#toast-container .alert {
+    animation: toast-in 220ms ease-out both;
+    border-width: 2px;
+    border-color: var(--color-obsidian);
+    border-radius: 1.5rem;
+}
+#modal-container .modal-box {
+    animation: modal-pop 240ms ease-out both;
+}
+
+/* Sticky app header: blurred limestone over scrolling ledger */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in oklab, var(--color-base-100) 88%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid color-mix(in oklab, var(--color-obsidian) 12%, transparent);
 }
 
 /* Ember acknowledgment ring — used for meaningful completions (e.g. a day done) */
@@ -275,12 +558,14 @@
     transition: opacity 150ms ease-out;
 }
 
-/* ── Native dropdown disclosure (language switcher) ────────────────────────── */details.dropdown[open] > .dropdown-content {
+/* ── Native dropdown disclosure (language switcher) ────────────────────────── */
+details.dropdown[open] > .dropdown-content {
     opacity: 1;
     scale: 1;
     display: block;
     position: absolute;
     z-index: 999;
+    animation: modal-pop 180ms ease-out both;
 }
 
 details.dropdown > summary {
