@@ -1,41 +1,68 @@
-# Use a lightweight Python image
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
+# Single production container: SvelteKit SSR (public :3000) + FastAPI
+# (loopback-only :8000). Built directly by Dokploy's Git/Docker deployment;
+# no Compose file involved.
 
-# Security: create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+############################
+# Stage 1: build the SvelteKit frontend
+############################
+FROM node:22-bookworm-slim AS frontend
+WORKDIR /app
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build && npm prune --omit=dev
 
-# Set the working directory in the container
-WORKDIR /code
+############################
+# Stage 2: runtime (Node + Python 3.11)
+############################
+FROM node:22-bookworm-slim
 
-# Copy requirements directly from the app folder
-COPY ./app/requirements.txt .
+# Debian bookworm ships Python 3.11, matching app/requirements.txt.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-venv \
+    && rm -rf /var/lib/apt/lists/*
 
-# Use Chabokan's PyPI mirror
-RUN pip install --no-cache-dir -r requirements.txt && \
-    rm -rf /root/.cache
+# Python deps live in a venv so the system interpreter stays untouched.
+ENV VIRTUAL_ENV=/opt/venv \
+    PATH=/opt/venv/bin:$PATH
+COPY app/requirements.txt /tmp/requirements.txt
+RUN python3 -m venv "$VIRTUAL_ENV" \
+    && pip install --no-cache-dir -r /tmp/requirements.txt \
+    && rm /tmp/requirements.txt
 
-# Copy the entire app folder
-COPY ./app ./app
-
-# Copy your data folder into the container
-COPY ./data ./data
-
-# Ensure data and static are readable but not writable where unnecessary
-RUN chown -R appuser:appuser /code && chmod -R 755 /code/app/static 2>/dev/null || true
-
-USER appuser
-
-# Env hardening: Python no bytecode, no pip cache, production mode hint
-ENV PYTHONDONTWRITEBYTECODE=1 \
+ENV ENV=production \
+    PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    ENV=production
+    BACKEND_URL=http://127.0.0.1:8000 \
+    HOST=0.0.0.0 \
+    PORT=3000 \
+    PROTOCOL_HEADER=x-forwarded-proto \
+    HOST_HEADER=x-forwarded-host \
+    ADDRESS_HEADER=x-forwarded-for
 
-EXPOSE 8000
+# FastAPI runs from /code (static + CSV datasets are path-relative).
+WORKDIR /code
+COPY app ./app
+COPY data ./data
 
-# Healthcheck: /healthz is PB-independent, so an upstream PocketBase outage
-# never marks the app container unhealthy
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://127.0.0.1:8000/healthz', timeout=2)" || exit 1
+# adapter-node output; the Node process runs from /app, as before.
+COPY --from=frontend /app/package.json /app/package.json
+COPY --from=frontend /app/node_modules /app/node_modules
+COPY --from=frontend /app/build /app/build
 
-# Only the SvelteKit container on the Compose network may supply proxy headers.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "172.28.0.2"]
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
+
+USER node
+
+# Only the SvelteKit server is public; uvicorn binds 127.0.0.1 inside the
+# container, so port 8000 is unreachable from outside even if it were mapped.
+EXPOSE 3000
+
+# Probes both processes: a static-asset request for Node (no backend/tenant/PB
+# involved) and FastAPI's PB-independent liveness endpoint.
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD python3 -c "import urllib.request as r; [r.urlopen(u, timeout=4) for u in ('http://127.0.0.1:3000/service-worker.js', 'http://127.0.0.1:8000/healthz')]"
+
+ENTRYPOINT ["docker-entrypoint.sh"]
