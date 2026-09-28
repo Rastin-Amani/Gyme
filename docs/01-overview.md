@@ -1,9 +1,8 @@
 # 01 — Product Overview
 
-**Verification status:** written against the current implementation (app version
-1.0.0, `main` branch). All features described here are traceable to code in this
-repository; where behavior depends on data configured in the external PocketBase
-instance, that is called out explicitly.
+**Verification status:** describes the current SvelteKit/Svelte 5 frontend and
+FastAPI JSON API. Behavior that depends on the external PocketBase instance is
+called out explicitly.
 
 ---
 
@@ -18,11 +17,10 @@ the app on its own domain. Inside a gym:
 - **Trainees** install the gym's app on their phone and follow their daily
   training, nutrition, and supplement plan with a single "Done" action per day.
 
-The user interface is **multilingual**: English is the default language, and
-Spanish, Turkish, and Armenian are also available. Visitors switch language with
-a selector in the header; the choice is stored in a `locale` cookie. Every
-locale is left-to-right, and dates render in the Gregorian calendar (Babel
-medium format).
+The Svelte user interface is **multilingual**: English is the default language,
+and Spanish, Turkish, and Armenian are also available. The choice is stored in
+the `gyme_locale` cookie. All enabled locales are left-to-right; dates use the
+browser's `Intl.DateTimeFormat`.
 
 ## Who it is for
 
@@ -36,10 +34,10 @@ medium format).
 
 - Replaces ad-hoc delivery of workout/nutrition programs via WhatsApp and PDF
   files with a structured per-trainee plan system.
-- Gives each gym an app under its own brand — logo, theme colors, name, icon,
-  and splash screen are driven by the gym's tenant record.
-- Standardizes initial fitness assessments with automatic BMI / body-fat / BMR /
-  TDEE calculations and before/after photo storage.
+- Gives each gym an app under its own brand — tenant name and logo feed the
+  shared UI and tenant-aware PWA manifest.
+- Provides structured fitness assessments and progress-photo storage; metric
+  values are entered by staff and validated by the API, not calculated there.
 - Lets trainees see exactly *today's* portion of every program instead of
   reading a full multi-week spreadsheet.
 
@@ -49,11 +47,10 @@ medium format).
 
 - Every request is mapped to a gym by hostname; each hostname corresponds to a
   record in the `tenants` collection.
-- The marketing site is a separate application; every tenant host redirects `/`
-  straight to login or dashboard.
-- Per-gym branding: name, logo (used for header, favicon, PWA icons, and iOS
-  splash screen), theme (`gyme`, `light`, or `custom` with custom CSS color
-  variables stored on the tenant).
+- The marketing site is a separate application; the app's `/` route redirects
+  into the dashboard, then anonymous users are sent to login.
+- Per-gym branding: tenant name and logo appear in the UI, favicon, and PWA
+  manifest/icons when configured.
 
 ### Accounts & roles
 
@@ -76,7 +73,7 @@ medium format).
 
 ### Trainee management
 
-- Paginated list (5 per page) with free-text search across name/phone/email and
+- Paginated list (20 per page by default) with free-text search across name/phone/email and
   filters for gender, status, and birthdate range.
 - Rich trainee profile: contact info, gender, birthdate, blood type, training
   history, steroid history, supplement history, physical limitations, notes.
@@ -90,12 +87,10 @@ Plans come in three types, each with its own item structure:
 
 | Plan type | Item fields |
 | --- | --- |
-| Training | Exercise name (autocomplete from an English exercise dataset), movement category (warm-up/main/etc.), day number, order, sets, reps, weight, rest seconds, notes |
-| Diet | Meal name (Fasting, Breakfast, Snack, Pre-workout, Post-workout, Lunch, Dinner), food name (autocomplete from an English food dataset), quantity/unit, day, order, notes |
+| Training | Exercise name, movement category, day number, sets, reps, weight, rest seconds, notes |
+| Diet | Meal name, food name, quantity, day number, notes |
 | Steroid/supplement | Name, type (Supplement/Steroid), dosage, frequency, day, order, notes |
 
-- Exercise and food name suggestions are served from English datasets bundled in
-  `data/*.csv`.
 - Plans have start/end dates, days-per-week, status (active/inactive/draft), a
   responsible coach, and notes.
 - **Templates:** any plan can be saved as a reusable template (with its own
@@ -104,12 +99,12 @@ Plans come in three types, each with its own item structure:
 
 ### Progress logs (assessments)
 
-- Records height, weight, chest/waist/hip/arm circumferences, plus computed
-  metrics: BMI, body-fat percentage, lean body mass, fat mass, BMR
-  (Mifflin-St Jeor), TDEE (from an activity-level selector), and waist-to-hip
-  ratio — calculated live in the browser as staff type.
-- Accepts up to **5 photos**, max **5 MB** each (JPEG/PNG/WebP/GIF), with
-  preview and client-side validation.
+- Records height, weight, chest/waist/hip/arm circumferences and metric fields
+  including BMI, body-fat percentage, BMR, TDEE, lean body mass, and waist-to-hip
+  ratio. The API validates submitted metric ranges; it does not calculate these
+  values.
+- Accepts up to **5 photos**, max **5 MB** each (JPEG/PNG/WebP/GIF); the API
+  validates their names, declared types, signatures, and sizes.
 - Saving a log also updates the trainee's current height/weight. Logs can be
   edited later; they are shown on the trainee detail page newest-first.
 
@@ -118,30 +113,24 @@ Plans come in three types, each with its own item structure:
 - **Owner dashboard:** counters for active/inactive trainees and per-type plan
   counts, filterable to this week/month/all time; a per-coach breakdown showing
   plan totals, active plans, plans currently in progress, and distinct trainees.
-- **Trainee "Today" dashboard:** tabs for Diet (nutrition), Training,
-  Steroid — only tabs with plans appear. Each plan card shows today's
-  items grouped by meal or exercise category and a **Done** button that
-  advances the plan to its next day (wrapping around at the end). A warning
-  banner reminds trainees to press it every day.
+- **Trainee dashboard:** plans are grouped by type. The current day's items are
+  shown on plan detail, where a **Complete this day** action advances the plan
+  to its next scheduled item day, wrapping around at the end.
 
 ### Installable app (PWA)
 
-- Dynamic web-app manifest per gym (name, icons generated from the gym logo,
-  standalone portrait mode, dark background).
-- Service worker caching strategy: instant-from-cache static assets with
-  background refresh, cache-first images (including photos served by
-  PocketBase), network-first pages falling back to the last visited copy or a
-  built-in offline page.
+- Dynamic web-app manifest per gym (tenant name and logo when configured,
+  standalone portrait mode).
+- The SvelteKit service worker precaches build/static assets and other
+  non-navigation same-origin resources; failed navigations fall back to the
+  bundled offline page. It does not intercept `/api/` requests.
 - An offline banner appears whenever the device loses connectivity.
-- On iOS, first-time visitors get a step-by-step "Add to Home Screen" overlay;
-  a branded splash screen is generated on the fly from the gym logo/colors.
 
 ## What Gyme deliberately does *not* do today
 
 Stated so readers don't assume otherwise:
 
-- No payments, billing, or subscription management (payment tracking is only
-  mentioned as a pain point on the separate marketing site).
+- No payments, billing, or subscription management.
 - No trainee-facing editing: trainees cannot mark individual items done, chat,
   or upload anything; their action set is view + daily "Done".
 - No notifications/push messaging, no scheduling/calendar beyond plan dates.
@@ -149,8 +138,8 @@ Stated so readers don't assume otherwise:
   gym staff (or direct database administration). Because the app generates
   random initial passwords and never displays them, new accounts must have
   their password reset via PocketBase admin before first login.
-- No CI configuration or LICENSE file; automated tests do ship under `tests/`
-  (`test_i18n.py` and the security regression suite).
+- Automated Python tests are under `tests/`; frontend checks and builds use the
+  package in `frontend/`.
 
 ## Requirements in brief
 
@@ -160,7 +149,7 @@ Stated so readers don't assume otherwise:
   the schema itself lives in PocketBase (no migrations are in this repo).
 - One `tenants` record per gym domain, plus the required collections, must be
   provisioned before the app is usable.
-- Python 3.11+ runtime and (for development/rebuilds only) Node.js.
+- Python 3.11+ and Node.js 22+ runtimes, plus npm for the SvelteKit frontend.
 
 See [02-getting-started.md](02-getting-started.md) for setup and
 [04-architecture.md](04-architecture.md) for the technical deep dive.

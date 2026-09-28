@@ -11,9 +11,19 @@ for the full setup. In short:
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r app/requirements.txt
-npm install
-npm run build            # or `npm run dev` for watch mode
-uvicorn app.main:app --reload
+npm --prefix frontend ci
+export PB_URL="http://127.0.0.1:8090"
+export BACKEND_URL="http://127.0.0.1:8000"
+```
+
+Run FastAPI and SvelteKit in separate terminals:
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+npm --prefix frontend run dev
 ```
 
 You need a running PocketBase instance (`PB_URL`); hostname-based tenancy means
@@ -23,24 +33,27 @@ each environment resolves gyms by `Host` header (see
 ## Before you open a PR
 
 ```bash
-make test        # 55-test suite: i18n + security regression + known-issue fixes
+.venv/bin/python -m pytest -q
 ruff check .
-black .
+black --check .
+npm --prefix frontend run check
+npm --prefix frontend run build
 ```
 
-CI runs `ruff check .`, `black --check .`, and `pytest -q`. The test suite runs
-against the local app only — no network calls.
+CI runs Python lint, formatting, and tests. The test suite runs against the local
+app only — no network calls.
 
 ## Code conventions
 
 - Keep routes thin: business logic and PocketBase queries live in
   `app/services/`.
-- UI strings are English msgids behind gettext: `_("…")` in Jinja templates
-  (`{{ _("...") }}`) and Python. Update catalogs with the i18n Makefile targets
-  (`make i18n-extract`, `make i18n-update`, `make i18n-compile`).
+- The UI is SvelteKit/Svelte 5 with TypeScript. Add or update UI translations in
+  `frontend/src/lib/i18n.ts`; backend/PWA messages use gettext catalogs under
+  `app/locales/` and the i18n Make targets.
 - Minimum Python is 3.11; type hints are welcome on new code.
-- Keep server-rendered HTML + HTMX interaction style (partial swaps, toast
-  headers via `app/utils.py`); no new front-end framework.
+- Keep business rules, validation, authentication, and tenant authorization in
+  FastAPI. The browser UI calls the same-origin SvelteKit API proxy; do not add
+  HTMX, Alpine, Jinja-rendered UI, or a second frontend framework.
 - Docs: user-facing behavioral changes should update
   [docs/07-troubleshooting-known-issues.md](docs/07-troubleshooting-known-issues.md)
   (and the README "Known limitations" when relevant).

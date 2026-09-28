@@ -1,31 +1,26 @@
-# Gyme — Security Hardening Report
+# Gyme — Historical Security Hardening Report
 **Date:** 2026-08-22
-**Stack:** FastAPI + Jinja2 + HTMX/Alpine + Tailwind + PocketBase + Docker
+**Stack reviewed at the time:** FastAPI-rendered Jinja UI with HTMX/Alpine,
+Tailwind, PocketBase, and Docker
 **Mode:** Defensive review & hardening (no destructive testing against prod)
 **Author:** AppSec hardening run
 
-> **Update (2026-09-25):** since this report was written, the **marketing site
-> was extracted into a separate application**. The `app/routes/marketing.py`
-> lead-capture flow and `POST /lead/submit` no longer exist in this repository
-> (the `leads` collection is now written only by that external app). Stale
-> marketing references below are annotated; all other hardening described here
-> is still present in the current tree (v0.9.1).
+> **Historical snapshot — not a current security assessment.** This report
+> describes a defensive review of the pre-Svelte frontend architecture. The
+> browser UI has since moved to SvelteKit and FastAPI now serves a JSON API;
+> frontend-specific observations below (Jinja, HTMX/Alpine, inline scripts,
+> routes, and static assets) do not describe the current frontend. The
+> 2026-09-25 follow-up notes document fixes made in the prior implementation,
+> not a re-audit of the current tree. Re-verify every control against the
+> current code before relying on it; see `docs/04-architecture.md` for the
+> current request boundaries.
 
-> **Update (2026-09-25, second):** the v0.9.1 fix round resolved the remaining
-> known issues tracked in `docs/07`: training items now persist `category`;
-> the plan-list coach filter reads `users` (role `coach`) instead of the
-> orphaned `coaches` collection; the owner profile button points at
-> `/change-password`; `APP_VERSION` and `app/version.text` are synchronized
-> at `0.9.1` and the service-worker cache-buster derives from `app_version`;
-> the default PB client now fails fast in production when `PB_URL` is unset
-> (and defaults to `http://127.0.0.1:8090` locally); `list_items` sorts by
-> `+seq,+order`; the services layer standardizes on `get_pb()` instead of the
-> module singleton; `GET /dashboard/debug-coach-stats` is registered only
-> outside production; unknown-tenant requests on private routes are redirected
-> to `/login`; deleting a trainee now cascades to its linked user record.
-> A GitHub Actions workflow (`ruff`, `black --check`, `pytest`) and an ISC
-> `LICENSE` were added. Regression coverage grew to 55 tests
-> (`tests/test_i18n.py` + `tests/test_security_regression.py` + `tests/test_known_issue_fixes.py`).
+> **Historical follow-up (2026-09-25):** after the original review, the
+> marketing site was extracted into a separate application, removing
+> `app/routes/marketing.py` and `POST /lead/submit` from this repository. The
+> follow-up also recorded fixes to the then-current backend, deployment, and
+> tests. Those notes are retained as history only; they do not establish the
+> present status of those controls.
 
 > Goal was not “unhackable” but **understand trust boundaries, close realistic holes, add repeatable checks, and leave residual-risk transparency**.
 
@@ -373,5 +368,7 @@ ENV=production PB_URL=https://pb.example.com .venv/bin/python -c "from fastapi.t
 
 ## Disclaimer
 
-This hardening eliminates **known, realistic** flaws but does not prove absence of all bugs. Treat as **defense-in-depth increment**, not an audit certification. Keep PB rules, infra, and dependencies under continuous review.
-
+This report records a hardening snapshot from **2026-08-22**; it does not prove
+absence of bugs or certify the current SvelteKit/API implementation. Treat the
+findings and fixes above as historical until verified against the current code.
+Keep PocketBase rules, infrastructure, and dependencies under continuous review.

@@ -11,10 +11,8 @@ training, nutrition, and supplement plans — and trainees follow their daily pl
 from their phone. The UI is multilingual with **English as the default language**;
 Spanish, Turkish, and Armenian are also supported.
 
-- **Current version:** 1.0.0 (`app/main.py` `APP_VERSION`)
-- **Status:** actively developed; automated tests ship under `tests/`
-  (`tests/test_i18n.py`, plus the 22-test security regression suite in
-  `tests_security_regression.py`)
+- **Status:** actively developed; backend and frontend checks live under
+  `tests/` and `frontend/`.
 - **Links:** [Releases](https://github.com/Rastin-Amani/Gyme/releases) · [Discussion](https://github.com/Rastin-Amani/Gyme/discussions) · [Security policy](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 ---
@@ -30,28 +28,27 @@ The tenant's members log in with an email/password managed by the gym:
 - **Trainees** get a personal "Today" dashboard that shows today's slice of each
   plan and a big **Done** button that advances them to the next day.
 
-The server renders HTML (Jinja2 + Tailwind/daisyUI); interactivity comes from
-HTMX partial swaps with toast notifications. All data lives in an external
-[PocketBase](https://pocketbase.io) instance (records, auth tokens, file
-storage). The app is installable as a PWA with per-gym branding, icon/favicon,
-offline caching, and an offline fallback page.
+SvelteKit renders the application with SSR and client-side navigation. FastAPI
+remains the same-origin JSON/API backend, with PocketBase handling records,
+auth tokens, and file storage. The app remains installable as a PWA with
+per-gym branding, icon/favicon, offline caching, and an offline fallback page.
 
 ## Key capabilities
 
 | Area | What it does |
 | --- | --- |
-| Multi-tenancy | Hostname-based tenant resolution, per-tenant theme/logo/manifest |
+| Multi-tenancy | Hostname-based tenant resolution, per-tenant name/logo/manifest |
 | Roles | `owner`, `coach` (scoped to own trainees/plans), `trainee` |
 | Trainee management | List/search/filter, profile with health data, create/edit/delete |
 | Plans & items | Training, diet, steroid plan types with type-specific items |
 | Plan templates | Save reusable templates, apply one to a trainee (copies all items) |
-| Progress logs | Body metrics (BMI/BFP/BMR/TDEE/LBM/WHR auto-calculated) + up to 5 photos |
+| Progress logs | Body metrics (BMI/BFP/BMR/TDEE/LBM/WHR) + up to 5 photos; submitted metric ranges are validated by the API |
 | Owner dashboard | Trainee/plan counters and per-coach stats with week/month/all timeframes |
-| PWA | Dynamic manifest per gym, service worker caching, offline page/banner, iOS install flow |
+| PWA | Dynamic manifest per gym, service worker caching, offline page and connectivity banner |
 
 ## Quick start (development)
 
-Prerequisites: Python 3.11+, Node.js, and a running PocketBase instance.
+Prerequisites: Python 3.11+, Node.js 22+, and a running PocketBase instance.
 
 ```bash
 # 1. Python environment
@@ -59,61 +56,81 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r app/requirements.txt
 
-# 2. Frontend tooling (Vite + Tailwind)
-npm install
+# 2. Frontend tooling (SvelteKit)
+cd frontend && npm ci && cd ..
 
-# 3. Point the app at your PocketBase instance
-export PB_URL="http://127.0.0.1:8090"    # default is a remote dev server!
+# 3. Point both servers at PocketBase and each other
+export PB_URL="http://127.0.0.1:8090"
+export BACKEND_URL="http://127.0.0.1:8000"
 
-# 4. Build static assets once (or run `npm run dev` for watch mode)
-npm run build                       # outputs app/static/app.css + app.js
+```
 
-# 5. Run the app
-uvicorn app.main:app --reload
+In separate terminals, run the backend and frontend:
+
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+npm --prefix frontend run dev
 ```
 
 Open the app on a hostname that matches a `domain` value of a record in your
-PocketBase `tenants` collection (e.g. add `127.0.0.1 yourgym.local` to your
-hosts file and browse `http://yourgym.local:8000`). See
+PocketBase `tenants` collection (for example, add `yourgym.localhost` as a
+tenant domain and open `http://yourgym.localhost:5173`). SvelteKit serves the
+browser UI; FastAPI stays on port 8000 for the private API hop. See
 [docs/02-getting-started.md](docs/02-getting-started.md) for the full walkthrough.
 
 ### Environment variables
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `PB_URL` | `http://db.dev.gyme.cloud` | Base URL of the PocketBase instance |
+| `PB_URL` | `http://127.0.0.1:8090` in development; required in production | Base URL of the PocketBase instance |
 | `ENV` | `dev` | Set to `production` to disable Swagger docs and `/debug/*` routes and switch logs to JSON |
 | `ALLOWED_HOSTS` | *(unset)* | Optional comma-separated allowlist passed to Starlette `TrustedHostMiddleware`; in production a warning is logged when it is unset |
+| `BACKEND_URL` | `http://backend:8000` | FastAPI origin used by the SvelteKit same-origin API proxy (set to `http://127.0.0.1:8000` for local development) |
 
 > Note: `python-dotenv` is listed in requirements but never invoked — `.env`
 > files are **not** loaded automatically; export variables in the shell.
 
 ## Development
 
-```bash
-uvicorn app.main:app --reload   # backend (port 8000 by default)
-npm run dev                     # Vite dev build with Tailwind watching
+Run the backend and frontend in separate terminals:
 
+```bash
+uvicorn app.main:app --reload --port 8000
+```
+
+```bash
+npm --prefix frontend run dev
+```
+
+Then run checks as needed:
+
+```bash
 ruff check .                    # lint
 black .                         # format
 ```
 
-Swagger UI is available at `/docs` and the OpenAPI schema at `/openapi.json`
-while `ENV` is not `production`. A set of read-only debug endpoints lives under
-`/debug/*` in dev only.
+Swagger UI is available directly on the development backend at
+`http://127.0.0.1:8000/docs` and the OpenAPI schema at
+`http://127.0.0.1:8000/openapi.json` while `ENV` is not `production`. Read-only
+debug endpoints live under `/debug/*` in dev only.
 
 ## Architecture overview
 
 ```
-Browser (PWA, HTMX + Alpine.js)
-   │  HTML over the wire
+Browser (SvelteKit SSR + client navigation)
+   │  same-origin HTML + /api/v1 JSON
+   ▼
+SvelteKit Node server (frontend/)
+   ├── SSR page loads/actions + components
+   └── /api/v1 proxy ── forwards cookies + trusted tenant host to FastAPI
    ▼
 FastAPI (app/main.py)
-   ├── TenantMiddleware ── resolves tenant by Host header (PocketBase: tenants)
-   │                    ── validates pb_auth cookie via PocketBase auth_refresh()
-   ├── Routers (app/routes/**)        thin HTTP layer
-   ├── Services (app/services/**)     PocketBase queries & business rules
-   └── Jinja2 templates (i18n, locale-aware date filters)
+    ├── TenantMiddleware ── resolves tenant + validates pb_auth cookie
+    ├── JSON API (app/routes/api.py)   HTTP/auth boundary
+    └── Services (app/services/**)    PocketBase queries & business rules
    ▼
 PocketBase (external)  ── collections: tenants, users, trainees, plans,
                           training_items, diet_items, steroid_items,
@@ -128,19 +145,22 @@ Deeper material: [docs/04-architecture.md](docs/04-architecture.md),
 ## Project structure
 
 ```
+frontend/
+├── src/routes/         # SvelteKit pages, SSR loads and form actions
+├── src/lib/            # UI, API client, i18n and server helpers
+├── src/service-worker.ts
+└── package.json        # SvelteKit + adapter-node
 app/
-├── main.py            # FastAPI app assembly, version, docs gating
+├── main.py            # FastAPI app assembly and docs gating
 ├── middleware.py      # TenantMiddleware (tenancy + auth + request logging)
-├── templates.py       # Jinja2 env + locale-aware date filters
 ├── pb.py              # PocketBase client factory (PB_URL)
-├── utils.py           # hx_toast helper (HTMX toast headers)
 ├── logging_config.py  # structlog setup (console dev / JSON prod)
-├── routes/            # feature routers (+ routes/user/ for trainee pages)
+├── routes/            # JSON API, PWA and dev-only diagnostics
 ├── services/          # PocketBase access & business logic
-├── templates/         # base, layouts, pages, forms, modals, components
-└── static/            # built CSS/JS (Vite), service worker, fonts, swagger assets
-data/                  # English exercise & food CSV datasets (dropdown sources)
-Dockerfile             # python:3.11-slim, uvicorn on :8000
+└── static/swagger/    # development API docs assets
+data/                  # bundled exercise and food CSV datasets
+Dockerfile             # FastAPI image
+compose.yaml           # frontend + backend for Dokploy
 ```
 
 ## Documentation
@@ -162,35 +182,30 @@ Highlights:
 
 - Accounts created in-app get a **random 15-character password** that the UI
   never displays — staff must share or reset it before the new user can log in.
-- A **rate limit** is enforced on the login route but not on password changes.
-- CI (GitHub Actions: ruff, black --check, pytest), an ISC `LICENSE`, and a
-  55-test suite (i18n + security regression + known-issue fixes) ship with the
-  repo.
+- Login attempts are rate-limited; password changes have separate validation
+  and are not covered by that login rate limit.
+- CI runs Python lint/format/tests; frontend checks and production builds use
+  the SvelteKit package under `frontend/`.
 
 ## Deployment
 
-A `Dockerfile` is provided (Python 3.11-slim, uvicorn on port 8000 with proxy
-header support). Static assets must be built before the image is built because
-Node/Vite files are excluded from the image.
+A two-service `compose.yaml` builds the SvelteKit frontend and FastAPI backend
+for Dokploy. Set `PB_URL` and `ALLOWED_HOSTS`; expose only the frontend service
+on port 3000. PocketBase remains external.
 
-Pre-built images are published to **GHCR** on every push to `main` (tag `latest`)
-and on version tags (e.g. `v0.9.1`):
+The GitHub workflow publishes the root `Dockerfile` image to **GHCR** on pushes
+to `main` (tag `latest`) and version tags. That image is the FastAPI backend,
+not the complete Compose deployment. `compose.yaml` builds both services from
+source:
 
 ```bash
-docker pull ghcr.io/rastin-amani/gyme:latest
-
-# Point the container at your PocketBase instance (required)
-export PB_URL="http://127.0.0.1:8090"
-
-docker run --rm -p 8000:8000 \
-  -e PB_URL="$PB_URL" \
-  -e ENV=production \
-  ghcr.io/rastin-amani/gyme:latest
+PB_URL="https://your-pocketbase.example" \
+ALLOWED_HOSTS="gym.example.com" \
+  docker compose -f compose.yaml up --build -d
 ```
 
-Browse it on a hostname that matches a `tenants` record (add `127.0.0.1 yourgym.local`
-to your hosts file and open `http://yourgym.local:8000`). Set `ALLOWED_HOSTS`
-in production.
+Route the public hostname to the frontend service (port 3000); it must match a
+`tenants` record. The FastAPI service remains private to the Compose network.
 
 Full runbook:
 [docs/06-configuration-deployment.md](docs/06-configuration-deployment.md).
@@ -198,23 +213,25 @@ Full runbook:
 ## Contributing
 
 Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for setup,
-code conventions (thin routes, logic in services, gettext `_("…")` UI strings),
-and the PR checklist (`make test`, `ruff check .`, `black .`).
+code conventions and the PR checklist (`make test`, `ruff check .`, `black .`,
+`npm --prefix frontend run check`).
 
 
 ## Internationalization (i18n)
 
 Languages (cookie-based): **en** (default, LTR, source msgids), **es**, **tr**, **hy**.
 
-- Switcher sets `locale` cookie for 1 year via `GET /locale/{code}?next=...` and full page reload.
-- `<html lang dir>` follows the locale — every locale is LTR.
-- UI strings: `_("…")` in Jinja and Python (English msgids + gettext catalogs under `app/locales/`).
+- The locale switcher stores the selected language in the `gyme_locale` cookie;
+  every supported locale is LTR.
+- Svelte UI strings live in `frontend/src/lib/i18n.ts`. FastAPI/PWA messages use
+  gettext catalogs under `app/locales/`.
 
 ```bash
 make i18n-extract   # refresh messages.pot
-make i18n-add LOCALE=de   # enable a new language (also flip enabled=True in app/i18n.py)
+make i18n-add LOCALE=de   # add a backend gettext catalog
 make i18n-update    # merge new msgids into existing .po files
 make i18n-compile   # build .mo
 ```
 
-To add a language: register it in `app/i18n.py` (`enabled=True`), `make i18n-add LOCALE=xx`, translate the `.po`, `make i18n-compile`.
+To add a language, update both the frontend dictionary and backend locale
+registry/catalogs; the gettext Make targets do not generate Svelte translations.

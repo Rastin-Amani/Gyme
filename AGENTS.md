@@ -1,115 +1,135 @@
 # Gyme: Agent Instructions
 
-## Commands (Exact)
+## Stack
+
+- Backend: FastAPI, Python 3.11+, PocketBase SDK.
+- Frontend: SvelteKit, Svelte 5, TypeScript, `@sveltejs/adapter-node`.
+- Styling: Tailwind CSS 4 and the existing Caldera visual tokens in
+  `frontend/src/routes/app.css`.
+- Production: one Compose app with private FastAPI `backend` and public Node SSR
+  `frontend` services. PocketBase is external.
+- Internationalization: Svelte UI dictionaries in `frontend/src/lib/i18n.ts`;
+  FastAPI/PWA messages use gettext catalogs in `app/locales/`. Enabled locales
+  are en, es, tr, and hy, all LTR.
+
+## Commands
 
 ### Setup
+
 ```bash
-# Python
 python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-.venv\Scripts\activate   # Windows
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r app/requirements.txt
-
-# Node (for Vite frontend build)
-npm install
+npm --prefix frontend ci
 ```
 
-### Dev
-```bash
-# Start FastAPI (uvicorn)
-uvicorn app.main:app --reload
+### Development
 
-# Start Vite dev server (parallel terminal, live CSS/JS)
-npm run dev
+Run FastAPI and SvelteKit in separate terminals. Set `PB_URL` to the local or
+remote PocketBase instance and `BACKEND_URL` for the SvelteKit BFF. Use a
+hostname present in the `tenants` collection, e.g. `gym.localhost`.
+
+```bash
+uvicorn app.main:app --reload --port 8000
+npm --prefix frontend run dev
 ```
 
-### Build
+Open the SvelteKit dev server on port 5173. FastAPI's dev Swagger is available
+directly at `http://127.0.0.1:8000/docs`.
+
+### Build and checks
+
 ```bash
-# Build static assets (Vite → app/static/app.css + app.js, minified)
-npm run build
+npm --prefix frontend run check
+npm --prefix frontend run build
+.venv/bin/python -m pytest -q  # or: make test
+ruff check .
+black --check .
 ```
 
-### Test
-```bash
-make test     # = pytest -q
-pytest        # run directly, fine too
-```
+The Node adapter output is `frontend/build/`; it is generated and should not be
+committed. For a production-like deployment, use `docker compose -f compose.yaml
+up --build` with `PB_URL` configured.
 
-### i18n (multilingual)
+### Backend gettext catalogs
+
 ```bash
-make i18n-extract        # refresh app/locales/messages.pot
-make i18n-add LOCALE=de  # new catalog (also enable in app/i18n.py)
+make i18n-extract
+make i18n-add LOCALE=de
 make i18n-update
 make i18n-compile
-pytest tests/test_i18n.py
 ```
 
-### Lint/Format
-```bash
-# Ruff (lint)
-ruff check .
-
-# Black (format)
-black .
-```
+These Make targets update backend gettext messages only. Svelte UI translations
+must also be added to `frontend/src/lib/i18n.ts`.
 
 ## Architecture
 
-### Stack
-- **Backend**: FastAPI (Python 3.11+)
-- **Frontend**: HTMX + Alpine.js + Tailwind CSS 4, built with Vite
-- **Templates**: Jinja2 (locale-aware date filters; `_` / `ngettext` gettext)
-- **DB**: PocketBase (via SDK)
-- **i18n**: gettext catalogs under `app/locales/` (default locale **en**, which is also the source of msgids; `es`/`tr`/`hy` also enabled; all locales are LTR)
-
-### Key Directories
+```text
+Browser
+  └── SvelteKit SSR + client navigation (public same-origin app)
+        └── private /api/v1 BFF proxy
+              └── FastAPI API -> services -> PocketBase (external)
 ```
+
+- SvelteKit page `load` functions and form actions call the same-origin BFF.
+- FastAPI owns authentication, role/tenant authorization, validation, data
+  mutation, and PocketBase access. Never move business rules to the browser.
+- `pb_auth` remains HttpOnly; never expose PocketBase tokens or credentials to
+  client-side JavaScript.
+- FastAPI middleware trusts forwarded host/protocol/client-IP data only from
+  the exact frontend proxy peer configured in Compose. Do not broaden proxy
+  trust or publish backend port 8000.
+- `/healthz` does not access PocketBase. `/docs`, OpenAPI and JSON debug routes
+  are development-only. Keep tenant resolution and open-redirect checks intact.
+- The SvelteKit catch-all route currently dispatches the existing public URL
+  space; preserve its routes, query parameters, form behavior, and HTTP status
+  semantics when changing it.
+- Dynamic `/manifest.json` and `/favicon.ico` are proxied from FastAPI so
+  tenant branding remains origin-local. SvelteKit owns its service worker and
+  offline page.
+
+## Project layout
+
+```text
 app/
-├── routes/       # FastAPI routers (feature-organized; user/ subfolder for trainee area)
-├── services/     # Business logic: PocketBase queries, auth, filters, tenant scoping
-├── static/       # Vite inputs (main.js, main.css) and built assets (app.css, app.js)
-├── templates/    # Jinja2 templates (base, layouts, pages, forms, modals, components)
-├── main.py       # FastAPI app setup
-├── middleware.py # TenantMiddleware
-├── security.py   # Auth cookies, sanitizers, allowlists, validators
-├── i18n.py       # Locale registry + gettext plumbing
-└── templates.py  # Jinja2 env (globals + locale-aware filters)
+├── routes/api.py       # JSON API
+├── routes/pwa.py       # Tenant-aware manifest/favicon
+├── routes/debug.py     # Development diagnostics
+├── services/           # PocketBase access and business rules
+├── middleware.py       # Tenant, auth, proxy trust, CSRF, security headers
+├── security.py         # Cookies, sanitizers, host and redirect validation
+├── i18n.py             # Backend locale registry/gettext
+└── static/swagger/     # Development API docs assets
+frontend/
+├── src/routes/         # SvelteKit pages, actions, BFF and PWA endpoints
+├── src/lib/            # UI, API client, locale dictionaries
+├── src/service-worker.ts
+└── package.json        # SvelteKit + adapter-node dependencies
+tests/                  # Python/API/security/i18n tests
+compose.yaml            # Exactly the frontend and backend services
 ```
 
-### Entry Points
-- **FastAPI**: `app.main:app`
-- **Templates**: `app/templates.py` (Jinja2 env + `_`/`ngettext`/`locale` globals + locale-aware filters)
-- **Static**: `app/static/main.js` + `app/static/main.css` (Vite inputs)
+## Security and behavior constraints
 
-### Quirks
-- **Dates**: `loc_year` / `loc_date` filters in `templates.py` (also aliased `jalali_year` / `jalali_date`) render Gregorian dates via Babel (fallback `%Y-%m-%d`).
-- **Swagger**: Disabled in production (`ENV=production` / `IS_PROD`).
-- **Tenant Middleware**: Applied globally via `TenantMiddleware`; `GET /healthz` is served before any PocketBase call.
-- **Auth cookie**: `pb_auth` via `app/security.set_auth_cookie` — `Secure` conditional on prod/https; login rate-limited 5 attempts/5 min per IP+identity+tenant.
-- **Vite**: builds to `app/static/app.css` + `app/static/app.js` (committed; Python runs without Node).
-
-## Constraints
-- **Python**: 3.11+ (per `pyproject.toml`).
-- **Node**: Required to rebuild static assets (Vite).
-- **Env Vars**: `PB_URL`, `ENV` (`production` disables Swagger/docs), optional `ALLOWED_HOSTS` (TrustedHostMiddleware allowlist).
-- **PocketBase**: Must be running (version ≥0.17.1) with a `tenants` record matching the request hostname.
-
-## Workflow Order
-1. **Setup**: Python venv + Node deps.
-2. **Dev**: Run `uvicorn` + `npm run dev` in parallel.
-3. **Build**: `npm run build` before deployment (regenerates `app/static/app.{css,js}`).
-4. **Test**: `make test` (i18n + security regression suites).
-5. **Lint**: `ruff check .` + `black .` (order irrelevant).
-
-## Gotchas
-- **Tailwind**: Vite + `@tailwindcss/vite`; edit `app/static/main.css`, rebuild with `npm run build`.
-- **Jinja2 Filters**: Must be registered before template rendering.
-- **New accounts**: initial password is random and never shown in the UI — staff must reset/share via PocketBase admin.
-- **PocketBase**: No local mock → must be running for full functionality.
+- Preserve role checks (`owner`, `coach`, `trainee`) and tenant-scoped record
+  access in FastAPI. Hiding a control in Svelte is not authorization.
+- Preserve login rate limiting, secure/HttpOnly/SameSite cookies, CSRF Origin /
+  Referer validation, forwarded-host validation, and safe redirects.
+- Never trust client-provided tenant, role, or record IDs. Validate uploads and
+  do not expose PocketBase admin credentials.
+- Keep semantic HTTP statuses for JSON APIs and SSR page errors. Do not turn
+  failed upstream requests into a successful page response.
+- Use accessible semantic controls, labels, keyboard operation, visible focus,
+  responsive layouts, and reduced-motion support.
+- No HTMX, Alpine.js, Jinja UI, or alternate frontend framework. Do not inject
+  legacy HTML into Svelte.
 
 ## References
-- `pyproject.toml`: Ruff/Black config.
-- `package.json`: Vite + Tailwind scripts (`dev`, `build`).
-- `Makefile`: test + i18n targets.
-- `app/requirements.txt`: Python deps.
-- `app/templates.py`: Jinja2 env + locale-aware date filters.
+
+- `pyproject.toml`: Ruff/Black configuration.
+- `app/requirements.txt`: Python runtime dependencies.
+- `frontend/package.json`: frontend scripts and dependencies.
+- `Makefile`: Python tests and backend i18n targets.
+- `docs/04-architecture.md`: request/security and data-flow details.
+- `docs/06-configuration-deployment.md`: Dokploy/Compose runbook.

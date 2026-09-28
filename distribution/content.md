@@ -7,14 +7,14 @@
 
 ## 1) Dev.to / Hashnode — architecture article (HIGH fit)
 
-**Working title:** Multi-tenant FastAPI: one codebase, N branded gym PWAs
+**Working title:** One gym-coaching platform, branded per gym
 
 **Outline (problem → approach → tradeoffs → result):**
 1. **Problem:** every gym asked for "an app", but one deployed app per gym didn't scale; coaches wanted per-trainee plans, not PDFs.
 2. **Approach:** hostname-based tenancy (`Host` header → PocketBase `tenants`), per-tenant theme/logo/manifest, roles scoped to tenants.
-3. **The stack:** FastAPI routers thin, services own PocketBase queries; HTML over the wire with HTMX + Alpine; Tailwind/daisyUI; PWA/service worker per tenant; i18n (gettext; en/es/tr/hy, all LTR).
+3. **The stack:** SvelteKit/Svelte 5 SSR frontend with TypeScript; FastAPI owns the JSON API, authorization, and PocketBase access; Tailwind/Caldera styles; tenant-aware PWA; separate Svelte dictionaries and backend gettext (en/es/tr/hy, all LTR).
 4. **Tradeoffs:** trust boundary is the `Host` header (tenant resolution + auth cookie validation via PocketBase `auth_refresh`); external DB (PocketBase) instead of ORM — no migration layer; no `dotenv` auto-loading (explicit `PB_URL`); Swagger/docs gated in prod.
-5. **Result:** ISO-ish per-gym branded installable app from one FastAPI app; open source (ISC), self-hostable via Docker; Docker layer excludes Node — assets pre-built with Vite.
+5. **Result:** per-gym branded installable app from one two-service Compose deployment; open source (ISC), self-hostable with Docker; Node serves SvelteKit SSR and FastAPI stays private behind the frontend.
 6. **CTA:** link to repo, docs, Dockerfile; mention gyme.cloud hosted option in one sentence.
 
 **Disclosure:** "I built this — happy to answer questions about the tenancy model."
@@ -27,9 +27,9 @@
 
 **Suggested framing (the author's own words, not a script):**
 - Point 1: built Gyme because gyms in [region] still run coaching through WhatsApp/PDF; each gym wanted *its own* branded app.
-- Point 2: the interesting engineering bit is hostname-based multi-tenancy + a dynamic per-gym PWA manifest, with PocketBase as the data layer and HTML-over-the-wire (HTMX) for interactivity.
-- Point 3: honest tradeoffs list (see DISTRIBUTION-REPORT.md): random 15-char passwords never shown in the UI (staff reset via PocketBase admin), login rate-limited 5 attempts/5 min, no formal Contributing process yet.
-- Point 4: release/roadmap (v0.9.1; multilingual en/es/tr/hy, all LTR).
+- Point 2: the interesting engineering bit is hostname-based multi-tenancy + a dynamic per-gym PWA manifest, with PocketBase as the data layer and SvelteKit SSR/forms in front of a private FastAPI JSON API.
+- Point 3: honest tradeoffs list: random 15-character passwords are never shown in the UI (staff set/reset through PocketBase admin), login is limited to 5 attempts per 5 minutes per IP/identity/tenant, and PocketBase rules must be configured by the operator.
+- Point 4: verify the current release and roadmap before posting; the UI supports en/es/tr/hy, all LTR.
 - Link: https://github.com/Rastin-Amani/Gyme
 
 **Do NOT:** ask for upvotes, coordinate comments, post AI-generated body.
@@ -46,7 +46,8 @@ Draft body (to be rewritten by author, disclosure first line):
 > coaching platform. Each tenant (gym) gets its own branded PWA on its own
 > domain — trainees get a "today" plan view with a Done button, coaches manage
 > trainees and plans, progress logs compute BMI/BFP/BMR/TDEE/LBM/WHR from body
-> metrics. Stack: FastAPI + HTMX + PocketBase, ships in a Dockerfile. UI is
+> metrics. Stack: SvelteKit + FastAPI + PocketBase, ships as a two-service
+> Compose deployment. UI is
 > multilingual (en/es/tr/hy, all LTR). I'm the author — happy to
 > answer setup questions.
 > https://github.com/Rastin-Amani/Gyme
@@ -70,7 +71,7 @@ Draft body (to be rewritten by author, disclosure first line):
 ## 5) Newsletter one-liners (MEDIUM fit)
 
 **Python Weekly / PyCoder's Weekly (suggestion form):**
-"Gyme: multi-tenant gym-coaching platform in FastAPI — per-gym branded PWAs, HTMX front end, PocketBase data layer, i18n (en/es/tr/hy), Docker deploy. https://github.com/Rastin-Amani/Gyme"
+"Gyme: multi-tenant gym-coaching platform with SvelteKit, FastAPI, and PocketBase — per-gym branded PWAs, i18n (en/es/tr/hy), Docker Compose deploy. https://github.com/Rastin-Amani/Gyme"
 
 **Self-hosted newsletter (editorial; verify open/paid):**
 "Self-hosted gym management with per-gym branded PWA, trainee/coach roles, plan templates and progress tracking. ISC, FastAPI, Docker."
@@ -86,7 +87,6 @@ Draft body (to be rewritten by author, disclosure first line):
 
 ## Content factual check (before any publication)
 
-[ ] Version 0.9.1 · ISC license · 55 passing tests locally
-[ ] CI green on main (ruff, black, pytest) — ready to link from anywhere (run 36229851866)
+[ ] Recheck current version, license, test result, and CI status before posting
 [ ] gyme.cloud reachable & screenshots exist (not yet)
 [ ] No fabricated metrics, users, testimonials, or roadmap items

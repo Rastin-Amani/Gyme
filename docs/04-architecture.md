@@ -1,323 +1,102 @@
 # 04 — Architecture
 
-**Verification status:** everything here is derived from reading the current
-source (`app/**`, `vite.config.js`, `Dockerfile`). Where behavior depends on
-the external PocketBase instance (API rules, collection schema), it is marked.
+## System context
 
----
+Gyme serves its browser UI from SvelteKit (Svelte 5, TypeScript,
+`@sveltejs/adapter-node`). FastAPI provides the authenticated JSON API and owns
+validation, tenant/role authorization, business rules, and persistence. An
+external PocketBase instance stores records, auth data, and files.
 
-## 1. System context
-
-Gyme is a server-rendered web application. There is no SPA, no REST/JSON API
-for the UI, and no client-side data store: the FastAPI backend renders HTML
-fragments, and HTMX swaps them into the page. All persistence — records,
-authentication, file storage — is delegated to an external **PocketBase**
-instance over HTTP using the official Python SDK.
-
-```mermaid
-flowchart LR
-    U["Browser\n(PWA: HTMX 2 + Alpine.js 3 + daisyUI/Tailwind CSS 4)"]
-    F["FastAPI app\napp.main:app"]
-    PB["PocketBase\n(external)"]
-
-    U -- "HTML over the wire\n(form posts, hx-post/hx-get)" --> F
-    F -- "records / auth / files\n(pocketbase SDK)" --> PB
-    PB -- "auth tokens, record files\n(logos, progress photos)" --> U
+```text
+Browser
+  └─ SvelteKit SSR + client navigation (public origin)
+       ├─ HTML/pages, server loads and form actions
+       └─ same-origin /api/v1/* proxy
+            └─ private FastAPI /api/v1 JSON API
+                 └─ services → external PocketBase
 ```
 
-Component inventory:
+SvelteKit lives in `frontend/`. FastAPI's assembly, middleware, API router, and
+business services live in `app/`. The backend does not render the application
+UI; FastAPI's development Swagger page is API documentation only.
 
-| Layer | Location | Responsibility |
-| --- | --- | --- |
-| App assembly | `app/main.py` | Router registration, static mount, version, prod gating of docs/debug, `ALLOWED_HOSTS` trust |
-| Middleware | `app/middleware.py` | Tenant resolution, authentication, access logs |
-| Routers | `app/routes/**` (+ `app/routes/user/**`) | HTTP endpoints; form parsing; HTMX header responses |
-| Services | `app/services/**` | All PocketBase queries/filters and business rules |
-| Templates | `app/templates/**` | base/layout/page/form/modal/component hierarchy (LTR) |
-| Template env | `app/templates.py` | Jinja2 environment, `_`/`ngettext`/`locale` globals + locale-aware date filters |
-| PB clients | `app/pb.py` | `PB_URL` config, `get_pb()` factory |
-| Logging | `app/logging_config.py` | structlog pipeline with request context |
-| Static assets | `app/static/**` | Vite-built `app.css`/`app.js`, workbox chunks, fonts, swagger assets |
+## Request and trust boundaries
 
-## 2. Request lifecycle
+1. The public request reaches the Node/SvelteKit frontend. SvelteKit SSR loads
+   and form actions call the same-origin `/api/v1/*` proxy; browser code does
+   not call PocketBase or the private backend directly.
+2. The proxy forwards the browser cookie and request origin context, plus the
+   public host/protocol and client address. FastAPI trusts forwarded values only
+   when the immediate peer matches `TRUSTED_PROXIES`.
+3. `compose.yaml` assigns the frontend `172.28.0.2`; the backend sets
+   `TRUSTED_PROXIES=172.28.0.2/32` and exposes port 8000 only inside the Compose
+   network. Do not publish that backend port or broaden proxy trust.
+4. FastAPI resolves the tenant by exact public hostname against PocketBase's
+   `tenants.domain`, validates the `pb_auth` token with PocketBase, then applies
+   tenant and role checks in the API routes/services.
+5. FastAPI returns JSON and semantic HTTP statuses. Failed upstream requests
+   remain failures; the SvelteKit page layer does not treat them as successful
+   mutations.
 
-Every request passes through exactly one middleware, `TenantMiddleware`
-(`BaseHTTPMiddleware`), registered globally:
+`pb_auth` is HttpOnly and SameSite=Lax; it is Secure in production. Login is
+rate-limited in process by client IP, identity, and tenant (5 attempts per 5
+minutes). Authenticated state-changing API requests require same-origin context;
+only the trusted frontend peer may make the server-side BFF hop without an
+Origin/Referer header. `GET /healthz` is a process liveness check and does not
+contact PocketBase.
 
-```mermaid
-sequenceDiagram
-    participant B as Browser
-    participant M as TenantMiddleware
-    participant PB as PocketBase
-    participant R as Route handler
+## API and data
 
-    B->>M: HTTP request (Host header, pb_auth cookie?)
-    M->>PB: tenants.get_first_list_item(domain="<host>")
-    M->>M: request.state.tenant = tenant (or None)
-    Note over M: bind req_id + tenant_id to logging context
-    M->>PB: load pb_auth token, users.auth_refresh()
-    alt valid token
-        M->>M: request.state.user / role set
-    else invalid/expired
-        M->>M: clear auth store, treat as anonymous
-    end
-    alt path = "/" (any tenant)
-        M-->>B: 303 → /dashboard if authenticated, else /login
-    end
-    alt anonymous and path not public
-        M-->>B: 303 → /login
-    end
-    M->>R: dispatch
-    R->>PB: queries via services layer
-    R-->>B: HTML page / fragment / 204+HX-* headers
-    M-->>B: request.completed log (status, duration_ms)
-```
+The JSON API is rooted at `/api/v1` in `app/routes/api.py`; the SvelteKit proxy
+exposes it on the public origin. API routes coordinate requests and authorization
+while `app/services/` contains PocketBase queries and business logic. Main
+collections used by the app are `tenants`, `users`, `trainees`, `plans`,
+`training_items`, `diet_items`, `steroid_items`, `progress_logs`, and
+`plan_progress`. The separate marketing application owns `leads`.
 
-Step-by-step behavior (all verifiable in `middleware.py`):
+The repository does not define or migrate the PocketBase schema or API rules.
+Field use can be traced in the services/API code, but operators must provision
+the collections and review PocketBase rules for their deployment. FastAPI's
+tenant/role checks do not replace restrictive PocketBase API rules, especially
+because PocketBase file URLs may be fetched directly by browsers.
 
-1. A short `req_id` (8-char UUID prefix) is generated and attached to
-   `request.state` and to the structlog context along with `tenant_id`.
-2. The hostname (Host header without port) is looked up in the `tenants`
-   collection by exact `domain` match. No match ⇒ `request.state.tenant = None`.
-3. If a `pb_auth` cookie exists, the token is loaded into a fresh PocketBase
-   client and validated via `pb.collection("users").auth_refresh()`. On any
-   error (expired, revoked, password changed) the client treats the request as
-   anonymous. The resolved user and its `role` (default `"trainee"`) go onto
-   `request.state`.
-4. Redirect rules:
-   - `/` → `303` to `/dashboard` if authenticated else `/login`, regardless of
-     the tenant (`is_main` is no longer read).
-   - Any non-public path while unauthenticated → `303 /login`. Public paths:
-     `/login`, `/logout`, `/static/*`, `/manifest.json`, `/sw.js`,
-     `/favicon.ico`, `/locale`. `/healthz` is served before these checks
-     (PB-free liveness endpoint).
-5. The request proceeds; start/end are logged as `request.started` /
-   `request.completed` with method, path, role, status, duration. Exceptions
-   are logged as `request.error` with traceback and re-raised.
-6. Logging context is cleared at the end of the request.
+## Frontend and localization
 
-**Consequence for operations:** every hostname served must exist in `tenants`.
-Authenticated traffic to an unknown domain will pass the middleware but crash
-in route handlers that dereference `request.state.tenant.id`; unauthenticated
-traffic lands on the login page, and submitting login there yields the
-"System error: Gym not found!" toast (handled explicitly in `routes/auth.py`).
+`frontend/src/routes/` contains the SvelteKit page shell, server loads/actions,
+same-origin API proxy, manifest/favicon handlers, and offline page. The public
+page catch-all preserves the application's paths while data mutations and reads
+go through FastAPI. Shared API helpers and UI translations are under
+`frontend/src/lib/`; UI dictionaries for `en`, `es`, `tr`, and `hy` are in
+`frontend/src/lib/i18n.ts`.
 
-## 3. Authentication & session model
+FastAPI/PWA messages use gettext catalogs in `app/locales/`. The two translation
+systems are separate: backend Make targets update gettext catalogs, not the
+Svelte dictionaries. Both the frontend locale cookie (`gyme_locale`) and
+backend API locale support are allowlisted; all enabled locales are LTR.
 
-- **Credential check** happens only in PocketBase
-  (`users.auth_with_password`) inside `services/auth.login_user`. After a
-  successful password check, the user's `tenant` field is compared against the
-  host-derived tenant id; mismatch ⇒ immediate logout-clear and failure
-  («Invalid tenant access» logged as `login_cross_tenant_denied`).
-- **Session transport** is the PocketBase auth token in an `pb_auth` cookie:
-  `HttpOnly`, `SameSite=Lax`, `Secure` set conditionally via
-  `security.cookie_secure_flag()` (True when `ENV=production` or the request
-  arrived over https/x-forwarded-proto). There are no server-side sessions;
-  every request re-validates the token against PocketBase. Login is rate
-  limited in-memory to 5 attempts per 5 minutes per IP+identity+tenant.
-- **Account creation** (`services/auth.create_user`) generates a random
-  15-character password (never set to the email), with `emailVisibility=True`.
-  **The initial password is not displayed anywhere in the UI**, so staff must
-  share or reset it through PocketBase admin before first login. The legacy
-  error message still warns about duplicate/short emails (PocketBase enforces
-  ≥8-char passwords).
-- **Password change** (`POST /change-password`) validates confirmation +
-  minimum length in the route, calls PocketBase's `oldPassword/password/
-  passwordConfirm` update, then immediately re-authenticates with the new
-  password and re-issues the cookie so the session survives.
-- **Authorization** is coarse role-based routing, enforced in two places:
-  - middleware: anonymous → `/login`;
-  - routes: `user.role == "trainee"` redirects away from all owner/coach pages
-    to `/user/dashboard`; non-trainees are redirected away from `/user/*` pages.
-  - coach scoping happens in query construction: coaches see only trainees
-    reachable through their own plans (`services/trainee.list_trainees`
-    collects plan trainee ids for the current coach) and only their own plans
-    (`routes/plan.py` forces `coach_id = user.id`).
+## Build and deployment
 
-There is no per-object ACL logic in the app beyond tenant scoping in query
-filters; record-level security ultimately depends on PocketBase API rules
-(**Unverified:** rules live in the instance, not in this repo). IDs are always
-combined with a `tenant="..."` filter in service queries.
+- `npm --prefix frontend run check` type-checks the SvelteKit project;
+  `npm --prefix frontend run build` creates the adapter-node server.
+- `frontend/Dockerfile` builds and runs the Node SSR frontend on port 3000.
+  The root `Dockerfile` builds FastAPI on port 8000.
+- `compose.yaml` contains only `frontend` and `backend`; only the frontend is
+  exposed for public routing. PocketBase is external.
+- For local development, run FastAPI on port 8000 and SvelteKit on port 5173;
+  set `BACKEND_URL=http://127.0.0.1:8000` and use a hostname present in the
+  `tenants` collection.
+- `ENV=production` disables FastAPI Swagger/OpenAPI and debug routes. The backend
+  requires `PB_URL` in production; `.env` files are not loaded automatically.
 
-## 4. Data model
+## PWA endpoints and offline behavior
 
-All collections live in PocketBase. Field lists below are reconstructed from
-payloads and filters in the code (the schema itself lives in the PB instance):
+The public SvelteKit endpoints `/manifest.json` and `/favicon.ico` obtain
+tenant-aware resources from FastAPI. The backend builds the manifest using the
+resolved tenant and redirects the favicon to the tenant logo when configured.
+SvelteKit owns the service worker and offline page. Its worker precaches the
+current build/static assets, avoids `/api/` requests, and serves the bundled
+offline page if a navigation fails; it does not provide a cached copy of
+authenticated API data.
 
-```mermaid
-erDiagram
-    tenants ||--o{ users : "domain-scoped accounts"
-    tenants ||--o{ trainees : ""
-    tenants ||--o{ plans : ""
-    tenants ||--o{ progress_logs : ""
-    users ||--o| trainees : "trainees.user"
-    users ||--o{ plans : "plans.coach"
-    trainees ||--o{ plans : "plans.trainee"
-    trainees ||--o{ progress_logs : "progress_logs.trainee"
-    plans ||--o{ training_items : "plan"
-    plans ||--o{ diet_items : "plan"
-    plans ||--o{ steroid_items : "plan"
-    plans ||--o| plan_progress : "current day pointer"
-```
-
-| Collection | Fields used by the code | Notes |
-| --- | --- | --- |
-| `tenants` | `domain`, `name`, `logo` (file), `theme`, `brand_theme` (map rendered as CSS vars), `brand_colors` (`base_100`, `base_content`), `primary_color`, `is_main` | one record per served hostname; `is_main` is still present in the schema but no longer read by the app (the marketing site is a separate application) |
-| `users` (auth) | `email`, `password`, `first_name`, `last_name`, `phone`, `tenant`, `role` (`owner`/`coach`/`trainee`), `emailVisibility` | coaches *and* owners are plain users with roles; there is also a separate `coaches` reference in one query (see known issues) |
-| `trainees` | `tenant`, `user`, `status` (`active`/`inactive`, default `active` on create), `gender`, `birthdate`, `blood_type`, `height`, `weight`, `training_history`, `steroid_history`, `supplement_history`, `limitations`, `notes` | list views expand `user` |
-| `plans` | `tenant`, `type` (`training`/`diet`/`steroid`), `trainee`, `coach`, `start_date`, `end_date`, `days_per_week`, `status` (`active`/`inactive`; `draft` is counted by dashboard stats but not offered in the form), `notes`, `is_template` (bool), `template_name` | templates = rows with `is_template=true`; list views expand `trainee,coach,trainee.user` |
-| `training_items` | `tenant`, `plan`, `name`, `category`, `seq` (day), `order`, `sets`, `reps`, `weight`, `rest_seconds`, `notes` | ⚠️ the HTTP layer currently drops `category` (known issue #2) |
-| `diet_items` | `tenant`, `plan`, `meal_name`, `name` (food), `quantity`, `seq`, `order`, `notes` | |
-| `steroid_items` | `tenant`, `plan`, `name`, `type` (`supplement`/`steroid`), `dosage`, `frequency`, `seq`, `order`, `notes` | |
-| `progress_logs` | `tenant`, `trainee`, `height`, `weight`, `chest`, `waist`, `hip`, `arms`, `bmi`, `bfp`, `bmr`, `tdee`, `lbm`, `whr`, `notes`, `progress_photos` (files ≤5) | metrics computed client-side |
-| `plan_progress` | `tenant`, `plan`, `current_seq` | one row per started plan; "Done" advances/wraps `current_seq` |
-| `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` | written by the separate marketing site; this app no longer writes leads |
-
-### Trainee "today" computation
-
-The trainee dashboard (`routes/user/dashboard.py`) does not paginate by date;
-it works on a per-plan **day pointer**:
-
-1. Load the trainee's plans (`get_plans_by_trainee`), split by type into
-   `training` / `diet` / `steroid` buckets.
-2. For each plan, fetch its single `plan_progress` row (or assume seq 1).
-3. Fetch items where `seq == current_seq` (`get_items_by_plan_seq`), sorted by
-   `seq`,`order`.
-4. Render those items grouped by `meal_name` (diet) or `category` (training).
-5. `POST /user/plans/{id}/done` recomputes the sorted distinct `seq` list,
-   advances to the next entry with wrap-around, updates/creates the
-   `plan_progress` row, and answers with `HX-Refresh: true`.
-
-## 5. Server ↔ browser interaction contract
-
-Pages are enhanced with `hx-boost="true"` on `<body>` (normal navigation feels
-instant). Mutations are HTMX requests that mostly return **empty bodies plus
-headers**, interpreted by listeners registered in `base.html`:
-
-| Mechanism | Emitted by | Effect |
-| --- | --- | --- |
-| `HX-Trigger-After-Swap: {"show-toast": {message, type}}` | `utils.hx_toast()` used by nearly every mutation | DaisyUI toast (info/success/error/warning), auto-dismisses after ~4 s |
-| `HX-Trigger` with `delayed-redirect: {url}` | create/update/delete flows | JS listener navigates after ~500 ms so the toast stays visible |
-| `HX-Trigger` with `closeModal` / `refreshList` / `performListRefresh` | modal forms (items, template apply, log edit) | closes dialog, refreshes underlying list |
-| `HX-Redirect` | password change when unauthenticated, etc. | full-page navigation |
-| `HX-Refresh: true` | trainee "done" button | reloads current page |
-| partial renders | dashboard timeframe select targets `dashboard-content`; search/filter/trainee list swap table fragments | server returns component templates instead of whole pages |
-
-A top progress bar animates on every HTMX request/beforeunload
-(`htmx:beforeRequest` / `afterSettle` listeners in `base.html`).
-
-## 6. Templates
-
-```
-base.html                     lang/dir from locale, theme vars, offline banner,
-│                             toast/redirect listeners, SW registration,
-│                             iOS splash generator, locale switcher in header
-├── layouts/dashboard.html    back button, tenant name/logo header, bottom dock
-│   ├── pages/owner/…         dashboard, trainees(+detail), coaches(+detail),
-│   │                         plans(+detail), profile
-│   ├── pages/user/…          today dashboard, plans(+detail), profile
-│   └── pages/auth/change_password.html
-├── pages/auth/login.html     login card + iOS install overlay
-├── forms/*.html              full-page create/edit forms (trainees, coaches,
-│                             plans, progress_logs)
-├── modals/*.html             HTMX-injected dialogs (items_form, apply_template,
-│                             confirm_delete, progress_log_edit)
-└── components/*.html         reusable fragments (dashboard_stats, coach_stats,
-                              dashboard_content, locale_switcher, toast, datepicker)
-```
-
-Jinja2 globals/filters: `app_version` global; `_` and `ngettext` from gettext
-(exposed globally) plus a `locale` proxy; date filters (`loc_date` / `loc_year`,
-aliased as `jalali_date` / `jalali_year` for backwards compatibility) convert
-PocketBase datetime strings (`YYYY-MM-DD[ HH:MM:SS(.f)]`, optional trailing
-`Z`) to the Gregorian calendar — a Babel medium date / year for the active
-locale, falling back to `%Y-%m-%d`. On bad input they return the raw string
-with a `date_parse_error` warning.
-
-Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
-'custom'` else `tenant.theme` (default `gyme`); custom tenants may inject a
-`:root { --var: value }` block from the `brand_theme` map.
-
-## 7. Frontend build pipeline
-
-- Entry: `app/static/main.js` imports `main.css`, registers `htmx`, `Alpine`,
-  `SortableJS` globals and starts Alpine.
-- Vite (`vite.config.js`): base `/static/`, Tailwind CSS 4 via
-  `@tailwindcss/vite`; build outputs `app/static/app.js` (entry),
-  `app/static/app.css` (CSS asset), fonts under `assets/[name]-[hash][extname]`;
-  `emptyOutDir=false` so the service worker, workbox chunks and swagger assets
-  survive rebuilds.
-- Committed built artifacts mean the Python app runs without Node; Node is only
-  needed to regenerate assets after class/template changes.
-
-## 8. PWA internals
-
-- `GET /manifest.json` (`routes/pwa.py`) builds a manifest per request from the
-  tenant record: name/short_name = gym name; icons = tenant logo rendered
-  through PocketBase thumb generator (`?thumb=192x192f` / `512x512f`) or
-  fallback static icons; standalone portrait, dark background `#1d232a`,
-  `start_url=/login`.
-- `GET /favicon.ico` redirects to a 32×32 thumb of the tenant logo or the
-  bundled favicon.
-- `GET /sw.js` serves `app/static/sw.js` with `__CACHE_VERSION__` replaced by
-  `APP_VERSION` (cache names embed the version, so deploying purges old
-  caches); served with `Service-Worker-Allowed: /` and `Cache-Control:
-  no-cache`.
-- Service worker strategies (Workbox modules self-hosted under
-  `/static/js/`):
-  - same-origin css/js/font/json: StaleWhileRevalidate, max 60 entries /
-    30 days;
-  - images (any origin — covers PocketBase photo URLs): cache-first, add to
-    image cache on success;
-  - navigations/HTML: network-first; on failure fall back to cached copy of
-    that URL, then cached `/offline/`, then an inline offline response
-    (503).
-- `base.html` shows/hides the offline banner from `navigator.onLine` events and
-  re-attaches it after HTMX body swaps via MutationObserver.
-- iOS specifics: first-visit "Add to Home Screen" overlay (dismissal persisted
-  in `localStorage`), and a canvas-generated `apple-touch-startup-image` built
-  from the tenant logo/colors/name.
-
-## 9. Logging & observability
-
-- structlog configured once in `logging_config.py`: ISO UTC timestamps,
-  log level + logger name, `req_id` and `tenant_id` merged from contextvars,
-  pretty console renderer when `ENV=dev`, JSON renderer otherwise.
-- uvicorn's access log is silenced (middleware emits richer lifecycle events);
-  `httpx`/`httpcore` debug noise is clamped to WARNING.
-- Event vocabulary examples: `login_success`, `login_cross_tenant_denied`,
-  `auth_refresh_failed`, `request.started/completed/error`,
-  `plan.list_pagination`, `template.apply_failed`,
-  `progress_log.create_failed`, `item.delete_failed`.
-
-If structlog import fails, `main.py` degrades to stdlib logging with a warning.
-
-## 10. Configuration surface
-
-Three environment variables exist (see
-[06-configuration-deployment.md](06-configuration-deployment.md)): `PB_URL`,
-`ENV`, and `ALLOWED_HOSTS` (optional; enables FastAPI's
-`TrustedHostMiddleware`). Feature gating done with them:
-
-| Concern | dev (default) | production |
-| --- | --- | --- |
-| Swagger `/docs` + `/openapi.json` | available | removed (`docs_url=None` always; custom docs + schema gated on `IS_PROD`) |
-| `/debug/*` routes | registered | router excluded AND its routes cleared defensively |
-| Log rendering | console (pretty) | JSON |
-
-## 11. Known structural quirks (summary)
-
-Full analysis in [07-troubleshooting-known-issues.md](07-troubleshooting-known-issues.md);
-architecture-relevant ones:
-
-- Mixed PocketBase client usage: middleware and most routes use a per-request
-  client from `get_pb()`, but `services/auth.py`, `services/tenants.py` share
-  module-level singletons whose `auth_store` mutates during login — acceptable
-  today because those paths don't rely on stored state afterwards, but it is a
-  latent concurrency hazard.
-- Template date filters (`loc_date` / `loc_year`, aliased `jalali_date` /
-  `jalali_year`) render Gregorian dates in `templates.py` for every locale (see
-  [02-getting-started.md](02-getting-started.md) i18n note).
-- One query reads coaches from a `coaches` collection (`routes/plan.py`
-  plan-list filter dropdown) while everywhere else coaches are `users` with
-  `role="coach"`.
+See [configuration & deployment](06-configuration-deployment.md) for the
+operator settings and [API reference](05-api-reference.md) for JSON endpoints.

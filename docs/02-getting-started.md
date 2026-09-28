@@ -1,138 +1,83 @@
 # 02 — Getting Started (Development)
 
-**Verification status:** every command below was checked against the repository
-(`package.json`, `vite.config.js`, `Dockerfile`, `app/requirements.txt`,
-`pyproject.toml`, `Makefile`). The frontend is built with Vite (`npm run dev` /
-`npm run build`); the outdated `css:watch` / `css:build` scripts no longer
-exist.
-
----
+Gyme's browser UI is a SvelteKit/Svelte 5 app in `frontend/`; FastAPI in `app/`
+provides the JSON API, and PocketBase is an external dependency.
 
 ## Prerequisites
 
-| Tool | Requirement | Evidence |
-| --- | --- | --- |
-| Python | 3.11+ | `pyproject.toml` targets `py311`; Docker image is `python:3.11-slim` |
-| Node.js + npm | Modern version supported by Vite 8 | `package.json` devDependencies (`vite ^8`) |
-| PocketBase | A reachable instance you control | all data access goes through it; the Python SDK requirement is `pocketbase>=0.17.1`. The *server* version itself is not pinned anywhere in this repo — use a current release |
+- Python 3.11+
+- Node.js 22+ and npm
+- A reachable PocketBase instance with the collections and tenant record described
+  in [configuration & deployment](06-configuration-deployment.md)
 
-## 1. Python setup
+## Install
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r app/requirements.txt
+npm --prefix frontend ci
 ```
 
-Installed stack: FastAPI, uvicorn, pocketbase (SDK), Jinja2, python-multipart,
-python-dotenv, pydantic-settings, requests, pandas,
-openpyxl, structlog.
+## Configure and run
 
-## 2. Frontend assets
-
-The UI uses Tailwind CSS 4 + daisyUI, compiled by Vite from
-`app/static/main.js` / `app/static/main.css`:
+Set the PocketBase URL and the FastAPI origin used by the SvelteKit server:
 
 ```bash
-npm install
-npm run build     # one-off build → app/static/app.js + app/static/app.css (+ assets/)
-# or
-npm run dev       # Vite watch mode while developing
+export PB_URL="http://127.0.0.1:8090"
+export BACKEND_URL="http://127.0.0.1:8000"
 ```
 
-Vite config details (from `vite.config.js`):
+In separate terminals, run:
 
-- Base path `/static/`, output directory `app/static`, `emptyOutDir: false`.
-- JS entry is emitted as `app.js`; CSS as `app.css`; fonts go to `assets/[name]-[hash][extname]`.
+```bash
+uvicorn app.main:app --reload --port 8000
+```
 
-Prebuilt `app/static/app.css` and `app/static/app.js` are committed, so the
-server runs even without a frontend build — but rebuild whenever templates'
-Tailwind classes change, otherwise new classes won't have styles.
+```bash
+npm --prefix frontend run dev
+```
 
-## 3. Configure environment variables
+The frontend listens on port 5173. Tenant lookup uses the browser's hostname,
+which must match a `domain` in PocketBase's `tenants` collection. For local
+development, map a tenant hostname to loopback (for example,
+`127.0.0.1 yourgym.local` in `/etc/hosts`) and open
+`http://yourgym.local:5173`.
 
-Three environment variables exist (there is no committed `.env.example`):
+The browser sends page requests to SvelteKit. SvelteKit SSR/load functions and
+form actions call FastAPI through the same-origin `/api/v1` proxy; the browser
+does not call PocketBase directly. Set `BACKEND_URL` to the reachable FastAPI
+origin. The backend trusts forwarded host/protocol/client-IP headers only from
+the configured proxy peer; local direct development defaults to loopback trust.
 
-| Variable | Default | Meaning |
+## Configuration notes
+
+| Variable | Development default | Meaning |
 | --- | --- | --- |
-| `PB_URL` | `http://db.dev.gyme.cloud` | PocketBase base URL used by every request (`app/pb.py`). ⚠️ The default points at the project's remote **dev** database — always set your own for local work |
-| `ENV` | `dev` | `production` hides Swagger docs + `/debug/*` routes and switches logging to JSON |
-| `ALLOWED_HOSTS` | *(unset)* | Optional comma-separated host allowlist enabled via Starlette `TrustedHostMiddleware` (`app/main.py`) when non-empty |
+| `PB_URL` | `http://127.0.0.1:8090` | PocketBase base URL. Required when `ENV=production`. |
+| `ENV` | `dev` | `production` disables Swagger and debug routes and enables production logging/security behavior. |
+| `ALLOWED_HOSTS` | unset | Optional comma-separated FastAPI host allowlist. |
+| `TRUSTED_PROXIES` | `127.0.0.1,::1` | Immediate peer addresses/CIDRs allowed to supply forwarded headers. Compose sets the frontend peer to `172.28.0.2/32`. |
+| `BACKEND_URL` | `http://backend:8000` | FastAPI origin for SvelteKit; use `http://127.0.0.1:8000` locally. |
 
-> **`.env` files are not loaded.** `python-dotenv` is installed but never called.
-> Export variables in your shell or process manager:
->
-> ```bash
-> export PB_URL="http://127.0.0.1:8090"
-> # export ENV=production   # only for prod-like runs
-> # export ALLOWED_HOSTS="yourgym.local,app.yourgym.ir"
-> ```
+`.env` files are not loaded automatically; export variables or configure the
+process environment.
 
-## 4. Prepare PocketBase
-
-The app expects these collections to exist (fields are inferred from code — see
-[06-configuration-deployment.md](06-configuration-deployment.md) for field-level
-detail): `tenants`, `users`, `trainees`, `plans`, `training_items`,
-`diet_items`, `steroid_items`, `progress_logs`, `plan_progress`. (`leads` is
-only written by the separate marketing application, not by this app.)
-
-Minimum to boot a usable gym:
-
-1. Create the collections above with the fields listed in the configuration doc.
-2. Create a `tenants` record whose `domain` matches the hostname you will use,
-   e.g. `yourgym.local`, and set its `name` and (optionally) `logo`/theme fields.
-3. Make sure `users` is an auth collection with `role`, `tenant`, `first_name`,
-   `last_name`, `phone` fields and that API rules permit what the app needs
-   (the app talks to PocketBase as an admin-less client using user tokens after
-   login; creation of users/trainees happens with whatever rule set your
-   instance defines — **Unverified:** the repo cannot confirm your instance's
-   API rules).
-
-## 5. Run
+## Checks and localization
 
 ```bash
-uvicorn app.main:app --reload          # serves http://127.0.0.1:8000
+npm --prefix frontend run check
+npm --prefix frontend run build
+.venv/bin/python -m pytest -q
+ruff check .
+black --check .
 ```
 
-Then open the app **through a hostname matching a tenant domain**, e.g. add to
-`/etc/hosts`:
+Svelte UI dictionaries are in `frontend/src/lib/i18n.ts`. FastAPI/PWA messages
+use gettext catalogs in `app/locales/`; the Make targets update those catalogs
+only (`make i18n-extract`, `make i18n-update`, `make i18n-compile`).
 
-```
-127.0.0.1   yourgym.local
-```
-
-and browse `http://yourgym.local:8000`. This matters because tenancy is derived
-from the `Host` header:
-
-- Unknown host → tenant is unresolved → login attempts show
-  "System error: Gym not found!".
-- `/` always redirects into the app: `/dashboard` when logged in, otherwise
-  `/login` (the marketing site lives in a separate application).
-
-## 6. Developer conveniences
-
-- Swagger UI at `/docs`, OpenAPI JSON at `/openapi.json` (non-production only).
-- Liveness probe: `GET /healthz` → `{"status": "ok"}` (never touches
-  PocketBase, so it reports app state even during a PB outage).
-- Locale switching: `GET /locale/{code}?next=...` (cookie + 303 redirect).
-- Debug endpoints under `/debug/*` (non-production only) dump raw tenant/user/
-  plan records as JSON — useful for inspecting expand behavior.
-- Logs: structlog pretty console output in dev; add `req_id` and `tenant_id` to
-  each line via middleware context.
-
-## Lint, format & test
-
-```bash
-ruff check .    # line-length 100, py311 target
-black .         # line-length 100
-pytest -q       # or: make test  (i18n + security regression suites)
-```
-
-Templates are additionally formatted with Prettier (plugins for Jinja and
-Tailwind class sorting are in `package.json` / `.prettierrc`).
-
-## Troubleshooting setup
-
-See [07-troubleshooting-known-issues.md](07-troubleshooting-known-issues.md)
-for symptom-based diagnostics (blank styles, login failures, unknown-domain
-errors, etc.).
+In non-production mode, FastAPI serves Swagger UI at `/docs` and OpenAPI JSON at
+`/openapi.json` on port 8000. `/healthz` is a PocketBase-independent liveness
+check. See [troubleshooting](07-troubleshooting-known-issues.md) for common
+setup issues.
