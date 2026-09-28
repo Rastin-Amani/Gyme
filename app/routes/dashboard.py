@@ -44,7 +44,7 @@ def owner_dashboard(request: Request, timeframe: str = "all"):
     }
 
     # HTMX: timeframe dropdown → return dashboard content (stats + coach section), not whole page
-    if request.headers.get("hx-target") == "dashboard-content":
+    if request.headers.get("hx-target", "").lstrip("#") == "dashboard-content":
         return templates.TemplateResponse(
             request=request, name="components/dashboard_content.html", context=context
         )
