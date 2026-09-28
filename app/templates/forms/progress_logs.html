@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block dashboard_content %}
-    <div class="max-w-3xl mx-auto space-y-6 pb-24">
+    <div class="max-w-3xl mx-auto space-y-6 pb-24" data-page-title="{{ title }}">
         <div class="flex items-center gap-3 mb-4">
             <div class="flex flex-col">
                 <span class="text-sm text-fog font-medium">
@@ -201,7 +201,7 @@
                 ></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full border-2 border-base-content">{{ _('Save assessment') }}</button>
+            <button type="submit" class="btn btn-primary w-full border-2 border-base-content" hx-disabled-elt="this">{{ _('Save assessment') }}</button>
         </form>
     </div>
 

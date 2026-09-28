@@ -4,6 +4,7 @@
 <form
     hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
     hx-swap="none"
+    data-page-title="{{ title }}"
     class="bg-base-100 space-y-4"
 >
     <div class="grid grid-cols-2 gap-4 items-baseline">
@@ -69,7 +70,7 @@
             <a href="/coaches" class="btn btn-ghost border-2 border-base-content/20" hx-boost="false">
                 {{ _('Cancel') }}
             </a>
-            <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content">
+            <button type="submit" class="btn btn-primary flex-1 border-2 border-base-content" hx-disabled-elt="this">
                 {{ _('Save changes') if coach else _('Add coach') }}
             </button>
         </div>

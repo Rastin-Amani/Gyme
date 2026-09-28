@@ -1,6 +1,6 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
-<div id="trainees-content" data-settle>
+<div id="trainees-content" data-settle data-page-title="{{ title }}">
     <header class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
             <h1 class="font-display font-normal text-3xl leading-tight">{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
@@ -25,7 +25,8 @@
                            hx-target="#trainees-content"
                            hx-select="#trainees-content"
                            hx-swap="outerHTML"
-                           hx-trigger="keyup changed delay:500ms, search" />
+                           hx-trigger="keyup changed delay:500ms, search"
+                           hx-sync="closest form:replace" />
                 </label>
                 <div class="grid sm:grid-cols-2 gap-4">
                     <label class="select w-full">
@@ -37,6 +38,7 @@
                                 hx-select="#trainees-content"
                                 hx-swap="outerHTML"
                                 hx-trigger="change"
+                                hx-sync="closest form:replace"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']">
                             <option value="" {% if not filter_params.gender %}selected{% endif %}>{{ _('All') }}</option>
                             <option value="male" {% if filter_params.gender == 'male' %}selected{% endif %}>{{ _('Male') }}</option>
@@ -51,6 +53,7 @@
                                 hx-select="#trainees-content"
                                 hx-swap="outerHTML"
                                 hx-trigger="change"
+                                hx-sync="closest form:replace"
                                 hx-include="[name='gender'],[name='status'],[name='min_birthdate'],[name='max_birthdate']">
                             <option value="" {% if not filter_params.status %}selected{% endif %}>{{ _('All') }}</option>
                             <option value="active" {% if filter_params.status == 'active' %}selected{% endif %}>{{ _('Active') }}</option>

@@ -13,7 +13,7 @@
                 hx-boost="false"
                 hx-on::after-request="this.closest('dialog').remove()"
             >
-                <button type="submit" class="btn btn-error border-2 border-base-content/20">
+                <button type="submit" class="btn btn-error border-2 border-base-content/20" hx-disabled-elt="this">
                     {{ _('Delete') }}
                 </button>
             </form>

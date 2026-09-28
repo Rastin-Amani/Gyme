@@ -156,7 +156,7 @@
                 {{ _('Delete') }}
             </button>
         {% endif %}
-        <button type="submit" class="btn btn-primary border-2 border-base-content flex-3">
+        <button type="submit" class="btn btn-primary border-2 border-base-content flex-3" hx-disabled-elt="this">
             {{ _('Update') if item else _('Add to list') }}
         </button>
     </div>

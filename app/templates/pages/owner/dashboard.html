@@ -1,7 +1,7 @@
 {% extends "layouts/dashboard.html" %}
 
 {% block dashboard_content %}
-    <div class="bg-base-100 pb-24">
+    <div class="bg-base-100 pb-24" data-page-title="{{ title }}">
         <div class="flex flex-col gap-3 mb-8">
             <h1 class="font-display text-3xl font-normal leading-tight">
                 {{ _('Overall statistics') }} <span class="text-2xl">📊</span>
@@ -14,6 +14,8 @@
                 hx-get="/dashboard"
                 hx-target="#dashboard-content"
                 hx-swap="outerHTML"
+                hx-sync="closest form:replace"
+                hx-indicator="#dashboard-content"
             >
                 <option value="all" {% if timeframe == 'all' %}selected{% endif %}>
                     {{ _('All time') }}

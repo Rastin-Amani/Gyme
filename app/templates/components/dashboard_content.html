@@ -1,4 +1,4 @@
-<div id="dashboard-content" class="flex flex-col gap-6" data-settle>
+<div id="dashboard-content" class="flex flex-col gap-6" data-settle data-page-title="{{ title }}">
     {% if user.role == 'owner' %}
         {% include "components/dashboard_stats.html" %}
     {% endif %}

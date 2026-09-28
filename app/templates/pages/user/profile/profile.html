@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div class="max-w-150">
+    <div class="max-w-150" data-page-title="{{ title }}">
         <div class="items-center justify-between bg-base-100 border-2 border-base-content p-4 mb-4 card flex rounded-[2.5rem]">
             <a href="/change-password" class="btn btn-sm border-2 border-base-content">{{ _('Change password') }}</a>
             <div class="text-center">

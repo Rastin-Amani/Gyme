@@ -1,7 +1,7 @@
 {% extends "layouts/dashboard.html" %}
 
 {% block dashboard_content %}
-    <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24">
+    <div class="min-h-screen bg-base-100 text-base-content font-sans pb-24" x-data="{ tab: '{{ active_tab }}' }" data-page-title="{{ title }}">
         <div class="flex flex-col gap-4 pb-6">
             <h1 class="font-display font-normal text-3xl md:text-4xl leading-tight">
                 <span class="text-secondary font-medium">
@@ -48,8 +48,9 @@
                     <a
                         role="tab"
                         id="btn-diet"
-                        class="tab transition-all px-6 {% if active_tab == 'diet' %}tab-active{% endif %}"
-                        onclick="showTab('diet')"
+                        class="tab transition-all px-6"
+                        :class="{ 'tab-active': tab === 'diet' }"
+                        @click="tab = 'diet'; $store.ui.setTab('diet')"
                     >
                         {{ _('Diet') }} 🥑
                     </a>
@@ -59,8 +60,9 @@
                     <a
                         role="tab"
                         id="btn-training"
-                        class="tab transition-all px-6 {% if active_tab == 'training' %}tab-active{% endif %}"
-                        onclick="showTab('training')"
+                        class="tab transition-all px-6"
+                        :class="{ 'tab-active': tab === 'training' }"
+                        @click="tab = 'training'; $store.ui.setTab('training')"
                     >
                         {{ _('Training') }} 💪🏻
                     </a>
@@ -70,8 +72,9 @@
                     <a
                         role="tab"
                         id="btn-steroid"
-                        class="tab transition-all px-6 {% if active_tab == 'steroid' %}tab-active{% endif %}"
-                        onclick="showTab('steroid')"
+                        class="tab transition-all px-6"
+                        :class="{ 'tab-active': tab === 'steroid' }"
+                        @click="tab = 'steroid'; $store.ui.setTab('steroid')"
                     >
                         {{ _('Steroid') }} 💊
                     </a>
@@ -79,7 +82,7 @@
             </div>
         </div>
 
-        <section id="tab-diet" class="{% if active_tab != 'diet' %}hidden{% endif %}">
+        <section id="tab-diet" x-cloak x-show="tab === 'diet'">
             {% if plans['diet'] %}
                 {# 🟢 FIXED: Loop filters out empty plans automatically! #}
                 {% for p in plans['diet'] if p['items'] %}
@@ -87,6 +90,8 @@
                         {% set meal_categories = ['Fasting', 'Breakfast', 'Snack', 'Pre-workout', 'Post-workout', 'Lunch', 'Dinner'] %}
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
+                            hx-swap="none"
+                            hx-disabled-elt="this"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
@@ -167,13 +172,15 @@
             {% endif %}
         </section>
 
-        <section id="tab-training" class="{% if active_tab != 'training' %}hidden{% endif %}">
+        <section id="tab-training" x-cloak x-show="tab === 'training'">
             {% if plans['training'] %}
                 {# 🟢 FIXED: Loop filters out empty plans automatically! #}
                 {% for p in plans['training'] if p['items'] %}
                     <div class="mb-6">
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
+                            hx-swap="none"
+                            hx-disabled-elt="this"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
@@ -309,13 +316,15 @@
             {% endif %}
         </section>
 
-        <section id="tab-steroid" class="{% if active_tab != 'steroid' %}hidden{% endif %}">
+        <section id="tab-steroid" x-cloak x-show="tab === 'steroid'">
             {% if plans['steroid'] %}
                 {# 🟢 FIXED: Loop filters out empty plans automatically! #}
                 {% for p in plans['steroid'] if p['items'] %}
                     <div class="mb-6 flex flex-col gap-3">
                         <button
                             hx-post="/user/plans/{{ p['id'] }}/done"
+                            hx-swap="none"
+                            hx-disabled-elt="this"
                             class="btn btn-primary w-full mb-4 border-2 border-base-content js-done-btn"
                         >
                             <span class="js-done-label">{{ _('Done') }}</span>
@@ -341,23 +350,4 @@
             {% endif %}
         </section>
     </div>
-
-    <script>
-        function showTab(name) {
-            // Updated to safely check if elements exist before modifying them
-            ['training', 'diet', 'steroid'].forEach((t) => {
-                const section = document.getElementById('tab-' + t);
-                const btn = document.getElementById('btn-' + t);
-
-                if (section) section.classList.add('hidden');
-                if (btn) btn.classList.remove('tab-active');
-            });
-
-            const activeSection = document.getElementById('tab-' + name);
-            const activeBtn = document.getElementById('btn-' + name);
-
-            if (activeSection) activeSection.classList.remove('hidden');
-            if (activeBtn) activeBtn.classList.add('tab-active');
-        }
-    </script>
 {% endblock %}

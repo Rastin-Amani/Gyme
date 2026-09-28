@@ -1,6 +1,6 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" class="bg-base-100 space-y-4">
+    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" class="bg-base-100 space-y-4" data-page-title="{{ title }}">
         <!-- Hidden field to submit is_template status -->
         <input type="hidden" name="is_template" value="{{ 'true' if is_template else 'false' }}" />
 
@@ -147,7 +147,7 @@
             >
                 {{ _('Cancel') }}
             </a>
-            <button type="submit" class="w-full btn btn-primary border-2 border-base-content">
+            <button type="submit" class="w-full btn btn-primary border-2 border-base-content" hx-disabled-elt="this">
                 {% if plan %}
                     {{ _('Update plan') }}
                 {% elif is_template %}
