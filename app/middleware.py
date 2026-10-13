@@ -25,6 +25,7 @@ PUBLIC_PATHS = [
     "/sw.js",  # Required for offline caching
     "/favicon.ico",
     "/locale",  # language switcher (cookie + redirect)
+    "/webhooks/",  # provider payment webhooks (signature-verified, no session)
 ]
 
 IS_PROD = os.getenv("ENV", "dev").lower() == "production"
@@ -32,6 +33,7 @@ IS_PROD = os.getenv("ENV", "dev").lower() == "production"
 CSRF_EXEMPT_PATHS = [
     "/login",
     "/logout",
+    "/webhooks/",  # provider webhooks cannot carry a session or CSRF token
 ]
 
 logger = get_logger(__name__)
