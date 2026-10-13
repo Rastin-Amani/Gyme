@@ -35,6 +35,8 @@ migrate(
                 { name: "seats", type: "number", required: true, min: 1 },
                 { name: "currency", type: "text", max: 8 },
                 { name: "sort_order", type: "number" },
+                { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+                { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
             ],
             indexes: [
                 "CREATE UNIQUE INDEX `idx_billing_products_key` ON `billing_products` (`key`)",
@@ -75,6 +77,8 @@ migrate(
                 { name: "paid_amount_usd", type: "number", min: 0 },
                 { name: "error", type: "text", max: 500 },
                 { name: "fulfilled_at", type: "text", max: 32 },
+                { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+                { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
             ],
             indexes: [
                 "CREATE UNIQUE INDEX `idx_billing_invoices_ref` ON `billing_invoices` (`invoice_ref`)",
@@ -102,6 +106,8 @@ migrate(
                 { name: "status", type: "text", max: 32 },
                 { name: "processed", type: "bool" },
                 { name: "error", type: "text", max: 500 },
+                { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+                { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
             ],
             indexes: [
                 "CREATE UNIQUE INDEX `idx_billing_events_dedup` ON `billing_events` (`dedup_key`)",
@@ -134,6 +140,8 @@ migrate(
                 { name: "status", type: "text", max: 16 },
                 { name: "idempotency_key", type: "text", required: true, min: 1, max: 200 },
                 { name: "note", type: "text", max: 200 },
+                { name: "created", type: "autodate", onCreate: true, onUpdate: false },
+                { name: "updated", type: "autodate", onCreate: true, onUpdate: true },
             ],
             indexes: [
                 "CREATE UNIQUE INDEX `idx_credit_tx_idem` ON `credit_transactions` (`idempotency_key`)",

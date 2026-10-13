@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
+from types import SimpleNamespace
 
 from pocketbase.errors import ClientResponseError
 
@@ -127,14 +128,19 @@ def get_invoice_by_ref_any_tenant(pb, invoice_ref: str):
 
 
 def list_invoices(pb, tenant_id: str, page: int = 1, per_page: int = 20):
-    return pb.collection(INVOICES).get_list(
-        page=max(1, page),
-        per_page=per_page,
-        query_params={
-            "filter": f'tenant="{pb_escape(tenant_id)}"',
-            "sort": "-created",
-        },
-    )
+    try:
+        return pb.collection(INVOICES).get_list(
+            page=max(1, page),
+            per_page=per_page,
+            query_params={
+                "filter": f'tenant="{pb_escape(tenant_id)}"',
+                "sort": "-created",
+            },
+        )
+    except Exception as exc:
+        # Never let a billing-history query take down the page.
+        logger.warning("billing.list_invoices_failed", extra={"error": str(exc)})
+        return SimpleNamespace(items=[], total_items=0, page=page, per_page=per_page)
 
 
 def count_open_invoices(pb, tenant_id: str) -> int:

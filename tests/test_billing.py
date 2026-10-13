@@ -597,6 +597,29 @@ def test_billing_collections_are_admin_only():
     assert "idx_credit_tx_idem" in src
 
 
+def test_billing_collections_have_autodate_fields():
+    """Regression: without created/updated, `sort=-created` 400s and /billing 500s."""
+    src = open("pb_migrations/1750000000_billing.js").read()
+    assert src.count('name: "created"') >= 4
+    assert src.count('name: "updated"') >= 4
+    assert 'type: "autodate"' in src
+
+
+def test_list_invoices_never_raises(monkeypatch):
+    from app.services.billing import store
+
+    class PB:
+        def collection(self, name):
+            class C:
+                def get_list(self, **kwargs):
+                    raise RuntimeError("boom")
+
+            return C()
+
+    result = store.list_invoices(PB(), "t1")
+    assert result.items == []
+
+
 def test_no_public_api_key_in_frontend_bundle():
     # The PayRam key is server-only; it must never appear in JS/templates.
     import glob

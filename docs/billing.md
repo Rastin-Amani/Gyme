@@ -81,6 +81,12 @@ Indexes: unique on `billing_products.key`, `billing_invoices.invoice_ref`,
 indexes on `billing_invoices.(tenant, provider_ref, status)`,
 `billing_events.reference_id`, `credit_transactions.(tenant, invoice_ref)`.
 
+> **Each collection must also have the `created` / `updated` autodate fields.**
+> They are *not* added automatically when a collection is created via the API,
+> and without `created` a `sort=-created` query fails with a PocketBase `400`
+> (which previously surfaced as a `/billing` 500). The migration defines them;
+> when creating collections by hand, add both.
+
 **Why admin-only:** these records are the source of truth for money and
 entitlements. Exposing them to the browser (even read-only) risks leaking other
 gyms' payments and invites tampering. The app reads/writes them through the
