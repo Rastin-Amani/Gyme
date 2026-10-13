@@ -5,6 +5,10 @@ from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.plan import get_plans_by_trainee
 from app.services.progress_logs import get_progress_logs_by_trainee
+from app.services.billing import seats as seat_service
+from app.services.billing.config import get_config as billing_config
+from app.pb import get_admin_pb
+from contextlib import nullcontext
 import json
 from app.utils import hx_toast
 from app.security import (
@@ -215,6 +219,17 @@ def trainees_new_form(request: Request):
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
+    # Surface the paywall before submission when the gym is already at capacity.
+    at_capacity = False
+    seat_summary = None
+    if billing_config().enabled:
+        try:
+            seat_summary = seat_service.seat_summary(get_admin_pb(), tenant.id)
+            at_capacity = seat_summary["used"] >= seat_summary["capacity"]
+        except Exception:
+            # Never block the form because the usage probe failed; POST still enforces.
+            at_capacity = False
+
     return templates.TemplateResponse(
         request=request,
         name="forms/trainees_form.html",
@@ -223,6 +238,8 @@ def trainees_new_form(request: Request):
             "tenant": tenant,
             "user": user,
             "trainee": None,
+            "at_capacity": at_capacity,
+            "seats": seat_summary,
         },
     )
 
@@ -370,59 +387,77 @@ def trainee_create(
             if not re.match(r"^\d{4}-\d{2}-\d{2}$", str(birthdate)):
                 birthdate = None
 
-        # --- STEP 1: Create the Auth User ---
-        user_result = create_user(
-            pb=pb,
-            tenant_id=tenant_id,
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            phone=phone,
-            role="trainee",
-        )
+        # --- Billing: enforce the active-trainee seat allowance server-side ---
+        # Held under a per-tenant lock so two concurrent creates cannot both
+        # consume the final free seat.
+        bcfg = billing_config()
+        lock_ctx = seat_service.tenant_seat_lock(tenant_id) if bcfg.enabled else nullcontext()
+        with lock_ctx:
+            if bcfg.enabled:
+                admin = get_admin_pb()
+                allowed, seat_summary = seat_service.has_free_seat(admin, tenant_id)
+                if not allowed:
+                    # 409: truthful conflict. htmx shows the toast; the form stays
+                    # intact and the owner can go to /billing to add seats.
+                    headers = hx_toast(
+                        _("Seat limit reached. Add seats to register another trainee."),
+                        "error",
+                    )
+                    return HTMLResponse(content="", status_code=409, headers=headers)
 
-        if not user_result.get("ok"):
-            error_msg = user_result.get("error", _("Error creating user."))
-            headers = hx_toast(error_msg, "error")
-            return HTMLResponse(content="", status_code=400, headers=headers)
+            # --- STEP 1: Create the Auth User ---
+            user_result = create_user(
+                pb=pb,
+                tenant_id=tenant_id,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                phone=phone,
+                role="trainee",
+            )
 
-        new_user = user_result["user"]
+            if not user_result.get("ok"):
+                error_msg = user_result.get("error", _("Error creating user."))
+                headers = hx_toast(error_msg, "error")
+                return HTMLResponse(content="", status_code=400, headers=headers)
 
-        # --- STEP 2: Create the Trainee Profile ---
-        trainee_data = {
-            "tenant": tenant_id,
-            "user": new_user.id,
-            "blood_type": blood_type,
-            "gender": gender,
-            "birthdate": birthdate,
-            "training_history": training_history,
-            "steroid_history": (
-                validate_length(steroid_history, "steroid_history", 0, 2000)
-                if steroid_history
-                else None
-            ),
-            "supplement_history": (
-                validate_length(supplement_history, "supplement_history", 0, 2000)
-                if supplement_history
-                else None
-            ),
-            "limitations": (
-                validate_length(limitations, "limitations", 0, 2000) if limitations else None
-            ),
-            "notes": notes,
-        }
+            new_user = user_result["user"]
 
-        created_trainee = create_trainee(pb, tenant_id, trainee_data)
-        new_trainee_id = created_trainee.id
+            # --- STEP 2: Create the Trainee Profile ---
+            trainee_data = {
+                "tenant": tenant_id,
+                "user": new_user.id,
+                "blood_type": blood_type,
+                "gender": gender,
+                "birthdate": birthdate,
+                "training_history": training_history,
+                "steroid_history": (
+                    validate_length(steroid_history, "steroid_history", 0, 2000)
+                    if steroid_history
+                    else None
+                ),
+                "supplement_history": (
+                    validate_length(supplement_history, "supplement_history", 0, 2000)
+                    if supplement_history
+                    else None
+                ),
+                "limitations": (
+                    validate_length(limitations, "limitations", 0, 2000) if limitations else None
+                ),
+                "notes": notes,
+            }
 
-        # --- STEP 3: Success! Delayed Redirect to Progress Logs ---
-        headers = hx_toast(_("Trainee registered successfully. Redirecting..."), "success")
+            created_trainee = create_trainee(pb, tenant_id, trainee_data)
+            new_trainee_id = created_trainee.id
 
-        trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
-        trigger_dict["delayed-redirect"] = {"url": f"/progress-log/new/{new_trainee_id}"}
-        headers["HX-Trigger"] = json.dumps(trigger_dict)
+            # --- STEP 3: Success! Delayed Redirect to Progress Logs ---
+            headers = hx_toast(_("Trainee registered successfully. Redirecting..."), "success")
 
-        return HTMLResponse(content="", status_code=200, headers=headers)
+            trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
+            trigger_dict["delayed-redirect"] = {"url": f"/progress-log/new/{new_trainee_id}"}
+            headers["HX-Trigger"] = json.dumps(trigger_dict)
+
+            return HTMLResponse(content="", status_code=200, headers=headers)
 
     except Exception as e:
         from structlog import get_logger

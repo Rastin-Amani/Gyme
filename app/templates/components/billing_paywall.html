@@ -1,0 +1,29 @@
+{# Paywall banner shown on the trainee form when the gym's active-trainee seat
+   allowance is exhausted. Rendered server-side from authoritative usage
+   numbers; never trust a client-sent count. #}
+<div
+    id="seat-limit-banner"
+    role="alert"
+    class="alert alert-warning border border-base-300 rounded-xl items-start"
+>
+    <div class="flex flex-col gap-2 text-sm">
+        <p class="font-semibold">{{ _('Seat limit reached') }}</p>
+        <p>
+            {{ _('This gym is using %(used)s of %(capacity)s active trainee seats.') % {'used': seats.used, 'capacity': seats.capacity} }}
+        </p>
+        <p>
+            {{ _('Add more seats to register another trainee. Existing trainees and plans are unaffected.') }}
+        </p>
+        <a
+            href="/billing"
+            hx-get="/billing"
+            hx-target="#page-content"
+            hx-select="#page-content"
+            hx-swap="innerHTML show:window:top"
+            hx-push-url="true"
+            class="btn btn-primary btn-sm w-fit border border-base-300"
+        >
+            {{ _('View billing and add seats') }}
+        </a>
+    </div>
+</div>
