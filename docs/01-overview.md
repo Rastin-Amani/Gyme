@@ -124,6 +124,22 @@ Plans come in three types, each with its own item structure:
   advances the plan to its next day (wrapping around at the end). A warning
   banner reminds trainees to press it every day.
 
+### Billing & seats
+
+- The monetized unit is an **active trainee seat** per gym: every gym gets
+  `BILLING_FREE_SEATS` (default 5) active trainees free, and one-time seat packs
+  (`billing_products`) add permanent capacity.
+- Owners open **Billing** to see seat usage (in use / capacity / available),
+  buy seat packs, and view their payment history.
+- Purchases run through the **PayRam** crypto provider: checkout redirects to a
+  provider-hosted page, and a signature-verified webhook grants the seats
+  exactly once.
+- Seat allowance is enforced **server-side** when a trainee is created; at
+  capacity, registration is blocked with a paywall banner linking to Billing.
+- Billing is off by default (`BILLING_ENABLED=false`); when off, `/billing`
+  still shows usage but purchases are disabled and trainee creation is not
+  limited. See [billing.md](billing.md).
+
 ### Installable app (PWA)
 
 - Dynamic web-app manifest per gym (name, icons generated from the gym logo,
@@ -140,8 +156,9 @@ Plans come in three types, each with its own item structure:
 
 Stated so readers don't assume otherwise:
 
-- No payments, billing, or subscription management (payment tracking is only
-  mentioned as a pain point on the separate marketing site).
+- No **recurring subscriptions**: PayRam has no auto-charge, so monetization is
+  one-time seat packs only. (Seat purchases and enforcement *are* implemented;
+  see [billing.md](billing.md).)
 - No trainee-facing editing: trainees cannot mark individual items done, chat,
   or upload anything; their action set is view + daily "Done".
 - No notifications/push messaging, no scheduling/calendar beyond plan dates.
@@ -149,15 +166,18 @@ Stated so readers don't assume otherwise:
   gym staff (or direct database administration). Because the app generates
   random initial passwords and never displays them, new accounts must have
   their password reset via PocketBase admin before first login.
-- No CI configuration or LICENSE file; automated tests do ship under `tests/`
-  (`test_i18n.py` and the security regression suite).
+- Automated tests ship under `tests/` (i18n, billing, security regression, and
+  known-issue-fix suites); CI (GitHub Actions) and an ISC `LICENSE` ship with
+  the repo.
 
 ## Requirements in brief
 
 - A running [PocketBase](https://pocketbase.io) instance acting as database,
   authentication provider, and file store. The collections the code expects are
   listed in [06-configuration-deployment.md](06-configuration-deployment.md);
-  the schema itself lives in PocketBase (no migrations are in this repo).
+  the schema lives in PocketBase. Only the **billing** collections ship as a
+  migration (`pb_migrations/1750000000_billing.js`, PocketBase ≥ 0.23); the
+  rest are provisioned externally.
 - One `tenants` record per gym domain, plus the required collections, must be
   provisioned before the app is usable.
 - Python 3.11+ runtime and (for development/rebuilds only) Node.js.

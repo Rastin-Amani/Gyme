@@ -13,8 +13,8 @@ Spanish, Turkish, and Armenian are also supported.
 
 - **Current version:** 1.4.0 (`app/main.py` `APP_VERSION`)
 - **Status:** actively developed; automated tests ship under `tests/`
-  (`tests/test_i18n.py`, plus the 22-test security regression suite in
-  `tests_security_regression.py`)
+  (`tests/test_i18n.py`, `tests/test_billing.py`, plus the 22-test security
+  regression suite in `tests_security_regression.py`)
 - **Links:** [Releases](https://github.com/Rastin-Amani/Gyme/releases) · [Discussion](https://github.com/Rastin-Amani/Gyme/discussions) · [Security policy](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 ---
@@ -48,6 +48,7 @@ offline caching, and an offline fallback page.
 | Progress logs | Body metrics (BMI/BFP/BMR/TDEE/LBM/WHR auto-calculated) + up to 5 photos |
 | Owner dashboard | Trainee/plan counters and per-coach stats with week/month/all timeframes |
 | PWA | Dynamic manifest per gym, service worker caching, offline page/banner, iOS install flow |
+| Billing & seats | Free active-trainee allowance per gym, one-time PayRam seat packs, server-side seat enforcement, payment history |
 
 ## Quick start (development)
 
@@ -140,6 +141,7 @@ app/
 ├── templates/         # base, layouts, pages, forms, modals, components
 └── static/            # built CSS/JS (Vite), service worker, fonts, swagger assets
 data/                  # English exercise & food CSV datasets (dropdown sources)
+pb_migrations/         # PocketBase migrations (admin-only billing schema)
 Dockerfile             # python:3.11-slim, uvicorn on :8000
 ```
 
@@ -151,6 +153,7 @@ Dockerfile             # python:3.11-slim, uvicorn on :8000
 | [Getting started](docs/02-getting-started.md) | Developers setting up a dev environment |
 | [Architecture](docs/04-architecture.md) | Technical deep dive |
 | [API reference](docs/05-api-reference.md) | All HTTP routes |
+| [Billing & payments](docs/billing.md) | Operators & developers — seats, PayRam setup, security |
 | [Configuration & deployment](docs/06-configuration-deployment.md) | Operators |
 | [Troubleshooting & known issues](docs/07-troubleshooting-known-issues.md) | Everyone |
 
@@ -164,8 +167,8 @@ Highlights:
   never displays — staff must share or reset it before the new user can log in.
 - A **rate limit** is enforced on the login route but not on password changes.
 - CI (GitHub Actions: ruff, black --check, pytest), an ISC `LICENSE`, and a
-  55-test suite (i18n + security regression + known-issue fixes) ship with the
-  repo.
+  93-test suite (i18n + billing + security regression + known-issue fixes) ship
+  with the repo.
 
 ## Deployment
 
