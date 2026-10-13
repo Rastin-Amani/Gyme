@@ -848,3 +848,68 @@ def test_trainee_create_handles_billing_failure():
     create_src = src[src.index("def trainee_create") : src.index("def trainee_update")]
     assert "billing.seat_check_failed" in create_src
     assert "billing.config_invalid" in create_src
+
+
+# ---------------------------------------------------------------------------
+# BILLING_ENABLED=false => the feature is entirely absent
+# ---------------------------------------------------------------------------
+def test_billing_disabled_hides_page(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.routes import billing as br
+
+    monkeypatch.setattr(br, "_billing_on", lambda: False)
+    req = SimpleNamespace(
+        state=SimpleNamespace(user=SimpleNamespace(role="owner"), tenant=SimpleNamespace(id="t1"))
+    )
+    assert br.billing_overview(req).status_code == 404
+
+
+def test_billing_disabled_checkout_is_404(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.routes import billing as br
+
+    monkeypatch.setattr(br, "_billing_on", lambda: False)
+    req = SimpleNamespace(
+        state=SimpleNamespace(user=SimpleNamespace(role="owner"), tenant=SimpleNamespace(id="t1"))
+    )
+    assert br.billing_checkout(req, product_key="seats-10").status_code == 404
+
+
+def test_billing_disabled_webhook_is_404(monkeypatch):
+    import asyncio
+    from types import SimpleNamespace
+
+    from app.routes import billing as br
+
+    monkeypatch.setattr(br, "_billing_on", lambda: False)
+    resp = asyncio.run(br.payram_webhook(SimpleNamespace()))
+    assert resp.status_code == 404
+
+
+def test_billing_enabled_global_follows_env(monkeypatch):
+    from app.templates import billing_enabled
+
+    monkeypatch.delenv("BILLING_ENABLED", raising=False)
+    reset_config_cache()
+    assert billing_enabled() is False
+    reset_config_cache()
+
+
+def test_billing_nav_hidden_when_disabled():
+    src = open("app/templates/layouts/dashboard.html").read()
+    # side nav + bottom dock both gate the Billing link on the flag
+    assert src.count("billing_enabled()") >= 2
+
+
+def test_billing_routes_gated_on_flag():
+    src = open("app/routes/billing.py").read()
+    # page, checkout, return, status, refund, webhook all check _billing_on()
+    assert src.count("_billing_on()") >= 6
+
+
+def test_trainee_form_paywall_gated_on_billing():
+    src = open("app/routes/trainee.py").read()
+    form_src = src[src.index("def trainees_new_form") : src.index("def show_trainee_detail")]
+    assert "billing_config().enabled" in form_src

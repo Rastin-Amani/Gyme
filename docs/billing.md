@@ -111,7 +111,7 @@ Server-side only. Never commit real values; never expose them to templates/JS.
 
 | Variable | Required | Default | Meaning |
 | --- | --- | --- | --- |
-| `BILLING_ENABLED` | no | `false` | Master switch. When false, `/billing` still shows seat usage but purchases are disabled and trainee creation is **not** limited. |
+| `BILLING_ENABLED` | no | `false` | Master switch. **When false the feature is entirely absent:** no Billing nav link, `/billing` and `/webhooks/payram` return `404`, purchases are impossible, and trainee creation is **not** seat-limited. The rest of the app is unaffected. |
 | `BILLING_FREE_SEATS` | no | `5` | Free active-trainee allowance per gym. |
 | `BILLING_CURRENCY` | no | `USD` | Fallback currency label for products without one. |
 | `PUBLIC_APP_URL` | no | — | Public base URL of this app (used for return links). |
@@ -127,6 +127,21 @@ Server-side only. Never commit real values; never expose them to templates/JS.
 If `BILLING_ENABLED=true` without PayRam credentials, startup **fails fast**
 (`RuntimeError`) rather than silently degrading. Missing `PB_ADMIN_*` surfaces
 as a clear error on the first billing operation.
+
+### Disabling billing entirely
+
+Set `BILLING_ENABLED=false` (the default) and the feature is gone, not just
+inert:
+
+- the **Billing** link disappears from the sidebar and bottom dock,
+- `GET /billing`, `POST /billing/checkout`, `GET /billing/return`,
+  `GET /billing/checkout/{ref}/status`, `POST /billing/invoices/{ref}/refund`
+  and `POST /webhooks/payram` all return **404**,
+- trainee creation is **not** seat-limited,
+- no billing PocketBase access happens at all.
+
+The billing collections and any existing invoices stay in PocketBase untouched,
+so re-enabling is a one-variable change (plus a restart).
 
 ---
 
@@ -165,8 +180,7 @@ PayRam page → webhook fires → seats increase. To exercise without a real cha
 ## 6. User experience
 
 - `GET /billing` (owner only): KPI strip (in use / capacity / available),
-  seat packs with server-side prices, and the gym's payment history.
-- `POST /billing/checkout` (`product_key`): creates the invoice + provider
+  seat packs with server-side prices, and the gym's payment history.- `POST /billing/checkout` (`product_key`): creates the invoice + provider
   checkout, then `HX-Redirect` to the **validated** provider URL.
 - `GET /billing/return?invoice=…`: reconciles with the provider, shows
   pending/paid/failed honestly; polls `/billing/checkout/{ref}/status` every 5s

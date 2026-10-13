@@ -46,6 +46,14 @@ def _is_htmx(request: Request) -> bool:
     return request.headers.get("hx-request") == "true"
 
 
+def _billing_on() -> bool:
+    """Whether billing is enabled. Any config problem means 'off'."""
+    try:
+        return get_config().enabled
+    except Exception:
+        return False
+
+
 def _admin():
     """Return ``(admin_client, None)`` or ``(None, error_response)``.
 
@@ -114,6 +122,9 @@ def billing_overview(request: Request):
     user, denial = _require_owner(request)
     if denial:
         return denial
+    # Feature off => the page does not exist (nav is hidden too).
+    if not _billing_on():
+        return HTMLResponse("", status_code=404)
     return templates.TemplateResponse(
         request=request,
         name="pages/owner/billing/billing.html",
@@ -128,6 +139,9 @@ def billing_checkout(request: Request, product_key: str = Form(...)):
         if _is_htmx(request):
             return HTMLResponse("", headers=hx_toast(_("Access denied"), "error"), status_code=403)
         return denial
+
+    if not _billing_on():
+        return HTMLResponse("", status_code=404)
 
     admin, error = _admin()
     if error:
@@ -163,6 +177,9 @@ def billing_return(request: Request, invoice: str = Query("")):
     user, denial = _require_owner(request)
     if denial:
         return denial
+
+    if not _billing_on():
+        return HTMLResponse("", status_code=404)
 
     admin, error = _admin()
     if error:
@@ -200,6 +217,9 @@ def billing_status_fragment(request: Request, invoice_ref: str):
     if denial:
         return denial
 
+    if not _billing_on():
+        return HTMLResponse("", status_code=404)
+
     admin, error = _admin()
     if error:
         return error
@@ -234,6 +254,9 @@ def billing_refund(request: Request, invoice_ref: str):
     if denial:
         return denial
 
+    if not _billing_on():
+        return HTMLResponse("", status_code=404)
+
     admin, error = _admin()
     if error:
         return error
@@ -250,6 +273,9 @@ def billing_refund(request: Request, invoice_ref: str):
 # ---------------------------------------------------------------------------
 @router.post("/webhooks/payram")
 async def payram_webhook(request: Request):
+    # Billing off => the endpoint does not exist.
+    if not _billing_on():
+        return JSONResponse({"ok": False}, status_code=404)
     raw = await request.body()
     if len(raw) > 64 * 1024:  # bound the request size
         return JSONResponse({"ok": False}, status_code=413)
