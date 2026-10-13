@@ -3,6 +3,10 @@
 Owner-only except the public provider webhook. All billing data access uses the
 server-side admin client; the browser never touches billing collections
 directly.
+
+Billing is an add-on: a missing admin credential or provider setting must never
+turn into a 500 on a normal page. Those cases degrade to a clear "not
+configured" state instead.
 """
 
 from __future__ import annotations
@@ -42,28 +46,67 @@ def _is_htmx(request: Request) -> bool:
     return request.headers.get("hx-request") == "true"
 
 
+def _admin():
+    """Return ``(admin_client, None)`` or ``(None, error_response)``.
+
+    Missing/invalid ``PB_ADMIN_*`` credentials must not break the page — the
+    rest of the app keeps working and billing reports itself unavailable.
+    """
+    try:
+        return get_admin_pb(), None
+    except Exception:
+        logger.exception("billing.admin_unavailable")
+        return None, HTMLResponse(
+            "",
+            headers=hx_toast(_("Billing is not configured on this server."), "error"),
+            status_code=503,
+        )
+
+
 def _overview_context(request: Request) -> dict:
     tenant = request.state.tenant
     user = request.state.user
-    config = get_config()
-    admin = get_admin_pb()
-    tenant_id = tenant.id
-
-    products = store.list_products(admin, active_only=True) if config.enabled else []
-    invoices_page = store.list_invoices(admin, tenant_id, page=1, per_page=20)
-    invoices_list = getattr(invoices_page, "items", invoices_page)
-
-    return {
+    context = {
         "title": _("Billing"),
         "tenant": tenant,
         "user": user,
-        "seats": seats.seat_summary(admin, tenant_id),
-        "products": products,
-        "invoices": invoices_list,
-        "billing_enabled": config.enabled,
-        "provider_ready": config.payram_configured,
-        "currency": config.currency,
+        "seats": None,
+        "products": [],
+        "invoices": [],
+        "billing_enabled": False,
+        "provider_ready": False,
+        "currency": "USD",
+        "admin_ready": False,
+        "config_error": False,
     }
+
+    try:
+        config = get_config()
+    except Exception:
+        logger.exception("billing.config_invalid")
+        context["config_error"] = True
+        return context
+
+    context["billing_enabled"] = config.enabled
+    context["provider_ready"] = config.payram_configured
+    context["currency"] = config.currency
+
+    try:
+        admin = get_admin_pb()
+    except Exception:
+        logger.exception("billing.admin_unavailable")
+        return context
+
+    context["admin_ready"] = True
+    context["seats"] = seats.seat_summary(admin, tenant.id)
+    if config.enabled:
+        context["products"] = store.list_products(admin, active_only=True)
+    try:
+        page = store.list_invoices(admin, tenant.id, page=1, per_page=20)
+        context["invoices"] = getattr(page, "items", page)
+    except Exception:
+        logger.exception("billing.invoices_unavailable")
+    return context
 
 
 @router.get("/billing")
@@ -86,8 +129,11 @@ def billing_checkout(request: Request, product_key: str = Form(...)):
             return HTMLResponse("", headers=hx_toast(_("Access denied"), "error"), status_code=403)
         return denial
 
+    admin, error = _admin()
+    if error:
+        return error
+
     tenant_id = request.state.tenant.id
-    admin = get_admin_pb()
     try:
         result = billing.create_checkout(
             admin, tenant_id=tenant_id, user=user, product_key=str(product_key)[:64]
@@ -118,8 +164,11 @@ def billing_return(request: Request, invoice: str = Query("")):
     if denial:
         return denial
 
+    admin, error = _admin()
+    if error:
+        return error
+
     tenant_id = request.state.tenant.id
-    admin = get_admin_pb()
     record = store.get_invoice(admin, tenant_id, invoice) if invoice else None
 
     # Reconcile with the provider so the page reflects confirmed state, not the
@@ -151,8 +200,11 @@ def billing_status_fragment(request: Request, invoice_ref: str):
     if denial:
         return denial
 
+    admin, error = _admin()
+    if error:
+        return error
+
     tenant_id = request.state.tenant.id
-    admin = get_admin_pb()
     record = store.get_invoice(admin, tenant_id, invoice_ref)
     status = str(getattr(record, "status", "") or "") if record else ""
     if record is not None and status not in store.TERMINAL_STATES:
@@ -182,7 +234,10 @@ def billing_refund(request: Request, invoice_ref: str):
     if denial:
         return denial
 
-    admin = get_admin_pb()
+    admin, error = _admin()
+    if error:
+        return error
+
     try:
         billing.refund_invoice(admin, request.state.tenant.id, invoice_ref)
     except billing.BillingError as exc:
@@ -202,7 +257,10 @@ async def payram_webhook(request: Request):
     if not billing.verify_webhook(raw, request.headers):
         return JSONResponse({"ok": False}, status_code=401)
     try:
-        admin = get_admin_pb()
+        admin, error = _admin()
+        if error:
+            # Configuration problem on our side — 5xx so PayRam retries.
+            return JSONResponse({"ok": False}, status_code=503)
         result = billing.process_webhook(admin, raw, request.headers)
     except billing.WebhookVerificationError:
         return JSONResponse({"ok": False}, status_code=401)

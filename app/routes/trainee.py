@@ -389,13 +389,26 @@ def trainee_create(
 
         # --- Billing: enforce the active-trainee seat allowance server-side ---
         # Held under a per-tenant lock so two concurrent creates cannot both
-        # consume the final free seat.
-        bcfg = billing_config()
-        lock_ctx = seat_service.tenant_seat_lock(tenant_id) if bcfg.enabled else nullcontext()
+        # consume the final free seat. A billing misconfiguration must never
+        # break trainee creation: it is logged loudly and the check is skipped.
+        from structlog import get_logger
+
+        _log = get_logger(__name__)
+        try:
+            billing_on = billing_config().enabled
+        except Exception as exc:
+            _log.error("billing.config_invalid", tenant=tenant_id, error=str(exc))
+            billing_on = False
+
+        lock_ctx = seat_service.tenant_seat_lock(tenant_id) if billing_on else nullcontext()
         with lock_ctx:
-            if bcfg.enabled:
-                admin = get_admin_pb()
-                allowed, seat_summary = seat_service.has_free_seat(admin, tenant_id)
+            if billing_on:
+                try:
+                    admin = get_admin_pb()
+                    allowed, _seat_summary = seat_service.has_free_seat(admin, tenant_id)
+                except Exception as exc:
+                    _log.error("billing.seat_check_failed", tenant=tenant_id, error=str(exc))
+                    allowed = True
                 if not allowed:
                     # 409: truthful conflict. htmx shows the toast; the form stays
                     # intact and the owner can go to /billing to add seats.

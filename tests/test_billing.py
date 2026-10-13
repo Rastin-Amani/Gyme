@@ -712,3 +712,116 @@ def test_all_templates_compile():
     assert names, "no templates found"
     for name in names:
         templates.env.get_template(name)
+
+
+# ---------------------------------------------------------------------------
+# Graceful degradation: missing config must never 500 a normal page
+# ---------------------------------------------------------------------------
+def test_admin_helper_returns_error_when_credentials_missing(monkeypatch):
+    from app.routes import billing as billing_routes
+
+    def boom():
+        raise RuntimeError("PB_ADMIN_EMAIL and PB_ADMIN_PASSWORD are required")
+
+    monkeypatch.setattr(billing_routes, "get_admin_pb", boom)
+    admin, error = billing_routes._admin()
+    assert admin is None
+    assert error is not None and error.status_code == 503
+
+
+def test_overview_context_degrades_without_admin(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.routes import billing as billing_routes
+    from app.services.billing.config import BillingConfig
+
+    monkeypatch.setattr(
+        billing_routes,
+        "get_config",
+        lambda: BillingConfig(
+            enabled=True,
+            free_seats=5,
+            currency="USD",
+            public_app_url="",
+            payram_base_url="https://pay.example.com",
+            payram_api_key="k",
+            payram_webhook_secret="k",
+            payram_timeout=15.0,
+            checkout_ttl_seconds=86400,
+            max_open_invoices=5,
+        ),
+    )
+
+    def boom():
+        raise RuntimeError("no creds")
+
+    monkeypatch.setattr(billing_routes, "get_admin_pb", boom)
+    request = SimpleNamespace(state=SimpleNamespace(tenant=SimpleNamespace(id="t1"), user=None))
+    ctx = billing_routes._overview_context(request)
+    assert ctx["admin_ready"] is False
+    assert ctx["seats"] is None
+    assert ctx["billing_enabled"] is True  # config still reported
+
+
+def test_overview_context_degrades_on_invalid_config(monkeypatch):
+    from types import SimpleNamespace
+
+    from app.routes import billing as billing_routes
+
+    def boom():
+        raise RuntimeError("BILLING_ENABLED without PayRam credentials")
+
+    monkeypatch.setattr(billing_routes, "get_config", boom)
+    request = SimpleNamespace(state=SimpleNamespace(tenant=SimpleNamespace(id="t1"), user=None))
+    ctx = billing_routes._overview_context(request)
+    assert ctx["admin_ready"] is False
+    assert ctx["config_error"] is True
+
+
+def test_billing_page_renders_when_unconfigured():
+    from starlette.requests import Request
+
+    from app.main import app
+    from app.templates import templates
+
+    scope = {
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": "GET",
+        "scheme": "https",
+        "path": "/billing",
+        "raw_path": b"/billing",
+        "query_string": b"",
+        "root_path": "",
+        "headers": [(b"host", b"app.gyme.cloud")],
+        "server": ("app.gyme.cloud", 443),
+        "client": ("127.0.0.1", 0),
+        "app": app,
+    }
+    request = Request(scope)
+    request.state.tenant = None
+    request.state.pb = None
+    html = templates.env.get_template("pages/owner/billing/billing.html").render(
+        request=request,
+        title="Billing",
+        tenant=None,
+        user=None,
+        seats=None,
+        products=[],
+        invoices=[],
+        billing_enabled=False,
+        provider_ready=False,
+        currency="USD",
+        admin_ready=False,
+        config_error=False,
+    )
+    assert "not configured" in html.lower()
+
+
+def test_trainee_create_handles_billing_failure():
+    """A billing outage must not 500 trainee creation (logged, then skipped)."""
+    src = open("app/routes/trainee.py").read()
+    create_src = src[src.index("def trainee_create") : src.index("def trainee_update")]
+    assert "billing.seat_check_failed" in create_src
+    assert "billing.config_invalid" in create_src
