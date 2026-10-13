@@ -294,7 +294,7 @@ Known navigation bug, issue #6.
   `black --check .`, and `pytest -q` on push/PR; an ISC `LICENSE` matches the
   `package.json` `"license": "ISC"` declaration. The security regression suite
   now lives at `tests/test_security_regression.py` and the suite has grown to
-  93 tests (9 i18n + 38 billing + 22 security + 24 known-issue-fix regressions).
+  107 tests (9 i18n + 52 billing + 22 security + 24 known-issue-fix regressions).
 - **Impact (today):** none — CI gates lint/format/tests and the project has an
   explicit license.
 - **Fix (applied):** workflow + LICENSE committed; covered by

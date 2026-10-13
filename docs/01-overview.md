@@ -136,9 +136,9 @@ Plans come in three types, each with its own item structure:
   exactly once.
 - Seat allowance is enforced **server-side** when a trainee is created; at
   capacity, registration is blocked with a paywall banner linking to Billing.
-- Billing is off by default (`BILLING_ENABLED=false`); when off, `/billing`
-  still shows usage but purchases are disabled and trainee creation is not
-  limited. See [billing.md](billing.md).
+- Billing is off by default (`BILLING_ENABLED=false`); when off the feature is
+  entirely absent — no Billing link, `/billing` and the webhook return `404`,
+  and trainee creation is not limited. See [billing.md](billing.md).
 
 ### Installable app (PWA)
 

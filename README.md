@@ -167,7 +167,7 @@ Highlights:
   never displays — staff must share or reset it before the new user can log in.
 - A **rate limit** is enforced on the login route but not on password changes.
 - CI (GitHub Actions: ruff, black --check, pytest), an ISC `LICENSE`, and a
-  93-test suite (i18n + billing + security regression + known-issue fixes) ship
+  107-test suite (i18n + billing + security regression + known-issue fixes) ship
   with the repo.
 
 ## Deployment

@@ -17,7 +17,7 @@ configuration — not stored here — and are marked accordingly.
 | `PB_URL` | effectively yes | `http://db.dev.gyme.cloud` | Base URL of the PocketBase instance used for **all** data access (`app/pb.py`). ⚠️ The default is the project's shared **dev** database over plain HTTP; any deployment that forgets this variable silently reads/writes that server |
 | `ENV` | no | `dev` | Any value other than exactly `production` behaves as dev. In production mode: Swagger docs + `/openapi.json` disabled, `/debug/*` router excluded (and its routes cleared defensively), structlog switches to JSON output |
 | `ALLOWED_HOSTS` | no | unset | When set (comma-separated), adds FastAPI's `TrustedHostMiddleware` with those hosts plus `localhost`/`127.0.0.1`/`testserver` in dev. In production without it, a warning is logged and no host validation is applied |
-| `BILLING_ENABLED` | no | `false` | Master switch for the billing/seat system. See [billing.md](billing.md) |
+| `BILLING_ENABLED` | no | `false` | Billing/seat master switch. When false the feature is entirely absent (no nav, `404` routes, no seat limit). See [billing.md](billing.md) |
 | `BILLING_FREE_SEATS` | no | `5` | Free active-trainee seats per gym |
 | `PAYRAM_BASE_URL`, `PAYRAM_API_KEY`, `PAYRAM_WEBHOOK_SECRET` | when billing on | — | PayRam payment provider (server-side only) |
 | `PB_ADMIN_EMAIL`, `PB_ADMIN_PASSWORD` | when billing on | — | PocketBase superuser used for admin-only billing collections |

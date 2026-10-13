@@ -23,7 +23,7 @@ each environment resolves gyms by `Host` header (see
 ## Before you open a PR
 
 ```bash
-make test        # 93-test suite: i18n + billing + security regression + known-issue fixes
+make test        # 107-test suite: i18n + billing + security regression + known-issue fixes
 ruff check .
 black .
 ```

@@ -124,9 +124,13 @@ Server-side only. Never commit real values; never expose them to templates/JS.
 | `PB_ADMIN_EMAIL` | yes (when billing on) | — | PocketBase superuser for billing data access. |
 | `PB_ADMIN_PASSWORD` | yes (when billing on) | — | PocketBase superuser password. |
 
-If `BILLING_ENABLED=true` without PayRam credentials, startup **fails fast**
-(`RuntimeError`) rather than silently degrading. Missing `PB_ADMIN_*` surfaces
-as a clear error on the first billing operation.
+If `BILLING_ENABLED=true` without PayRam credentials, loading the config raises
+(`RuntimeError`). Billing is an add-on, so this never crashes a page: an invalid
+or incomplete billing configuration is treated as **billing off** (routes
+`404`, nav hidden, trainee creation unlimited) and the error is logged. Missing
+`PB_ADMIN_*` is handled the same way on operator pages — `/billing` renders a
+"not configured" notice, checkout/refund/webhook return `503`, and trainee
+creation logs the error and proceeds.
 
 ### Disabling billing entirely
 
@@ -180,7 +184,8 @@ PayRam page → webhook fires → seats increase. To exercise without a real cha
 ## 6. User experience
 
 - `GET /billing` (owner only): KPI strip (in use / capacity / available),
-  seat packs with server-side prices, and the gym's payment history.- `POST /billing/checkout` (`product_key`): creates the invoice + provider
+  seat packs with server-side prices, and the gym's payment history.
+- `POST /billing/checkout` (`product_key`): creates the invoice + provider
   checkout, then `HX-Redirect` to the **validated** provider URL.
 - `GET /billing/return?invoice=…`: reconciles with the provider, shows
   pending/paid/failed honestly; polls `/billing/checkout/{ref}/status` every 5s
@@ -215,12 +220,15 @@ provider state does.
 - **Secrets**: never logged, never rendered, never in the JS bundle (tested).
 - **Recovery**: unknown-invoice webhooks are durably recorded (not lost);
   `reconcile_tenant` re-checks unsettled invoices on the return page.
+- **Graceful degradation**: billing is an add-on. Missing credentials or invalid
+  config never `500` a normal page — the feature reports itself unavailable
+  (or entirely absent when disabled) and trainee creation fails open.
 
 ---
 
 ## 8. Tests
 
-`tests/test_billing.py` (38 billing tests; 93 in the full suite, all passing):
+`tests/test_billing.py` (52 billing tests; 107 in the full suite, all passing):
 
 - Provider status mapping; entitlement only for paid states.
 - Checkout-URL trust guard; signature valid/invalid/legacy/missing; webhook
@@ -237,6 +245,12 @@ provider state does.
 - Template rendering of all three billing components.
 - Static contracts: webhook public + CSRF-exempt, trainee create guarded,
   billing routes owner-only, all billing rules `null`, no API key in the bundle.
+- Graceful degradation: missing `PB_ADMIN_*` and invalid config never `500` a
+  page; `/billing` renders its "not configured" notice.
+- Disabled feature: `BILLING_ENABLED=false` hides the nav, `404`s every billing
+  route and the webhook, and skips the seat check.
+- Schema: each billing collection ships `created`/`updated` autodate fields
+  (PocketBase does not add them for API-created collections).
 
 **Not verified here** (no live PocketBase / PayRam): actual migration execution,
 real collection-rule enforcement by PocketBase, and a real crypto payment.
@@ -308,11 +322,12 @@ Verified against `pay.rastin.cloud` (PayRam **v3.8.2**):
 
 | Symptom | Cause | Action |
 | --- | --- | --- |
-| `/billing` shows "provider not configured" | `PAYRAM_BASE_URL`/`PAYRAM_API_KEY` missing | set them, restart |
-| Startup `RuntimeError` about PayRam | `BILLING_ENABLED=true` without creds | set creds or disable billing |
+| `/billing` returns `404` | `BILLING_ENABLED` is not true (or config invalid) | set `BILLING_ENABLED=true` and the PayRam creds, restart |
+| `/billing` shows "not configured" | `PB_ADMIN_*` missing/invalid | set `PB_ADMIN_EMAIL`/`PB_ADMIN_PASSWORD` |
+| Checkout/refund/webhook returns `503` | same `PB_ADMIN_*` problem | set the superuser credentials |
+| Config error in logs (`billing.config_invalid`) | `BILLING_ENABLED=true` without PayRam creds | set creds or set `BILLING_ENABLED=false` |
 | Webhook returns 401 | wrong `PAYRAM_WEBHOOK_SECRET`/key, or forged request | match the dashboard API key |
 | Payment paid but no seats | webhook not delivered | open `/billing/return?invoice=…` (reconciles) or re-check `billing_events` |
-| `PB_ADMIN_*` error on billing | superuser env missing | set `PB_ADMIN_EMAIL`/`PB_ADMIN_PASSWORD` |
 | "too many unpaid invoices" | open-invoice limit | complete or wait for expiry |
 
 **Investigating a payment:** look up `billing_invoices` by `invoice_ref`; check
