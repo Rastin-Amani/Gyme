@@ -59,7 +59,7 @@
             {% include 'components/datepicker.html' %}
         {% endwith %}
         {% if trainee and trainee.expand and 'user' in trainee.expand %}
-            {% include 'components/phone_field.html' with phone_value=trainee.expand['user'].phone %}
+            {% with phone_value=trainee.expand['user'].phone %}{% include 'components/phone_field.html' %}{% endwith %}
         {% else %}
             {% include 'components/phone_field.html' %}
         {% endif %}
