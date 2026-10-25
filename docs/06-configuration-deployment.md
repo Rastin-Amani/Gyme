@@ -17,10 +17,6 @@ configuration — not stored here — and are marked accordingly.
 | `PB_URL` | effectively yes | `http://db.dev.gyme.cloud` | Base URL of the PocketBase instance used for **all** data access (`app/pb.py`). ⚠️ The default is the project's shared **dev** database over plain HTTP; any deployment that forgets this variable silently reads/writes that server |
 | `ENV` | no | `dev` | Any value other than exactly `production` behaves as dev. In production mode: Swagger docs + `/openapi.json` disabled, `/debug/*` router excluded (and its routes cleared defensively), structlog switches to JSON output |
 | `ALLOWED_HOSTS` | no | unset | When set (comma-separated), adds FastAPI's `TrustedHostMiddleware` with those hosts plus `localhost`/`127.0.0.1`/`testserver` in dev. In production without it, a warning is logged and no host validation is applied |
-| `BILLING_ENABLED` | no | `false` | Billing/seat master switch. When false the feature is entirely absent (no nav, `404` routes, no seat limit). See [billing.md](billing.md) |
-| `BILLING_FREE_SEATS` | no | `5` | Free active-trainee seats per gym |
-| `PAYRAM_BASE_URL`, `PAYRAM_API_KEY`, `PAYRAM_WEBHOOK_SECRET` | when billing on | — | PayRam payment provider (server-side only) |
-| `PB_ADMIN_EMAIL`, `PB_ADMIN_PASSWORD` | when billing on | — | PocketBase superuser used for admin-only billing collections |
 
 > **Important:** `python-dotenv` appears in `requirements.txt`, but nothing
 > ever calls it. `.env` files are **not** loaded. Provide variables through the
@@ -62,16 +58,13 @@ long as filters like `tenant="..."` work):
 | `progress_logs` | `tenant`, `trainee`, metric numbers (`height weight chest waist hip arms bmi bfp bmr tdee lbm whr`), `notes`, `progress_photos` (multiple files, ≤5) |
 | `plan_progress` | `tenant`, `plan`, `current_seq` |
 | `leads` | `name`, `phone`, `position`, `coaches_count`, `trainees_count`, `gym_name`, `note` | written only by the **separate marketing application**; this app no longer writes or reads leads |
-| `billing_products`, `billing_invoices`, `billing_events`, `credit_transactions` | Billing collections (admin-only). **Not created manually** — ship as `pb_migrations/1750000000_billing.js` (PocketBase ≥ 0.23). See [billing.md](billing.md) |
 
 Operational notes:
 
 - The app authenticates end users against `users` and then performs all reads/
   writes with that user's token. **Unverified / your responsibility:** API
   rules must allow each role's expected operations (e.g. staff creating users,
-  reading tenants). The app collections have no rule definitions committed;
-  the exception is the **billing** collections, which ship as an admin-only
-  migration (`pb_migrations/1750000000_billing.js`) — see [billing.md](billing.md).
+  reading tenants). The repo contains no rule definitions or migrations.
 - There is no seed script. Minimum bootstrap = one `tenants` record matching a
   real hostname plus at least one owner account (create directly in PocketBase
   admin since the UI has no signup).
@@ -80,10 +73,10 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `1.6.0`) drives:
+- `APP_VERSION` constant in `app/main.py` (currently `1.4.0`) drives:
   template footer/global, and the PWA cache version injected into `sw.js`
   (bumping it purges clients' caches on next visit).
-- `app/version.text` mirrors it (`"1.6.0"`); both are in sync. `base.html`
+- `app/version.text` mirrors it (`"1.4.0"`); both are in sync. `base.html`
   derives the SW cache-buster from `{{ app_version }}`, so no hardcoding is
   left (known issue #7 resolved in 0.9.1).
 

@@ -12,9 +12,8 @@ PocketBase endpoints are external and out of scope.
 **Authentication & tenancy**
 
 - Everything except the public paths (`/login`, `/logout`, `/static/*`,
-  `/manifest.json`, `/sw.js`, `/favicon.ico`, `/locale`, `/webhooks/*`) requires
-  a valid `pb_auth` cookie; anonymous requests get `303 → /login` from
-  middleware.
+  `/manifest.json`, `/sw.js`, `/favicon.ico`, `/locale`) requires a valid
+  `pb_auth` cookie; anonymous requests get `303 → /login` from middleware.
   `/` always `303`s to `/dashboard` (authenticated) or `/login` (anonymous),
   and `/healthz` is served before auth checks (PB-free liveness, returns
   `{"status": "ok"}`).
@@ -185,17 +184,6 @@ detail page.
 | Method | Path | Purpose | Notes |
 | --- | --- | --- | --- |
 | GET | `/profile` | Owner/coach profile page | Shows account info; owners additionally see tenant domain/theme and the coaches-management card |
-
-### Billing (owner-only; see [billing.md](billing.md))
-
-| Method | Path | Purpose | Notes |
-| --- | --- | --- | --- |
-| GET | `/billing` | Seat usage + seat packs + payment history | Owner only |
-| POST | `/billing/checkout` | Create invoice + provider checkout | Field `product_key`; replies `HX-Redirect` to the validated PayRam URL |
-| GET | `/billing/return?invoice=…` | Checkout return / receipt | Reconciles with the provider; never grants seats from query params |
-| GET | `/billing/checkout/{ref}/status` | Polled payment-status fragment | Stops polling once settled |
-| POST | `/billing/invoices/{ref}/refund` | Manual refund marker | Owner only; compensating ledger entry |
-| POST | `/webhooks/payram` | PayRam payment webhook | Public; HMAC-SHA256 signature verified; rejects forged deliveries with `401` |
 
 ## Trainee area (`/user/*`)
 

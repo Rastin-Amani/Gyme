@@ -125,7 +125,7 @@ from the `Host` header:
 ```bash
 ruff check .    # line-length 100, py311 target
 black .         # line-length 100
-pytest -q       # or: make test  (i18n, billing, security & known-issue suites)
+pytest -q       # or: make test  (i18n + security regression suites)
 ```
 
 Templates are additionally formatted with Prettier (plugins for Jinja and

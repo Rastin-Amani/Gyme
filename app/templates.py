@@ -15,23 +15,6 @@ templates.env.globals["ngettext"] = ngettext
 templates.env.globals["locale"] = locale_proxy
 
 
-def billing_enabled() -> bool:
-    """Whether the billing/seat feature is on for this deployment.
-
-    Templates use this to hide billing navigation entirely when
-    ``BILLING_ENABLED`` is false. Fails safe (off) if config is invalid.
-    """
-    try:
-        from app.services.billing.config import get_config
-
-        return get_config().enabled
-    except Exception:
-        return False
-
-
-templates.env.globals["billing_enabled"] = billing_enabled
-
-
 def _parse_dt(date_str):
     """Normalize PB timestamps (str or datetime) to a naive datetime; None on failure."""
     if not date_str:

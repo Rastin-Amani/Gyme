@@ -14,7 +14,6 @@ from .routes import item
 from .routes import coach
 from app.routes import progress_logs
 from .routes import profile
-from .routes import billing
 from .routes.user import dashboard as user_dashboard
 from .routes.user import profile as user_profile
 from .routes.user import plan as user_plan
@@ -65,7 +64,7 @@ else:
             "ALLOWED_HOSTS not set in production - relying on tenant host validation only"
         )
 
-APP_VERSION = "1.6.0"
+APP_VERSION = "1.4.0"
 templates.env.globals["app_version"] = APP_VERSION
 
 # static folder
@@ -92,7 +91,6 @@ app.include_router(item.router)
 app.include_router(coach.router)
 app.include_router(progress_logs.router)
 app.include_router(profile.router)
-app.include_router(billing.router)
 app.include_router(user_dashboard.router)
 app.include_router(user_profile.router)
 app.include_router(user_plan.router)

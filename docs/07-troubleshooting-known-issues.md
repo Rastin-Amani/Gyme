@@ -198,8 +198,8 @@ Known navigation bug, issue #6.
 
 - **Evidence (historical):** `APP_VERSION = "0.9.0"` (`main.py`),
   `app/version.text` `"0.8.1"`, and `base.html` registered `/sw.js?v=0.8.1`.
-- **Current code:** `APP_VERSION = "1.6.0"` (`main.py`), `app/version.text` is
-  `"1.6.0"` (single source, quoted value), and `base.html` registers
+- **Current code:** `APP_VERSION = "1.4.0"` (`main.py`), `app/version.text` is
+  `"1.4.0"` (single source, quoted value), and `base.html` registers
   `/sw.js?v={{ app_version }}` — derived from the same `app_version` global
   already used for the CSS cache-buster.
 - **Impact (today):** none — version strings are consistent and cache
@@ -294,7 +294,7 @@ Known navigation bug, issue #6.
   `black --check .`, and `pytest -q` on push/PR; an ISC `LICENSE` matches the
   `package.json` `"license": "ISC"` declaration. The security regression suite
   now lives at `tests/test_security_regression.py` and the suite has grown to
-  107 tests (9 i18n + 52 billing + 22 security + 24 known-issue-fix regressions).
+  55 tests (9 i18n + 22 security + 24 known-issue-fix regressions).
 - **Impact (today):** none — CI gates lint/format/tests and the project has an
   explicit license.
 - **Fix (applied):** workflow + LICENSE committed; covered by

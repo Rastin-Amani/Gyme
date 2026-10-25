@@ -48,7 +48,7 @@
         <div class="validator-hint hidden">{{ _('Enter a valid email address.') }}</div>
     </div>
     {% if coach %}
-        {% with phone_value=coach.phone %}{% include 'components/phone_field.html' %}{% endwith %}
+        {% include 'components/phone_field.html' with phone_value=coach.phone %}
     {% else %}
         {% include 'components/phone_field.html' %}
     {% endif %}
