@@ -1,6 +1,15 @@
 {% extends "layouts/dashboard.html" %}
 
 {% block dashboard_content %}
+    {# Determine the default active tab so the UI doesn't break if a plan is missing #}
+    {% set active_tab = 'none' %}
+    {% if plans['diet'] %}
+        {% set active_tab = 'diet' %}
+    {% elif plans['training'] %}
+        {% set active_tab = 'training' %}
+    {% elif plans['steroid'] %}
+        {% set active_tab = 'steroid' %}
+    {% endif %}
     <div class="pb-4" x-data="{ tab: '{{ active_tab }}' }" data-page-title="{{ title }}">
         <div class="page-head">
             <div>
@@ -12,16 +21,6 @@
             </div>
         </div>
 
-        {# Determine the default active tab so the UI doesn't break if a plan is missing #}
-        {% set active_tab = 'none' %}
-        {% if plans['diet'] %}
-            {% set active_tab = 'diet' %}
-        {% elif plans['training'] %}
-            {% set active_tab = 'training' %}
-        {% elif plans['steroid'] %}
-            {% set active_tab = 'steroid' %}
-        {% endif %}
-
         <div class="mb-6">
             <div
                 role="tablist"
@@ -32,7 +31,7 @@
                     <a
                         role="tab"
                         id="btn-diet"
-                        aria-selected="true"
+                        :aria-selected="tab === 'diet'"
                         class="tab transition-all px-6 min-h-11 flex-1"
                         :class="{ 'tab-active': tab === 'diet' }"
                         @click="tab = 'diet'; $store.ui.setTab('diet')"
@@ -45,6 +44,7 @@
                     <a
                         role="tab"
                         id="btn-training"
+                        :aria-selected="tab === 'training'"
                         class="tab transition-all px-6 min-h-11 flex-1"
                         :class="{ 'tab-active': tab === 'training' }"
                         @click="tab = 'training'; $store.ui.setTab('training')"
@@ -57,6 +57,7 @@
                     <a
                         role="tab"
                         id="btn-steroid"
+                        :aria-selected="tab === 'steroid'"
                         class="tab transition-all px-6 min-h-11 flex-1"
                         :class="{ 'tab-active': tab === 'steroid' }"
                         @click="tab = 'steroid'; $store.ui.setTab('steroid')"
