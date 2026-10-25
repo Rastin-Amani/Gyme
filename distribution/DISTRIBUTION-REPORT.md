@@ -4,8 +4,9 @@
 
 - **Name:** Gyme
 - **Repository:** https://github.com/Rastin-Amani/Gyme
-- **Website:** https://gyme.cloud *(reachability not verifiable from this network — check before linking in posts)*
+- **Website:** https://gyme.cloud *(verified HTTP 200 on 2026-10-25)*
 - **Version:** 0.9.1
+- **Latest cycle:** 2026-10-25 — README visuals, product-site links and v1.4.0 publish (see the cycle section at the end)
 - **License:** ISC
 - **Campaign date:** 2026-09-26
 - **Mode:** AUTONOMOUS (GitHub-safe actions + permitted submissions executed directly) — earlier repo P0 phase ran under explicit user approval
@@ -71,7 +72,7 @@
 
 | Destination | Exact Blocker | Prepared Asset | Required Human Action |
 | --- | --- | --- | --- |
-| Screenshots / social preview | repo has zero images; `usesCustomOpenGraphImage: false` | placeholder slots in README/articles | capture real UI (trainee Today view, owner dashboard, plan editor) → add README images + og:image |
+| Screenshots / social preview | GitHub exposes no API for the social-preview image; README images are live | `docs/screenshots/dashboard.png` | Settings → General → Social preview → upload the dashboard screenshot |
 | GHCR package visibility | token lacks `read:packages`; no docker CLI here | workflow + run working | Settings → Packages → Gyme → make public |
 | GitHub private vulnerability reporting | disabled on repo | SECURITY.md already points at it | Repo settings → Code security → enable |
 | Dev.to article | no API key | `distribution/devto-article.md` | export key (`DEVTO_API_KEY` or web editor) and publish |
@@ -113,7 +114,7 @@
 
 ## What Did Not Work
 
-- Cannot produce screenshots (no runnable live instance + PocketBase in this environment) — biggest conversion gap remains.
+- ~~Cannot produce screenshots (no runnable live instance + PocketBase in this environment)~~ Resolved 2026-10-25: seeded local PocketBase + captured 9 real screenshots — see the cycle section below.
 - GHCR visibility could not be flipped programmatically (token scopes).
 - Non-GitHub verification (websearch, HN Algolia, Product Hunt, AlternativeTo) is network-blocked here — every rule claim for those must be re-verified by the human at submit time.
 - Creating the Dieterbe issue, while successful, intentionally excluded the maintainer's “interesting” sub-list choice — placement is up to them.
@@ -140,7 +141,7 @@
 
 ## Next Distribution Cycle
 
-1. Human: screenshots → README + og:image + PH media.
+1. Human: upload the social preview image (dashboard screenshot) and keep README screenshots current.
 2. Human: GHCR public + private vuln reporting enabled (5 minutes, unlocks image pulls and security reporting).
 3. Dev.to publish (key) → cross-promote on X/LinkedIn after a few days.
 4. 2026-10-14: awesome-selfhosted PR (human, per guide).
@@ -152,3 +153,40 @@
 - Release: https://github.com/Rastin-Amani/Gyme/releases/tag/v0.9.1
 - Dieterbe issue accepted: https://github.com/Dieterbe/awesome-health-fitness-oss/issues/14 (`state: open`)
 - Repo commits: 3f43223 (GHCR), 1ce4240 (CI deps), b9227e5 (pythonpath), ae2a05a (SECURITY.md), 394292f (README/CONTRIBUTING); discussions enabled (`has_discussions: true`).
+---
+
+## Cycle 2026-10-25 — README visuals and product-site links
+
+**Version:** 1.4.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+
+### Executed (LIVE)
+
+| Action | Evidence | Status |
+| --- | --- | --- |
+| Removed billing and restored 1.4.0 | commit `990824c` | **PUSHED** |
+| Fixed Today tab init, ARIA state, plan chevrons and dashboard span | commit `af46c90` | **PUSHED** |
+| Added logo + 9 real screenshots from a seeded local app | commit `fdb6e57`, `docs/assets/logo.svg`, `docs/screenshots/` | **PUSHED** |
+| README rebuilt: logo, hero, TOC, why-Gyme, cloud vs self-host, compare/migrate, security, docs | commit `fdb6e57` | **PUSHED** |
+| 21 unique links to `gyme.cloud/en` product pages | `README.md` | **VERIFIED 200** |
+| GitHub homepage → `https://gyme.cloud/en/` | `gh repo edit` 2026-10-25 | **LIVE** |
+| Topics += `htmx`, `tailwindcss`, `pocketbase`, `jinja2`, `gym-software`, `fitness-coaching`, `docker` | 18 topics total | **LIVE** |
+
+### Verification
+
+- 55 tests pass; `ruff check .` and `black --check .` clean.
+- Every `gyme.cloud` and `app.gyme.cloud` URL used in the README returned HTTP 200.
+- All 9 README images exist and were captured from the running app (1280×/390× viewports, 2–3× DPR).
+- Demo content is fictional: “Northline Strength”, 24 trainees, three coaches; no customer data or secrets.
+
+### Manual follow-up
+
+| Action | Blocker | Evidence |
+| --- | --- | --- |
+| Upload repository social preview | GitHub has no API for it | `docs/screenshots/dashboard.png` → Settings → General → Social preview |
+| Product Hunt media | maker account | the 9 screenshots are ready to upload |
+| Dev.to / article images | publishing key | use `docs/screenshots/` directly |
+
+### Notes
+
+- The README now opens with the product problem and two clear paths (cloud vs self-host), not a feature inventory; the technical sections remain unchanged below it.
+- The screenshots surfaced four real UI defects (blank Today tab, always-selected Diet tab, backward plan chevrons, half-empty dashboard grid); all are fixed in `af46c90` rather than papered over in the images.
