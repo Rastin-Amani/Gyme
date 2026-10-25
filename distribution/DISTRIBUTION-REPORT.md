@@ -168,6 +168,7 @@
 | Added logo + 9 real screenshots from a seeded local app | commit `fdb6e57`, `docs/assets/logo.svg`, `docs/screenshots/` | **PUSHED** |
 | README rebuilt: logo, hero, TOC, why-Gyme, cloud vs self-host, compare/migrate, security, docs | commit `fdb6e57` | **PUSHED** |
 | 21 unique links to `gyme.cloud/en` product pages | `README.md` | **VERIFIED 200** |
+| CI + GHCR after push | [CI run 40211520620](https://github.com/Rastin-Amani/Gyme/actions/runs/40211520620) success · [GHCR run 40211520622](https://github.com/Rastin-Amani/Gyme/actions/runs/40211520622) success | **LIVE** |
 | GitHub homepage → `https://gyme.cloud/en/` | `gh repo edit` 2026-10-25 | **LIVE** |
 | Topics += `htmx`, `tailwindcss`, `pocketbase`, `jinja2`, `gym-software`, `fitness-coaching`, `docker` | 18 topics total | **LIVE** |
 

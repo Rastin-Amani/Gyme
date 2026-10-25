@@ -133,8 +133,7 @@ record on infrastructure you control.
 | Start | [app.gyme.cloud](https://app.gyme.cloud) | [Quick start](#quick-start) |
 
 The [open-source page](https://gyme.cloud/en/open-source) explains the boundary in
-plain terms. Running it yourself does not hide the commercial service, and the cloud
-does not require you to give up the source.
+plain terms. Choosing the cloud does not remove the self-hosted option.
 
 ## What's inside
 
