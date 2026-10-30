@@ -1,7 +1,8 @@
 # 07 — Troubleshooting & Known Issues
 
 **Verification status:** every issue below was confirmed by reading the source
-at the current working tree (version 0.9.1, verified 2026-09-25). File/line
+of the tree released as 0.9.1 (verified 2026-09-25); the current tree is
+0.10.0, the first release of the corrected pre-1.0 line. File/line
 references are included so each claim can be checked. Issues are numbered;
 other documents reference these numbers. Statuses: **OPEN** (still true),
 **RESOLVED** (fixed in the current tree), **PARTIAL**.

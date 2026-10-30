@@ -86,7 +86,7 @@ Draft body (to be rewritten by author, disclosure first line):
 
 ## Content factual check (before any publication)
 
-[ ] Version 0.9.1 · ISC license · 55 passing tests locally
+[ ] Version 0.10.0 · ISC license · 57 passing tests locally
 [ ] CI green on main (ruff, black, pytest) — ready to link from anywhere (run 36229851866)
 [ ] gyme.cloud reachable & screenshots exist (not yet)
 [ ] No fabricated metrics, users, testimonials, or roadmap items

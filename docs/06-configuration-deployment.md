@@ -189,5 +189,5 @@ no file handling or rotation is configured in-app.
 
 ## Documentation status
 
-- Last verified: 2026-09-25 against `main` (uncommitted working tree after the
-  marketing-app extraction; version 0.9.1).
+- Last verified: 2026-10-30 against `main` (version 0.10.0); the earlier review
+  of 2026-09-25 covered the 0.9.1 tree and the marketing-app extraction.
