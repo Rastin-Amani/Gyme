@@ -4,33 +4,25 @@
     <!-- iOS install overlay — shown once for first-time iOS non-standalone users -->
     <div
         id="ios-overlay"
-        class="hidden fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-neutral p-6"
+        class="fixed inset-0 z-[10000] hidden flex-col items-center justify-center bg-neutral p-6"
     >
-        <div
-            class="bg-base-100 rounded-2xl w-full max-w-sm p-6 pb-8 border border-base-300 transform transition-all duration-300 animate-slide-up"
-        >
-            <div class="flex flex-col items-center text-center gap-3">
+        <div class="w-full max-w-sm rounded-box border border-base-300 bg-base-100 p-6 pb-8">
+            <div class="flex flex-col items-center gap-3 text-center">
                 <img
                     src="/apple-touch-icon-180x180.png"
                     alt=""
-                    class="w-20 h-20 rounded-box border border-base-300"
+                    class="size-20 rounded-box border border-base-300"
                     onerror="this.style.display='none'"
                 />
                 <div>
-                    <p class="font-display text-3xl font-normal text-base-content">{{ _('Install the app') }}</p>
-                    <p class="text-sm text-base-content/60 mt-1 leading-relaxed">
+                    <p class="text-2xl font-semibold tracking-tight">{{ _('Install the app') }}</p>
+                    <p class="mt-1 text-sm leading-relaxed text-base-content/60">
                         {{ _('Add the web app to your home screen.') }}
                     </p>
                 </div>
-                <div
-                    class="text-left w-full space-y-3 bg-base-200 rounded-box p-4 text-sm mt-2 border border-base-300"
-                >
+                <div class="mt-2 w-full space-y-3 rounded-box border border-base-300 bg-base-200 p-4 text-left text-sm">
                     <div class="flex items-start gap-3">
-                        <span
-                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
-                        >
-                            1
-                        </span>
+                        <span class="grid size-6 shrink-0 place-items-center rounded-full bg-secondary/10 text-xs font-bold text-secondary">1</span>
                         <span>
                             {{ _('Tap the') }}
                             <strong>Share</strong>
@@ -39,29 +31,21 @@
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
-                        <span
-                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
-                        >
-                            2
-                        </span>
+                        <span class="grid size-6 shrink-0 place-items-center rounded-full bg-secondary/10 text-xs font-bold text-secondary">2</span>
                         <span>
                             {{ _('In the menu that opens, choose') }}
                             <strong>Add to Home Screen</strong>.
                         </span>
                     </div>
                     <div class="flex items-start gap-3">
-                        <span
-                            class="flex-shrink-0 w-6 h-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center text-xs font-bold"
-                        >
-                            3
-                        </span>
+                        <span class="grid size-6 shrink-0 place-items-center rounded-full bg-secondary/10 text-xs font-bold text-secondary">3</span>
                         <span>
                             {{ _('In the next step, tap') }}
                             <strong>Add</strong>.
                         </span>
                     </div>
                 </div>
-                <button onclick="dismissInstallOverlay()" class="btn btn-primary w-full mt-1">
+                <button onclick="dismissInstallOverlay()" class="btn btn-primary btn-block mt-1">
                     {{ _('Got it') }}
                 </button>
             </div>
@@ -76,12 +60,18 @@
 
             if (isIOS && !isStandalone && !hasSeen) {
                 var overlay = document.getElementById('ios-overlay');
-                if (overlay) overlay.classList.remove('hidden');
+                if (overlay) {
+                    overlay.classList.remove('hidden');
+                    overlay.classList.add('flex');
+                }
             }
 
             window.dismissInstallOverlay = function () {
                 var overlay = document.getElementById('ios-overlay');
-                if (overlay) overlay.classList.add('hidden');
+                if (overlay) {
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                }
                 localStorage.setItem('ios-install-overlay-dismissed', '1');
             };
         })();
@@ -89,141 +79,92 @@
 {% endblock %}
 
 {% block content %}
-    <div class="fixed top-2 end-2 z-40">
+    <div class="fixed end-2 top-2 z-40">
         {% include "components/locale_switcher.html" %}
     </div>
 
-    <div
-        class="flex flex-col justify-center items-center min-h-[calc(100vh-4rem)] relative py-8"
-    >
-        <!-- Login card -->
-        <div
-            class="card bg-base-100 border border-base-300 w-full max-w-sm rounded-2xl"
-        >
-            <div class="card-body p-6 sm:p-8">
-                <div class="mb-4">
-                    {% if tenant and tenant.logo %}
-                        {% set pb_url = request.state.pb.base_url.rstrip("/") %}
-                        <img
-                            src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
-                            alt="{{ tenant.name }}"
-                            class="w-12 h-12 rounded-xl border border-base-300 object-cover"
-                        />
-                    {% else %}
-                        <div
-                            class="w-12 h-12 rounded-xl bg-primary text-primary-content flex items-center justify-center text-xl font-bold"
-                        >
-                            {{ tenant.name[:1] if tenant else "G" }}
-                        </div>
-                    {% endif %}
+    <main class="flex min-h-dvh flex-col items-center justify-center px-4 py-10">
+        <div class="w-full max-w-sm">
+            <div class="mb-6 flex items-center gap-3">
+                {% if tenant and tenant.logo %}
+                    {% set pb_url = request.state.pb.base_url.rstrip("/") %}
+                    <img
+                        src="{{ pb_url }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=200x200f"
+                        alt="{{ tenant.name }}"
+                        class="size-12 rounded-field border border-base-300 object-cover"
+                    />
+                {% else %}
+                    <span class="grid size-12 place-items-center rounded-field bg-primary text-xl font-bold text-primary-content" aria-hidden="true">
+                        {{ tenant.name[:1] if tenant else "G" }}
+                    </span>
+                {% endif %}
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-semibold tracking-tight">{{ tenant.name if tenant else _("Gyme") }}</p>
+                    <p class="text-xs text-base-content/50">Gyme</p>
                 </div>
-                <h2
-                    class="font-display text-2xl leading-none text-base-content mb-5"
-                >
-                    {{ _('Log in') }}
-                </h2>
+            </div>
 
-                <form method="post" action="/login" class="space-y-4">
-                    <div class="form-control">
-                        <label class="floating-label">
-                            <span>{{ _('Email') }}</span>
+            <div class="card border border-base-300 bg-base-100">
+                <div class="card-body gap-5 p-6 sm:p-8">
+                    <h1 class="text-2xl font-semibold tracking-tight">{{ _('Log in') }}</h1>
+
+                    <form method="post" action="/login" class="flex flex-col gap-4">
+                        <label class="input w-full">
+                            <span class="label">{{ _('Email') }}</span>
                             <input
                                 name="identity"
-                                class="input w-full validator transition-colors"
+                                class="w-full validator"
                                 placeholder="{{ _('Email') }}"
                                 type="email"
+                                autocomplete="username"
                                 required
                                 autofocus
                             />
-                            <div class="validator-hint hidden text-xs mt-1">
-                                {{ _('Enter a valid email address.') }}
-                            </div>
                         </label>
-                    </div>
 
-                    <div class="form-control">
                         <div class="relative w-full">
-                            <label class="floating-label w-full">
-                                <span>{{ _('Password') }}</span>
+                            <label class="input w-full">
+                                <span class="label">{{ _('Password') }}</span>
                                 <input
                                     name="password"
-                                    class="input w-full validator pl-12 transition-colors"
+                                    class="w-full pe-12 validator"
                                     placeholder="{{ _('Password') }}"
                                     type="password"
+                                    autocomplete="current-password"
                                     required
                                 />
-                                <div class="validator-hint hidden text-xs mt-1">
-                                    {{ _('Password is required.') }}
-                                </div>
                             </label>
 
                             <button
                                 type="button"
-                                class="absolute top-1/2 -translate-y-1/2 left-3 p-2 text-base-content/40 hover:text-secondary transition-colors focus:outline-none z-10"
+                                class="btn btn-ghost btn-circle btn-sm absolute end-1.5 top-1/2 -translate-y-1/2 text-base-content/40"
                                 onclick="toggleLoginPassword(this)"
                                 tabindex="-1"
+                                aria-label="{{ _('Show password') }}"
                             >
-                                <svg
-                                    class="eye-open w-5 h-5"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                                    />
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
+                                <svg class="eye-open size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
-                                <svg
-                                    class="eye-closed w-5 h-5 hidden"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke-width="1.5"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                                    />
+                                <svg class="eye-closed hidden size-4" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                                 </svg>
                             </button>
                         </div>
-                    </div>
 
-                    <div class="flex justify-start pt-1 hidden">
-                        <a
-                            href="#"
-                            class="text-xs font-semibold text-secondary hover:text-secondary/80 transition-colors"
-                        >
-                            {{ _('Forgot your password?') }}
-                        </a>
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" class="btn btn-primary w-full min-h-12 text-base font-bold">
+                        <button type="submit" class="btn btn-primary btn-lg btn-block mt-2 transition-transform active:scale-[0.98]">
                             {{ _('Log in') }}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="size-5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
                         </button>
-                    </div>
-                </form>
-
-                <div class="mt-6">
-                    <div class="h-px bg-base-300"></div>
-                    <p class="text-center text-[0.7rem] font-medium text-fog mt-3">
-                        {{ tenant.name if tenant else _("Gyme") }} / Gyme
-                    </p>
+                    </form>
                 </div>
             </div>
+
+            <p class="mt-6 text-center text-xs font-medium text-base-content/40">
+                {{ tenant.name if tenant else _("Gyme") }} / Gyme
+            </p>
         </div>
-    </div>
+    </main>
 
     <script>
         function toggleLoginPassword(button) {
