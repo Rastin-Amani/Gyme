@@ -1,25 +1,30 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
-<div class="max-w-150 mx-auto" data-page-title="{{ title }}">
-    <div class="card flex items-center justify-between border border-base-300 bg-base-100 rounded-2xl p-4 mb-4">
-        <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm border border-base-300">{{ _('Edit') }}</a>
-        <div class="text-center min-w-0">
-            <div class="flex items-center justify-center gap-3 mb-2">
-                <h1 class="font-display font-normal text-2xl leading-tight truncate">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</h1>
-                <div class="avatar avatar-placeholder shrink-0">
-                    <div class="bg-lavender-whisper text-vast-ink w-10 h-10 rounded-full border border-base-300 flex items-center justify-center font-semibold">
-                        {{ coach.first_name[0] if coach.first_name else '?' }}
-                    </div>
-                </div>
+<div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
+    <header class="mb-6 flex items-center gap-4">
+        <div class="avatar avatar-placeholder shrink-0">
+            <div class="w-14 rounded-full bg-base-200 text-lg font-semibold text-base-content/70">
+                <span>{{ coach.first_name[0] if coach.first_name else '?' }}</span>
             </div>
-            {% if coach.email %}<span class="text-sm text-fog block truncate">{{ coach.email }}</span>{% endif %}
         </div>
-        <div class="w-16"></div>
-    </div>
+        <div class="min-w-0 flex-1">
+            <h1 class="truncate text-2xl font-semibold tracking-tight">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</h1>
+            {% if coach.email %}<p class="truncate text-sm text-base-content/60">{{ coach.email }}</p>{% endif %}
+        </div>
+        <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm">{{ _('Edit') }}</a>
+    </header>
 
-    <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-        <div><span class="text-fog block text-xs mb-1">{{ _('Phone') }}</span><span class="font-semibold">{{ coach.phone or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Email') }}</span><span class="font-semibold truncate">{{ coach.email or '-' }}</span></div>
+    <div class="card border border-base-300 bg-base-100">
+        <ul class="list">
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Phone') }}</span>
+                <span class="ms-auto truncate text-sm font-medium">{{ coach.phone or '-' }}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Email') }}</span>
+                <span class="ms-auto truncate text-sm font-medium">{{ coach.email or '-' }}</span>
+            </li>
+        </ul>
     </div>
 </div>
 {% endblock %}

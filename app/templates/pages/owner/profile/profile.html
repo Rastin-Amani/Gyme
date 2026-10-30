@@ -1,72 +1,56 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div class="max-w-150" data-page-title="{{ title }}">
-        <div
-            class="items-center justify-between border border-base-300 bg-base-100 p-4 mb-4 card flex rounded-2xl"
-        >
-            <a
-                href="/change-password"
-                class="btn btn-sm border border-base-300"
-            >
-                {{ _('Change password') }}
-            </a>
-            <div class="text-center">
-                <h1 class="font-display font-normal text-2xl leading-tight text-left ml-4">
+    <div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
+        <header class="mb-6 flex items-end justify-between gap-3">
+            <div class="min-w-0">
+                <h1 class="truncate text-2xl font-semibold tracking-tight">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
                 </h1>
+                <p class="truncate text-sm text-base-content/60">{{ user.email }}</p>
             </div>
-        </div>
-        <!-- Info Grid -->
-        <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Email') }}</span>
-                <span class="font-medium">{{ user.email }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Status') }}</span>
-                <span class="font-medium">{{ _('Active') }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Account created') }}</span>
-                <span class="font-medium">{{ tenant.created | jalali_date or '-' }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Last updated') }}</span>
-                <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
-            </div>
+            <a href="/change-password" class="btn btn-sm shrink-0">{{ _('Change password') }}</a>
+        </header>
+
+        <div class="card border border-base-300 bg-base-100">
+            <ul class="list">
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Status') }}</span>
+                    <span class="badge badge-soft badge-success badge-sm ms-auto">{{ _('Active') }}</span>
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Account created') }}</span>
+                    <span class="ms-auto text-sm font-medium">{{ tenant.created | jalali_date or '-' }}</span>
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Last updated') }}</span>
+                    <span class="ms-auto text-sm font-medium">{{ tenant.updated | jalali_date }}</span>
+                </li>
+            </ul>
         </div>
 
-        <!-- Items Section - Owner only -->
         {% if user.role == 'owner' %}
-            <div>
-                <div class="mt-4" id="items-list-container">
-                    <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('App information and settings') }}</div>
-                    <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-                        <div>
-                            <span class="text-fog block text-xs mb-1">{{ _('Domain') }}</span>
-                            <span class="font-medium">{{ tenant.domain }}</span>
-                        </div>
-                        <div>
-                            <span class="text-fog block text-xs mb-1">{{ _('Theme') }}</span>
-                            <span class="font-medium">{{ tenant.theme or '-' }}</span>
-                        </div>
-                        <div></div>
-                    </div>
-                </div>
+            <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('App information and settings') }}</h2>
+            <div class="card border border-base-300 bg-base-100">
+                <ul class="list">
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Domain') }}</span>
+                        <span class="ms-auto truncate text-sm font-medium">{{ tenant.domain }}</span>
+                    </li>
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Theme') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ tenant.theme or '-' }}</span>
+                    </li>
+                </ul>
             </div>
-        {% endif %}
 
-        {% if user.role == "owner" %}
-            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('Management') }}</div>
-            <div class="card bg-base-100 border border-base-300 rounded-xl">
-                <div class="card-body p-4">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="font-semibold">{{ _('Coaches') }}</h3>
-                            <p class="text-sm text-fog">{{ _("Manage your gym's coaches") }}</p>
-                        </div>
-                        <a href="/coaches" class="btn btn-primary btn-sm border border-base-300">{{ _('View') }}</a>
+            <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Management') }}</h2>
+            <div class="card border border-base-300 bg-base-100">
+                <div class="card-body flex-row items-center justify-between gap-3 p-4">
+                    <div class="min-w-0">
+                        <h3 class="text-sm font-semibold">{{ _('Coaches') }}</h3>
+                        <p class="text-sm text-base-content/60">{{ _("Manage your gym's coaches") }}</p>
                     </div>
+                    <a href="/coaches" class="btn btn-primary btn-sm shrink-0">{{ _('View') }}</a>
                 </div>
             </div>
         {% endif %}
