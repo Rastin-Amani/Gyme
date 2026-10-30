@@ -1,32 +1,32 @@
 {% if plans and plans|length > 0 %}
     {% for t in plans %}
-        <article class="card bg-base-100 border border-base-300 rounded-2xl mb-4 card-body p-5">
-            <div class="flex items-center justify-between gap-2">
-                <div class="min-w-0">
-                    <h3 class="font-display font-normal text-xl leading-tight truncate">
-                        {{ t.template_name or (_('Template') ~ ' ' ~ t.type) }}
-                    </h3>
-                    <p class="text-xs text-fog mt-1">
-                        {% if t.type == 'diet' %}
-                            {{ _('Diet') }}
-                        {% elif t.type == 'training' %}
-                            {{ _('Training') }}
-                        {% else %}
-                            {{ _('Steroid') }}
-                        {% endif %}
-                        | {{ t.days_per_week or '—' }} {{ _('days per week') }}
-                    </p>
+        <article class="card border border-base-300 bg-base-100 transition-colors hover:border-base-content/20">
+            <div class="card-body gap-3 p-5">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                        <h3 class="truncate text-base font-semibold tracking-tight">
+                            {{ t.template_name or (_('Template') ~ ' ' ~ t.type) }}
+                        </h3>
+                        <p class="mt-1 text-xs text-base-content/55">
+                            {% if t.type == 'diet' %}
+                                {{ _('Diet') }}
+                            {% elif t.type == 'training' %}
+                                {{ _('Training') }}
+                            {% else %}
+                                {{ _('Steroid') }}
+                            {% endif %}
+                            · {{ t.days_per_week or '—' }} {{ _('days per week') }}
+                        </p>
+                    </div>
+                    <a href="/plans/{{ t.id }}" class="btn btn-ghost btn-sm shrink-0">{{ _('View') }}</a>
                 </div>
-                <a href="/plans/{{ t.id }}" class="btn btn-sm btn-ghost border border-base-300 text-secondary shrink-0">{{ _('View') }}</a>
-            </div>
 
-            {% if t.notes %}
-                <p class="text-xs text-fog mt-2 line-clamp-2">{{ t.notes }}</p>
-            {% endif %}
+                {% if t.notes %}
+                    <p class="line-clamp-2 text-xs text-base-content/55">{{ t.notes }}</p>
+                {% endif %}
 
-            <div class="flex mt-4">
                 <button
-                    class="btn btn-s btn-primary btn-soft flex-1 border border-base-300"
+                    class="btn btn-soft btn-primary btn-block btn-sm"
                     hx-get="/templates/{{ t.id }}/apply"
                     hx-target="#modal-container"
                     hx-swap="innerHTML"
@@ -38,15 +38,10 @@
         </article>
     {% endfor %}
 {% else %}
-    <div class="col-span-full">
-        <div class="bg-base-100 border border-dashed border-base-300 rounded-2xl p-8 text-center">
-            <p class="text-sm text-fog">
-                <span class="status status-secondary ml-1"></span>
-                {{ _('No templates created yet.') }}
-            </p>
-            <a href="/plans/new?template=true" class="btn btn-sm btn-primary border border-base-300 mt-4">
-                {{ _('Create new template') }}
-            </a>
+    <div class="card border border-dashed border-base-300 bg-base-100">
+        <div class="card-body items-center py-12 text-center">
+            <p class="text-sm text-base-content/60">{{ _('No templates created yet.') }}</p>
+            <a href="/plans/new?template=true" class="btn btn-primary btn-sm mt-3">{{ _('Create new template') }}</a>
         </div>
     </div>
 {% endif %}

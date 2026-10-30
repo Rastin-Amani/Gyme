@@ -1,11 +1,11 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
     <div id="plans-content" data-settle data-page-title="{{ title }}">
-        <!-- Tab Bar: Active Plans | Templates -->
-        <div class="tabs tabs-box mb-6 bg-base-100 border border-base-300 p-1 gap-0">
+        <div role="tablist" class="tabs tabs-box mb-6 w-full bg-base-200 p-1 sm:w-auto">
             <a
                 href="/plans"
-                class="tab {{ 'tab-active' if not is_template else '' }}"
+                role="tab"
+                class="tab flex-1 sm:flex-none {{ 'tab-active' if not is_template else '' }}"
                 hx-get="/plans"
                 hx-target="#plans-content"
                 hx-swap="outerHTML"
@@ -16,7 +16,8 @@
             </a>
             <a
                 href="/plans?is_template=true"
-                class="tab {{ 'tab-active' if is_template else '' }}"
+                role="tab"
+                class="tab flex-1 sm:flex-none {{ 'tab-active' if is_template else '' }}"
                 hx-get="/plans?is_template=true"
                 hx-target="#plans-content"
                 hx-swap="outerHTML"
@@ -27,38 +28,31 @@
             </a>
         </div>
 
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h1 class="font-display text-3xl font-normal leading-tight">
-                    {% if is_template %}{{ _('Templates') }}{% else %}{{ _('Plans') }}{% endif %}
-                </h1>
-                <p class="text-sm text-fog"></p>
-            </div>
+        <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
+            <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+                {% if is_template %}{{ _('Templates') }}{% else %}{{ _('Plans') }}{% endif %}
+            </h1>
 
             {% if is_template %}
-                <a href="/plans/new?template=true" class="btn btn-primary border border-base-300">{{ _('New template') }}</a>
+                <a href="/plans/new?template=true" class="btn btn-primary shrink-0">{{ _('New template') }}</a>
             {% else %}
-                <a href="/plans/new" class="btn btn-primary border border-base-300">{{ _('New plan') }}</a>
+                <a href="/plans/new" class="btn btn-primary shrink-0">{{ _('New plan') }}</a>
             {% endif %}
-        </div>
+        </header>
 
-        <!-- Search / Filter (only for active plans) -->
         {% if not is_template %}
-            <div
-                class="collapse collapse-arrow border border-base-300 bg-base-100 rounded-2xl mb-6"
-            >
-                <input type="checkbox" />
-                <div class="collapse-title text-md font-semibold">{{ _('Search and filter') }}</div>
+            <details class="collapse collapse-arrow mb-6 border border-base-300 bg-base-100">
+                <summary class="collapse-title flex min-h-12 items-center text-sm font-semibold">{{ _('Search and filter') }}</summary>
                 <div class="collapse-content">
                     <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
-                        <label class="form-control floating-label">
+                        <label class="input w-full">
+                            <span class="label">{{ _('Search') }}</span>
                             <input
                                 type="text"
                                 name="query"
                                 id="search-input"
                                 placeholder="{{ _('Search (trainee name, coach name...)') }}"
-                                class="input w-full peer"
+                                class="w-full"
                                 value="{{ search_query or '' }}"
                                 hx-get="/plans?page=1"
                                 hx-target="#plans-content"
@@ -68,156 +62,104 @@
                                 hx-trigger="keyup changed delay:500ms, search"
                                 hx-sync="closest form:replace"
                             />
-                            <span class="label-text">{{ _('Search (trainee name, coach name...)') }}</span>
                         </label>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
-                            <label class="form-control floating-label">
-                                <select
-                                    name="type"
-                                    id="type-filter"
-                                    class="select w-full peer"
-                                    hx-get="/plans?page=1"
-                                    hx-target="#plans-content"
-                                    hx-select="#plans-content"
-                                    hx-swap="outerHTML"
-                                    hx-push-url="true"
-                                    hx-trigger="change"
-                                    hx-sync="closest form:replace"
-                                >
-                                    <option
-                                        value=""
-                                        {% if not filter_params.type %}selected{% endif %}
-                                    >
-                                        {{ _('All') }}
-                                    </option>
-                                    <option
-                                        value="diet"
-                                        {% if filter_params.type == 'diet' %}selected{% endif %}
-                                    >
-                                        {{ _('Diet') }}
-                                    </option>
-                                    <option
-                                        value="training"
-                                        {% if filter_params.type == 'training' %}selected{% endif %}
-                                    >
-                                        {{ _('Training') }}
-                                    </option>
-                                    <option
-                                        value="steroid"
-                                        {% if filter_params.type == 'steroid' %}selected{% endif %}
-                                    >
-                                        {{ _('Steroid') }}
-                                    </option>
-                                </select>
-                                <span class="label-text">{{ _('Plan type') }}</span>
-                            </label>
-                        </div>
+                        <label class="select w-full">
+                            <span class="label">{{ _('Plan type') }}</span>
+                            <select
+                                name="type"
+                                id="type-filter"
+                                class="w-full"
+                                hx-get="/plans?page=1"
+                                hx-target="#plans-content"
+                                hx-select="#plans-content"
+                                hx-swap="outerHTML"
+                                hx-push-url="true"
+                                hx-trigger="change"
+                                hx-sync="closest form:replace"
+                            >
+                                <option value="" {% if not filter_params.type %}selected{% endif %}>{{ _('All') }}</option>
+                                <option value="diet" {% if filter_params.type == 'diet' %}selected{% endif %}>{{ _('Diet') }}</option>
+                                <option value="training" {% if filter_params.type == 'training' %}selected{% endif %}>{{ _('Training') }}</option>
+                                <option value="steroid" {% if filter_params.type == 'steroid' %}selected{% endif %}>{{ _('Steroid') }}</option>
+                            </select>
+                        </label>
 
                         <button
                             type="button"
                             id="clear-filters"
-                            class="btn btn-primary btn-soft btn-block mt-2"
+                            class="btn btn-ghost btn-block mt-1"
                             onclick="clearAllFilters()"
                         >
                             {{ _('Clear filters') }}
                         </button>
                     </form>
                 </div>
-            </div>
+            </details>
         {% endif %}
 
         {% if is_template %}
-            <!-- Template Cards View -->
-            <div id="templates-grid" class="grid grid-cols-1">
+            <div id="templates-grid" class="grid grid-cols-1 gap-4">
                 {% include "pages/owner/plan/templates_list.html" %}
             </div>
         {% else %}
-            <!-- Regular Plans List -->
-            <div class="card bg-base-100 border border-base-300">
-                <div class="card-body p-0">
-                    <div id="plans-table-container">
-                        {% if plans|length > 0 %}
-                            <ul class="divide-y divide-base-300">
-                                {% for plan in plans %}
-                                    <li
-                                        class="flex items-center gap-3 px-4 py-3 active:bg-base-200 transition-colors duration-150"
-                                    >
-                                        <div
-                                            class="flex-shrink-0 w-11 h-11 rounded-full bg-lavender-whisper border border-base-300 flex items-center justify-center text-base"
-                                        >
-                                            {% if plan.type == 'diet' %}
-                                                🥑
-                                            {% elif plan.type == 'training' %}
-                                                💪
-                                            {% else %}
-                                                💊
-                                            {% endif %}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <span class="font-semibold text-sm">
-                                                {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                                            </span>
-                                            <span class="text-xs text-fog block">
-                                                {% if plan.type == 'diet' %}
-                                                    {{ _('Diet') }}
-                                                {% elif plan.type == 'training' %}
-                                                    {{ _('Training') }}
-                                                {% else %}
-                                                    {{ _('Steroid') }}
-                                                {% endif %}
-                                                · {{ plan.days_per_week or '-' }} {{ _('days/week') }}
-                                            </span>
-                                        </div>
-
-                                        <a
-                                            href="/plans/{{ plan.id }}"
-                                            class="flex-shrink-0 btn btn-sm btn-square border border-base-300"
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                class="h-5 w-5 opacity-40"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                                    clip-rule="evenodd"
-                                                />
-                                            </svg>
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <div class="text-center py-12 px-4">
-                                <div
-                                    class="bg-base-100 rounded-2xl p-10 max-w-md mx-auto border border-dashed border-base-300"
-                                >
-                                    <p class="text-base text-fog">
-                                        {% if is_search_result or show_empty_state %}
-                                            <span class="status status-secondary ml-1"></span>
-                                            {{ empty_message }}
+            <div id="plans-table-container">
+                {% if plans|length > 0 %}
+                    <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
+                        {% for plan in plans %}
+                            <li class="list-row items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/60">
+                                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                                    {% if plan.type == 'diet' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6 7.5 5.5 6.5 5 4.5 4 3.5 4 1.5 4.5 1.5 6 3 9 4 10.5 5 13.5 5 15a6 6 0 0 0 7 6Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v3" /></svg>
+                                    {% elif plan.type == 'training' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5" /></svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 20.25-6-6a2.25 2.25 0 0 1 0-3.182l7.5-7.5a2.25 2.25 0 0 1 1.591-.659h3.909a2.25 2.25 0 0 1 2.25 2.25v3.909c0 .597-.237 1.17-.659 1.591l-7.5 7.5a2.25 2.25 0 0 1-3.09.09Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h.008v.008H15V9Z" /></svg>
+                                    {% endif %}
+                                </span>
+                                <div class="min-w-0">
+                                    <span class="block truncate text-sm font-semibold">
+                                        {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'] and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                                    </span>
+                                    <span class="block truncate text-xs text-base-content/55">
+                                        {% if plan.type == 'diet' %}
+                                            {{ _('Diet') }}
+                                        {% elif plan.type == 'training' %}
+                                            {{ _('Training') }}
                                         {% else %}
-                                            <span
-                                                class="status status-secondary animate-bounce ml-1"
-                                            ></span>
-                                            {{ _("You haven't created any plans yet!") }}
+                                            {{ _('Steroid') }}
                                         {% endif %}
-                                    </p>
+                                        · {{ plan.days_per_week or '-' }} {{ _('days/week') }}
+                                    </span>
                                 </div>
-                            </div>
-                        {% endif %}
+                                <a href="/plans/{{ plan.id }}" class="btn btn-ghost btn-square btn-sm ms-auto" aria-label="{{ _('View') }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 text-base-content/40" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="card border border-dashed border-base-300 bg-base-100">
+                        <div class="card-body items-center py-12 text-center">
+                            <p class="text-sm text-base-content/60">
+                                {% if is_search_result or show_empty_state %}
+                                    {{ empty_message }}
+                                {% else %}
+                                    {{ _("You haven't created any plans yet!") }}
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
+
             {% if total_pages > 1 %}
-                <!-- Pagination -->
-                <div class="join flex justify-center mt-4">
+                <div class="join mt-5 flex justify-center">
                     <a
                         href="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
-                        class="join-item btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled{% endif %}"
+                        class="btn btn-sm join-item {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
                         hx-get="/plans?page={{ page - 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
                         hx-target="#plans-content"
                         hx-select="#plans-content"
@@ -226,12 +168,12 @@
                     >
                         «
                     </a>
-                    <button class="join-item btn btn-sm btn-disabled pointer-events-none">
+                    <button class="btn btn-sm join-item btn-disabled pointer-events-none tabular-nums">
                         {{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}
                     </button>
                     <a
                         href="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
-                        class="join-item btn btn-sm btn-primary btn-soft{% if page >= total_pages %}btn-disabled{% endif %}"
+                        class="btn btn-sm join-item {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
                         hx-get="/plans?page={{ page + 1 }}&query={{ search_query or '' }}&type={{ filter_params.type or '' }}&coach_id={{ filter_params.coach_id or '' }}&is_template={{ is_template }}"
                         hx-target="#plans-content"
                         hx-select="#plans-content"

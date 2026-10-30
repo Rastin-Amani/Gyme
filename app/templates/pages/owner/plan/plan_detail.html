@@ -1,103 +1,90 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div class="max-w-150 pb-24" data-page-title="{{ title }}">
-        <div
-            class="items-center justify-between border border-base-300 bg-base-100 p-4 mb-4 card flex rounded-2xl"
-        >
-            {% if plan.is_template | string | lower == 'true' %}
-                <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border border-base-300">{{ _('Edit') }}</a>
-                    <button
-                        hx-get="/plans/{{ plan.id }}/confirm-delete"
-                        hx-target="#modal-container"
-                        class="btn btn-sm btn-error btn-soft"
-                    >
-                        {{ _('Delete') }}
-                    </button>
-                </div>
-                <div class="text-center min-w-0">
-                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('Template:') }}</span>
-                    <h1 class="font-display font-normal text-2xl leading-tight truncate">
+    <div class="mx-auto max-w-3xl pb-24" data-page-title="{{ title }}">
+        <header class="mb-6">
+            <p class="text-xs font-semibold tracking-wide text-base-content/50 uppercase">
+                {% if plan.is_template | string | lower == 'true' %}{{ _('Template') }}{% else %}{{ _('Plan') }}{% endif %}
+            </p>
+            <div class="mt-1 flex flex-wrap items-center justify-between gap-3">
+                <h1 class="min-w-0 truncate text-2xl font-semibold tracking-tight">
+                    {% if plan.is_template | string | lower == 'true' %}
                         {{ plan.template_name or _('Untitled') }}
-                    </h1>
-                </div>
-            {% else %}
-                <div class="flex gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm border border-base-300">{{ _('Edit') }}</a>
+                    {% else %}
+                        {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
+                    {% endif %}
+                </h1>
+                <div class="flex shrink-0 gap-2">
+                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('Edit') }}</a>
                     <button
                         hx-get="/plans/{{ plan.id }}/confirm-delete"
                         hx-target="#modal-container"
-                        class="btn btn-sm btn-error btn-soft"
+                        class="btn btn-sm btn-soft btn-error"
                     >
                         {{ _('Delete') }}
                     </button>
                 </div>
-                <div class="text-center min-w-0">
-                    <span class="text-xs font-semibold tracking-widest text-fog">{{ _('Plan:') }}</span>
-                    <h1 class="font-display font-normal text-2xl leading-tight truncate">
-                        {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                    </h1>
-                </div>
-            {% endif %}
-        </div>
+            </div>
+        </header>
 
-        <div class="grid grid-cols-3 gap-4 text-sm mb-4 text-center">
-            <div>
-                <span class="text-fog block text-xs">{{ _('Type') }}</span>
-                <span class="font-semibold">
-                    {% if plan.type == 'diet' %}
-                        {{ _('Diet') }}
-                    {% elif plan.type =='training' %}
-                        {{ _('Training') }}
-                    {% else %}
-                        {{ _('Steroid') }}
-                    {% endif %}
-                </span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs">{{ _('Days per week') }}</span>
-                <span class="font-semibold">{{ plan.days_per_week or '-' }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs">{{ _('Status') }}</span>
-                <span class="font-semibold">
-                    {% if plan.status == 'active' %}
-                        <span class="badge badge-success badge-soft">{{ _('Active') }}</span>
-                    {% elif plan.status == 'inactive' %}
-                        <span class="badge badge-error badge-soft">{{ _('Inactive') }}</span>
-                    {% else %}
-                        -
-                    {% endif %}
-                </span>
-            </div>
-
-            {% if plan.is_template | string | lower != 'true' %}
-                <div>
-                    <span class="text-fog block text-xs">{{ _('Coach') }}</span>
-                    <span class="font-semibold">
-                        {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
+        <div class="card border border-base-300 bg-base-100">
+            <ul class="list">
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Type') }}</span>
+                    <span class="ms-auto text-sm font-medium">
+                        {% if plan.type == 'diet' %}
+                            {{ _('Diet') }}
+                        {% elif plan.type == 'training' %}
+                            {{ _('Training') }}
+                        {% else %}
+                            {{ _('Steroid') }}
+                        {% endif %}
                     </span>
-                </div>
-                <div>
-                    <span class="text-fog block text-xs">{{ _('Start date') }}</span>
-                    <span class="font-semibold">{{ plan.start_date | jalali_date or '-' }}</span>
-                </div>
-                <div>
-                    <span class="text-fog block text-xs">{{ _('End date') }}</span>
-                    <span class="font-semibold">{{ plan.end_date | jalali_date or '-' }}</span>
-                </div>
-            {% endif %}
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Days per week') }}</span>
+                    <span class="ms-auto text-sm font-medium tabular-nums">{{ plan.days_per_week or '-' }}</span>
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Status') }}</span>
+                    <span class="ms-auto">
+                        {% if plan.status == 'active' %}
+                            <span class="badge badge-soft badge-success badge-sm">{{ _('Active') }}</span>
+                        {% elif plan.status == 'inactive' %}
+                            <span class="badge badge-soft badge-error badge-sm">{{ _('Inactive') }}</span>
+                        {% else %}
+                            <span class="text-sm text-base-content/50">-</span>
+                        {% endif %}
+                    </span>
+                </li>
 
-            {% if plan.notes and plan.notes != "" %}
-                <div class="bg-lavender-whisper/30 border border-base-300 rounded-xl p-4 col-span-3 text-left mt-2">
-                    <p class="text-sm">{{ plan.notes }}</p>
-                </div>
-            {% endif %}
+                {% if plan.is_template | string | lower != 'true' %}
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Coach') }}</span>
+                        <span class="ms-auto text-sm font-medium">
+                            {{ (plan.expand['coach'].first_name ~ ' ' ~ plan.expand['coach'].last_name) if plan.expand and 'coach' in plan.expand and plan.expand['coach'] else '-' }}
+                        </span>
+                    </li>
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Start date') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ plan.start_date | jalali_date or '-' }}</span>
+                    </li>
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('End date') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ plan.end_date | jalali_date or '-' }}</span>
+                    </li>
+                {% endif %}
+
+                {% if plan.notes and plan.notes != "" %}
+                    <li class="list-row">
+                        <p class="text-sm whitespace-pre-line text-base-content/80">{{ plan.notes }}</p>
+                    </li>
+                {% endif %}
+            </ul>
         </div>
 
         {% if plan.is_template | string | lower == 'true' %}
             <button
-                class="btn btn-primary btn-s w-full border border-base-300"
+                class="btn btn-primary btn-block mt-4"
                 type="button"
                 hx-get="/templates/{{ plan.id }}/apply"
                 hx-target="#modal-container"
@@ -108,110 +95,77 @@
             </button>
         {% endif %}
 
-        <div class="mt-6">
-            <div class="divider text-xs font-semibold tracking-widest text-fog">{{ _('Plan items') }}</div>
+        <div class="mt-8 mb-3 flex items-center justify-between gap-3">
+            <h2 class="text-sm font-semibold">{{ _('Plan items') }}</h2>
             <button
-                class="btn btn-primary btn-soft btn-s w-full mb-4 border border-base-300"
+                class="btn btn-primary btn-sm"
                 type="button"
                 hx-get="/items/new?plan_type={{ plan.type }}&plan_id={{ plan.id }}"
                 hx-target="#modal-container"
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 {{ _('Add item') }}
             </button>
-            <div
-                id="items-list-content"
-                class="flex flex-col gap-3"
-                data-enter
-                hx-get="/plans/{{ plan.id }}"
-                hx-trigger="performListRefresh from:body"
-                hx-select="#items-list-content"
-                hx-swap="outerHTML"
-            >
-                {% for item in item.items %}
-                    <div class="bg-base-100 border border-base-300 rounded-xl p-4 card">
-                        {% if plan.type == 'diet' %}
-                            <div class="flex justify-between items-center gap-2">
-                                <div class="max-w-3/4">
-                                    <span class="badge badge-soft border border-base-300">{{ _('Meal') }}</span>
-                                    <h3 class="font-semibold text-sm mt-2">{{ item.meal_name }}</h3>
-                                    <p class="text-sm text-fog mt-1">
-                                        {{ item.name }} · {{ _('Quantity:') }} {{ item.quantity }}
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-xs btn-ghost border border-base-300 text-secondary"
-                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                    hx-target="#modal-container"
-                                    hx-swap="innerHTML"
-                                    hx-boost="false"
-                                    hx-select="unset"
-                                >
-                                    {{ _('Edit') }}
-                                </button>
-                            </div>
-                            {% if item.notes %}
-                                <p class="text-xs text-fog mt-2">{{ _('Notes:') }} {{ item.notes }}</p>
+        </div>
+
+        <div
+            id="items-list-content"
+            class="flex flex-col gap-3"
+            data-enter
+            hx-get="/plans/{{ plan.id }}"
+            hx-trigger="performListRefresh from:body"
+            hx-select="#items-list-content"
+            hx-swap="outerHTML"
+        >
+            {% for item in item.items %}
+                <article class="card border border-base-300 bg-base-100 transition-colors hover:border-base-content/20">
+                    <div class="card-body flex-row items-start justify-between gap-3 p-4">
+                        <div class="min-w-0">
+                            {% if plan.type == 'diet' %}
+                                <span class="badge badge-soft badge-sm">{{ item.meal_name or _('Meal') }}</span>
+                                <h3 class="mt-2 text-sm font-semibold">{{ item.name }}</h3>
+                                <p class="mt-1 text-sm text-base-content/60">
+                                    {{ item.name }} · {{ _('Quantity:') }} {{ item.quantity }}
+                                </p>
+                            {% elif plan.type == 'steroid' %}
+                                <span class="badge badge-soft badge-sm">{{ _('Medication/Supplement') }}</span>
+                                <h3 class="mt-2 text-sm font-semibold">{{ item.name }}</h3>
+                                <p class="mt-1 text-sm text-base-content/60">{{ _('Day:') }} {{ item.seq or '-' }}</p>
+                            {% elif plan.type == 'training' %}
+                                <span class="badge badge-soft badge-sm">{{ _('Day') }} {{ item.seq }}</span>
+                                <h3 class="mt-2 text-sm font-semibold">{{ item.name }}</h3>
+                                <p class="mt-1 text-sm text-base-content/60 tabular-nums">
+                                    {{ _('Sets:') }} {{ item.sets }} · {{ _('Reps:') }} {{ item.reps }} · {{ _('Weight:') }} {{ item.weight }}{{ _('kg') }}
+                                </p>
+                            {% else %}
+                                <p class="text-sm text-base-content/60">{{ item.name }}</p>
                             {% endif %}
-                        {% elif plan.type == 'steroid' %}
-                            <div class="flex justify-between items-center gap-2">
-                                <div>
-                                    <span class="badge badge-soft border border-base-300">{{ _('Medication/Supplement') }}</span>
-                                    <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
-                                    <p class="text-sm text-fog mt-1">{{ _('Day:') }} {{ item.seq or '-' }}</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-xs btn-ghost border border-base-300 text-secondary"
-                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                    hx-target="#modal-container"
-                                    hx-swap="innerHTML"
-                                    hx-boost="false"
-                                    hx-select="unset"
-                                >
-                                    {{ _('Edit') }}
-                                </button>
-                            </div>
                             {% if item.notes %}
-                                <p class="text-xs text-fog mt-2">{{ _('Notes:') }} {{ item.notes }}</p>
+                                <p class="mt-2 text-xs text-base-content/55">{{ _('Notes:') }} {{ item.notes }}</p>
                             {% endif %}
-                        {% elif plan.type == 'training' %}
-                            <div class="flex justify-between items-center gap-2">
-                                <div>
-                                    <span class="badge badge-accent border border-base-300">{{ _('Day') }} {{ item.seq }}</span>
-                                    <h3 class="font-semibold text-sm mt-2">{{ item.name }}</h3>
-                                    <p class="text-sm text-fog mt-1">
-                                        {{ _('Sets:') }} {{ item.sets }} · {{ _('Reps:') }} {{ item.reps }} · {{ _('Weight:') }}
-                                        {{ item.weight }}kg
-                                    </p>
-                                </div>
-                                <button
-                                    type="button"
-                                    class="btn btn-xs btn-ghost border border-base-300 text-secondary"
-                                    hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
-                                    hx-target="#modal-container"
-                                    hx-swap="innerHTML"
-                                    hx-boost="false"
-                                    hx-select="unset"
-                                >
-                                    {{ _('Edit') }}
-                                </button>
-                            </div>
-                        {% else %}
-                            <p class="text-sm text-fog">{{ item.name }}</p>
-                        {% endif %}
+                        </div>
+                        <button
+                            type="button"
+                            class="btn btn-ghost btn-sm shrink-0"
+                            hx-get="/items/{{ item.id }}/edit?plan_type={{ plan.type }}"
+                            hx-target="#modal-container"
+                            hx-swap="innerHTML"
+                            hx-boost="false"
+                            hx-select="unset"
+                        >
+                            {{ _('Edit') }}
+                        </button>
                     </div>
-                {% else %}
-                    <div class="bg-base-100 border border-dashed border-base-300 rounded-xl p-8 text-center card">
-                        <p class="text-sm text-fog">
-                            <span class="status status-secondary ml-1"></span>
-                            {{ _('No items recorded.') }}
-                        </p>
+                </article>
+            {% else %}
+                <div class="card border border-dashed border-base-300 bg-base-100">
+                    <div class="card-body items-center py-12 text-center">
+                        <p class="text-sm text-base-content/60">{{ _('No items recorded.') }}</p>
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 {% endblock %}
