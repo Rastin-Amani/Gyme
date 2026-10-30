@@ -2,10 +2,10 @@
 
 {% block dashboard_content %}
     <div class="pb-4" data-page-title="{{ title }}">
-        <div class="page-head">
+        <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
-                <h1>{{ _('Overall statistics') }}</h1>
-                <p class="page-sub">{{ _('Live count') }}</p>
+                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{{ _('Overall statistics') }}</h1>
+                <p class="mt-1 text-sm text-base-content/60">{{ _('Live count') }}</p>
             </div>
 
             <select
@@ -28,7 +28,7 @@
                     {{ _('This week') }}
                 </option>
             </select>
-        </div>
+        </header>
 
         {% include "components/dashboard_content.html" %}
     </div>

@@ -1,56 +1,58 @@
-<div class="kpi-strip md:col-span-2">
-    <div class="kpi">
-        <div class="kpi-label">{{ _('Active trainees') }}</div>
-        <div class="kpi-value stat-value" data-count-up="{{ stats.active_trainees }}">{{ stats.active_trainees }}</div>
-        <div class="kpi-note">{{ _('Live count') }}</div>
+<div class="stats stats-vertical w-full border border-base-300 bg-base-100 sm:stats-horizontal md:col-span-2">
+    <div class="stat">
+        <div class="stat-title">{{ _('Active trainees') }}</div>
+        <div class="stat-value text-3xl tabular-nums" data-count-up="{{ stats.active_trainees }}">{{ stats.active_trainees }}</div>
+        <div class="stat-desc">{{ _('Live count') }}</div>
     </div>
-    <div class="kpi">
-        <div class="kpi-label">{{ _('Inactive') }}</div>
-        <div class="kpi-value stat-value" data-count-up="{{ stats.inactive_trainees }}">{{ stats.inactive_trainees }}</div>
-        <div class="kpi-note">{{ _('Trainees') }}</div>
+    <div class="stat">
+        <div class="stat-title">{{ _('Inactive') }}</div>
+        <div class="stat-value text-3xl tabular-nums" data-count-up="{{ stats.inactive_trainees }}">{{ stats.inactive_trainees }}</div>
+        <div class="stat-desc">{{ _('Trainees') }}</div>
     </div>
-    <div class="kpi">
-        <div class="kpi-label">{{ _('Training') }}</div>
-        <div class="kpi-value stat-value" data-count-up="{{ stats.training_plans }}">{{ stats.training_plans }}</div>
-        <div class="kpi-note">{{ _('Plans') }}</div>
+    <div class="stat">
+        <div class="stat-title">{{ _('Training') }}</div>
+        <div class="stat-value text-3xl tabular-nums" data-count-up="{{ stats.training_plans }}">{{ stats.training_plans }}</div>
+        <div class="stat-desc">{{ _('Plans') }}</div>
     </div>
-    <div class="kpi">
-        <div class="kpi-label">{{ _('Diet') }}</div>
-        <div class="kpi-value stat-value" data-count-up="{{ stats.diet_plans }}">{{ stats.diet_plans }}</div>
-        <div class="kpi-note">{{ _('Plans') }}</div>
+    <div class="stat">
+        <div class="stat-title">{{ _('Diet') }}</div>
+        <div class="stat-value text-3xl tabular-nums" data-count-up="{{ stats.diet_plans }}">{{ stats.diet_plans }}</div>
+        <div class="stat-desc">{{ _('Plans') }}</div>
     </div>
 </div>
 
-<div class="md:col-span-2 border border-base-300 rounded-2xl bg-base-100 overflow-hidden">
-    <div class="flex items-center justify-between px-5 py-3 border-b border-base-300">
-        <span class="font-semibold text-sm">{{ _('Plans') }}</span>
-        <span class="text-xs text-fog font-medium">{{ _('Registered plans') }}</span>
+<div class="card border border-base-300 bg-base-100 md:col-span-2">
+    <div class="flex items-center justify-between gap-3 border-b border-base-300 px-5 py-3">
+        <h2 class="text-sm font-semibold">{{ _('Plans') }}</h2>
+        <span class="text-xs font-medium text-base-content/50">{{ _('Registered plans') }}</span>
     </div>
-    <div class="flex items-center gap-3 px-5 py-4 ledger-row border-b border-base-300">
-        <span class="w-9 h-9 rounded-full bg-base-200 text-secondary flex items-center justify-center shrink-0" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.636 4.5a.75.75 0 0 1 .758.69l.104 1.042a9.114 9.114 0 0 1 2.369 2.369l1.042.104a.75.75 0 0 1 0 1.498l-1.042.104a9.114 9.114 0 0 1-2.369 2.369l-.104 1.042a.75.75 0 0 1-1.498 0l-.104-1.042a9.114 9.114 0 0 1-2.369-2.369l-1.042-.104a.75.75 0 0 1 0-1.498l1.042-.104a9.114 9.114 0 0 1 2.369-2.369l.104-1.042a.75.75 0 0 1 .69-.758Zm0 0V3.75m12 9a.75.75 0 0 1 .758.69l.104 1.042a9.114 9.114 0 0 1 2.369 2.369l1.042.104a.75.75 0 0 1 0 1.498l-1.042.104a9.114 9.114 0 0 1-2.369 2.369l-.104 1.042a.75.75 0 0 1-1.498 0l-.104-1.042a9.114 9.114 0 0 1-2.369-2.369l-1.042-.104a.75.75 0 0 1 0-1.498l1.042-.104a9.114 9.114 0 0 1 2.369-2.369l.104-1.042a.75.75 0 0 1 .69-.758Zm0 0V12.75" />
-            </svg>
-        </span>
-        <span class="font-semibold text-sm flex-1">{{ _('Training') }}</span>
-        <span class="text-xl font-bold tabular" data-count-up="{{ stats.training_plans }}">{{ stats.training_plans }}</span>
-    </div>
-    <div class="flex items-center gap-3 px-5 py-4 ledger-row border-b border-base-300">
-        <span class="w-9 h-9 rounded-full bg-base-200 text-secondary flex items-center justify-center shrink-0" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-        </span>
-        <span class="font-semibold text-sm flex-1">{{ _('Diet') }}</span>
-        <span class="text-xl font-bold tabular" data-count-up="{{ stats.diet_plans }}">{{ stats.diet_plans }}</span>
-    </div>
-    <div class="flex items-center gap-3 px-5 py-4 ledger-row">
-        <span class="w-9 h-9 rounded-full bg-base-200 text-secondary flex items-center justify-center shrink-0" aria-hidden="true">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
-            </svg>
-        </span>
-        <span class="font-semibold text-sm flex-1">{{ _('Steroid') }}</span>
-        <span class="text-xl font-bold tabular" data-count-up="{{ stats.steroid_plans }}">{{ stats.steroid_plans }}</span>
-    </div>
+    <ul class="list">
+        <li class="list-row items-center px-5 py-4">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.636 4.5a.75.75 0 0 1 .758.69l.104 1.042a9.114 9.114 0 0 1 2.369 2.369l1.042.104a.75.75 0 0 1 0 1.498l-1.042.104a9.114 9.114 0 0 1-2.369 2.369l-.104 1.042a.75.75 0 0 1-1.498 0l-.104-1.042a9.114 9.114 0 0 1-2.369-2.369l-1.042-.104a.75.75 0 0 1 0-1.498l1.042-.104a9.114 9.114 0 0 1 2.369-2.369l.104-1.042a.75.75 0 0 1 .69-.758Zm0 0V3.75m12 9a.75.75 0 0 1 .758.69l.104 1.042a9.114 9.114 0 0 1 2.369 2.369l1.042.104a.75.75 0 0 1 0 1.498l-1.042.104a9.114 9.114 0 0 1-2.369 2.369l-.104 1.042a.75.75 0 0 1-1.498 0l-.104-1.042a9.114 9.114 0 0 1-2.369-2.369l-1.042-.104a.75.75 0 0 1 0-1.498l1.042-.104a9.114 9.114 0 0 1 2.369-2.369l.104-1.042a.75.75 0 0 1 .69-.758Zm0 0V12.75" />
+                </svg>
+            </span>
+            <span class="text-sm font-medium">{{ _('Training') }}</span>
+            <span class="ms-auto text-xl font-semibold tabular-nums" data-count-up="{{ stats.training_plans }}">{{ stats.training_plans }}</span>
+        </li>
+        <li class="list-row items-center px-5 py-4">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </span>
+            <span class="text-sm font-medium">{{ _('Diet') }}</span>
+            <span class="ms-auto text-xl font-semibold tabular-nums" data-count-up="{{ stats.diet_plans }}">{{ stats.diet_plans }}</span>
+        </li>
+        <li class="list-row items-center px-5 py-4">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+                </svg>
+            </span>
+            <span class="text-sm font-medium">{{ _('Steroid') }}</span>
+            <span class="ms-auto text-xl font-semibold tabular-nums" data-count-up="{{ stats.steroid_plans }}">{{ stats.steroid_plans }}</span>
+        </li>
+    </ul>
 </div>
