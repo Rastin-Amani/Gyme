@@ -73,12 +73,13 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `1.4.0`) drives:
-  template footer/global, and the PWA cache version injected into `sw.js`
-  (bumping it purges clients' caches on next visit).
-- `app/version.text` mirrors it (`"1.4.0"`); both are in sync. `base.html`
-  derives the SW cache-buster from `{{ app_version }}`, so no hardcoding is
-  left (known issue #7 resolved in 0.9.1).
+- `APP_VERSION` constant in `app/main.py` (currently `1.7.0`) drives the
+  template footer/global. It is the release identity, not the cache-buster.
+- `ASSET_VERSION` is `APP_VERSION` plus the newest mtime of
+  `app/static/app.{css,js}`. Templates append it as `?v=`, and `sw.js` uses it
+  as its cache version, so clients purge cached assets on every deploy that
+  rebuilds the bundle — no manual bump can be forgotten.
+- `app/version.text` mirrors `APP_VERSION` (`"1.7.0"`); both are in sync.
 
 ## Part 2 — Deployment guide
 

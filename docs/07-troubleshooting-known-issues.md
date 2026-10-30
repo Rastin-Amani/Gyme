@@ -198,10 +198,10 @@ Known navigation bug, issue #6.
 
 - **Evidence (historical):** `APP_VERSION = "0.9.0"` (`main.py`),
   `app/version.text` `"0.8.1"`, and `base.html` registered `/sw.js?v=0.8.1`.
-- **Current code:** `APP_VERSION = "1.4.0"` (`main.py`), `app/version.text` is
-  `"1.4.0"` (single source, quoted value), and `base.html` registers
-  `/sw.js?v={{ app_version }}` — derived from the same `app_version` global
-  already used for the CSS cache-buster.
+- **Current code:** `APP_VERSION = "1.7.0"` (`main.py`), `app/version.text` is
+  `"1.7.0"` (single source, quoted value), and `base.html` registers
+  `/sw.js?v={{ asset_version }}` — the build-derived `ASSET_VERSION` bound in
+  `main.py`, which also stamps the CSS/JS URLs.
 - **Impact (today):** none — version strings are consistent and cache
   invalidation uses the same value everywhere.
 - **Fix (applied):** covered by `test_app_version_matches_version_text`,

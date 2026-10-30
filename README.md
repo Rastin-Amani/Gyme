@@ -40,7 +40,7 @@ server work.
 </p>
 
 <p align="center">
-  <sub>v1.4.0 · ISC licensed · 55 tests · CI runs ruff, black and pytest</sub>
+  <sub>v1.7.0 · ISC licensed · 57 tests · CI runs ruff, black and pytest</sub>
 </p>
 
 ## Contents
