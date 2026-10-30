@@ -95,6 +95,9 @@ def offline_page():
 
 @router.get("/manifest.json", response_class=JSONResponse)
 def dynamic_manifest(request: Request):
+    # Lazy import avoids circular import: main.py imports pwa before it defines ASSET_VERSION
+    from app.main import ASSET_VERSION
+
     pb = request.state.pb
     pb_base_url = pb.base_url.rstrip("/")
     tenant = getattr(request.state, "tenant", None)
@@ -115,8 +118,8 @@ def dynamic_manifest(request: Request):
         icon_512 = f"{base_icon_url}?thumb=512x512f"
     else:
         # 2. Fallback to your default Gyme icon if the tenant has no logo
-        icon_192 = "/static/icons/icon-192x192.png"
-        icon_512 = "/static/icons/icon-512x512.png"
+        icon_192 = f"/static/icons/icon-192x192.png?v={ASSET_VERSION}"
+        icon_512 = f"/static/icons/icon-512x512.png?v={ASSET_VERSION}"
 
     # 3. Build the Manifest
     manifest = {
@@ -127,8 +130,8 @@ def dynamic_manifest(request: Request):
         "scope": "/",
         "display": "standalone",
         "orientation": "portrait",
-        "background_color": "#e2e2df",  # Caldera pumice — page canvas
-        "theme_color": "#070607",  # Caldera obsidian — app chrome
+        "background_color": "#f2f1ec",  # canvas (base-200)
+        "theme_color": "#fbfbf9",  # paper header (base-100)
         "icons": [
             {"src": icon_192, "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
             {"src": icon_512, "sizes": "512x512", "type": "image/png", "purpose": "any maskable"},
