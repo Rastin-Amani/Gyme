@@ -1,0 +1,72 @@
+name: Prune image tags
+
+# Removes GHCR image versions whose tags are all superseded, so the registry
+# only advertises the current release line. Run it after a release when old
+# tags (withdrawn versions, per-commit sha tags) have piled up.
+#
+# Keeps: "latest", the current commit's sha tag, and anything passed in `keep`.
+# Dry run by default; nothing is deleted until dry_run is false.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Report only, delete nothing"
+        type: boolean
+        default: true
+      keep:
+        description: "Extra tags to keep, comma separated (e.g. v0.10.0)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  prune:
+    name: Delete superseded image versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prune
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          EXTRA_KEEP: ${{ inputs.keep }}
+        run: |
+          set -euo pipefail
+          owner="$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
+          pkg="$(basename "$GITHUB_REPOSITORY" | tr '[:upper:]' '[:lower:]')"
+          sha_tag="${GITHUB_SHA:0:7}"
+          keep="latest $sha_tag ${EXTRA_KEEP//,/ }"
+          echo "package: ghcr.io/$owner/$pkg"
+          echo "keeping: $keep"
+
+          gh api "/users/$owner/packages/container/$pkg/versions" --paginate \
+            -q '.[] | "\(.id)\t\((.metadata.container.tags // []) | join(" "))"' \
+            > versions.tsv
+          cat versions.tsv
+
+          failed=0
+          while IFS=$'\t' read -r id tags; do
+            [ -n "$id" ] || continue
+            keep_this=0
+            for tag in $tags; do
+              for k in $keep; do
+                [ "$tag" = "$k" ] && keep_this=1
+              done
+            done
+            if [ "$keep_this" = "1" ]; then
+              echo "keep   version $id [$tags]"
+              continue
+            fi
+            if [ "$DRY_RUN" = "true" ]; then
+              echo "would delete version $id [$tags]"
+              continue
+            fi
+            echo "delete version $id [$tags]"
+            gh api -X DELETE "/users/$owner/packages/container/$pkg/versions/$id" \
+              || { echo "::warning::could not delete version $id [$tags]"; failed=1; }
+          done < versions.tsv
+
+          exit $failed
