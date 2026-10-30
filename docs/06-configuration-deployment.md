@@ -73,8 +73,10 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `0.10.0`) drives the
-  template footer/global. It is the release identity, not the cache-buster.
+- `APP_VERSION` constant in `app/main.py` (currently `0.10.0`) is the release
+  identity: it is exposed to templates as `app_version` and read by
+  `app/version.text`, `package.json`, the git tag and the release. It is not
+  the cache-buster.
 - The project is **pre-1.0**: releases stay on `0.MINOR.PATCH` until the
   product is declared stable. The `v1.0.0`–`v1.7.0` tags were withdrawn on
   2026-10-30 as a numbering error — the billing experiment they carried had
