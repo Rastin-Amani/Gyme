@@ -207,13 +207,14 @@
 | Withdrew the `v1.0.0`–`v1.7.0` tags and releases (numbering error; billing already reverted) | tags deleted on origin, notes archived in `docs/releases-withdrawn-1x.md` | **DONE** |
 | Reset the release line to `v0.10.0` | commit `cbe20d3`, tag `v0.10.0`, [release](https://github.com/Rastin-Amani/Gyme/releases/tag/v0.10.0) | **LIVE** |
 | CI + GHCR for the release | [CI run 41035669596](https://github.com/Rastin-Amani/Gyme/actions/runs/41035669596) success · [GHCR run 41035715759](https://github.com/Rastin-Amani/Gyme/actions/runs/41035715759) published `ghcr.io/rastin-amani/gyme:v0.10.0` | **LIVE** |
-| Pruned superseded GHCR image versions | `.github/workflows/prune-packages.yml` (workflow_dispatch) | **PENDING RUN** |
+| Pruned superseded GHCR image versions | [prune run 41047413543](https://github.com/Rastin-Amani/Gyme/actions/runs/41047413543) removed 17 tag-bearing versions; registry now advertises only `latest`, `v0.10.0` and commit tags | **DONE** |
 
 ### Verification
 
 - 57 tests pass; `ruff check .` and `black --check .` clean.
 - App booted against a live PocketBase: `/login` renders, `/healthz` 200, `/manifest.json` and `/sw.js` carry `0.10.0`, `/static/app.css` is served `immutable`, HTML is gzipped.
 - Release identity agrees across `APP_VERSION`, `app/version.text`, `package.json`, the git tag, the GitHub release and the Docker image.
+- `git tag`, `git ls-remote`, `gh release list` and the anonymous GHCR tag list were all checked after the reset: every one of them resolves to 0.10.0 only.
 
 ### Notes
 
