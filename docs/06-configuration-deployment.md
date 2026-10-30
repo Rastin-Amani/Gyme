@@ -73,13 +73,19 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `1.7.0`) drives the
+- `APP_VERSION` constant in `app/main.py` (currently `0.10.0`) drives the
   template footer/global. It is the release identity, not the cache-buster.
+- The project is **pre-1.0**: releases stay on `0.MINOR.PATCH` until the
+  product is declared stable. The `v1.0.0`–`v1.7.0` tags were withdrawn on
+  2026-10-30 as a numbering error — the billing experiment they carried had
+  already been reverted on `main`. Those commits are untouched; their release
+  notes are archived in
+  [releases-withdrawn-1x.md](releases-withdrawn-1x.md). Do not re-tag them.
 - `ASSET_VERSION` is `APP_VERSION` plus the newest mtime of
   `app/static/app.{css,js}`. Templates append it as `?v=`, and `sw.js` uses it
   as its cache version, so clients purge cached assets on every deploy that
   rebuilds the bundle — no manual bump can be forgotten.
-- `app/version.text` mirrors `APP_VERSION` (`"1.7.0"`); both are in sync.
+- `app/version.text` mirrors `APP_VERSION` (`"0.10.0"`); both are in sync.
 
 ## Part 2 — Deployment guide
 

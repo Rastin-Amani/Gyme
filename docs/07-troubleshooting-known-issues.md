@@ -198,8 +198,8 @@ Known navigation bug, issue #6.
 
 - **Evidence (historical):** `APP_VERSION = "0.9.0"` (`main.py`),
   `app/version.text` `"0.8.1"`, and `base.html` registered `/sw.js?v=0.8.1`.
-- **Current code:** `APP_VERSION = "1.7.0"` (`main.py`), `app/version.text` is
-  `"1.7.0"` (single source, quoted value), and `base.html` registers
+- **Current code:** `APP_VERSION = "0.10.0"` (`main.py`), `app/version.text` is
+  `"0.10.0"` (single source, quoted value), and `base.html` registers
   `/sw.js?v={{ asset_version }}` — the build-derived `ASSET_VERSION` bound in
   `main.py`, which also stamps the CSS/JS URLs.
 - **Impact (today):** none — version strings are consistent and cache
