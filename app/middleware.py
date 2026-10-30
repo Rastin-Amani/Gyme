@@ -1,6 +1,7 @@
 import time
 import uuid
 import os
+import threading
 from urllib.parse import urlparse
 
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -47,6 +48,38 @@ def _load_auth(pb, token: str):
     pb.collection("users").auth_refresh()
 
     return pb.auth_store.model
+
+
+# ponytail: verified-token cache — a token is trusted for 30s after PB confirmed
+# it, so navigation/HTMX requests skip one PB roundtrip. Trade-off: revoked
+# tokens and password changes take up to 30s to bite. Per-process; multi-instance
+# deploys just cache independently.
+_AUTH_TTL = 30.0
+_AUTH_CACHE_MAX = 1024
+_auth_cache: dict = {}
+_auth_lock = threading.Lock()
+
+
+def _auth_cache_get(token: str):
+    now = time.monotonic()
+    with _auth_lock:
+        hit = _auth_cache.get(token)
+        if hit and hit[0] > now:
+            return hit[1]
+    return None
+
+
+def _auth_cache_put(token: str, user):
+    now = time.monotonic()
+    with _auth_lock:
+        if len(_auth_cache) >= _AUTH_CACHE_MAX:
+            _auth_cache.clear()
+        _auth_cache[token] = (now + _AUTH_TTL, user)
+
+
+def _auth_cache_drop(token: str):
+    with _auth_lock:
+        _auth_cache.pop(token, None)
 
 
 def _host_matches(header_value: str, host_header: str) -> bool:
@@ -118,17 +151,28 @@ class TenantMiddleware(BaseHTTPMiddleware):
                 logger.warning("auth_token_too_long")
                 pb.auth_store.clear()
             else:
-                try:
-                    user = await run_in_threadpool(_load_auth, pb, token)
+                # Authenticate the request's PB client either way; only the
+                # server-side verification is cached.
+                pb.auth_store.save(token, None)
+                user = _auth_cache_get(token)
+                if user is not None:
                     request.state.user = user
                     request.state.role = getattr(user, "role", "trainee")
                     is_authenticated = True
+                else:
+                    try:
+                        user = await run_in_threadpool(_load_auth, pb, token)
+                        request.state.user = user
+                        request.state.role = getattr(user, "role", "trainee")
+                        is_authenticated = True
+                        _auth_cache_put(token, user)
 
-                except Exception as e:
-                    # If the token is expired, invalid, or revoked, clear the store
-                    # and treat them as an anonymous user.
-                    logger.warning("auth_refresh_failed", error=str(e))
-                    pb.auth_store.clear()
+                    except Exception as e:
+                        # If the token is expired, invalid, or revoked, clear the store
+                        # and treat them as an anonymous user.
+                        logger.warning("auth_refresh_failed", error=str(e))
+                        _auth_cache_drop(token)
+                        pb.auth_store.clear()
 
         # ---- CSRF defense for state-changing authenticated requests ----
         method = request.method
