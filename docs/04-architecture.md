@@ -79,11 +79,13 @@ Step-by-step behavior (all verifiable in `middleware.py`):
    `request.state` and to the structlog context along with `tenant_id`.
 2. The hostname (Host header without port) is looked up in the `tenants`
    collection by exact `domain` match. No match ⇒ `request.state.tenant = None`.
-3. If a `pb_auth` cookie exists, the token is loaded into a fresh PocketBase
-   client and validated via `pb.collection("users").auth_refresh()`. On any
-   error (expired, revoked, password changed) the client treats the request as
-   anonymous. The resolved user and its `role` (default `"trainee"`) go onto
-   `request.state`.
+3. If a `pb_auth` cookie exists, the token is loaded into the request's
+   PocketBase client and validated via `pb.collection("users").auth_refresh()`.
+   A successful verification is remembered for 30 s per process (see
+   **Performance model**), so repeat requests in a session skip the call. On
+   any error (expired, revoked, password changed) the client drops the cache
+   entry and treats the request as anonymous. The resolved user and its `role`
+   (default `"trainee"`) go onto `request.state`.
 4. Redirect rules:
    - `/` → `303` to `/dashboard` if authenticated else `/login`, regardless of
      the tenant (`is_main` is no longer read).
@@ -113,7 +115,9 @@ traffic lands on the login page, and submitting login there yields the
   `HttpOnly`, `SameSite=Lax`, `Secure` set conditionally via
   `security.cookie_secure_flag()` (True when `ENV=production` or the request
   arrived over https/x-forwarded-proto). There are no server-side sessions;
-  every request re-validates the token against PocketBase. Login is rate
+  the token is re-validated against PocketBase at most once every 30 s per
+  process (cached verification, `middleware.py`), so **revocation and password
+  changes can take up to 30 s to take effect** on a warm process. Login is rate
   limited in-memory to 5 attempts per 5 minutes per IP+identity+tenant.
 - **Account creation** (`services/auth.create_user`) generates a random
   15-character password (never set to the email), with `emailVisibility=True`.
@@ -321,3 +325,29 @@ architecture-relevant ones:
 - One query reads coaches from a `coaches` collection (`routes/plan.py`
   plan-list filter dropdown) while everywhere else coaches are `users` with
   `role="coach"`.
+
+## 12. Performance model
+
+Everything below is on the request path and on by default; each item is
+verifiable where it is named.
+
+- **One connection pool.** `get_pb()` (`app/pb.py`) shallow-copies one
+  process-wide PocketBase blueprint, giving every request its own `auth_store`
+  and record services while sharing the httpx connection pool. PocketBase calls
+  cost a request, not a TLS handshake.
+- **Cached token verification.** A successful `auth_refresh()` is remembered
+  for 30 s (`_AUTH_TTL` in `middleware.py`), bounded to 1024 entries per
+  process. This is the only place where auth is not re-checked per request, so
+  it bounds how long a revoked token can still be used: 30 s. Multi-instance
+  deploys cache independently.
+- **Parallel independent reads.** `pmap()` (`app/utils.py`) runs independent
+  PocketBase queries through a bounded thread pool (8 workers) and preserves
+  input order. Dashboard aggregates use it, so page latency is the slowest
+  query instead of the sum.
+- **Static assets.** `/static/*` skips tenant resolution and is served with
+  `Cache-Control: public, max-age=31536000, immutable`. URL correctness comes
+  from `ASSET_VERSION` (`app/main.py`), the max mtime of `app.css`/`app.js`,
+  which templates append as `?v=` and the service worker uses as its cache
+  version.
+- **Compression.** `GZipMiddleware` (800-byte threshold) compresses HTML, CSS
+  and JS; PocketBase file responses are proxied, not compressed here.
