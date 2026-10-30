@@ -1,50 +1,73 @@
-# Design — Gyme Slate Pine
+# Design — Gyme Slate Pine (DaisyUI only)
 
-Calm premium gym SaaS. Paper canvas, deep pine actions, warm stone text. Replaces Caldera Evolved (ember/violet/sulfur eye-burner) — rationale and change list in `docs/retheme-slate-pine.md`.
+Calm premium gym SaaS. Paper canvas, deep pine actions, warm ink. This supersedes
+the Caldera direction and the intermediate custom-class pass: the interface is now
+built **exclusively from one DaisyUI theme plus Tailwind utilities**. There are no
+custom component classes in `app/static/main.css` — if the product needs a new look,
+the theme tokens change, not the markup contract.
 
-## Tokens
+## Tokens (`@plugin "daisyui/theme"` in `app/static/main.css`)
 
-- paper `#FAFAF8` (base-100) · canvas `#F1F0EB` (base-200) · hairline `#E4E2DA` (base-300) · ink `#1A1E1C` (base-content)
-- pine `#1C4A3C` = the only actionable color (primary: CTAs, active tab, Done, focus ring, dock dot, selection)
-- stone `#57534E` (secondary) · moss `#A3B18A` (accent — sparingly: tiny badges/status only, never surfaces)
-- fog `#6B6E69` = meta text (AA on paper)
+- paper `#FBFBF9` (base-100) · canvas `#F2F1EC` (base-200) · hairline `#E4E2DA` (base-300) · ink `#191D1B` (base-content)
+- pine `#1C4A3C` = the only actionable colour (primary: CTAs, active nav, Done, focus, selection)
+- stone `#57534E` (secondary) · moss `#A3B18A` (accent — status only, never surfaces)
 - semantic: info `#0E7490` · success `#15803D` · warning `#B45309` · error `#B91C1C`
-- Type: system sans stack (Inter/DM Sans first if installed, no webfont fetch). Display = same sans 700/800, tracking −0.02em (`.font-display`).
-- Radius: 12px fields/selectors · 16px boxes. Borders: 1px hairlines. Depth: 0, noise: 0.
+- radius: 10px selector + field · 16px box. Borders 1px. `--depth: 0`, `--noise: 0` → flat by contract.
+- control height: `--size-field: .28125rem` → 45px buttons/inputs/tabs (thumb-sized without per-element utilities).
+- type: the platform system stack (Tailwind default). No webfont is fetched: SF Pro on Apple
+  platforms, Segoe/Roboto elsewhere. Hierarchy comes from weight + size + tracking
+  (`tracking-tight` on titles, near-zero on body), never from colour alone.
 
 ## Direction contract
 
-- THESIS: a quiet ledger, not a loud dashboard. One column of soft paper on canvas, pine stamps where action lives, hairlines where structure lives.
-- OWN-WORLD: compact sticky blurred header, page-head title + sub, KPI strip with tabular counts, hairline ledger rows with hover wash, segmented Today rail with pine active pill, safe-area dock with pine active dot, roster avatars with status dot.
-- STORY: coach scans the KPI strip, drills into a ledger row, acts. Trainee opens Today, reads the plan sections, taps the pine Done.
-- FINISH: unreviewed and undocumented is unfinished — this build ends with the docs and verification below.
+- THESIS: a quiet ledger, not a loud dashboard. One paper surface on a canvas, pine stamps where
+  action lives, hairlines where structure lives, translucency only where chrome floats over content.
+- OWN-WORLD: persistent shell (translucent sticky header, sidebar `menu` on desktop, `dock` on mobile),
+  page title + sub, `stats` strip, `list`/`list-row` ledgers, `tabs-box` segmented rails, DaisyUI modals.
+- STORY: coach scans the stats, drills into a ledger row, acts. Trainee opens Today, reads the plan
+  sections, presses the pine Done.
+- FINISH: unreviewed and undocumented is unfinished — this build ends with the verification below.
 
 ## Rules
 
-- Icons are drawn SVG (1.5–2 stroke, currentColor), one system. No emoji as iconography (flags in locale switcher stay).
-- No kicker/eyebrow above headings. Headings carry their own weight; `.section-label` labels sections, not titles.
-- No gradient text, no glass decoration, no colored border-left, no drop shadows, no zoom/scale-up hovers. Press compresses (0.97), hover lifts (−2px translate) — never zooms.
-- No 800px pills: pills only for avatar, status dot, toggle. Surfaces are 16px, fields 12px, badges DaisyUI default (selector radius).
-- Motion vocabulary (CSS + existing motion/mini only, no new deps): page settle fade-rise, stagger, count-up numerals, tab pill slide, Done morph + pine ring-out, toast slide-in, modal pop, skeleton shimmer on htmx-request. All collapse under prefers-reduced-motion.
-- Browser surfaces themed: selection pine, focus-visible 2px pine outline (offset 2), scrollbar thin stone, caret pine, tabular numerals for counts.
-- States everywhere: hover, active, disabled, loading (DaisyUI loading spinner + shimmer), empty (calm centered message + CTA), error (validator-hint + alert), offline banner kept.
+- **No custom classes.** Build from DaisyUI components (`card`, `list`, `stats`, `menu`, `dock`,
+  `tabs`, `collapse`, `fieldset`/`input`/`select`/`textarea`, `modal`, `alert`, `badge`, `btn`,
+  `avatar`, `indicator`, `status`, `radial-progress`, `divider`, `loading`, `skeleton`) and Tailwind
+  utilities. `main.css` holds the theme block and Alpine's `[x-cloak]` only.
+- Flat: no shadows, no gradients, no glass decoration, no coloured border-left, no zoom hovers.
+  Press compresses (`active:scale-[0.98]` on primary CTAs), hover is a tone change or 1px border shift.
+- Translucency is structural: the sticky header (`bg-base-100/80 backdrop-blur-xl`) and the mobile
+  dock are the only blurred surfaces. Never stack glass on glass.
+- Icons are drawn SVG (1.6–1.8 stroke, `currentColor`), one system. Flags stay in the locale switcher.
+  Emoji are not iconography.
+- No kicker/eyebrow above titles. Section labels are small caps above a hairline (`divider divider-start`).
+- Motion: CSS/DaisyUI transitions + existing `motion/mini` settle, stagger and count-up. Nothing
+  gesture-driven is hand-animated; all of it collapses under `prefers-reduced-motion`.
+- States everywhere: hover, active, focus-visible (2px pine outline), disabled, loading (DaisyUI
+  `loading`), empty (dashed `card` with a calm line and one CTA), error (`validator` + `alert`),
+  offline banner kept.
+- Numbers use `tabular-nums`; counts animate once via `data-count-up`.
 
-## Components
+## Component mapping
 
-- `.page-head`: title (1.5rem/700/−0.02em) + `.page-sub` fog sub, action right-aligned.
-- `.kpi-strip` / `.kpi`: 2-col → 4-col, 1px hairline, 16px radius, uppercase label, 28px/800 tabular value, fog note.
-- `.section-label`: 11px/700 uppercase tracking .08em fog (replaces Caldera seals).
-- `.ledger-row`: hairline dividers, hover bg canvas, `.ledger-go` chevron slides +4px and turns pine.
-- `.avatar-ring`: pine-wash circle, 1px ring, status dot (success/fog) with paper outline.
-- Header: sticky top, paper/88 blur, 1px ink/12% bottom hairline, min-height 56px.
-- Shell: fixed 1140px max (`app-shell`), 16/24/32px gutters; desktop sidebar 240px + content, mobile bottom dock.
-- Dock: fixed bottom, safe-area padding, 4 items max (owner/coach) / 3 (trainee), active = ink 700 + pine dot.
-- Buttons: btn-primary pine, arrow nudges +3px on hover; loading state keeps width.
-- Tabs (Today): segmented rail (canvas, 1px hairline, 16px) with pine active pill via Alpine `:class` only — no JS change.
-- Forms: 12px fields, pine focus ring, validator-hint errors.
-- Toasts: paper chamber, 1px hairline, 16px radius, DaisyUI alert tones, slide-in + auto-dismiss.
-- Modal: pop-in (fade + 8px rise), paper 16px chamber.
+| Surface | Component |
+| --- | --- |
+| App shell | `max-w-[82rem]` flex; `sticky h-dvh` sidebar; `navbar sticky top-0 bg-base-100/80 backdrop-blur-xl`; mobile `dock` |
+| Navigation | `menu menu-md` + `menu-active`; `dock` + `dock-active` + `dock-label` |
+| Page head | `text-2xl/3xl font-semibold tracking-tight` + `text-sm text-base-content/60` sub, action right |
+| KPIs | `stats stats-vertical sm:stats-horizontal` with `stat-title` / `stat-value` / `stat-desc` |
+| Ledgers | `list` + `list-row` (hairline dividers, 1fr growth, `hover:bg-base-200/60`) |
+| Segmented control | `tabs tabs-box bg-base-200 p-1` + `tab tab-active` |
+| Forms | `label.input` / `label.select` with `<span class="label">`; textareas via `floating-label`; `validator` |
+| Detail rows | `list` with `label → value (ms-auto)` pairs — no centred KPI grids |
+| Modals | `dialog.modal.modal-bottom sm:modal-middle` + `modal-box` + `modal-action`; photo lightbox uses native `<dialog>` |
+| Toasts | `toast toast-center sm:toast-end` container + `alert alert-{tone} alert-soft` |
+| Empty | `card border-dashed` + `card-body items-center text-center py-12` |
 
 ## Quality bar
 
-Contrast ≥4.5:1 body, ≥3:1 large; 44px touch targets; 65–75ch measure; desktop 1440 + mobile 390 both calm, no horizontal overflow; HTMX swaps settle without flash; Alpine store untouched.
+- Contrast ≥4.5:1 body, ≥3:1 large; 45px controls; 65–75ch measure; no horizontal overflow at 390px.
+- Desktop 1440 and mobile 390 both calm; the dock, header and modal/toast roots survive HTMX swaps
+  (only `#page-content` is replaced).
+- No webfont request; CSS ships as one file with the theme inlined; no second component library and
+  no new runtime dependency.
