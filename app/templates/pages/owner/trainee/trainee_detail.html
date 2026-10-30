@@ -1,200 +1,253 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
-<div class="max-w-150 mx-auto" data-page-title="{{ title }}">
-    {# Header #}
-    <div class="card flex items-center justify-between border border-base-300 bg-base-100 rounded-2xl p-4 mb-4">
-        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm border border-base-300">{{ _('Edit') }}</a>
-        <div class="text-center min-w-0">
-            <div class="flex items-center justify-center gap-3 mb-2">
-                <h1 class="font-display font-normal text-2xl leading-tight truncate">
-                    {% if trainee.expand and 'user' in trainee.expand %}
-                        {{ trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '') }}
-                    {% else %}-{% endif %}
-                </h1>
-                <div class="avatar avatar-placeholder shrink-0">
-                    <div class="bg-lavender-whisper text-vast-ink w-10 h-10 rounded-full border border-base-300 flex items-center justify-center font-semibold">
-                        {% if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name %}{{ trainee.expand['user'].first_name[0] }}{% else %}?{% endif %}
-                    </div>
-                </div>
+<div class="mx-auto max-w-3xl" data-page-title="{{ title }}">
+    <header class="mb-6 flex items-center gap-4">
+        <div class="avatar avatar-placeholder shrink-0">
+            <div class="w-14 rounded-full bg-base-200 text-lg font-semibold text-base-content/70">
+                <span>{% if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name %}{{ trainee.expand['user'].first_name[0] }}{% else %}?{% endif %}</span>
             </div>
+        </div>
+        <div class="min-w-0 flex-1">
+            <h1 class="truncate text-2xl font-semibold tracking-tight">
+                {% if trainee.expand and 'user' in trainee.expand %}
+                    {{ trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '') }}
+                {% else %}-{% endif %}
+            </h1>
             {% if trainee.expand and 'user' in trainee.expand %}
-            <span class="text-sm text-fog block truncate">{{ trainee.expand['user'].email }}</span>
+                <p class="truncate text-sm text-base-content/60">{{ trainee.expand['user'].email }}</p>
             {% endif %}
         </div>
-        <div class="w-16"></div>
-    </div>
+        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm shrink-0">{{ _('Edit') }}</a>
+    </header>
 
-    {# Info section #}
     {% set gender_map = {'male': _('Male'), 'female': _('Female')} %}
-    <div class="grid grid-cols-3 gap-4 text-sm mb-8 text-center">
-        <div><span class="text-fog block text-xs mb-1">{{ _('Phone') }}</span><span class="font-semibold">{% if trainee.expand and 'user' in trainee.expand %}{{ trainee.expand['user'].phone or '-' }}{% else %}-{% endif %}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Gender') }}</span><span class="font-semibold">{{ gender_map.get(trainee.gender, gender_map.get(trainee.gender, _('-'))) }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Date of birth') }}</span><span class="font-semibold">{{ trainee.birthdate|jalali_date or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Height') }}</span><span class="font-semibold">{{ trainee.height or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Weight') }}</span><span class="font-semibold">{{ trainee.weight or '-' }}</span></div>
-        <div><span class="text-fog block text-xs mb-1">{{ _('Blood type') }}</span><span class="font-semibold">{{ trainee.blood_type or '-' }}</span></div>
+    <div class="card border border-base-300 bg-base-100">
+        <ul class="list">
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Phone') }}</span>
+                <span class="ms-auto text-sm font-medium">{% if trainee.expand and 'user' in trainee.expand %}{{ trainee.expand['user'].phone or '-' }}{% else %}-{% endif %}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Gender') }}</span>
+                <span class="ms-auto text-sm font-medium">{{ gender_map.get(trainee.gender, '-') }}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Date of birth') }}</span>
+                <span class="ms-auto text-sm font-medium">{{ trainee.birthdate|jalali_date or '-' }}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Height') }}</span>
+                <span class="ms-auto text-sm font-medium tabular-nums">{{ trainee.height or '-' }}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Weight') }}</span>
+                <span class="ms-auto text-sm font-medium tabular-nums">{{ trainee.weight or '-' }}</span>
+            </li>
+            <li class="list-row items-center">
+                <span class="text-sm text-base-content/60">{{ _('Blood type') }}</span>
+                <span class="ms-auto text-sm font-medium">{{ trainee.blood_type or '-' }}</span>
+            </li>
+        </ul>
     </div>
 
     {% if trainee.notes %}
-    <div class="bg-lavender-whisper/30 border border-base-300 rounded-xl p-4 mb-6">
-        <p class="text-sm text-base-content/80">{{ trainee.notes }}</p>
-    </div>
+        <div class="mt-4 rounded-box border border-base-300 bg-base-200/50 p-4">
+            <p class="text-sm whitespace-pre-line text-base-content/80">{{ trainee.notes }}</p>
+        </div>
     {% endif %}
 
-    {# Additional info #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('Additional information') }}</div>
-    <div class="grid gap-4 text-sm mb-2">
-        {% if trainee.training_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Training history') }}</span><span class="font-medium">{{ trainee.training_history|jalali_year }}</span></div>{% endif %}
-        {% if trainee.steroid_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Steroid history') }}</span><span class="font-medium">{{ trainee.steroid_history }}</span></div>{% endif %}
-        {% if trainee.supplement_history %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Supplement history') }}</span><span class="font-medium">{{ trainee.supplement_history }}</span></div>{% endif %}
-        {% if trainee.limitations %}<div class="flex items-center gap-3"><span class="text-fog w-40 shrink-0">{{ _('Abnormalities and illnesses') }}</span><span class="font-medium">{{ trainee.limitations }}</span></div>{% endif %}
-    </div>
+    {% if trainee.training_history or trainee.steroid_history or trainee.supplement_history or trainee.limitations %}
+        <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Additional information') }}</h2>
+        <div class="card border border-base-300 bg-base-100">
+            <ul class="list">
+                {% if trainee.training_history %}
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Training history') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ trainee.training_history|jalali_year }}</span>
+                    </li>
+                {% endif %}
+                {% if trainee.steroid_history %}
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Steroid history') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ trainee.steroid_history }}</span>
+                    </li>
+                {% endif %}
+                {% if trainee.supplement_history %}
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Supplement history') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ trainee.supplement_history }}</span>
+                    </li>
+                {% endif %}
+                {% if trainee.limitations %}
+                    <li class="list-row items-center">
+                        <span class="text-sm text-base-content/60">{{ _('Abnormalities and illnesses') }}</span>
+                        <span class="ms-auto text-sm font-medium">{{ trainee.limitations }}</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
 
-    {# History #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('History') }}</div>
+    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('History') }}</h2>
 
     {% if progress_logs %}
-        {% for log in progress_logs %}
-        <div class="collapse collapse-arrow border border-base-300 rounded-2xl bg-base-100 mb-3">
-            <input type="checkbox" aria-label="{{ log.created|jalali_date }}" />
-            <div class="collapse-title font-bold text-sm flex items-center gap-2">
-                📋 {{ log.created|jalali_date }}
-                {% if log.progress_photos %}<span class="badge badge-secondary badge-sm">{{ log.progress_photos|length }} 📷</span>{% endif %}
-            </div>
-            <div class="collapse-content">
-                <div class="grid grid-cols-2 gap-3 mt-2">
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Height') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.height or '-' }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Weight') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.weight or '-' }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">BMI</span>
-                        <span class="font-display text-2xl font-normal">{{ log.bmi|round(1) if log.bmi else '-' }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Body fat %') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.bfp|round(1) if log.bfp else '-' }}%</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Lean body mass') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.lbm|round(1) if log.lbm else '-' }} {{ _('kg') }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Basal metabolic rate') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.bmr|int if log.bmr else '-' }} {{ _('kcal') }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Activity-adjusted metabolism') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.tdee|int if log.tdee else '-' }} {{ _('kcal') }}</span>
-                    </div>
-                    <div class="text-center p-3 bg-lavender-whisper/25 border border-base-300 rounded-xl">
-                        <span class="text-fog block text-xs mb-1">{{ _('Waist-to-hip ratio') }}</span>
-                        <span class="font-display text-2xl font-normal">{{ log.whr|round(2) if log.whr else '-' }}</span>
-                    </div>
-                </div>
+        <div class="flex flex-col gap-3">
+            {% for log in progress_logs %}
+                <details class="collapse collapse-arrow border border-base-300 bg-base-100">
+                    <summary class="collapse-title flex min-h-12 items-center gap-2 text-sm font-semibold">
+                        <span>{{ log.created|jalali_date }}</span>
+                        {% if log.progress_photos %}
+                            <span class="badge badge-soft badge-secondary badge-sm">
+                                {{ log.progress_photos|length }}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" /></svg>
+                            </span>
+                        {% endif %}
+                    </summary>
+                    <div class="collapse-content">
+                        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Height') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.height or '-' }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Weight') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.weight or '-' }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">BMI</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.bmi|round(1) if log.bmi else '-' }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Body fat %') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.bfp|round(1) if log.bfp else '-' }}%</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Lean body mass') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.lbm|round(1) if log.lbm else '-' }} {{ _('kg') }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Basal metabolic rate') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.bmr|int if log.bmr else '-' }} {{ _('kcal') }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Activity-adjusted metabolism') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.tdee|int if log.tdee else '-' }} {{ _('kcal') }}</span>
+                            </div>
+                            <div class="rounded-box bg-base-200/60 p-3 text-center">
+                                <span class="block text-xs text-base-content/55">{{ _('Waist-to-hip ratio') }}</span>
+                                <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.whr|round(2) if log.whr else '-' }}</span>
+                            </div>
+                        </div>
 
-                {% if log.progress_photos %}
-                <p class="text-xs text-fog mt-4 mb-2">{{ _('Progress photos') }} ({{ log.progress_photos|length }})</p>
-                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {% for photo in log.progress_photos %}
-                    <div class="relative rounded-xl border border-base-300 overflow-hidden cursor-pointer group">
-                        <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="block cursor-pointer">
-                            <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
-                                 alt="{{ _('Progress photo') }}"
-                                 class="w-full h-24 object-cover transition group-hover:scale-110 lazy"
-                                 loading="lazy" />
-                        </label>
+                        {% if log.progress_photos %}
+                            <p class="mt-4 mb-2 text-xs text-base-content/55">{{ _('Progress photos') }} ({{ log.progress_photos|length }})</p>
+                            <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                                {% for photo in log.progress_photos %}
+                                    <button
+                                        type="button"
+                                        class="overflow-hidden rounded-selector border border-base-300 transition-opacity hover:opacity-80"
+                                        onclick="document.getElementById('photo-{{ log.id }}-{{ loop.index0 }}').showModal()"
+                                        aria-label="{{ _('Progress photo') }}"
+                                    >
+                                        <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}?thumb=100x100"
+                                             alt=""
+                                             class="h-24 w-full object-cover"
+                                             loading="lazy" />
+                                    </button>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        {% if log.notes %}
+                            <div class="mt-3 rounded-box border border-base-300 bg-base-200/40 p-4">
+                                <span class="block text-xs text-base-content/55">{{ _('Notes') }}</span>
+                                <p class="mt-1 text-sm whitespace-pre-line text-base-content/80">{{ log.notes }}</p>
+                            </div>
+                        {% endif %}
+
+                        <div class="mt-4">
+                            <button class="btn btn-ghost btn-sm btn-block"
+                                    hx-get="/progress-log/{{ log.id }}/edit"
+                                    hx-target="#modal-container"
+                                    hx-trigger="click"
+                                    hx-swap="innerHTML">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
+                                </svg>
+                                {{ _('Edit') }}
+                            </button>
+                        </div>
                     </div>
-                    {% endfor %}
-                </div>
-                {% endif %}
-
-                {% if log.notes %}
-                <div class="mt-3 p-4 bg-lavender-whisper/30 border border-base-300 rounded-xl">
-                    <span class="text-fog text-xs block mb-1">{{ _('Notes') }}</span>
-                    <p class="text-sm text-base-content/80">{{ log.notes }}</p>
-                </div>
-                {% endif %}
-
-                <div class="mt-4 flex justify-center">
-                    <button class="btn btn-sm btn-ghost border border-base-300 text-secondary w-full"
-                            hx-get="/progress-log/{{ log.id }}/edit"
-                            hx-target="#modal-container"
-                            hx-trigger="click"
-                            hx-swap="innerHTML">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="size-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                        </svg>
-                        {{ _('Edit') }}
-                    </button>
-                </div>
-            </div>
+                </details>
+            {% endfor %}
         </div>
-        {% endfor %}
     {% else %}
-        <div class="bg-base-100 rounded-2xl p-8 text-center border border-dashed border-base-300">
-            <span class="status status-secondary animate-bounce"></span>
-            <p class="text-sm text-fog font-medium mt-2">{{ _('No assessments recorded yet!') }}</p>
+        <div class="card border border-dashed border-base-300 bg-base-100">
+            <div class="card-body items-center py-12 text-center">
+                <p class="text-sm text-base-content/60">{{ _('No assessments recorded yet!') }}</p>
+            </div>
         </div>
     {% endif %}
 
-    <div class="mt-4 flex justify-center">
-        <a href="/progress-log/new/{{ trainee.id }}" class="btn btn-primary btn-soft w-full border border-base-300">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            {{ _('Record assessment') }}
-        </a>
-    </div>
+    <a href="/progress-log/new/{{ trainee.id }}" class="btn btn-primary btn-block mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </svg>
+        {{ _('Record assessment') }}
+    </a>
 
-    {# Plans #}
-    <div class="divider divider-start text-xs font-semibold tracking-widest text-fog my-6">{{ _('Plans') }}</div>
+    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Plans') }}</h2>
     {% set plan_list = plans.items if plans.items is defined else plans %}
     {% if plan_list %}
-        {% for plan in plan_list %}
-        <div class="bg-base-100 p-4 card border border-base-300 rounded-xl mb-3">
-            <div class="flex justify-between items-center gap-3">
-                <div class="min-w-0 max-w-[75%]">
-                    <div class="flex items-center gap-2">
-                        {% if plan.type == 'training' %}💪🏻{% elif plan.type == 'diet' %}🥑{% else %}💊{% endif %}
-                        <h3 class="font-bold text-sm truncate">
-                            {% if plan.type == 'training' %}{{ _('Training plan') }}{% elif plan.type == 'diet' %}{{ _('Diet plan') }}{% else %}{{ _('Steroid plan') }}{% endif %}
-                        </h3>
+        <div class="flex flex-col gap-3">
+            {% for plan in plan_list %}
+                <article class="card border border-base-300 bg-base-100 transition-colors hover:border-base-content/20">
+                    <div class="card-body flex-row items-center justify-between gap-3 p-4">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="grid size-8 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                                    {% if plan.type == 'training' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5" /></svg>
+                                    {% elif plan.type == 'diet' %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6 7.5 5.5 6.5 5 4.5 4 3.5 4 1.5 4.5 1.5 6 3 9 4 10.5 5 13.5 5 15a6 6 0 0 0 7 6Z" /></svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 20.25-6-6a2.25 2.25 0 0 1 0-3.182l7.5-7.5a2.25 2.25 0 0 1 1.591-.659h3.909a2.25 2.25 0 0 1 2.25 2.25v3.909c0 .597-.237 1.17-.659 1.591l-7.5 7.5a2.25 2.25 0 0 1-3.09.09Z" /></svg>
+                                    {% endif %}
+                                </span>
+                                <h3 class="truncate text-sm font-semibold">
+                                    {% if plan.type == 'training' %}{{ _('Training plan') }}{% elif plan.type == 'diet' %}{{ _('Diet plan') }}{% else %}{{ _('Steroid plan') }}{% endif %}
+                                </h3>
+                            </div>
+                            <p class="mt-1 text-xs text-base-content/55">
+                                {% if plan.status == 'active' %}{{ _('Active') }}{% elif plan.status == 'inactive' %}{{ _('Inactive') }}{% else %}{{ _('Draft') }}{% endif %}
+                                · {{ plan.start_date|jalali_date or '-' }} — {{ plan.end_date|jalali_date or '-' }}
+                            </p>
+                        </div>
+                        <a href="/plans/{{ plan.id }}" class="btn btn-ghost btn-sm shrink-0">{{ _('View') }}</a>
                     </div>
-                    <div class="text-xs text-fog mt-2 flex flex-col gap-1">
-                        <span>{{ _('Status') }}: {% if plan.status == 'active' %}{{ _('Active') }}{% elif plan.status == 'inactive' %}{{ _('Inactive') }}{% else %}{{ _('Draft') }}{% endif %}</span>
-                        <span>{{ _('Start') }}: {{ plan.start_date|jalali_date or '-' }} — {{ _('End') }}: {{ plan.end_date|jalali_date or '-' }}</span>
-                    </div>
-                </div>
-                <a href="/plans/{{ plan.id }}" class="btn btn-sm btn-ghost text-secondary border border-base-300 shrink-0">{{ _('View') }}</a>
-            </div>
+                </article>
+            {% endfor %}
         </div>
-        {% endfor %}
     {% else %}
-        <p class="text-sm text-fog text-center py-4">{{ _('No plans recorded yet!') }}</p>
+        <p class="py-4 text-center text-sm text-base-content/60">{{ _('No plans recorded yet!') }}</p>
     {% endif %}
 </div>
 
-{# Photo lightbox modals (checkbox style) #}
+{# Photo lightbox — native dialog, DaisyUI modal #}
 {% if progress_logs %}
     {% for log in progress_logs %}
         {% if log.progress_photos %}
             {% for photo in log.progress_photos %}
-            <input type="checkbox" id="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-toggle" />
-            <div class="modal z-[9999]" role="dialog" aria-modal="true">
-                <div class="modal-box p-0 bg-transparent shadow-none w-auto max-w-[95vw] flex flex-col items-center justify-center overflow-hidden">
-                    <label for="modal-{{ log.id }}-{{ loop.index0 }}"
-                           class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 text-white bg-vast-ink border border-base-300 z-[10000] cursor-pointer">✕</label>
-                    <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
-                         alt="{{ _('Full progress photo') }}"
-                         class="max-w-full max-h-[85vh] object-contain rounded-box" />
-                </div>
-                <label for="modal-{{ log.id }}-{{ loop.index0 }}" class="modal-backdrop bg-black/50 cursor-pointer">{{ _('Close') }}</label>
-            </div>
+                <dialog id="photo-{{ log.id }}-{{ loop.index0 }}" class="modal">
+                    <div class="modal-box max-w-[95vw] bg-transparent p-0 shadow-none">
+                        <img src="{{ pb_files_url }}{{ log.collection_id }}/{{ log.id }}/{{ photo }}"
+                             alt="{{ _('Full progress photo') }}"
+                             class="mx-auto max-h-[85vh] w-auto rounded-box object-contain" />
+                    </div>
+                    <form method="dialog" class="modal-backdrop">
+                        <button>{{ _('Close') }}</button>
+                    </form>
+                </dialog>
             {% endfor %}
         {% endif %}
     {% endfor %}

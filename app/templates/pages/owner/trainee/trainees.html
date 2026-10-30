@@ -1,29 +1,26 @@
 {% extends 'layouts/dashboard.html' %}
 {% block dashboard_content %}
 <div id="trainees-content" data-settle data-page-title="{{ title }}">
-    <header class="page-head">
+    <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
-            <div class="flex items-center gap-2.5 flex-wrap">
-                <h1>{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
-                {% if trainees %}<span class="badge badge-soft badge-secondary text-xs">{{ trainees|length }}</span>{% endif %}
+            <div class="flex flex-wrap items-center gap-2">
+                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
+                {% if trainees %}<span class="badge badge-soft badge-secondary text-xs tabular-nums">{{ trainees|length }}</span>{% endif %}
             </div>
-            <p class="page-sub">{{ _('Manage registered trainees') }}</p>
+            <p class="mt-1 text-sm text-base-content/60">{{ _('Manage registered trainees') }}</p>
         </div>
-        <a href="/trainees/new" class="btn btn-primary border border-base-300 shrink-0 min-h-11">{{ _('New trainee') }}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
+        <a href="/trainees/new" class="btn btn-primary shrink-0">{{ _('New trainee') }}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
         </a>
     </header>
 
-    <div class="collapse collapse-arrow border border-base-300 rounded-2xl mb-6 bg-base-100 sticky top-14 z-30">
-        <input type="checkbox" aria-label="{{ _('Search and filter') }}" />
-        <div class="collapse-title font-bold text-sm flex items-center gap-2">
-            {{ _('Search and filter') }}
-        </div>
+    <details class="collapse collapse-arrow mb-6 border border-base-300 bg-base-100">
+        <summary class="collapse-title flex min-h-12 items-center text-sm font-semibold">{{ _('Search and filter') }}</summary>
         <div class="collapse-content">
             <form id="search-filter-form" class="grid grid-cols-1 gap-4 pt-2">
-                <label class="input w-full validator">
-                    <span class="label">{{ _('Search') }} ({{ _('name, email...') }})</span>
-                    <input type="search" id="search-input" name="query" placeholder="{{ _('Search...') }}" class="w-full peer"
+                <label class="input w-full">
+                    <span class="label">{{ _('Search') }}</span>
+                    <input type="search" id="search-input" name="query" placeholder="{{ _('name, email...') }}" class="w-full"
                            value="{{ search_query or '' }}"
                            hx-get="/trainees/search?page=1"
                            hx-target="#trainees-content"
@@ -32,7 +29,7 @@
                            hx-trigger="keyup changed delay:500ms, search"
                            hx-sync="closest form:replace" />
                 </label>
-                <div class="grid sm:grid-cols-2 gap-4">
+                <div class="grid gap-4 sm:grid-cols-2">
                     <label class="select w-full">
                         <span class="label">{{ _('Gender') }}</span>
                         <select id="gender-filter" name="gender"
@@ -65,62 +62,63 @@
                         </select>
                     </label>
                 </div>
-                <button type="button" class="btn btn-primary btn-soft btn-block mt-2 border border-base-300" onclick="clearAllFilters()">
+                <button type="button" class="btn btn-ghost btn-block mt-1" onclick="clearAllFilters()">
                     {{ _('Clear filters') }}
                 </button>
             </form>
         </div>
-    </div>
+    </details>
 
     <div id="trainees-table-container">
-        <div class="card bg-base-100 border border-base-300 rounded-2xl overflow-hidden">
-            <div class="card-body p-0">
-                {% if trainees and trainees|length > 0 %}
-                <ul class="divide-y divide-base-300">
-                    {% for trainee in trainees %}
-                    <li class="ledger-row flex items-center gap-3 px-4 py-3 min-h-[68px]">
+        {% if trainees and trainees|length > 0 %}
+            <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
+                {% for trainee in trainees %}
+                    <li class="list-row items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/60">
                         {% set first = (trainee.expand['user'].first_name[0] if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name else '?') %}
-                        <div class="avatar-ring w-11 h-11 rounded-full text-sm" {% if trainee.status|default('active') != 'active' %}data-status="inactive"{% endif %} aria-hidden="true">
-                            {{ first }}
+                        <div class="indicator shrink-0">
+                            <span class="indicator-item badge badge-xs size-2.5 border-2 border-base-100 {% if trainee.status|default('active') == 'active' %}bg-success{% else %}bg-base-content/30{% endif %}"></span>
+                            <div class="avatar avatar-placeholder">
+                                <div class="w-10 rounded-full bg-base-200 text-sm font-semibold text-base-content/70">
+                                    <span>{{ first }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="min-w-0 flex-1">
-                            <span class="font-semibold text-sm block truncate">
+                        <div class="min-w-0">
+                            <span class="block truncate text-sm font-semibold">
                                 {% if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name %}
                                     {{ trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '') }}
                                 {% else %}-{% endif %}
                             </span>
-                            {% if trainee.expand and 'user' in trainee.expand %}<span class="text-xs text-fog block truncate">{{ trainee.expand['user'].email or '' }}</span>{% endif %}
+                            {% if trainee.expand and 'user' in trainee.expand %}<span class="block truncate text-xs text-base-content/55">{{ trainee.expand['user'].email or '' }}</span>{% endif %}
                         </div>
-                        <a href="/trainees/{{ trainee.id }}" class="ledger-go btn btn-ghost btn-sm btn-square min-h-11 min-w-11" aria-label="{{ _('View trainee') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5" aria-hidden="true">
+                        <a href="/trainees/{{ trainee.id }}" class="btn btn-ghost btn-square btn-sm ms-auto" aria-label="{{ _('View trainee') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 text-base-content/40" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </a>
                     </li>
-                    {% endfor %}
-                </ul>
-                {% else %}
-                <div class="text-center py-10">
-                    <p class="text-sm text-fog font-medium">
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="card border border-dashed border-base-300 bg-base-100">
+                <div class="card-body items-center py-12 text-center">
+                    <p class="text-sm text-base-content/60">
                         {{ empty_message or _("You haven't added any trainees yet!") }}
                     </p>
                     {% if not search_query %}
-                    <a href="/trainees/new" class="btn btn-primary btn-sm mt-4">{{ _('New trainee') }}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 btn-arrow" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12l-7.5 7.5M21 12H3" /></svg>
-                    </a>
+                        <a href="/trainees/new" class="btn btn-primary btn-sm mt-3">{{ _('New trainee') }}</a>
                     {% endif %}
                 </div>
-                {% endif %}
             </div>
-        </div>
+        {% endif %}
 
         {% if total_pages > 1 %}
-        <nav class="join flex justify-center mt-4" aria-label="{{ _('Pagination') }}">
+        <nav class="join mt-5 flex justify-center" aria-label="{{ _('Pagination') }}">
             {% set page_qs = '&search_query=' ~ (search_query|urlencode if search_query else '') ~ '&gender=' ~ (filter_params.gender|urlencode if filter_params.gender else '') ~ '&status=' ~ (filter_params.status|urlencode if filter_params.status else '') ~ '&min_birthdate=' ~ (filter_params.min_birthdate|urlencode if filter_params.min_birthdate else '') ~ '&max_birthdate=' ~ (filter_params.max_birthdate|urlencode if filter_params.max_birthdate else '') %}
-            <a class="btn btn-sm btn-primary btn-soft {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
+            <a class="btn btn-sm join-item {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
                {% if page > 1 %}href="/trainees?page={{ page - 1 }}" hx-get="/trainees?page={{ page - 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Previous') }}">«</a>
-            <button class="btn btn-sm btn-disabled pointer-events-none" aria-disabled="true">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</button>
-            <a class="btn btn-sm btn-primary btn-soft {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
+            <button class="btn btn-sm join-item btn-disabled pointer-events-none tabular-nums" aria-disabled="true">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</button>
+            <a class="btn btn-sm join-item {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
                {% if page < total_pages %}href="/trainees?page={{ page + 1 }}" hx-get="/trainees?page={{ page + 1 }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Next') }}">»</a>
         </nav>
         {% endif %}
