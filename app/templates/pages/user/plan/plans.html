@@ -3,189 +3,93 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block dashboard_content %}
-    <div class="max-w-3xl mx-auto" data-page-title="{{ title }}">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="font-display font-normal text-3xl leading-tight">{{ _('My plans') }}</h1>
-                <p class="text-sm text-fog mt-2">
-                    {{ _('View and track the plans your coach created for you') }}
-                </p>
-            </div>
-        </div>
+    <div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
+        <header class="mb-6">
+            <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{{ _('My plans') }}</h1>
+            <p class="mt-1 text-sm text-base-content/60">
+                {{ _('View and track the plans your coach created for you') }}
+            </p>
+        </header>
 
         {# Safely extract the list depending on if your service uses get_list() or get_full_list() #}
         {% set plan_list = plans.items if plans.items is defined else plans %}
 
         {% if plan_list and plan_list | length > 0 %}
-            <div class="flex flex-col gap-4">
+            <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
                 {% for plan in plan_list %}
-                    <div
-                        class="card bg-base-100 border border-base-300 hover:border-secondary transition-all duration-300"
-                    >
-                        <div class="card-body p-4 sm:p-5">
-                            <div class="flex flex-wrap justify-between items-center gap-4">
-                                <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-[200px]">
-                                    <div
-                                        class="flex-shrink-0 w-12 h-12 flex items-center justify-center bg-lavender-whisper border border-base-300 rounded-2xl text-2xl"
-                                    >
-                                        {% if plan.type == 'training' %}
-                                            💪🏻
-                                        {% elif plan.type == 'diet' %}
-                                            🥑
-                                        {% elif plan.type == 'steroid' %}
-                                            💊
-                                        {% else %}
-                                            📋
-                                        {% endif %}
-                                    </div>
+                    <li class="list-row items-center gap-3 px-4 py-4 transition-colors hover:bg-base-200/60">
+                        <span class="grid size-10 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                            {% if plan.type == 'training' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5" /></svg>
+                            {% elif plan.type == 'diet' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6 7.5 5.5 6.5 5 4.5 4 3.5 4 1.5 4.5 1.5 6 3 9 4 10.5 5 13.5 5 15a6 6 0 0 0 7 6Z" /></svg>
+                            {% elif plan.type == 'steroid' %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 20.25-6-6a2.25 2.25 0 0 1 0-3.182l7.5-7.5a2.25 2.25 0 0 1 1.591-.659h3.909a2.25 2.25 0 0 1 2.25 2.25v3.909c0 .597-.237 1.17-.659 1.591l-7.5 7.5a2.25 2.25 0 0 1-3.09.09Z" /></svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h6M5.25 3.75h13.5A2.25 2.25 0 0 1 21 6v12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V6a2.25 2.25 0 0 1 2.25-2.25Z" /></svg>
+                            {% endif %}
+                        </span>
 
-                                    <div class="flex flex-col items-start gap-x-6 gap-y-2 w-full">
-                                        <div class="flex items-center gap-2">
-                                            <h3
-                                                class="font-bold text-base sm:text-lg text-base-content whitespace-nowrap"
-                                            >
-                                                {% if plan.type == 'training' %}
-                                                    {{ _('Training plan') }}
-                                                {% elif plan.type == 'diet' %}
-                                                    {{ _('Diet plan') }}
-                                                {% elif plan.type == 'steroid' %}
-                                                    {{ _('Steroid plan') }}
-                                                {% else %}
-                                                    {{ _('Unknown plan') }}
-                                                {% endif %}
-                                            </h3>
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="truncate text-sm font-semibold">
+                                    {% if plan.type == 'training' %}
+                                        {{ _('Training plan') }}
+                                    {% elif plan.type == 'diet' %}
+                                        {{ _('Diet plan') }}
+                                    {% elif plan.type == 'steroid' %}
+                                        {{ _('Steroid plan') }}
+                                    {% else %}
+                                        {{ _('Unknown plan') }}
+                                    {% endif %}
+                                </span>
 
-                                            {% if plan.status == 'active' %}
-                                                <span
-                                                    class="badge badge-success badge-sm badge-soft font-medium"
-                                                >
-                                                    {{ _('Active') }}
-                                                </span>
-                                            {% elif plan.status == 'draft' %}
-                                                <span
-                                                    class="badge badge-ghost badge-sm font-medium"
-                                                >
-                                                    {{ _('Draft') }}
-                                                </span>
-                                            {% elif plan.status == 'inactive' %}
-                                                <span
-                                                    class="badge badge-error badge-sm badge-soft font-medium"
-                                                >
-                                                    {{ _('Inactive') }}
-                                                </span>
-                                            {% else %}
-                                                <span
-                                                    class="badge badge-ghost badge-sm"
-                                                >
-                                                    {{ plan.status }}
-                                                </span>
-                                            {% endif %}
-                                        </div>
-
-                                        <div
-                                            class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-fog font-medium"
-                                        >
-                                            {% if plan.start_date %}
-                                                <div
-                                                    class="flex items-center gap-1 whitespace-nowrap"
-                                                >
-                                                    <svg
-                                                        class="w-3.5 h-3.5 opacity-70"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="1.5"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                                                        />
-                                                    </svg>
-                                                    <span>
-                                                        {{ _('Start') }}:
-                                                        {{ plan.start_date | jalali_date }}
-                                                    </span>
-                                                </div>
-                                            {% endif %}
-
-                                            {% if plan.end_date %}
-                                                <div
-                                                    class="flex items-center gap-1 whitespace-nowrap"
-                                                >
-                                                    <svg
-                                                        class="w-3.5 h-3.5 opacity-70"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke-width="1.5"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            d="M3 3v1.5M3 21v-6m0 0l2.77-.693a15.215 15.215 0 013.111-.306c1.2.03 2.394.3 3.528.816l.16.073a15.216 15.216 0 003.111.306 15.215 15.215 0 003.111-.306V5.624c-3.268.687-6.534-.2-9.636-1.18m0 0C10.189 3.515 7.02 3.227 3 4.42m0 10.58v-6"
-                                                        />
-                                                    </svg>
-                                                    <span>
-                                                        {{ _('End') }}:
-                                                        {{ plan.end_date | jalali_date }}
-                                                    </span>
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="flex-shrink-0">
-                                    <a
-                                        href="/user/plans/{{ plan.id }}"
-                                        class="btn btn-square border border-base-300 transition-colors"
-                                    >
-                                        <svg
-                                            class="w-5 h-5"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="2"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                                            />
-                                        </svg>
-                                    </a>
-                                </div>
+                                {% if plan.status == 'active' %}
+                                    <span class="badge badge-soft badge-success badge-sm">{{ _('Active') }}</span>
+                                {% elif plan.status == 'draft' %}
+                                    <span class="badge badge-ghost badge-sm">{{ _('Draft') }}</span>
+                                {% elif plan.status == 'inactive' %}
+                                    <span class="badge badge-soft badge-error badge-sm">{{ _('Inactive') }}</span>
+                                {% else %}
+                                    <span class="badge badge-ghost badge-sm">{{ plan.status }}</span>
+                                {% endif %}
                             </div>
+
+                            <p class="mt-1 flex flex-wrap gap-x-3 text-xs text-base-content/55">
+                                {% if plan.start_date %}
+                                    <span class="whitespace-nowrap">{{ _('Start') }}: {{ plan.start_date | jalali_date }}</span>
+                                {% endif %}
+                                {% if plan.end_date %}
+                                    <span class="whitespace-nowrap">{{ _('End') }}: {{ plan.end_date | jalali_date }}</span>
+                                {% endif %}
+                            </p>
                         </div>
-                    </div>
+
+                        <a href="/user/plans/{{ plan.id }}" class="btn btn-ghost btn-square btn-sm ms-auto" aria-label="{{ _('View') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 text-base-content/40" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </a>
+                    </li>
                 {% endfor %}
-            </div>
+            </ul>
         {% else %}
-            <div
-                class="card bg-base-100 border border-dashed border-base-300 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[40vh]"
-            >
-                <div
-                    class="w-16 h-16 bg-lavender-whisper border border-base-300 rounded-full flex items-center justify-center mb-4 text-3xl"
-                >
-                    📭
+            <div class="card border border-dashed border-base-300 bg-base-100">
+                <div class="card-body items-center px-6 py-16 text-center">
+                    <span class="grid size-14 place-items-center rounded-full bg-base-200 text-base-content/40" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+                        </svg>
+                    </span>
+                    <h2 class="mt-4 text-lg font-semibold tracking-tight">{{ _('No plans recorded yet!') }}</h2>
+                    <p class="mt-1 max-w-sm text-sm text-base-content/60">
+                        {{
+                            _(
+                                "Your coach hasn't created any plans for you yet. As soon as a new plan is created, it will show up here."
+                            )
+                        }}
+                    </p>
                 </div>
-                <h3 class="font-display font-normal text-2xl text-base-content">
-                    {{ _('No plans recorded yet!') }}
-                </h3>
-                <p class="text-sm text-fog mt-2 max-w-xs mx-auto">
-                    {{
-                        _(
-                            "Your coach hasn't created any plans for you yet. As soon as a new plan is created, it will show up here."
-                        )
-                    }}
-                </p>
-                <span
-                    class="flex items-center gap-2 text-xs font-medium text-secondary mt-6 bg-secondary/10 border border-base-300 px-3 py-1.5 rounded-full"
-                >
-                    <span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
-                    {{ _('Waiting for your plan...') }}
-                </span>
             </div>
         {% endif %}
     </div>

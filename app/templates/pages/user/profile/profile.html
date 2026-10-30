@@ -1,43 +1,36 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <div class="max-w-150" data-page-title="{{ title }}">
-        <div class="items-center justify-between bg-base-100 border border-base-300 p-4 mb-4 card flex rounded-2xl">
-            <a href="/change-password" class="btn btn-sm border border-base-300">{{ _('Change password') }}</a>
-            <div class="text-center">
-                <h1 class="font-display font-normal text-2xl leading-tight text-left ml-4">
+    <div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
+        <header class="mb-6 flex items-end justify-between gap-3">
+            <div class="min-w-0">
+                <h1 class="truncate text-2xl font-semibold tracking-tight">
                     {{ user.first_name ~ ' ' ~ user.last_name }}
                 </h1>
+                <p class="truncate text-sm text-base-content/60">{{ user.email }}</p>
             </div>
-        </div>
-        <!-- Info Grid -->
-        <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Email') }}</span>
-                <span class="font-medium">{{ user.email }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Status') }}</span>
-                <span class="font-medium">{{ _('Active') }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Account created') }}</span>
-                <span class="font-medium">{{ tenant.created | jalali_date or '-' }}</span>
-            </div>
-            <div>
-                <span class="text-fog block text-xs mb-1">{{ _('Last updated') }}</span>
-                <span class="font-medium">{{ tenant.updated | jalali_date }}</span>
-            </div>
+            <a href="/change-password" class="btn btn-sm shrink-0">{{ _('Change password') }}</a>
+        </header>
+
+        <div class="card border border-base-300 bg-base-100">
+            <ul class="list">
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Status') }}</span>
+                    <span class="badge badge-soft badge-success badge-sm ms-auto">{{ _('Active') }}</span>
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Account created') }}</span>
+                    <span class="ms-auto text-sm font-medium">{{ tenant.created | jalali_date or '-' }}</span>
+                </li>
+                <li class="list-row items-center">
+                    <span class="text-sm text-base-content/60">{{ _('Last updated') }}</span>
+                    <span class="ms-auto text-sm font-medium">{{ tenant.updated | jalali_date }}</span>
+                </li>
+            </ul>
         </div>
 
-        <!-- Items Section -->
-        <div class="hidden">
-            <div class="mt-4" id="items-list-container">
-                <div class="divider text-xs opacity-50">
-                    {{ _('App information and settings') }}
-                </div>
-                <div class="grid grid-cols-2 gap-4 text-sm mb-8 text-center">
-                    <div></div>
-                </div>
+        <div class="hidden" aria-hidden="true">
+            <div id="items-list-container">
+                <h2>{{ _('App information and settings') }}</h2>
             </div>
         </div>
     </div>
