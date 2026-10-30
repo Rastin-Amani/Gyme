@@ -109,13 +109,14 @@ class TenantMiddleware(BaseHTTPMiddleware):
         # Use X-Forwarded-Host when behind trusted proxy, fallback to Host
         raw_host = request.headers.get("x-forwarded-host") or request.headers.get("host", "")
         host = raw_host.split(":")[0].strip().lower()
+        is_static = path.startswith("/static")
         # Validate host to prevent header injection
         if not is_valid_host(host):
             # Do not attempt tenant lookup for clearly invalid hosts
             logger.warning("invalid_host", host=raw_host)
             host = ""
             tenant = None
-        elif path.startswith("/static"):
+        elif is_static:
             # StaticFiles never reads the tenant; skip the PB lookup so asset
             # requests stay instant even while PocketBase is degraded.
             tenant = None
@@ -314,6 +315,14 @@ class TenantMiddleware(BaseHTTPMiddleware):
         # ---- Security headers ----
         # Align with OWASP ASVS 14.4.7 / Cheat Sheets
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
+
+        # Static assets carry a ?v=asset_version query, so they can be cached
+        # forever. Everything else stays uncached (private app).
+        if is_static:
+            response.headers.setdefault("Cache-Control", "public, max-age=31536000, immutable")
+            clear_request_context()
+            return response
+
         response.headers.setdefault("X-Frame-Options", "DENY")
         response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
         response.headers.setdefault(

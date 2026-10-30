@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 from app.routes import auth
 from .routes import dashboard
@@ -67,11 +68,34 @@ else:
 APP_VERSION = "1.4.0"
 templates.env.globals["app_version"] = APP_VERSION
 
+
+def _asset_version() -> str:
+    """Cache-busting token derived from the built assets themselves.
+
+    Static files are served with `immutable` caching, so the URL must change
+    whenever app.css/app.js do — otherwise a deploy serves stale CSS/JS until
+    someone remembers to bump APP_VERSION by hand.
+    """
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+    try:
+        newest = max(
+            os.path.getmtime(os.path.join(static_dir, name)) for name in ("app.css", "app.js")
+        )
+        return f"{APP_VERSION}-{int(newest)}"
+    except OSError:
+        return APP_VERSION
+
+
+ASSET_VERSION = _asset_version()
+templates.env.globals["asset_version"] = ASSET_VERSION
+
 # static folder
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # middleware
 app.add_middleware(TenantMiddleware)
+# Compress text responses: JS/CSS/HTML drop ~70-85% on the wire.
+app.add_middleware(GZipMiddleware, minimum_size=800, compresslevel=6)
 
 # include routers
 app.include_router(dashboard.router)
