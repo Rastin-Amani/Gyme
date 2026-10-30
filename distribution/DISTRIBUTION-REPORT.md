@@ -5,8 +5,8 @@
 - **Name:** Gyme
 - **Repository:** https://github.com/Rastin-Amani/Gyme
 - **Website:** https://gyme.cloud *(verified HTTP 200 on 2026-10-25)*
-- **Version:** 0.9.1
-- **Latest cycle:** 2026-10-25 — README visuals, product-site links and v1.4.0 publish (see the cycle section at the end)
+- **Version:** 0.10.0 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
+- **Latest cycle:** 2026-10-30 — DaisyUI interface rebuild, request-path speed, version line reset to 0.10.0 (see the cycle section at the end)
 - **License:** ISC
 - **Campaign date:** 2026-09-26
 - **Mode:** AUTONOMOUS (GitHub-safe actions + permitted submissions executed directly) — earlier repo P0 phase ran under explicit user approval
@@ -191,3 +191,31 @@
 
 - The README now opens with the product problem and two clear paths (cloud vs self-host), not a feature inventory; the technical sections remain unchanged below it.
 - The screenshots surfaced four real UI defects (blank Today tab, always-selected Diet tab, backward plan chevrons, half-empty dashboard grid); all are fixed in `af46c90` rather than papered over in the images.
+
+---
+
+## Cycle 2026-10-30 — interface rebuild and version line reset
+
+**Version:** 0.10.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+
+### Executed (LIVE)
+
+| Action | Evidence | Status |
+| --- | --- | --- |
+| Rebuilt the interface on a single DaisyUI theme (shell, ledgers, forms, modals, auth screens) | commits `ecbb65b`–`42370d4` | **PUSHED** |
+| Cut the request-path cost: pooled PocketBase client, 30 s token cache, parallel reads, gzip, immutable assets | commits `daa450f`–`0d5032f` | **PUSHED** |
+| Withdrew the `v1.0.0`–`v1.7.0` tags and releases (numbering error; billing already reverted) | tags deleted on origin, notes archived in `docs/releases-withdrawn-1x.md` | **DONE** |
+| Reset the release line to `v0.10.0` | commit `cbe20d3`, tag `v0.10.0`, [release](https://github.com/Rastin-Amani/Gyme/releases/tag/v0.10.0) | **LIVE** |
+| CI + GHCR for the release | [CI run 41035669596](https://github.com/Rastin-Amani/Gyme/actions/runs/41035669596) success · [GHCR run 41035715759](https://github.com/Rastin-Amani/Gyme/actions/runs/41035715759) published `ghcr.io/rastin-amani/gyme:v0.10.0` | **LIVE** |
+| Pruned superseded GHCR image versions | `.github/workflows/prune-packages.yml` (workflow_dispatch) | **PENDING RUN** |
+
+### Verification
+
+- 57 tests pass; `ruff check .` and `black --check .` clean.
+- App booted against a live PocketBase: `/login` renders, `/healthz` 200, `/manifest.json` and `/sw.js` carry `0.10.0`, `/static/app.css` is served `immutable`, HTML is gzipped.
+- Release identity agrees across `APP_VERSION`, `app/version.text`, `package.json`, the git tag, the GitHub release and the Docker image.
+
+### Notes
+
+- The 1.x numbering shipped in error: `v1.5.0`/`v1.6.0` carried a billing experiment that was reverted on `main`, and `v1.7.0` inherited the number. The project is pre-1.0, so the line resumes at `0.10.0`; no commit was rewritten and the withdrawn release notes are preserved in the repository.
+- Container images published under the withdrawn tags are unsupported and are being removed from GHCR by the pruning workflow above.
