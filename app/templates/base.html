@@ -13,19 +13,20 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        
+
         <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" />
+        {# Direct icon URL: a <link rel=icon> to /favicon.ico cost a redirect
+           hop on every load. Inline fallback avoids the request entirely. #}
+        {% if tenant and tenant.logo %}
+            {% set pb_base = request.state.pb.base_url.rstrip('/') %}
+            <link rel="icon" href="{{ pb_base }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=32x32f" />
+        {% else %}
+            <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=http://www.w3.org/2000/svg width=32 height=32%3E%3Crect width=32 height=32 rx=8 fill=%231c4a3c/%3E%3Ctext x=16 y=22 font-family=sans-serif font-size=18 font-weight=bold fill=%23fff text-anchor=middle%3EG%3C/text%3E%3C/svg%3E" />
+        {% endif %}
 
         <title>{{ title or _('Gyme') }}</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Inter:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v={{ app_version }}" />
-        
+        <link rel="stylesheet" href="{{ url_for('static', path='/app.css') }}?v={{ asset_version }}" />
+
         {% if tenant.theme == 'custom' and tenant.brand_theme %}
             <style>
             :root {
@@ -50,8 +51,9 @@
                 function createBanner() {
                     var el = document.createElement('div');
                     el.id = BANNER_ID;
+                    el.setAttribute('role', 'status');
+                    el.className = 'alert alert-warning alert-soft border-b border-base-300 rounded-none rounded-b-box fixed top-0 left-1/2 z-[99999] w-full max-w-lg -translate-x-1/2 justify-center text-sm font-semibold';
                     el.textContent = BANNER_TEXT;
-                    el.style.cssText = 'position:fixed;top:0;left:50%;translate:-50%;z-index:99999;background:#ffedd5;color:#9a3412;text-align:center;font-size:0.875rem;font-weight:700;padding:0.5rem 1rem;border-radius:0 0 0.5rem 0.5rem;max-width:600px;width:100%';
                     el.style.display = navigator.onLine ? 'none' : '';
                     document.body.prepend(el);
                 }
@@ -89,34 +91,31 @@
     </head>
 
     <body
-        class="bg-base-200 font-sans! antialiased"
+        class="min-h-dvh bg-base-200 font-sans text-base-content antialiased selection:bg-primary selection:text-primary-content"
         hx-boost="false"
         x-data
     >
         {% block body_start %}{% endblock %}
+
         <div
-            class="app-shell min-h-screen bg-base-100 border-x border-base-300/80 selection:bg-primary selection:text-primary-content"
-        >
-            
-            <div
-                id="top-progress-bar"
-                class="fixed top-0 h-0.5 bg-primary z-[9999] transition-all duration-300 ease-out w-0 opacity-0 pointer-events-none"
-            ></div>
+            id="top-progress-bar"
+            class="pointer-events-none fixed start-0 top-0 z-[9999] h-0.5 w-0 bg-primary opacity-0 transition-all duration-300 ease-out"
+        ></div>
 
-            <main id="main-content" class="px-4 sm:px-6 lg:px-8">
-                {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
 
-                <div id="modal-container"></div>
-                <div
-                    id="toast-container"
-                    class="fixed top-5 end-5 z-50 flex flex-col gap-2"
-                ></div>
-            </main>
-        </div>
+        <div id="modal-container"></div>
+        <div
+            id="toast-container"
+            class="toast toast-center sm:toast-end top-4 z-[60] w-full max-w-sm px-4 sm:px-0"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+        ></div>
 
         {% block body_end %}{% endblock %}
 
-        <script type="module" src="{{ url_for('static', path='/app.js') }}"></script>
+        <script type="module" src="{{ url_for('static', path='/app.js') }}?v={{ asset_version }}"></script>
 
         <script>
             function getProgressBar() {
@@ -125,7 +124,7 @@
 
             function startProgress() {
                 const bar = getProgressBar();
-                if (!bar) return; 
+                if (!bar) return;
 
                 bar.style.transition = 'width 0.3s ease-out, opacity 0.1s ease-in';
                 bar.style.opacity = '1';
@@ -138,15 +137,15 @@
 
             function stopProgress() {
                 const bar = getProgressBar();
-                if (!bar) return; 
+                if (!bar) return;
 
                 bar.style.transition = 'width 0.2s ease-out, opacity 0.3s ease-out';
-                bar.style.width = '100%'; 
+                bar.style.width = '100%';
 
                 setTimeout(() => {
                     bar.style.opacity = '0';
                     setTimeout(() => {
-                        bar.style.transition = 'none'; 
+                        bar.style.transition = 'none';
                         bar.style.width = '0%';
                     }, 300);
                 }, 300);
@@ -160,7 +159,7 @@
 
         <script>
             if (!window.toastListenerAttached) {
-                // 1. Toast Listener
+                // 1. Toast Listener — DaisyUI alert tones, message inserted as text only.
                 document.addEventListener('show-toast', function (evt) {
                     const message = evt.detail.message;
                     const type = evt.detail.type || 'info';
@@ -175,28 +174,30 @@
 
                     if (type === 'info') {
                         colorClass = 'alert-info';
-                        icon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="h-6 w-6 shrink-0 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                        icon = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="size-5 shrink-0 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
                     } else if (type === 'success') {
                         colorClass = 'alert-success';
-                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     } else if (type === 'error') {
                         colorClass = 'alert-error';
-                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
                     } else if (type === 'warning') {
                         colorClass = 'alert-warning';
-                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+                        icon = `<svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
                     }
 
-                    toast.className = `alert ${colorClass} alert-soft transition-all duration-300 transform translate-x-full opacity-0 max-w-sm flex items-center justify-between`;
+                    toast.className = `alert ${colorClass} alert-soft flex items-center justify-between rounded-box border border-base-300 text-sm transition-all duration-300 ease-out opacity-0 translate-y-2`;
+                    toast.setAttribute('role', 'status');
 
                     // Use safe DOM construction to prevent XSS via message
                     const wrapper = document.createElement('div');
                     wrapper.className = 'flex items-center gap-3';
                     const iconSpan = document.createElement('span');
+                    iconSpan.className = 'shrink-0';
                     iconSpan.innerHTML = icon; // icon is trusted static SVG
                     wrapper.appendChild(iconSpan);
                     const msgSpan = document.createElement('span');
-                    msgSpan.className = 'font-bold text-sm';
+                    msgSpan.className = 'font-semibold';
                     msgSpan.textContent = String(message).slice(0, 500); // textContent auto-escapes, length limit
                     wrapper.appendChild(msgSpan);
                     toast.appendChild(wrapper);
@@ -204,11 +205,11 @@
                     toastContainer.appendChild(toast);
 
                     setTimeout(() => {
-                        toast.classList.remove('translate-x-full', 'opacity-0');
+                        toast.classList.remove('translate-y-2', 'opacity-0');
                     }, 50);
 
                     setTimeout(() => {
-                        toast.classList.add('opacity-0', 'scale-90');
+                        toast.classList.add('opacity-0');
                         setTimeout(() => toast.remove(), 300);
                     }, 4000);
                 });
@@ -239,7 +240,7 @@
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', async () => {
                     try {
-                        const reg = await navigator.serviceWorker.register('/sw.js?v={{ app_version }}', { scope: '/' });
+                        const reg = await navigator.serviceWorker.register('/sw.js?v={{ asset_version }}', { scope: '/' });
                         console.log('SW registered:', reg.scope);
 
                         reg.addEventListener('updatefound', () => {
@@ -301,21 +302,21 @@
                         ctx.fillText(version, canvas.width / 2, yOffset + 120 + (canvas.width * 0.06) + 20);
                     }
 
-                    const dotY = canvas.height - (canvas.height * 0.15); 
+                    const dotY = canvas.height - (canvas.height * 0.15);
                     const dotRadius = canvas.width * 0.015;
                     const spacing = canvas.width * 0.07;
                     const centerX = canvas.width / 2;
 
                     ctx.fillStyle = textColor;
-                    
+
                     ctx.globalAlpha = 0.8;
                     ctx.beginPath(); ctx.arc(centerX - spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
                     ctx.globalAlpha = 0.4;
                     ctx.beginPath(); ctx.arc(centerX, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
                     ctx.globalAlpha = 0.15;
                     ctx.beginPath(); ctx.arc(centerX + spacing, dotY, dotRadius, 0, Math.PI * 2); ctx.fill();
-                    
-                    ctx.globalAlpha = 1.0; 
+
+                    ctx.globalAlpha = 1.0;
                 };
 
                 if (!logoUrl || logoUrl.trim() === '') {
@@ -328,12 +329,12 @@
                 img.crossOrigin = 'Anonymous';
 
                 img.onload = () => {
-                    const targetLogoWidth = canvas.width / 3.5; 
+                    const targetLogoWidth = canvas.width / 3.5;
                     const scale = targetLogoWidth / img.width;
                     const targetLogoHeight = img.height * scale;
 
                     const x = (canvas.width - targetLogoWidth) / 2;
-                    const y = (canvas.height - targetLogoHeight) / 2 - 80; 
+                    const y = (canvas.height - targetLogoHeight) / 2 - 80;
 
                     const radius = canvas.width * 0.04;
                     ctx.save();
@@ -349,7 +350,7 @@
                     ctx.quadraticCurveTo(x, y, x + radius, y);
                     ctx.closePath();
                     ctx.clip();
-                    
+
                     ctx.drawImage(img, x, y, targetLogoWidth, targetLogoHeight);
                     ctx.restore();
 
@@ -381,21 +382,28 @@
             {% elif request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_100 %}
                 {% set splash_bg = request.state.tenant.brand_colors.base_100 %}
             {% else %}
-                {% set splash_bg = '#F1F0EB' %}  {# Slate Pine — canvas #}
+                {% set splash_bg = '#F2F1EC' %}  {# canvas #}
             {% endif %}
 
             {% if request.state.tenant and request.state.tenant.brand_colors and request.state.tenant.brand_colors.base_content %}
                 {% set splash_text = request.state.tenant.brand_colors.base_content %}
             {% else %}
-                {% set splash_text = '#1A1E1C' %}  {# Slate Pine — ink #}
+                {% set splash_text = '#191D1B' %}  {# ink #}
             {% endif %}
 
-            generateIOSSplashScreen(
-                "{{ dynamic_logo_url }}",
-                "{{ splash_bg }}",
-                "{{ request.state.tenant.name | default('Gyme Platform') }}",
-                "{{ splash_text }}",
-            );
+            {# Apple startup images only exist on iOS; drawing a full-screen
+               canvas + PNG-encoding it on every page load blocked the main
+               thread everywhere else. Defer it to idle on iOS only. #}
+            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+                (window.requestIdleCallback || function (fn) { setTimeout(fn, 200); })(function () {
+                    generateIOSSplashScreen(
+                        "{{ dynamic_logo_url }}",
+                        "{{ splash_bg }}",
+                        "{{ request.state.tenant.name | default('Gyme Platform') }}",
+                        "{{ splash_text }}",
+                    );
+                });
+            }
         </script>
     </body>
 </html>

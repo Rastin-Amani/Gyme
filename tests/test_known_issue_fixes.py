@@ -92,8 +92,10 @@ def test_app_version_matches_version_text():
 
 
 def test_sw_register_uses_app_version():
+    # ASSET_VERSION is APP_VERSION + built-asset stamp, so this is the stronger
+    # contract: the SW URL changes on every deploy that touches CSS/JS.
     src = _read("app/templates/base.html")
-    assert "/sw.js?v={{ app_version }}" in src
+    assert "sw.js?v={{ asset_version }}" in src
 
 
 def test_no_hardcoded_old_sw_version():
