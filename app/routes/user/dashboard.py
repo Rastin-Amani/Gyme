@@ -6,6 +6,7 @@ from app.services.plan import get_plans_by_trainee, get_plan_by_id
 from app.services.progress import get_progress_by_plan
 from app.services.item import get_items_by_plan_seq, list_items_by_plan
 from app.security import pb_escape, ALLOWED_PLAN_TYPES, sanitize_collection_name
+from app.utils import pmap
 from app.i18n import _
 
 router = APIRouter()
@@ -31,10 +32,11 @@ def trainee_dashboard(request: Request):
 
     categorized = {"training": [], "diet": [], "steroid": []}
 
-    for p in plans:
+    def build_entry(p):
+        """Progress + current-seq items for one plan (2 PB round-trips)."""
         plan_type = p.type.value if hasattr(p.type, "value") else str(p.type)
         if plan_type not in ALLOWED_PLAN_TYPES:
-            continue
+            return None, None
 
         try:
             progress = get_progress_by_plan(pb, tenant_id, p.id)
@@ -46,7 +48,7 @@ def trainee_dashboard(request: Request):
         try:
             coll_name = sanitize_collection_name(plan_type)
         except ValueError:
-            continue
+            return None, None
         try:
             # 🟢 Passing tenant_id (string) and current_seq dynamically!
             items = get_items_by_plan_seq(pb, tenant_id, coll_name, p.id, current_seq)
@@ -62,7 +64,10 @@ def trainee_dashboard(request: Request):
             "progress": progress,
             "items": items,
         }
+        return plan_type, plan_dict
 
+    # Plans are independent — fetch them concurrently instead of N × 2 serial RTTs.
+    for plan_type, plan_dict in pmap(build_entry, plans):
         if plan_type in categorized:
             categorized[plan_type].append(plan_dict)
 

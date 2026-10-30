@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from app.services.coach import list_coaches
+from app.utils import pmap
 from structlog import get_logger
 from app.security import pb_escape
 
@@ -43,13 +44,17 @@ def get_owner_dashboard_stats(pb, tenant_id: str, timeframe: str = "all"):
             logger.error("dashboard.count_error", collection=collection, error=str(e))
             return 0
 
-    return {
-        "active_trainees": get_count("trainees", 'status="active"'),
-        "inactive_trainees": get_count("trainees", 'status="inactive"'),
-        "diet_plans": get_count("plans", 'type="diet"'),
-        "training_plans": get_count("plans", 'type="training"'),
-        "steroid_plans": get_count("plans", 'type="steroid"'),
+    # Independent counts: one round-trip each, so run them concurrently.
+    specs = {
+        "active_trainees": ("trainees", 'status="active"'),
+        "inactive_trainees": ("trainees", 'status="inactive"'),
+        "diet_plans": ("plans", 'type="diet"'),
+        "training_plans": ("plans", 'type="training"'),
+        "steroid_plans": ("plans", 'type="steroid"'),
     }
+    keys = list(specs)
+    values = pmap(lambda key: get_count(*specs[key]), keys)
+    return dict(zip(keys, values))
 
 
 def _time_filter(timeframe: str) -> str:
@@ -172,15 +177,18 @@ def get_coach_stats(
     coach_list = list(raw) if raw else []
     logger.info("get_coach_stats.coaches_fetched", count=len(coach_list))
 
-    for coach in coach_list:
+    def coach_row(coach):
         coach_id = getattr(coach, "id", None)
         if not coach_id:
-            continue
+            return None
         name = (
             f"{getattr(coach, 'first_name', '')} {getattr(coach, 'last_name', '')}".strip()
             or getattr(coach, "email", "?")
         )
-        result.append(_coach_stats_single(pb, tenant_id, coach_id, name, timeframe))
+        return _coach_stats_single(pb, tenant_id, coach_id, name, timeframe)
+
+    # Each coach costs 2 PB round-trips; run the independent ones concurrently.
+    result = [row for row in pmap(coach_row, coach_list) if row]
 
     # Add owner's stats if requested and not already included
     if owner_id and owner_id not in [c["id"] for c in result]:
