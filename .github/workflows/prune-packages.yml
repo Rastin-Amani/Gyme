@@ -50,6 +50,13 @@ jobs:
           failed=0
           while IFS=$'\t' read -r id tags; do
             [ -n "$id" ] || continue
+            if [ -z "${tags// /}" ]; then
+              # Untagged versions are buildx attestation manifests. They do not
+              # advertise a version, and pruning them would strip provenance
+              # from images that are still kept.
+              echo "skip   untagged version $id"
+              continue
+            fi
             keep_this=0
             for tag in $tags; do
               for k in $keep; do
