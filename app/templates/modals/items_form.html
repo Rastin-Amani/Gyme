@@ -5,20 +5,20 @@
     hx-post="{{ '/items/' + item.id if item else '/items' }}"
     hx-boost="false"
     hx-swap="none"
-    hx-on:htmx:after-request="if(event.detail.successful){console.log('modal success, triggering refresh');document.getElementById('modal-container').innerHTML='';htmx.trigger(document.body,'performListRefresh');}"
+    hx-on:htmx:after-request="if(event.detail.successful){document.getElementById('modal-container').innerHTML='';htmx.trigger(document.body,'performListRefresh');}"
     class="flex flex-col gap-4"
 >
     {% if plan_type == 'training' %}
-        <div class="form-control w-full flex flex-col gap-4">
-            <label class="floating-label">
-                <span>{{ _('Exercise name') }}</span>
+        <div class="flex flex-col gap-4">
+            <label class="input w-full">
+                <span class="label">{{ _('Exercise name') }}</span>
                 <input
                     list="exercise-options"
                     type="text"
                     name="item_name"
                     value="{{ item.name or '' }}"
                     placeholder="{{ _('Exercise name (select or type)') }}"
-                    class="input w-full validator"
+                    class="w-full validator"
                     autocomplete="on"
                     required
                 />
@@ -28,71 +28,66 @@
                     <option value="{{ name }}"></option>
                 {% endfor %}
             </datalist>
-            <p class="validator-hint text-error text-xs mt-1 hidden">{{ _('This field is required.') }}</p>
 
-            <label class="floating-label">
-                <span>{{ _('Exercise category') }}</span>
-                <select name="category" class="select w-full" required>
+            <label class="select w-full">
+                <span class="label">{{ _('Exercise category') }}</span>
+                <select name="category" class="w-full" required>
                     {% for cat in ['Warm-up', 'Corrective', 'Main', 'Cardio', 'Cool-down'] %}
-                        <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>
-                            {{ _(cat) }}
-                        </option>
+                        <option value="{{ cat }}" {% if item.category == cat %}selected{% endif %}>{{ _(cat) }}</option>
                     {% endfor %}
                 </select>
             </label>
         </div>
 
-        <div class="grid grid-cols-3 gap-4">
-            <label class="floating-label">
-                <span>{{ _('Day') }}</span>
-                <input type="number" name="seq" value="{{ item.seq or 1 }}" class="input w-full" />
+        <div class="grid grid-cols-3 gap-3">
+            <label class="input w-full">
+                <span class="label">{{ _('Day') }}</span>
+                <input type="number" name="seq" value="{{ item.seq or 1 }}" class="w-full tabular-nums" />
             </label>
-            <p class="validator-hint text-error text-xs hidden">{{ _('This field is required.') }}</p>
-            <label class="floating-label">
-                <span>{{ _('Order') }}</span>
-                <input type="number" name="order" value="{{ item.order or 1 }}" class="input w-full" />
+            <label class="input w-full">
+                <span class="label">{{ _('Order') }}</span>
+                <input type="number" name="order" value="{{ item.order or 1 }}" class="w-full tabular-nums" />
             </label>
-            <label class="floating-label">
-                <span>{{ _('Sets') }}</span>
-                <input type="number" name="sets" value="{{ item.sets or '' }}" class="input w-full" />
+            <label class="input w-full">
+                <span class="label">{{ _('Sets') }}</span>
+                <input type="number" name="sets" value="{{ item.sets or '' }}" class="w-full tabular-nums" />
             </label>
         </div>
 
-        <div class="grid grid-cols-3 gap-2">
-            <label class="floating-label">
-                <span>{{ _('Reps') }}</span>
-                <input type="number" name="reps" value="{{ item.reps or '' }}" class="input w-full" />
+        <div class="grid grid-cols-3 gap-3">
+            <label class="input w-full">
+                <span class="label">{{ _('Reps') }}</span>
+                <input type="number" name="reps" value="{{ item.reps or '' }}" class="w-full tabular-nums" />
             </label>
-            <label class="floating-label">
-                <span>{{ _('Weight') }}</span>
-                <input type="number" step="0.1" name="weight" value="{{ item.weight or '' }}" class="input w-full" />
+            <label class="input w-full">
+                <span class="label">{{ _('Weight') }}</span>
+                <input type="number" step="0.1" name="weight" value="{{ item.weight or '' }}" class="w-full tabular-nums" />
             </label>
-            <label class="floating-label">
-                <span>{{ _('Rest (s)') }}</span>
-                <input type="number" name="rest_seconds" value="{{ item.rest_seconds or '' }}" class="input w-full" />
+            <label class="input w-full">
+                <span class="label">{{ _('Rest (s)') }}</span>
+                <input type="number" name="rest_seconds" value="{{ item.rest_seconds or '' }}" class="w-full tabular-nums" />
             </label>
         </div>
     {% elif plan_type == 'diet' %}
-        <label class="floating-label">
-            <span>{{ _('Meal') }}</span>
-            <select name="meal_name" class="select w-full" required>
+        <label class="select w-full">
+            <span class="label">{{ _('Meal') }}</span>
+            <select name="meal_name" class="w-full" required>
                 <option value="" {% if not item %}selected{% endif %} disabled>{{ _('Select a meal...') }}</option>
                 {% for category in ['Fasting', 'Breakfast', 'Snack', 'Pre-workout', 'Post-workout', 'Lunch', 'Dinner'] %}
-                    <option value="{{ category }}" {% if item.meal_name == category %}selected{% endif %}>
-                        {{ _(category) }}
-                    </option>
+                    <option value="{{ category }}" {% if item.meal_name == category %}selected{% endif %}>{{ _(category) }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="floating-label">
-            <span>{{ _('Food name') }}</span>
+
+        <label class="input w-full">
+            <span class="label">{{ _('Food name') }}</span>
             <input
                 list="food-options"
                 type="text"
                 name="food_name"
                 value="{{ item.food_name or '' }}"
                 placeholder="{{ _('Food name (select or type)') }}"
-                class="input w-full"
+                class="w-full"
                 autocomplete="off"
             />
         </label>
@@ -101,53 +96,53 @@
                 <option value="{{ name }}"></option>
             {% endfor %}
         </datalist>
-        <label class="floating-label">
-            <span>{{ _('Quantity / unit') }}</span>
-            <input type="text" name="quantity" value="{{ item.quantity or '' }}" class="input w-full" />
+
+        <label class="input w-full">
+            <span class="label">{{ _('Quantity / unit') }}</span>
+            <input type="text" name="quantity" value="{{ item.quantity or '' }}" class="w-full" />
         </label>
     {% elif plan_type == 'steroid' %}
-        <label class="floating-label">
-            <span>{{ _('Supplement/medication name') }}</span>
-            <input type="text" name="name" value="{{ item.name or '' }}" class="input w-full" />
+        <label class="input w-full">
+            <span class="label">{{ _('Supplement/medication name') }}</span>
+            <input type="text" name="name" value="{{ item.name or '' }}" class="w-full" />
         </label>
-        <div class="grid grid-cols-2 gap-4">
-            <label class="floating-label">
-                <span>{{ _('Type') }}</span>
-                <select name="type" class="select w-full">
+        <div class="grid grid-cols-2 gap-3">
+            <label class="select w-full">
+                <span class="label">{{ _('Type') }}</span>
+                <select name="type" class="w-full">
                     <option value="supplement" {% if item.type == 'supplement' %}selected{% endif %}>{{ _('Supplement') }}</option>
                     <option value="steroid" {% if item.type == 'steroid' %}selected{% endif %}>{{ _('Steroid') }}</option>
                 </select>
             </label>
-            <label class="floating-label">
-                <span>{{ _('Dosage') }}</span>
-                <input type="text" name="dosage" value="{{ item.dosage or '' }}" class="input w-full" />
+            <label class="input w-full">
+                <span class="label">{{ _('Dosage') }}</span>
+                <input type="text" name="dosage" value="{{ item.dosage or '' }}" class="w-full" />
             </label>
         </div>
-        <label class="floating-label">
-            <span>{{ _('Timing / frequency') }}</span>
-            <input type="text" name="frequency" value="{{ item.frequency or '' }}" class="input w-full" />
+        <label class="input w-full">
+            <span class="label">{{ _('Timing / frequency') }}</span>
+            <input type="text" name="frequency" value="{{ item.frequency or '' }}" class="w-full" />
         </label>
     {% endif %}
 
-    {% if item.notes and item.notes.strip() %}
-        <textarea name="notes" class="textarea h-12 w-full">{{ item.notes.strip() }}</textarea>
-    {% else %}
-        <textarea name="notes" class="textarea h-12 w-full" placeholder="{{ _('Notes') }}"></textarea>
-    {% endif %}
+    <label class="floating-label">
+        <span>{{ _('Notes') }}</span>
+        <textarea name="notes" class="textarea h-24 w-full" placeholder="{{ _('Notes') }}">{{ item.notes.strip() if item and item.notes else '' }}</textarea>
+    </label>
 
     <div class="hidden">
         <input type="hidden" name="plan_type" value="{{ plan_type }}" />
         <input type="hidden" name="plan" value="{{ plan_id }}" />
     </div>
 
-    <div class="modal-action flex gap-3 mt-6">
-        <button type="button" class="btn btn-ghost border border-base-300 flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
+    <div class="modal-action mt-2 flex gap-2">
+        <button type="button" class="btn btn-ghost flex-1" onclick="document.getElementById('modal-container').innerHTML = ''">
             {{ _('Cancel') }}
         </button>
         {% if item %}
             <button
                 type="button"
-                class="btn btn-error btn-soft border border-base-300 flex-1"
+                class="btn btn-error btn-soft flex-1"
                 hx-get="/items/{{ item.id }}/confirm-delete"
                 hx-target="#modal-container"
                 hx-swap="innerHTML"
@@ -156,7 +151,7 @@
                 {{ _('Delete') }}
             </button>
         {% endif %}
-        <button type="submit" class="btn btn-primary border border-base-300 flex-3" hx-disabled-elt="this">
+        <button type="submit" class="btn btn-primary flex-[2]" hx-disabled-elt="this">
             {{ _('Update') if item else _('Add to list') }}
         </button>
     </div>

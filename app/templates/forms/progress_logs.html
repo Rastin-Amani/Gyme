@@ -3,18 +3,14 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block dashboard_content %}
-    <div class="max-w-3xl mx-auto space-y-6 pb-24" data-page-title="{{ title }}">
-        <div class="flex items-center gap-3 mb-4">
-            <div class="flex flex-col">
-                <span class="text-sm text-fog font-medium">
-                    {{ _('Please enter your body measurements. Calculations will be done automatically.') }}
-                </span>
-            </div>
-        </div>
+    <div class="mx-auto max-w-2xl space-y-6 pb-24" data-page-title="{{ title }}">
+        <p class="text-sm text-base-content/60">
+            {{ _('Please enter your body measurements. Calculations will be done automatically.') }}
+        </p>
         <form
             hx-post="/trainees/{{ trainee.id }}/progress-log"
             enctype="multipart/form-data"
-            class="bg-base-100 space-y-6"
+            class="space-y-6"
             hx-swap="none"
         >
             <input type="hidden" name="bmi" id="input_bmi" />
@@ -24,184 +20,109 @@
             <input type="hidden" name="lbm" id="input_lbm" />
             <input type="hidden" name="whr" id="input_whr" />
 
-            <div class="">
-                <div class="">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Height') }}</span>
-                                <input
-                                    type="number"
-                                    id="val_height"
-                                    name="height"
-                                    value="{{ trainee.height if trainee.height else '' }}"
-                                    class="w-full calc-trigger validator"
-                                    required
-                                />
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Weight') }}</span>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    id="val_weight"
-                                    name="weight"
-                                    value="{{ trainee.weight if trainee.weight else '' }}"
-                                    class="w-full calc-trigger validator"
-                                    required
-                                />
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Chest') }}</span>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="chest"
-                                    class="w-full calc-trigger"
-                                />
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Waist') }}</span>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    id="val_waist"
-                                    name="waist"
-                                    class="w-full calc-trigger"
-                                />
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Hips') }}</span>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    id="val_hip"
-                                    name="hip"
-                                    class="w-full calc-trigger"
-                                />
-                            </label>
-                        </div>
-                        <div class="form-control">
-                            <label class="input">
-                                <span class="label">{{ _('Arms') }}</span>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="arms"
-                                    class="w-full calc-trigger"
-                                />
-                            </label>
-                        </div>
-                    </div>
-                    <div class="form-control">
-                        <label class="select w-full">
-                            <span class="label">{{ _('Activity level') }}</span>
-                            <select id="val_activity" class="select w-full calc-trigger">
-                                <option value="1.2">{{ _('Sedentary (desk job)') }}</option>
-                                <option value="1.375">{{ _('Light (1-3 days of exercise)') }}</option>
-                                <option value="1.55" selected>{{ _('Moderate (3-5 days of exercise)') }}</option>
-                                <option value="1.725">{{ _('Intense (6-7 days of exercise)') }}</option>
-                                <option value="1.9">{{ _('Very intense (professional athlete)') }}</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center">
-                    <div class="text-xs font-semibold text-fog mb-3">{{ _('Body mass index (BMI)') }}</div>
-                    <div
-                        id="bmi-gauge"
-                        class="radial-progress text-base-content/20 transition-all duration-500 font-black"
-                        style="--value:0; --size:4rem; --thickness: 4px;"
-                    >
-                        0
-                    </div>
-                    <div id="bmi-status" class="text-xs mt-3 font-bold">-</div>
-                </div>
-
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center">
-                    <div class="text-xs font-semibold text-fog mb-3">{{ _('Body fat percentage (BFP)') }}</div>
-                    <div
-                        id="bfp-gauge"
-                        class="radial-progress text-base-content/20 transition-all duration-500 font-black"
-                        style="--value:0; --size:4rem; --thickness: 4px;"
-                    >
-                        0%
-                    </div>
-                    <div id="bfp-status" class="text-xs mt-3 font-bold">-</div>
-                </div>
-
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Lean body mass (LBM)') }}</div>
-                    <div id="lbm-display" class="font-display font-normal text-2xl text-info mt-2">0</div>
-                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
-                </div>
-
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Fat mass') }}</div>
-                    <div id="fat-mass-display" class="font-display font-normal text-2xl text-warning mt-2">0</div>
-                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">KG</div>
-                </div>
-
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Metabolism (BMR)') }}</div>
-                    <div id="bmr-display" class="font-display font-normal text-2xl text-base-content mt-2">0</div>
-                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
-                        Kcal / Day
-                    </div>
-                </div>
-
-                <div class="card bg-base-100 border border-base-300 rounded-xl p-4 text-center items-center justify-center">
-                    <div class="text-xs font-semibold text-fog mb-2">{{ _('Maintenance calories (TDEE)') }}</div>
-                    <div id="tdee-display" class="font-display font-normal text-2xl text-success mt-2">0</div>
-                    <div class="text-[10px] text-fog mt-1 uppercase tracking-wider">
-                        Kcal / Day
-                    </div>
+            <div class="card border border-base-300 bg-base-100">
+                <div class="card-body grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+                    <label class="input w-full">
+                        <span class="label">{{ _('Height') }}</span>
+                        <input type="number" id="val_height" name="height" class="w-full calc-trigger validator tabular-nums"
+                               value="{{ trainee.height if trainee.height else '' }}" required />
+                    </label>
+                    <label class="input w-full">
+                        <span class="label">{{ _('Weight') }}</span>
+                        <input type="number" step="0.1" id="val_weight" name="weight" class="w-full calc-trigger validator tabular-nums"
+                               value="{{ trainee.weight if trainee.weight else '' }}" required />
+                    </label>
+                    <label class="input w-full">
+                        <span class="label">{{ _('Chest') }}</span>
+                        <input type="number" step="0.1" name="chest" class="w-full calc-trigger tabular-nums" />
+                    </label>
+                    <label class="input w-full">
+                        <span class="label">{{ _('Waist') }}</span>
+                        <input type="number" step="0.1" id="val_waist" name="waist" class="w-full calc-trigger tabular-nums" />
+                    </label>
+                    <label class="input w-full">
+                        <span class="label">{{ _('Hips') }}</span>
+                        <input type="number" step="0.1" id="val_hip" name="hip" class="w-full calc-trigger tabular-nums" />
+                    </label>
+                    <label class="input w-full">
+                        <span class="label">{{ _('Arms') }}</span>
+                        <input type="number" step="0.1" name="arms" class="w-full calc-trigger tabular-nums" />
+                    </label>
+                    <label class="select w-full sm:col-span-2">
+                        <span class="label">{{ _('Activity level') }}</span>
+                        <select id="val_activity" class="select w-full calc-trigger">
+                            <option value="1.2">{{ _('Sedentary (desk job)') }}</option>
+                            <option value="1.375">{{ _('Light (1-3 days of exercise)') }}</option>
+                            <option value="1.55" selected>{{ _('Moderate (3-5 days of exercise)') }}</option>
+                            <option value="1.725">{{ _('Intense (6-7 days of exercise)') }}</option>
+                            <option value="1.9">{{ _('Very intense (professional athlete)') }}</option>
+                        </select>
+                    </label>
                 </div>
             </div>
 
-            <div class="">
-                <div class="grid grid-cols-1 gap-4">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text text-fog mb-2">{{ _('Progress photos (optional)') }}</span>
-                        </label>
-                        <input
-                            type="file"
-                            name="progress_photos"
-                            id="progress-photos-input"
-                            class="file-input w-full"
-                            multiple
-                            accept="image/*"
-                        />
-                        <!-- Image preview grid -->
-                        <div
-                            id="photo-previews"
-                            class="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3"
-                        ></div>
-                        <div id="photo-validation" class="text-xs mt-1"></div>
-                    </div>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div class="flex flex-col items-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Body mass index (BMI)') }}</span>
+                    <div id="bmi-gauge" class="radial-progress mt-3 text-base-content/20 transition-all duration-500 font-bold"
+                         style="--value:0; --size:4rem; --thickness: 4px;" role="progressbar">0</div>
+                    <div id="bmi-status" class="mt-3 text-xs font-semibold">-</div>
+                </div>
+
+                <div class="flex flex-col items-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Body fat percentage (BFP)') }}</span>
+                    <div id="bfp-gauge" class="radial-progress mt-3 text-base-content/20 transition-all duration-500 font-bold"
+                         style="--value:0; --size:4rem; --thickness: 4px;" role="progressbar">0%</div>
+                    <div id="bfp-status" class="mt-3 text-xs font-semibold">-</div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Lean body mass (LBM)') }}</span>
+                    <div id="lbm-display" class="mt-2 text-2xl font-semibold tabular-nums text-info">0</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">KG</div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Fat mass') }}</span>
+                    <div id="fat-mass-display" class="mt-2 text-2xl font-semibold tabular-nums text-warning">0</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">KG</div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Metabolism (BMR)') }}</span>
+                    <div id="bmr-display" class="mt-2 text-2xl font-semibold tabular-nums">0</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">Kcal / Day</div>
+                </div>
+
+                <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
+                    <span class="text-xs text-base-content/55">{{ _('Maintenance calories (TDEE)') }}</span>
+                    <div id="tdee-display" class="mt-2 text-2xl font-semibold tabular-nums text-success">0</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">Kcal / Day</div>
                 </div>
             </div>
 
-            <div class="form-control">
-                <textarea
-                    name="notes"
-                    class="textarea h-12 w-full"
-                    placeholder="{{ _('Assessment notes') }}"
-                ></textarea>
+            <div class="card border border-base-300 bg-base-100">
+                <div class="card-body gap-3 p-5">
+                    <span class="text-sm font-medium text-base-content/70">{{ _('Progress photos (optional)') }}</span>
+                    <input
+                        type="file"
+                        name="progress_photos"
+                        id="progress-photos-input"
+                        class="file-input w-full"
+                        multiple
+                        accept="image/*"
+                    />
+                    <div id="photo-previews" class="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-4"></div>
+                    <div id="photo-validation" class="mt-1 text-xs"></div>
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-primary w-full border border-base-300" hx-disabled-elt="this">{{ _('Save assessment') }}</button>
+            <label class="floating-label">
+                <span>{{ _('Assessment notes') }}</span>
+                <textarea name="notes" class="textarea h-28 w-full" placeholder="{{ _('Assessment notes') }}"></textarea>
+            </label>
+
+            <button type="submit" class="btn btn-primary btn-block transition-transform active:scale-[0.98]" hx-disabled-elt="this">{{ _('Save assessment') }}</button>
         </form>
     </div>
 
@@ -232,16 +153,16 @@
                 document.getElementById('bmi-gauge').innerText = '0';
                 document.getElementById('bmi-status').innerText = '-';
                 document.getElementById('bmi-gauge').className =
-                    'radial-progress text-base-content/20 transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-base-content/20 transition-all duration-500 font-bold';
 
                 // Reset BFP gauge and status
                 document.getElementById('bfp-gauge').style.setProperty('--value', 0);
                 document.getElementById('bfp-gauge').innerText = '0%';
                 document.getElementById('bfp-status').innerText = '-';
                 document.getElementById('bfp-gauge').className =
-                    'radial-progress text-base-content/20 transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-base-content/20 transition-all duration-500 font-bold';
                 document.getElementById('bfp-status').className =
-                    'text-xs mt-3 font-bold text-base-content/20';
+                    'mt-3 text-xs font-semibold text-base-content/40';
 
                 // Reset other fields
                 document.getElementById('lbm-display').innerText = '0';
@@ -263,24 +184,24 @@
 
             if (bmi < 18.5) {
                 bmiGauge.className =
-                    'radial-progress text-info transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-info transition-all duration-500 font-bold';
                 bmiStatus.innerText = {{ _('Underweight') | tojson }};
-                bmiStatus.className = 'text-xs mt-3 text-info font-bold';
+                bmiStatus.className = 'mt-3 text-xs font-semibold text-info';
             } else if (bmi < 25) {
                 bmiGauge.className =
-                    'radial-progress text-success transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-success transition-all duration-500 font-bold';
                 bmiStatus.innerText = {{ _('Normal') | tojson }};
-                bmiStatus.className = 'text-xs mt-3 text-success font-bold';
+                bmiStatus.className = 'mt-3 text-xs font-semibold text-success';
             } else if (bmi < 30) {
                 bmiGauge.className =
-                    'radial-progress text-warning transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-warning transition-all duration-500 font-bold';
                 bmiStatus.innerText = {{ _('Overweight') | tojson }};
-                bmiStatus.className = 'text-xs mt-3 text-warning font-bold';
+                bmiStatus.className = 'mt-3 text-xs font-semibold text-warning';
             } else {
                 bmiGauge.className =
-                    'radial-progress text-error transition-all duration-500 font-black';
+                    'radial-progress mt-3 text-error transition-all duration-500 font-bold';
                 bmiStatus.innerText = {{ _('Obesity') | tojson }};
-                bmiStatus.className = 'text-xs mt-3 text-error font-bold';
+                bmiStatus.className = 'mt-3 text-xs font-semibold text-error';
             }
 
             // 2. BMR (Mifflin-St Jeor) & TDEE
@@ -306,7 +227,6 @@
             bfpGauge.style.setProperty('--value', Math.min(bfp, 100));
             bfpGauge.innerText = bfp + '%';
 
-            // 🟢 Determine BFP Status Categories based on gender
             let bfpText = '-';
             let bfpColor = 'text-base-content/20';
 
@@ -328,7 +248,6 @@
                     bfpColor = 'text-error';
                 }
             } else {
-                // Female thresholds
                 if (bfp < 14) {
                     bfpText = {{ _('Essential fat') | tojson }};
                     bfpColor = 'text-info';
@@ -347,9 +266,9 @@
                 }
             }
 
-            bfpGauge.className = `radial-progress ${bfpColor} transition-all duration-500 font-black`;
+            bfpGauge.className = `radial-progress mt-3 ${bfpColor} transition-all duration-500 font-bold`;
             bfpStatus.innerText = bfpText;
-            bfpStatus.className = `text-xs mt-3 font-bold ${bfpColor}`;
+            bfpStatus.className = `mt-3 text-xs font-semibold ${bfpColor}`;
 
             // 4. Lean Body Mass (LBM) & WHR & Fat Mass (KG)
             let lbm = weight - weight * (bfp / 100);
@@ -392,12 +311,12 @@
             function showValidation(msg, isError = true) {
                 validationEl.textContent = msg;
                 validationEl.className =
-                    'text-xs mt-1 ' + (isError ? 'text-error' : 'text-success');
+                    'mt-1 text-xs ' + (isError ? 'text-error' : 'text-success');
             }
 
             function clearValidation() {
                 validationEl.textContent = '';
-                validationEl.className = 'text-xs mt-1';
+                validationEl.className = 'mt-1 text-xs';
             }
 
             function renderPreviews() {
@@ -406,11 +325,12 @@
                     const reader = new FileReader();
                     reader.onload = function (e) {
                         const div = document.createElement('div');
-                        div.className = 'relative group';
+                        div.className = 'relative';
                         div.innerHTML = `
-                            <img src="${e.target.result}" class="w-full h-20 object-cover rounded-box border border-base-300" />
+                            <img src="${e.target.result}" class="h-20 w-full rounded-selector border border-base-300 object-cover" />
                             <button type="button" data-index="${index}"
-                                class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-error text-white rounded-full text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity"
+                                class="btn btn-error btn-circle btn-xs absolute -top-1.5 -right-1.5"
+                                aria-label="Remove"
                             >✕</button>
                         `;
                         div.querySelector('button').addEventListener('click', function () {

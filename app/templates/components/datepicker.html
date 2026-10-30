@@ -9,64 +9,59 @@
 {% set required = required | default("-") %}
 
 <div
-    class="form-control w-full"
+    class="w-full"
     x-data="gregorianDatePicker('{{ value | default('') }}', {{ min_year }}, {{ max_year }})"
 >
     <!-- Hidden input for FastAPI/HTMX form submission -->
     <input type="hidden" name="{{ input_name }}" x-model="gregorianDate" />
 
-    <!-- Label -->
     {% if input_label %}
-        <label class="floating-label">
-            <span class="label-text">{{ input_label }}</span>
+        <label class="input w-full">
+            <span class="label">{{ input_label }}</span>
             <input
                 type="text"
                 readonly
                 x-model="formattedDate"
                 placeholder="{{ placeholder }}"
-                class="input w-full font-sans cursor-pointer text-left validator"
+                class="w-full cursor-pointer text-left validator"
                 @click="openModal()"
                 {{ required }}
             />
-            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
         </label>
     {% endif %}
 
-    <!-- Visible Input -->
-
     <!-- Modal -->
     <dialog x-ref="modalRef" class="modal">
-        <div class="modal-box max-w-sm font-sans border border-base-300" @click.stop>
-            <h3 class="font-display font-normal text-2xl text-center mb-6">{{ modal_title }}</h3>
+        <div class="modal-box max-w-sm border border-base-300" @click.stop>
+            <h3 class="mb-6 text-center text-xl font-semibold tracking-tight">{{ modal_title }}</h3>
 
-            <div class="flex justify-center gap-3 mb-6" dir="ltr">
+            <div class="mb-6 flex justify-center gap-3" dir="ltr">
                 <div
                     x-ref="yearRef"
-                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200 border border-base-300"
+                    class="relative h-72 w-20 overflow-hidden rounded-box border border-base-300 bg-base-200"
                 ></div>
                 <div
                     x-ref="monthRef"
-                    class="relative w-24 h-72 overflow-hidden rounded-box bg-base-200 border border-base-300"
+                    class="relative h-72 w-24 overflow-hidden rounded-box border border-base-300 bg-base-200"
                 ></div>
                 <div
                     x-ref="dayRef"
-                    class="relative w-20 h-72 overflow-hidden rounded-box bg-base-200 border border-base-300"
+                    class="relative h-72 w-20 overflow-hidden rounded-box border border-base-300 bg-base-200"
                 ></div>
             </div>
 
             <div class="flex flex-col gap-2">
-                <button type="button" class="btn btn-primary border border-base-300" @click="confirmDate()">
+                <button type="button" class="btn btn-primary" @click="confirmDate()">
                     {{ confirm_text }}
                 </button>
-                <button type="button" class="btn btn-outline" @click="closeModal()">
+                <button type="button" class="btn btn-ghost" @click="closeModal()">
                     {{ cancel_text }}
                 </button>
             </div>
         </div>
 
-        <!-- Changed from <form method="dialog"> to <div> -->
         <div class="modal-backdrop" @click="closeModal()">
-            <button class="cursor-default">{{ _('Close') }}</button>
+            <button>{{ _('Close') }}</button>
         </div>
     </dialog>
 </div>

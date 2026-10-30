@@ -5,72 +5,86 @@
     hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
     hx-swap="none"
     data-page-title="{{ title }}"
-    class="bg-base-100 space-y-4"
+    class="mx-auto max-w-2xl"
 >
-    <div class="grid grid-cols-2 gap-4 items-baseline">
-        <label class="floating-label">
-            <span>{{ _('First name') }}</span>
-            <input
-                type="text"
-                name="first_name"
-                required
-                class="input w-full validator"
-                placeholder="{{ _('First name') }}"
-                value="{{ coach.first_name if coach else '' }}"
-            />
-            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
-        </label>
-        <label class="floating-label">
-            <span>{{ _('Last name') }}</span>
-            <input
-                type="text"
-                name="last_name"
-                required
-                class="input w-full validator"
-                placeholder="{{ _('Last name') }}"
-                value="{{ coach.last_name if coach else '' }}"
-            />
-            <div class="validator-hint hidden">{{ _('This field is required.') }}</div>
-        </label>
-    </div>
-    <div class="form-control">
-        <label class="input w-full validator">
-            <span class="label">{{ _('Email') }}</span>
-            <input
-                type="email"
-                name="email"
-                value="{{ coach.email if coach else '' }}"
-                {{ 'readonly' if coach else '' }}
-                placeholder="e.g. test@gyme.cloud"
-                required
-            />
-        </label>
-        <div class="validator-hint hidden">{{ _('Enter a valid email address.') }}</div>
-    </div>
-    {% if coach %}
-        {% include 'components/phone_field.html' with phone_value=coach.phone %}
-    {% else %}
-        {% include 'components/phone_field.html' %}
-    {% endif %}
+    <div class="card border border-base-300 bg-base-100">
+        <div class="card-body gap-4 p-5">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label class="input w-full">
+                    <span class="label">{{ _('First name') }}</span>
+                    <input
+                        type="text"
+                        name="first_name"
+                        required
+                        class="w-full validator"
+                        placeholder="{{ _('First name') }}"
+                        value="{{ coach.first_name if coach else '' }}"
+                        autocomplete="given-name"
+                    />
+                </label>
+                <label class="input w-full">
+                    <span class="label">{{ _('Last name') }}</span>
+                    <input
+                        type="text"
+                        name="last_name"
+                        required
+                        class="w-full validator"
+                        placeholder="{{ _('Last name') }}"
+                        value="{{ coach.last_name if coach else '' }}"
+                        autocomplete="family-name"
+                    />
+                </label>
+            </div>
 
-    <div class="flex flex-col gap-2 mt-6">
+            <label class="input w-full">
+                <span class="label">{{ _('Email') }}</span>
+                <input
+                    type="email"
+                    name="email"
+                    class="w-full validator"
+                    value="{{ coach.email if coach else '' }}"
+                    {{ 'readonly' if coach else '' }}
+                    placeholder="e.g. test@gyme.cloud"
+                    autocomplete="email"
+                    required
+                />
+            </label>
+
+            {% if coach %}
+                {% set phone_value = coach.phone %}
+            {% endif %}
+            {% include 'components/phone_field.html' %}
+        </div>
+    </div>
+
+    <div class="mt-6 flex flex-col gap-2">
         {% if coach %}
-        <button
-            type="button"
-            class="btn btn-error btn-soft w-full border border-base-300"
-            hx-get="/coaches/{{ coach.id }}/confirm-delete"
-            hx-target="#modal-container"
-            hx-swap="innerHTML"
-            hx-boost="false"
-        >
-            {{ _('Delete coach') }}
-        </button>
+            <button
+                type="button"
+                class="btn btn-ghost btn-error btn-block sm:hidden"
+                hx-get="/coaches/{{ coach.id }}/confirm-delete"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
+            >
+                {{ _('Delete coach') }}
+            </button>
         {% endif %}
-        <div class="flex justify-end gap-2">
-            <a href="/coaches" class="btn btn-ghost border border-base-300" hx-boost="false">
-                {{ _('Cancel') }}
-            </a>
-            <button type="submit" class="btn btn-primary flex-1 border border-base-300" hx-disabled-elt="this">
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            {% if coach %}
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-error sm:me-auto hidden sm:inline-flex"
+                    hx-get="/coaches/{{ coach.id }}/confirm-delete"
+                    hx-target="#modal-container"
+                    hx-swap="innerHTML"
+                    hx-boost="false"
+                >
+                    {{ _('Delete coach') }}
+                </button>
+            {% endif %}
+            <a href="/coaches" class="btn btn-ghost" hx-boost="false">{{ _('Cancel') }}</a>
+            <button type="submit" class="btn btn-primary transition-transform active:scale-[0.98]" hx-disabled-elt="this">
                 {{ _('Save changes') if coach else _('Add coach') }}
             </button>
         </div>

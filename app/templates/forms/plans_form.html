@@ -1,50 +1,36 @@
 {% extends "layouts/dashboard.html" %}
 {% block dashboard_content %}
-    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" class="bg-base-100 space-y-4" data-page-title="{{ title }}">
+    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" data-page-title="{{ title }}" class="mx-auto max-w-2xl">
         <!-- Hidden field to submit is_template status -->
         <input type="hidden" name="is_template" value="{{ 'true' if is_template else 'false' }}" />
 
-        <div class="grid grid-cols-1 gap-4">
-            <!-- Template name (visible only when is_template = true) -->
-            {% if is_template %}
-                <div class="form-control">
+        <div class="card border border-base-300 bg-base-100">
+            <div class="card-body gap-4 p-5">
+                {% if is_template %}
                     <label class="input w-full">
                         <span class="label">{{ _('Template name') }}</span>
                         <input
                             type="text"
                             name="template_name"
+                            class="w-full"
                             placeholder="{{ _('e.g. Keto plan') }}"
                             value="{{ plan.template_name or '' }}"
                         />
                     </label>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <div class="form-control">
                 <label class="select w-full">
                     <span class="label">{{ _('Plan type') }}</span>
-                    <select name="type">
-                        <option
-                            value="training"
-                            {{ 'selected' if plan.type == 'training' else '' }}
-                        >
-                            {{ _('Training') }}
-                        </option>
-                        <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>
-                            {{ _('Diet') }}
-                        </option>
-                        <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>
-                            {{ _('Steroid') }}
-                        </option>
+                    <select name="type" class="w-full">
+                        <option value="training" {{ 'selected' if plan.type == 'training' else '' }}>{{ _('Training') }}</option>
+                        <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>{{ _('Diet') }}</option>
+                        <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>{{ _('Steroid') }}</option>
                     </select>
                 </label>
-            </div>
 
-            <!-- Coach selector -->
-            <div class="form-control">
                 <label class="select w-full">
                     <span class="label">{{ _('Coach') }}</span>
-                    <select name="coach" class="select w-full">
+                    <select name="coach" class="w-full">
                         {% for coach in coaches %}
                             <option
                                 value="{{ coach.id }}"
@@ -55,14 +41,11 @@
                         {% endfor %}
                     </select>
                 </label>
-            </div>
 
-            <!-- Trainee selector – hidden for templates -->
-            {% if not is_template %}
-                <div class="form-control">
+                {% if not is_template %}
                     <label class="select w-full">
                         <span class="label">{{ _('Trainee') }}</span>
-                        <select name="trainee" class="select w-full">
+                        <select name="trainee" class="w-full">
                             {% for trainee in trainees %}
                                 <option
                                     value="{{ trainee.id }}"
@@ -73,81 +56,61 @@
                             {% endfor %}
                         </select>
                     </label>
-                </div>
-            {% endif %}
-            {% if not is_template %}
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
+                {% endif %}
+            </div>
+        </div>
+
+        <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Schedule') }}</h2>
+        <div class="card border border-base-300 bg-base-100">
+            <div class="card-body gap-4 p-5">
+                {% if not is_template %}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {% with name="start_date", label=_("Start date"), placeholder=_("Start date"), value=plan.start_date %}
                             {% include 'components/datepicker.html' %}
                         {% endwith %}
-                    </div>
-                    <div>
-                        {% with name="end_date", label=_("End date"), placeholder= _("End date"), value=plan.end_date %}
+                        {% with name="end_date", label=_("End date"), placeholder=_("End date"), value=plan.end_date %}
                             {% include 'components/datepicker.html' %}
                         {% endwith %}
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="form-control">
-                    <label class="input">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <label class="input w-full">
                         <span class="label">{{ _('Days per week') }}</span>
                         <input
                             type="number"
                             name="days_per_week"
+                            class="w-full tabular-nums"
+                            min="1"
+                            max="7"
                             value="{{ plan.days_per_week or '3' }}"
                         />
                     </label>
-                </div>
-                <div class="form-control">
-                    <label class="input select">
+                    <label class="select w-full">
                         <span class="label">{{ _('Status') }}</span>
-                        <select name="status">
-                            <option
-                                value="active"
-                                {{ 'selected' if plan.status == 'active' else '' }}
-                            >
-                                {{ _('Active') }}
-                            </option>
-                            <option
-                                value="inactive"
-                                {{ 'selected' if plan.status == 'inactive' else '' }}
-                            >
-                                {{ _('Inactive') }}
-                            </option>
+                        <select name="status" class="w-full">
+                            <option value="active" {{ 'selected' if plan.status == 'active' else '' }}>{{ _('Active') }}</option>
+                            <option value="inactive" {{ 'selected' if plan.status == 'inactive' else '' }}>{{ _('Inactive') }}</option>
                         </select>
                     </label>
                 </div>
+
+                <label class="floating-label">
+                    <span>{{ _('Notes') }}</span>
+                    <textarea name="notes" class="textarea h-28 w-full" placeholder="{{ _('Notes') }}">{{ plan.notes.strip() if plan.notes else '' }}</textarea>
+                </label>
             </div>
         </div>
 
-        <!-- Notes -->
-        <div class="form-control">
-            {% if plan.notes and plan.notes.strip() %}
-                <textarea name="notes" class="textarea h-12 w-full">
-{{ plan.notes.strip() }}</textarea
-                >
-            {% else %}
-                <textarea
-                    name="notes"
-                    class="textarea h-12 w-full"
-                    placeholder="{{ _('Notes') }}"
-                ></textarea>
-            {% endif %}
-        </div>
-
-        <!-- Actions -->
-        <div class="flex flex-col justify-end gap-2 mt-6">
+        <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <a
                 href="{{ '/plans?is_template=true' if is_template else '/plans' }}"
-                class="btn btn-ghost border border-base-300"
+                class="btn btn-ghost"
                 hx-boost="false"
             >
                 {{ _('Cancel') }}
             </a>
-            <button type="submit" class="w-full btn btn-primary border border-base-300" hx-disabled-elt="this">
+            <button type="submit" class="btn btn-primary transition-transform active:scale-[0.98]" hx-disabled-elt="this">
                 {% if plan %}
                     {{ _('Update plan') }}
                 {% elif is_template %}
@@ -156,18 +119,19 @@
                     {{ _('Create plan') }}
                 {% endif %}
             </button>
-            {% if plan %}
-                <button
-                    type="button"
-                    class="btn btn-error btn-soft w-full border border-base-300"
-                    hx-get="/plans/{{ plan.id }}/confirm-delete"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('Delete') }}
-                </button>
-            {% endif %}
         </div>
+
+        {% if plan %}
+            <button
+                type="button"
+                class="btn btn-ghost btn-error btn-block mt-3"
+                hx-get="/plans/{{ plan.id }}/confirm-delete"
+                hx-target="#modal-container"
+                hx-swap="innerHTML"
+                hx-boost="false"
+            >
+                {{ _('Delete') }}
+            </button>
+        {% endif %}
     </form>
 {% endblock %}
