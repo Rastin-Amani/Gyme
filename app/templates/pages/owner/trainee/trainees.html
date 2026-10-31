@@ -77,7 +77,7 @@
                     <li class="list-row items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/60">
                         {% set first = (trainee.expand['user'].first_name[0] if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name else '?') %}
                         <div class="indicator shrink-0">
-                            <span class="indicator-item badge badge-xs size-2.5 border-2 border-base-100 {% if trainee.status|default('active') == 'active' %}bg-success{% else %}bg-base-content/30{% endif %}"></span>
+                            <span class="indicator-item size-2.5 rounded-full border-2 border-base-100 {% if trainee.status|default('active') == 'active' %}bg-success{% else %}bg-base-content/30{% endif %}"></span>
                             <div class="avatar avatar-placeholder">
                                 <div class="w-10 rounded-full bg-base-200 text-sm font-semibold text-base-content/70">
                                     <span>{{ first }}</span>

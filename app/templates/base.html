@@ -23,7 +23,7 @@
             {% set pb_base = request.state.pb.base_url.rstrip('/') %}
             <link rel="icon" href="{{ pb_base }}/api/files/{{ tenant.collection_id }}/{{ tenant.id }}/{{ tenant.logo }}?thumb=32x32f" />
         {% else %}
-            <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=http://www.w3.org/2000/svg width=32 height=32%3E%3Crect width=32 height=32 rx=8 fill=%231c4a3c/%3E%3Ctext x=16 y=22 font-family=sans-serif font-size=18 font-weight=bold fill=%23fff text-anchor=middle%3EG%3C/text%3E%3C/svg%3E" />
+            <link rel="icon" href="/static/icons/favicon.ico" />
         {% endif %}
 
         <title>{{ title or _('Gyme') }}</title>
