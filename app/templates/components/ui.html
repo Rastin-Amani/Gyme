@@ -1,0 +1,43 @@
+{# Shared page chrome. Every page uses these three macros so titles, actions and
+   section headings sit on the same line, at the same size, with the same
+   spacing across the whole app. #}
+
+{% macro page_header(title, subtitle="", badge="", badge_tone="secondary", action_href="", action_label="", action_icon="") -%}
+    <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+                <h1 class="truncate text-2xl font-semibold tracking-tight sm:text-3xl">{{ title }}</h1>
+                {% if badge %}<span class="badge badge-soft badge-{{ badge_tone }} badge-sm">{{ badge }}</span>{% endif %}
+            </div>
+            {% if subtitle %}<p class="mt-1 text-sm text-base-content/60">{{ subtitle }}</p>{% endif %}
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+            {{ caller() if caller else "" }}
+            {% if action_href %}
+                <a href="{{ action_href }}" class="btn btn-primary">
+                    {{ action_label }}
+                    {% if action_icon %}{{ icon(action_icon, "size-4") }}{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </header>
+{%- endmacro %}
+
+{% macro detail_header(title, subtitle="", initial="", action_href="", action_label="") -%}
+    <header class="mb-6 flex items-center gap-4">
+        <div class="avatar avatar-placeholder shrink-0">
+            <div class="w-14 rounded-full bg-base-200 text-lg font-semibold text-base-content/70">
+                <span>{{ initial or "?" }}</span>
+            </div>
+        </div>
+        <div class="min-w-0 flex-1">
+            <h1 class="truncate text-2xl font-semibold tracking-tight">{{ title }}</h1>
+            {% if subtitle %}<p class="truncate text-sm text-base-content/60">{{ subtitle }}</p>{% endif %}
+        </div>
+        {% if action_href %}<a href="{{ action_href }}" class="btn shrink-0">{{ action_label }}</a>{% endif %}
+    </header>
+{%- endmacro %}
+
+{% macro section_title(text) -%}
+    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ text }}</h2>
+{%- endmacro %}
