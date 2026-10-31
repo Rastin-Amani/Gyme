@@ -76,8 +76,7 @@
             </ul>
 
             <div class="mt-auto flex items-center justify-between gap-2 border-t border-base-300/80 pt-3">
-                {% set up = true %}
-                {% include "components/locale_switcher.html" %}
+                {% with up = true %}{% include "components/locale_switcher.html" %}{% endwith %}
                 <span class="truncate pe-1 text-xs font-medium text-base-content/50">
                     {{ user.first_name if user else '' }}
                 </span>
@@ -102,7 +101,7 @@
                 </div>
 
                 <div class="flex items-center gap-1">
-                    {% include "components/locale_switcher.html" %}
+                    {% with up = false %}{% include "components/locale_switcher.html" %}{% endwith %}
                     <span class="hidden max-w-40 truncate rounded-selector bg-base-200 px-2.5 py-1 text-xs font-semibold text-base-content/70 sm:inline-block">
                         {{ tenant.name if tenant else _('Gym') }}
                     </span>
