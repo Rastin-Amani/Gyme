@@ -1,12 +1,11 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header with context %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block dashboard_content %}
-    <div class="mx-auto max-w-2xl space-y-6 pb-24" data-page-title="{{ title }}">
-        <p class="text-sm text-base-content/60">
-            {{ _('Please enter your body measurements. Calculations will be done automatically.') }}
-        </p>
+    <div data-page-title="{{ title }}">
+        {{ page_header(title, _('Please enter your body measurements. Calculations will be done automatically.')) }}
         <form
             hx-post="/trainees/{{ trainee.id }}/progress-log"
             enctype="multipart/form-data"
@@ -79,25 +78,25 @@
                 <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
                     <span class="text-xs text-base-content/55">{{ _('Lean body mass (LBM)') }}</span>
                     <div id="lbm-display" class="mt-2 text-2xl font-semibold tabular-nums text-info">0</div>
-                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">KG</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">{{ _('KG') }}</div>
                 </div>
 
                 <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
                     <span class="text-xs text-base-content/55">{{ _('Fat mass') }}</span>
                     <div id="fat-mass-display" class="mt-2 text-2xl font-semibold tabular-nums text-warning">0</div>
-                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">KG</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">{{ _('KG') }}</div>
                 </div>
 
                 <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
                     <span class="text-xs text-base-content/55">{{ _('Metabolism (BMR)') }}</span>
                     <div id="bmr-display" class="mt-2 text-2xl font-semibold tabular-nums">0</div>
-                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">Kcal / Day</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">{{ _('Kcal / Day') }}</div>
                 </div>
 
                 <div class="flex flex-col items-center justify-center rounded-box border border-base-300 bg-base-100 p-4 text-center">
                     <span class="text-xs text-base-content/55">{{ _('Maintenance calories (TDEE)') }}</span>
                     <div id="tdee-display" class="mt-2 text-2xl font-semibold tabular-nums text-success">0</div>
-                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">Kcal / Day</div>
+                    <div class="mt-1 text-[0.65rem] tracking-wider text-base-content/45 uppercase">{{ _('Kcal / Day') }}</div>
                 </div>
             </div>
 
@@ -330,7 +329,7 @@
                             <img src="${e.target.result}" class="h-20 w-full rounded-selector border border-base-300 object-cover" />
                             <button type="button" data-index="${index}"
                                 class="btn btn-error btn-circle btn-xs absolute -top-1.5 -right-1.5"
-                                aria-label="Remove"
+                                aria-label="{{ _('Remove') }}"
                             >✕</button>
                         `;
                         div.querySelector('button').addEventListener('click', function () {

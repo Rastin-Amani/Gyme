@@ -1,6 +1,9 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header, section_title with context %}
 {% block dashboard_content %}
-    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}" data-page-title="{{ title }}" class="mx-auto max-w-2xl">
+    <div data-page-title="{{ title }}">
+    {{ page_header(title) }}
+    <form hx-post="{{ '/plans/' + plan.id if plan else '/plans' }}">
         <!-- Hidden field to submit is_template status -->
         <input type="hidden" name="is_template" value="{{ 'true' if is_template else 'false' }}" />
 
@@ -61,7 +64,7 @@
             </div>
         </div>
 
-        <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Schedule') }}</h2>
+        {{ section_title(_('Schedule')) }}
         <div class="card border border-base-300 bg-base-100">
             <div class="card-body gap-4 p-5">
                 {% if not is_template %}
@@ -135,4 +138,5 @@
             </button>
         {% endif %}
     </form>
+    </div>
 {% endblock %}

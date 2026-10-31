@@ -1,15 +1,13 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header with context %}
 {% block dashboard_content %}
-    <div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
-        <header class="mb-6 flex items-end justify-between gap-3">
-            <div class="min-w-0">
-                <h1 class="truncate text-2xl font-semibold tracking-tight">
-                    {{ user.first_name ~ ' ' ~ user.last_name }}
-                </h1>
-                <p class="truncate text-sm text-base-content/60">{{ user.email }}</p>
-            </div>
-            <a href="/change-password" class="btn btn-sm shrink-0">{{ _('Change password') }}</a>
-        </header>
+    <div data-page-title="{{ title }}">
+        {{ page_header(
+            user.first_name ~ ' ' ~ user.last_name,
+            user.email,
+            action_href='/change-password',
+            action_label=_('Change password'),
+        ) }}
 
         <div class="card border border-base-300 bg-base-100">
             <ul class="list">
@@ -26,12 +24,6 @@
                     <span class="ms-auto text-sm font-medium">{{ tenant.updated | jalali_date }}</span>
                 </li>
             </ul>
-        </div>
-
-        <div class="hidden" aria-hidden="true">
-            <div id="items-list-container">
-                <h2>{{ _('App information and settings') }}</h2>
-            </div>
         </div>
     </div>
 {% endblock %}

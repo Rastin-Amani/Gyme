@@ -1,11 +1,12 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import page_header with context %}
 
 {% block dashboard_content %}
+<div data-page-title="{{ title }}">
+    {{ page_header(title) }}
 <form
     hx-post="{{ '/coaches/' + coach.id if coach else '/coaches/new' }}"
     hx-swap="none"
-    data-page-title="{{ title }}"
-    class="mx-auto max-w-2xl"
 >
     <div class="card border border-base-300 bg-base-100">
         <div class="card-body gap-4 p-5">
@@ -90,4 +91,5 @@
         </div>
     </div>
 </form>
+</div>
 {% endblock %}

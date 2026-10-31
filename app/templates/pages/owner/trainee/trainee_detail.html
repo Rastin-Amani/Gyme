@@ -1,24 +1,14 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import detail_header, section_title with context %}
 {% block dashboard_content %}
-<div class="mx-auto max-w-3xl" data-page-title="{{ title }}">
-    <header class="mb-6 flex items-center gap-4">
-        <div class="avatar avatar-placeholder shrink-0">
-            <div class="w-14 rounded-full bg-base-200 text-lg font-semibold text-base-content/70">
-                <span>{% if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name %}{{ trainee.expand['user'].first_name[0] }}{% else %}?{% endif %}</span>
-            </div>
-        </div>
-        <div class="min-w-0 flex-1">
-            <h1 class="truncate text-2xl font-semibold tracking-tight">
-                {% if trainee.expand and 'user' in trainee.expand %}
-                    {{ trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '') }}
-                {% else %}-{% endif %}
-            </h1>
-            {% if trainee.expand and 'user' in trainee.expand %}
-                <p class="truncate text-sm text-base-content/60">{{ trainee.expand['user'].email }}</p>
-            {% endif %}
-        </div>
-        <a href="/trainees/{{ trainee.id }}/edit" class="btn btn-sm shrink-0">{{ _('Edit') }}</a>
-    </header>
+<div data-page-title="{{ title }}">
+    {{ detail_header(
+        (trainee.expand['user'].first_name ~ ' ' ~ (trainee.expand['user'].last_name or '')) if trainee.expand and 'user' in trainee.expand else '-',
+        trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '',
+        initial=(trainee.expand['user'].first_name[0] if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name else '?'),
+        action_href='/trainees/' ~ trainee.id ~ '/edit',
+        action_label=_('Edit'),
+    ) }}
 
     {% set gender_map = {'male': _('Male'), 'female': _('Female')} %}
     <div class="card border border-base-300 bg-base-100">
@@ -57,7 +47,7 @@
     {% endif %}
 
     {% if trainee.training_history or trainee.steroid_history or trainee.supplement_history or trainee.limitations %}
-        <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Additional information') }}</h2>
+        {{ section_title(_('Additional information')) }}
         <div class="card border border-base-300 bg-base-100">
             <ul class="list">
                 {% if trainee.training_history %}
@@ -88,7 +78,7 @@
         </div>
     {% endif %}
 
-    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('History') }}</h2>
+    {{ section_title(_('History')) }}
 
     {% if progress_logs %}
         <div
@@ -106,7 +96,7 @@
                         {% if log.progress_photos %}
                             <span class="badge badge-soft badge-secondary badge-sm">
                                 {{ log.progress_photos|length }}
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" /></svg>
+                                {{ icon("camera", "size-3.5") }}
                             </span>
                         {% endif %}
                     </summary>
@@ -121,7 +111,7 @@
                                 <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.weight or '-' }}</span>
                             </div>
                             <div class="rounded-box bg-base-200/60 p-3 text-center">
-                                <span class="block text-xs text-base-content/55">BMI</span>
+                                <span class="block text-xs text-base-content/55">{{ _('BMI') }}</span>
                                 <span class="mt-1 block text-lg font-semibold tabular-nums">{{ log.bmi|round(1) if log.bmi else '-' }}</span>
                             </div>
                             <div class="rounded-box bg-base-200/60 p-3 text-center">
@@ -179,9 +169,7 @@
                                     hx-trigger="click"
                                     hx-select="unset"
                                     hx-swap="innerHTML">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                                </svg>
+                                {{ icon("pencil", "size-4") }}
                                 {{ _('Edit') }}
                             </button>
                         </div>
@@ -198,13 +186,11 @@
     {% endif %}
 
     <a href="/progress-log/new/{{ trainee.id }}" class="btn btn-primary btn-block mt-4">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-        </svg>
+        {{ icon("plus", "size-4") }}
         {{ _('Record assessment') }}
     </a>
 
-    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Plans') }}</h2>
+    {{ section_title(_('Plans')) }}
     {% set plan_list = plans.items if plans.items is defined else plans %}
     {% if plan_list %}
         <div class="flex flex-col gap-3">
@@ -215,11 +201,11 @@
                             <div class="flex items-center gap-2">
                                 <span class="grid size-8 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
                                     {% if plan.type == 'training' %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5" /></svg>
+                                        {{ icon("dumbbell", "size-4") }}
                                     {% elif plan.type == 'diet' %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6 7.5 5.5 6.5 5 4.5 4 3.5 4 1.5 4.5 1.5 6 3 9 4 10.5 5 13.5 5 15a6 6 0 0 0 7 6Z" /></svg>
+                                        {{ icon("apple", "size-4") }}
                                     {% else %}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 20.25-6-6a2.25 2.25 0 0 1 0-3.182l7.5-7.5a2.25 2.25 0 0 1 1.591-.659h3.909a2.25 2.25 0 0 1 2.25 2.25v3.909c0 .597-.237 1.17-.659 1.591l-7.5 7.5a2.25 2.25 0 0 1-3.09.09Z" /></svg>
+                                        {{ icon("tag", "size-4") }}
                                     {% endif %}
                                 </span>
                                 <h3 class="truncate text-sm font-semibold">
@@ -237,7 +223,11 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="py-4 text-center text-sm text-base-content/60">{{ _('No plans recorded yet!') }}</p>
+        <div class="card border border-dashed border-base-300 bg-base-100">
+            <div class="card-body items-center py-12 text-center">
+                <p class="text-sm text-base-content/60">{{ _('No plans recorded yet!') }}</p>
+            </div>
+        </div>
     {% endif %}
 </div>
 

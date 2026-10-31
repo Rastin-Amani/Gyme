@@ -1,42 +1,46 @@
 {% if plans and plans|length > 0 %}
-    {% for t in plans %}
-        <article class="card border border-base-300 bg-base-100 transition-colors hover:border-base-content/20">
-            <div class="card-body gap-3 p-5">
-                <div class="flex items-start justify-between gap-3">
-                    <div class="min-w-0">
-                        <h3 class="truncate text-base font-semibold tracking-tight">
-                            {{ t.template_name or (_('Template') ~ ' ' ~ t.type) }}
-                        </h3>
-                        <p class="mt-1 text-xs text-base-content/55">
-                            {% if t.type == 'diet' %}
-                                {{ _('Diet') }}
-                            {% elif t.type == 'training' %}
-                                {{ _('Training') }}
-                            {% else %}
-                                {{ _('Steroid') }}
-                            {% endif %}
-                            · {{ t.days_per_week or '—' }} {{ _('days per week') }}
-                        </p>
-                    </div>
-                    <a href="/plans/{{ t.id }}" class="btn btn-ghost btn-sm shrink-0">{{ _('View') }}</a>
+    <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
+        {% for t in plans %}
+            <li class="list-row items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/60">
+                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
+                    {% if t.type == 'diet' %}
+                        {{ icon("apple", "size-5") }}
+                    {% elif t.type == 'training' %}
+                        {{ icon("dumbbell", "size-5") }}
+                    {% else %}
+                        {{ icon("tag", "size-5") }}
+                    {% endif %}
+                </span>
+                <div class="min-w-0">
+                    <span class="block truncate text-sm font-semibold">{{ t.template_name or (_('Template') ~ ' ' ~ t.type) }}</span>
+                    <span class="block truncate text-xs text-base-content/55">
+                        {% if t.type == 'diet' %}
+                            {{ _('Diet') }}
+                        {% elif t.type == 'training' %}
+                            {{ _('Training') }}
+                        {% else %}
+                            {{ _('Steroid') }}
+                        {% endif %}
+                        · {{ t.days_per_week or '-' }} {{ _('days/week') }}
+                    </span>
                 </div>
-
-                {% if t.notes %}
-                    <p class="line-clamp-2 text-xs text-base-content/55">{{ t.notes }}</p>
-                {% endif %}
-
-                <button
-                    class="btn btn-soft btn-primary btn-block btn-sm"
-                    hx-get="/templates/{{ t.id }}/apply"
-                    hx-target="#modal-container"
-                    hx-swap="innerHTML"
-                    hx-boost="false"
-                >
-                    {{ _('Apply to trainee') }}
-                </button>
-            </div>
-        </article>
-    {% endfor %}
+                <div class="ms-auto flex shrink-0 items-center gap-1">
+                    <button
+                        class="btn btn-soft btn-primary btn-sm"
+                        hx-get="/templates/{{ t.id }}/apply"
+                        hx-target="#modal-container"
+                        hx-swap="innerHTML"
+                        hx-boost="false"
+                    >
+                        {{ _('Apply to trainee') }}
+                    </button>
+                    <a href="/plans/{{ t.id }}" class="btn btn-ghost btn-square btn-sm" aria-label="{{ _('View') }}">
+                        {{ icon("chevron-right", "size-4 text-base-content/40") }}
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
 {% else %}
     <div class="card border border-dashed border-base-300 bg-base-100">
         <div class="card-body items-center py-12 text-center">

@@ -1,13 +1,15 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import page_header with context %}
 {% block dashboard_content %}
 <div id="coaches-content" data-settle data-page-title="{{ title }}">
-    <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-            <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{{ _('Coaches') }}</h1>
-            <p class="mt-1 text-sm text-base-content/60">{{ _('Manage registered coaches') }}</p>
-        </div>
-        <a href="/coaches/new" class="btn btn-primary shrink-0">{{ _('New coach') }}</a>
-    </header>
+    {{ page_header(
+        _('Coaches'),
+        _('Manage registered coaches'),
+        badge=(coaches|length) if coaches else '',
+        action_href='/coaches/new',
+        action_label=_('New coach'),
+        action_icon='plus',
+    ) }}
 
     <div id="coaches-table-container">
         {% if coaches and coaches|length > 0 %}
@@ -24,9 +26,7 @@
                             <span class="block truncate text-xs text-base-content/55">{{ coach.email or '' }}</span>
                         </div>
                         <a href="/coaches/{{ coach.id }}" class="btn btn-ghost btn-square btn-sm ms-auto" aria-label="{{ _('View coach') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 text-base-content/40" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
+                            {{ icon("chevron-right", "size-4 text-base-content/40") }}
                         </a>
                     </li>
                 {% endfor %}

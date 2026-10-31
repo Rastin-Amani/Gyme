@@ -1,13 +1,9 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header with context %}
 
 {% block dashboard_content %}
     <div class="pb-4" data-page-title="{{ title }}">
-        <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
-            <div>
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{{ _('Overall statistics') }}</h1>
-                <p class="mt-1 text-sm text-base-content/60">{{ _('Live count') }}</p>
-            </div>
-
+        {% call page_header(title) %}
             <select
                 name="timeframe"
                 class="select w-full sm:w-56"
@@ -28,7 +24,7 @@
                     {{ _('This week') }}
                 </option>
             </select>
-        </header>
+        {% endcall %}
 
         {% include "components/dashboard_content.html" %}
     </div>

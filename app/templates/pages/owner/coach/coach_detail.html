@@ -1,18 +1,14 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import detail_header with context %}
 {% block dashboard_content %}
-<div class="mx-auto max-w-2xl" data-page-title="{{ title }}">
-    <header class="mb-6 flex items-center gap-4">
-        <div class="avatar avatar-placeholder shrink-0">
-            <div class="w-14 rounded-full bg-base-200 text-lg font-semibold text-base-content/70">
-                <span>{{ coach.first_name[0] if coach.first_name else '?' }}</span>
-            </div>
-        </div>
-        <div class="min-w-0 flex-1">
-            <h1 class="truncate text-2xl font-semibold tracking-tight">{{ coach.first_name ~ ' ' ~ (coach.last_name or '') }}</h1>
-            {% if coach.email %}<p class="truncate text-sm text-base-content/60">{{ coach.email }}</p>{% endif %}
-        </div>
-        <a href="/coaches/{{ coach.id }}/edit" class="btn btn-sm">{{ _('Edit') }}</a>
-    </header>
+<div data-page-title="{{ title }}">
+    {{ detail_header(
+        coach.first_name ~ ' ' ~ (coach.last_name or ''),
+        coach.email or '',
+        initial=coach.first_name[0] if coach.first_name else '?',
+        action_href='/coaches/' ~ coach.id ~ '/edit',
+        action_label=_('Edit'),
+    ) }}
 
     <div class="card border border-base-300 bg-base-100">
         <ul class="list">

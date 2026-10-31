@@ -1,18 +1,15 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import page_header with context %}
 {% block dashboard_content %}
 <div id="trainees-content" data-settle data-page-title="{{ title }}">
-    <header class="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-            <div class="flex flex-wrap items-center gap-2">
-                <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">{% if search_query %}«{{ search_query }}»{% else %}{{ _('Trainees') }}{% endif %}</h1>
-                {% if trainees %}<span class="badge badge-soft badge-secondary text-xs tabular-nums">{{ trainees|length }}</span>{% endif %}
-            </div>
-            <p class="mt-1 text-sm text-base-content/60">{{ _('Manage registered trainees') }}</p>
-        </div>
-        <a href="/trainees/new" class="btn btn-primary shrink-0">{{ _('New trainee') }}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-        </a>
-    </header>
+    {{ page_header(
+        ('«' ~ search_query ~ '»') if search_query else _('Trainees'),
+        _('Manage registered trainees'),
+        badge=(trainees|length) if trainees else '',
+        action_href='/trainees/new',
+        action_label=_('New trainee'),
+        action_icon='plus',
+    ) }}
 
     <details id="trainees-filter-panel" hx-preserve="true" class="collapse collapse-arrow mb-6 border border-base-300 bg-base-100">
         <summary class="collapse-title flex min-h-12 items-center text-sm font-semibold">{{ _('Search and filter') }}</summary>
@@ -76,13 +73,13 @@
                 {% for trainee in trainees %}
                     <li class="list-row items-center gap-3 px-4 py-3 transition-colors hover:bg-base-200/60">
                         {% set first = (trainee.expand['user'].first_name[0] if trainee.expand and 'user' in trainee.expand and trainee.expand['user'].first_name else '?') %}
-                        <div class="indicator shrink-0">
-                            <span class="indicator-item size-2.5 rounded-full border-2 border-base-100 {% if trainee.status|default('active') == 'active' %}bg-success{% else %}bg-base-content/30{% endif %}"></span>
+                        <div class="relative shrink-0">
                             <div class="avatar avatar-placeholder">
                                 <div class="w-10 rounded-full bg-base-200 text-sm font-semibold text-base-content/70">
                                     <span>{{ first }}</span>
                                 </div>
                             </div>
+                            <span class="absolute end-0 bottom-0 size-2.5 rounded-full border-2 border-base-100 {% if trainee.status|default('active') == 'active' %}bg-success{% else %}bg-base-content/30{% endif %}"></span>
                         </div>
                         <div class="min-w-0">
                             <span class="block truncate text-sm font-semibold">
@@ -93,9 +90,7 @@
                             {% if trainee.expand and 'user' in trainee.expand %}<span class="block truncate text-xs text-base-content/55">{{ trainee.expand['user'].email or '' }}</span>{% endif %}
                         </div>
                         <a href="/trainees/{{ trainee.id }}" class="btn btn-ghost btn-square btn-sm ms-auto" aria-label="{{ _('View trainee') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 text-base-content/40" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                            </svg>
+                            {{ icon("chevron-right", "size-4 text-base-content/40") }}
                         </a>
                     </li>
                 {% endfor %}
@@ -117,10 +112,10 @@
         <nav class="join mt-5 flex justify-center" aria-label="{{ _('Pagination') }}">
             {% set page_qs = '&query=' ~ (search_query|urlencode if search_query else '') ~ '&gender=' ~ (filter_params.gender|urlencode if filter_params.gender else '') ~ '&status=' ~ (filter_params.status|urlencode if filter_params.status else '') ~ '&min_birthdate=' ~ (filter_params.min_birthdate|urlencode if filter_params.min_birthdate else '') ~ '&max_birthdate=' ~ (filter_params.max_birthdate|urlencode if filter_params.max_birthdate else '') %}
             <a class="btn btn-sm join-item {% if page <= 1 %}btn-disabled pointer-events-none{% endif %}"
-               {% if page > 1 %}href="/trainees?page={{ page - 1 }}{{ page_qs }}" hx-get="/trainees?page={{ page - 1 }}{{ page_qs }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Previous') }}">«</a>
-            <button class="btn btn-sm join-item btn-disabled pointer-events-none tabular-nums" aria-disabled="true">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</button>
+               {% if page > 1 %}href="/trainees?page={{ page - 1 }}{{ page_qs }}" hx-get="/trainees?page={{ page - 1 }}{{ page_qs }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Previous') }}">{{ icon("chevron-left", "size-4") }}</a>
+            <span class="join-item grid place-items-center px-3 text-xs font-medium tabular-nums text-base-content/60">{{ _('Page') }} {{ page }} {{ _('of') }} {{ total_pages }}</span>
             <a class="btn btn-sm join-item {% if page >= total_pages %}btn-disabled pointer-events-none{% endif %}"
-               {% if page < total_pages %}href="/trainees?page={{ page + 1 }}{{ page_qs }}" hx-get="/trainees?page={{ page + 1 }}{{ page_qs }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Next') }}">»</a>
+               {% if page < total_pages %}href="/trainees?page={{ page + 1 }}{{ page_qs }}" hx-get="/trainees?page={{ page + 1 }}{{ page_qs }}" hx-target="#trainees-content" hx-select="#trainees-content" hx-swap="outerHTML" hx-push-url="true"{% endif %} aria-label="{{ _('Next') }}">{{ icon("chevron-right", "size-4") }}</a>
         </nav>
         {% endif %}
     </div>

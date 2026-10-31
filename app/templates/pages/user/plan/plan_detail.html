@@ -1,59 +1,42 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header with context %}
 
 {% block title %}{{ title }}{% endblock %}
 
 {% block dashboard_content %}
-    <div class="mx-auto max-w-2xl pb-24" data-page-title="{{ title }}">
-        <header class="mb-6">
-            <div class="flex items-start justify-between gap-3">
-                <div class="min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1 class="text-2xl font-semibold tracking-tight">
-                            {% if plan.type == 'training' %}
-                                {{ _('Training plan') }}
-                            {% elif plan.type == 'diet' %}
-                                {{ _('Diet plan') }}
-                            {% elif plan.type == 'steroid' %}
-                                {{ _('Steroid plan') }}
-                            {% else %}
-                                {{ _('Plan details') }}
-                            {% endif %}
-                        </h1>
-                        {% if plan.status == 'active' %}
-                            <span class="badge badge-soft badge-success badge-sm">{{ _('Active') }}</span>
-                        {% elif plan.status == 'draft' %}
-                            <span class="badge badge-ghost badge-sm">{{ _('Draft') }}</span>
-                        {% elif plan.status == 'inactive' %}
-                            <span class="badge badge-soft badge-error badge-sm">{{ _('Inactive') }}</span>
-                        {% else %}
-                            <span class="badge badge-ghost badge-sm">{{ plan.status }}</span>
-                        {% endif %}
-                    </div>
-                    <p class="mt-1 flex flex-wrap gap-x-3 text-xs text-base-content/55">
-                        {% if plan.start_date %}<span>{{ _('From') }} {{ plan.start_date | jalali_date }}</span>{% endif %}
-                        {% if plan.end_date %}<span>{{ _('To') }} {{ plan.end_date | jalali_date }}</span>{% endif %}
-                    </p>
-                </div>
-                <span class="grid size-11 shrink-0 place-items-center rounded-full bg-base-200 text-base-content/60" aria-hidden="true">
-                    {% if plan.type == 'training' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5" /></svg>
-                    {% elif plan.type == 'diet' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6 7.5 5.5 6.5 5 4.5 4 3.5 4 1.5 4.5 1.5 6 3 9 4 10.5 5 13.5 5 15a6 6 0 0 0 7 6Z" /></svg>
-                    {% elif plan.type == 'steroid' %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="m10.5 20.25-6-6a2.25 2.25 0 0 1 0-3.182l7.5-7.5a2.25 2.25 0 0 1 1.591-.659h3.909a2.25 2.25 0 0 1 2.25 2.25v3.909c0 .597-.237 1.17-.659 1.591l-7.5 7.5a2.25 2.25 0 0 1-3.09.09Z" /></svg>
-                    {% else %}
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h6M5.25 3.75h13.5A2.25 2.25 0 0 1 21 6v12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18V6a2.25 2.25 0 0 1 2.25-2.25Z" /></svg>
-                    {% endif %}
-                </span>
-            </div>
-        </header>
+    <div data-page-title="{{ title }}">
+        {% if plan.type == 'training' %}
+            {% set plan_title = _('Training plan') %}
+        {% elif plan.type == 'diet' %}
+            {% set plan_title = _('Diet plan') %}
+        {% elif plan.type == 'steroid' %}
+            {% set plan_title = _('Steroid plan') %}
+        {% else %}
+            {% set plan_title = _('Plan details') %}
+        {% endif %}
+        {% if plan.status == 'active' %}
+            {% set plan_status = _('Active') %}
+        {% elif plan.status == 'draft' %}
+            {% set plan_status = _('Draft') %}
+        {% elif plan.status == 'inactive' %}
+            {% set plan_status = _('Inactive') %}
+        {% else %}
+            {% set plan_status = plan.status %}
+        {% endif %}
+        {% set plan_period = ((_('From') ~ ' ' ~ (plan.start_date | jalali_date)) if plan.start_date else '') ~ ((' · ' ~ _('To') ~ ' ' ~ (plan.end_date | jalali_date)) if plan.end_date else '') %}
+        {{ page_header(
+            plan_title,
+            plan_period,
+            badge=plan_status,
+            badge_tone='success' if plan.status == 'active' else ('error' if plan.status == 'inactive' else 'ghost'),
+        ) }}
 
         {# 🟢 2. Safely Extract Items & Unique Days (Sequences) #}
         {% set item_list = item.items if item.items is defined else item %}
         {% set seqs = item_list | map(attribute='seq') | unique | sort | list %}
 
         {% if seqs and seqs | length > 0 %}
-            <div class="sticky top-14 z-20 -mx-4 mb-4 bg-base-100/85 px-4 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10">
+            <div class="sticky top-14 z-20 -mx-4 mb-4 bg-base-100/85 px-4 py-2 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
                 <div role="tablist" class="tabs tabs-box w-full overflow-x-auto bg-base-200 p-1">
                     {% for seq in seqs %}
                         <a
@@ -81,7 +64,7 @@
                         {% for category in meal_categories %}
                             {% set category_items = day_items | selectattr('meal_name', 'equalto', category) | list %}
                             {% if category_items %}
-                                <h2 class="divider divider-start mt-6 mb-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _(category) }}</h2>
+                                <h2 class="mt-6 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _(category) }}</h2>
                                 <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
                                     {% for i in category_items %}
                                         <li class="list-row items-center gap-3 px-4 py-3">
@@ -103,7 +86,7 @@
                         {# Catch-all for diet items without a standard meal name #}
                         {% set other_items = day_items | rejectattr('meal_name', 'in', meal_categories) | list %}
                         {% if other_items %}
-                            <h2 class="divider divider-start mt-6 mb-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Other') }}</h2>
+                            <h2 class="mt-6 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Other') }}</h2>
                             <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
                                 {% for i in other_items %}
                                     <li class="list-row items-center gap-3 px-4 py-3">
@@ -128,7 +111,7 @@
                         {% for category in training_categories %}
                             {% set category_items = day_items | selectattr('category', 'equalto', category) | list %}
                             {% if category_items %}
-                                <h2 class="divider divider-start mt-6 mb-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _(category) }}</h2>
+                                <h2 class="mt-6 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _(category) }}</h2>
                                 <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
                                     {% for i in category_items %}
                                         <li class="list-row items-start gap-3 px-4 py-3">
@@ -158,7 +141,7 @@
                         {# Catch-all for training items #}
                         {% set other_training_items = day_items | rejectattr('category', 'in', training_categories) | list %}
                         {% if other_training_items %}
-                            <h2 class="divider divider-start mt-6 mb-2 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Other exercises') }}</h2>
+                            <h2 class="mt-6 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Other exercises') }}</h2>
                             <ul class="list overflow-hidden rounded-box border border-base-300 bg-base-100">
                                 {% for i in other_training_items %}
                                     <li class="list-row items-start gap-3 px-4 py-3">

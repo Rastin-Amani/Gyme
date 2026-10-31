@@ -1,12 +1,13 @@
 {% extends 'layouts/dashboard.html' %}
+{% from "components/ui.html" import page_header, section_title with context %}
 
 {% block dashboard_content %}
 {% set current_email = trainee.expand['user'].email if trainee.expand and 'user' in trainee.expand else '' %}
+<div data-page-title="{{ title }}">
+    {{ page_header(title) }}
 <form
     hx-post="{{ '/trainees/' + trainee.id if trainee else '/trainees/new' }}"
     hx-swap="none"
-    data-page-title="{{ title }}"
-    class="mx-auto max-w-2xl"
 >
     <div class="card border border-base-300 bg-base-100">
         <div class="card-body gap-4 p-5">
@@ -89,7 +90,7 @@
         </div>
     </div>
 
-    <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Additional information') }}</h2>
+    {{ section_title(_('Additional information')) }}
     <div class="card border border-base-300 bg-base-100">
         <div class="card-body gap-4 p-5">
             {% set textarea_fields = [
@@ -141,4 +142,5 @@
         </div>
     </div>
 </form>
+</div>
 {% endblock %}

@@ -1,30 +1,20 @@
 {% extends "layouts/dashboard.html" %}
+{% from "components/ui.html" import page_header, section_title with context %}
 {% block dashboard_content %}
-    <div class="mx-auto max-w-3xl pb-24" data-page-title="{{ title }}">
-        <header class="mb-6">
-            <p class="text-xs font-semibold tracking-wide text-base-content/50 uppercase">
-                {% if plan.is_template | string | lower == 'true' %}{{ _('Template') }}{% else %}{{ _('Plan') }}{% endif %}
-            </p>
-            <div class="mt-1 flex flex-wrap items-center justify-between gap-3">
-                <h1 class="min-w-0 truncate text-2xl font-semibold tracking-tight">
-                    {% if plan.is_template | string | lower == 'true' %}
-                        {{ plan.template_name or _('Untitled') }}
-                    {% else %}
-                        {{ (plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-' }}
-                    {% endif %}
-                </h1>
-                <div class="flex shrink-0 gap-2">
-                    <a href="/plans/{{ plan.id }}/edit" class="btn btn-sm">{{ _('Edit') }}</a>
-                    <button
-                        hx-get="/plans/{{ plan.id }}/confirm-delete"
-                        hx-target="#modal-container"
-                        class="btn btn-sm btn-soft btn-error"
-                    >
-                        {{ _('Delete') }}
-                    </button>
-                </div>
-            </div>
-        </header>
+    <div data-page-title="{{ title }}">
+        {% call page_header(
+            (plan.template_name or _('Untitled')) if plan.is_template | string | lower == 'true' else ((plan.expand['trainee'].expand['user'].first_name ~ ' ' ~ plan.expand['trainee'].expand['user'].last_name) if plan.expand and 'trainee' in plan.expand and plan.expand['trainee'].expand and 'user' in plan.expand['trainee'].expand else '-'),
+            (_('Template') ~ ' · ' ~ plan.type|capitalize) if plan.is_template | string | lower == 'true' else ((_('Training plan') if plan.type == 'training' else (_('Diet plan') if plan.type == 'diet' else _('Steroid plan'))))
+        ) %}
+                <a href="/plans/{{ plan.id }}/edit" class="btn">{{ _('Edit') }}</a>
+                <button
+                    hx-get="/plans/{{ plan.id }}/confirm-delete"
+                    hx-target="#modal-container"
+                    class="btn btn-soft btn-error"
+                >
+                    {{ _('Delete') }}
+                </button>
+        {% endcall %}
 
         <div class="card border border-base-300 bg-base-100">
             <ul class="list">
@@ -75,8 +65,9 @@
                 {% endif %}
 
                 {% if plan.notes and plan.notes != "" %}
-                    <li class="list-row">
-                        <p class="text-sm whitespace-pre-line text-base-content/80">{{ plan.notes }}</p>
+                    <li class="list-row items-start">
+                        <span class="text-sm text-base-content/60">{{ _('Notes') }}</span>
+                        <p class="ms-auto max-w-[70%] text-end text-sm whitespace-pre-line text-base-content/80">{{ plan.notes }}</p>
                     </li>
                 {% endif %}
             </ul>
@@ -96,7 +87,7 @@
         {% endif %}
 
         <div class="mt-8 mb-3 flex items-center justify-between gap-3">
-            <h2 class="text-sm font-semibold">{{ _('Plan items') }}</h2>
+            <h2 class="text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('Plan items') }}</h2>
             <button
                 class="btn btn-primary btn-sm"
                 type="button"
@@ -105,7 +96,7 @@
                 hx-swap="innerHTML"
                 hx-boost="false"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                {{ icon("plus", "size-4") }}
                 {{ _('Add item') }}
             </button>
         </div>
