@@ -244,7 +244,7 @@
 
 - 78 tests pass; `ruff check .` and `black --check .` clean.
 - App booted against a live PocketBase: login failures render in-page, `/static/icons/*` return 200, CSP `img-src` includes the PocketBase origin, `data-theme="gyme"`, HTML gzipped, `/healthz` 200.
-- Registry pruned to `latest`, `v0.11.0` and the current commit tags.
+- Registry pruned to `latest`, the two current release images (`v0.11.0`, `v0.10.0`) and their commit tags; no withdrawn tags remain.
 
 ### Notes
 
