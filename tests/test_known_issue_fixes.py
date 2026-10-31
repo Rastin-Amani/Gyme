@@ -224,3 +224,173 @@ def test_ci_workflow_checks_lint_format_and_tests():
 def test_license_file_present():
     license_text = _read("LICENSE")
     assert "Permission to use, copy, modify, and/or distribute" in license_text
+
+
+# --- Runtime regressions found by role walkthrough (owner/coach/trainee) --
+
+
+def _function_src(src, name, next_name):
+    return src[src.index(f"def {name}") : src.index(f"def {next_name}")]
+
+
+def test_plan_new_form_passes_tenant_record_not_id():
+    src = _read("app/routes/plan.py")
+    fn = _function_src(src, "plan_new_form", "show_plan_detail")
+    assert '"tenant": request.state.tenant' in fn
+    assert '"tenant": tenant,' not in fn
+
+
+def test_item_confirm_delete_uses_new_template_signature():
+    src = _read("app/routes/item.py")
+    fn = _function_src(src, "item_confirm_delete", "item_create")
+    assert "request=request" in fn
+    assert 'TemplateResponse("modals/confirm_delete.html"' not in fn
+
+
+def test_items_form_delete_modal_passes_plan_type():
+    src = _read("app/templates/modals/items_form.html")
+    assert "confirm-delete?plan_type={{ plan_type }}" in src
+
+
+def test_trainee_role_is_blocked_from_staff_mutations():
+    plan_src = _read("app/routes/plan.py")
+    item_src = _read("app/routes/item.py")
+    trainee_src = _read("app/routes/trainee.py")
+    for name, next_name in (
+        ("plan_create", "plan_update"),
+        ("plan_update", "plan_confirm_delete"),
+        ("plan_delete", None),
+        ("template_apply", "plan_create"),
+    ):
+        fn = plan_src[plan_src.index(f"def {name}") :]
+        if next_name:
+            fn = plan_src[plan_src.index(f"def {name}") : plan_src.index(f"def {next_name}")]
+        assert "deny_trainee(" in fn, name
+    for name in ("item_create", "item_update", "item_delete"):
+        fn = item_src[item_src.index(f"def {name}") :]
+        assert "deny_trainee(" in fn[:2000], name
+    for name in ("trainee_create", "trainee_update", "trainee_delete"):
+        fn = trainee_src[trainee_src.index(f"def {name}") :]
+        assert "deny_trainee(" in fn[:2000], name
+
+
+def test_coach_mutations_are_scoped_to_own_plans():
+    plan_src = _read("app/routes/plan.py")
+    delete_src = plan_src[plan_src.index("def plan_delete") :]
+    assert 'getattr(plan, "coach", None) != user.id' in delete_src
+    item_src = _read("app/routes/item.py")
+    for name in ("item_update", "item_delete"):
+        fn = item_src[item_src.index(f"def {name}") :][:2500]
+        assert 'getattr(existing_plan, "coach", "")' in fn or 'getattr(plan_obj, "coach", "")' in fn
+
+
+def test_stale_ids_redirect_instead_of_crashing():
+    plan_src = _read("app/routes/plan.py")
+    edit_src = plan_src[
+        plan_src.index("def plan_edit_form") : plan_src.index("def template_apply_form")
+    ]
+    assert "except Exception" in edit_src and '"/plans"' in edit_src
+    apply_src = plan_src[
+        plan_src.index("def template_apply_form") : plan_src.index("def template_apply(")
+    ]
+    assert "except Exception" in apply_src
+    user_plan_src = _read("app/routes/user/plan.py")
+    assert "except Exception" in user_plan_src
+    trainee_src = _read("app/routes/trainee.py")
+    assert (
+        "except Exception"
+        in trainee_src[
+            trainee_src.index("def trainee_edit_form") : trainee_src.index("def trainee_create")
+        ]
+    )
+
+
+def test_new_accounts_surface_initial_password_once():
+    auth_src = _read("app/services/auth.py")
+    assert '"password": random_pwd' in auth_src
+    assert 'user_result.get("password", "")' in _read("app/routes/trainee.py")
+    assert 'user_result.get("password", "")' in _read("app/routes/coach.py")
+
+
+def test_layout_exposes_logout():
+    assert 'href="/logout"' in _read("app/templates/layouts/dashboard.html")
+
+
+def test_plan_create_and_update_require_a_trainee():
+    src = _read("app/routes/plan.py")
+    assert src.count("if not is_template_bool and not trainee:") >= 2
+
+
+def test_plan_pagination_omits_disabled_links():
+    src = _read("app/templates/pages/owner/plan/plans.html")
+    assert "{% if page > 1 %}" in src and "{% if page < total_pages %}" in src
+
+
+def test_data_theme_matches_the_one_built_theme():
+    # Only one daisyUI theme is compiled; any other data-theme renders unstyled.
+    assert 'data-theme="gyme"' in _read("app/templates/base.html")
+    assert "[data-theme=gyme]" in _read("app/static/app.css")
+
+
+# --- Browser-only regressions found with a real headless browser ----------
+
+
+def test_toast_container_does_not_swallow_clicks():
+    src = _read("app/templates/base.html")
+    container = src[src.index('id="toast-container"') : src.index('role="status"')]
+    assert "pointer-events-none" in container
+
+
+def test_modal_close_is_deferred_so_followup_events_bubble():
+    src = _read("app/static/main.js")
+    clear_modal = src[
+        src.index("function clearModal()") : src.index("document.addEventListener('closeModal'")
+    ]
+    assert "setTimeout(" in clear_modal
+
+
+def test_shell_navigation_pushes_the_url():
+    src = _read("app/static/main.js")
+    nav = src[src.index("window.gymeNav") : src.index("function clearModal()")]
+    assert "pushUrl" not in nav
+    assert "push: 'true'" in nav
+
+
+def test_dashboard_timeframe_has_no_form_sync_without_a_form():
+    src = _read("app/templates/pages/owner/dashboard.html")
+    assert "hx-sync" not in src or 'hx-sync="this:replace"' in src
+
+
+def test_filter_panels_survive_result_swaps():
+    assert 'hx-preserve="true"' in _read("app/templates/pages/owner/plan/plans.html")
+    assert 'hx-preserve="true"' in _read("app/templates/pages/owner/trainee/trainees.html")
+
+
+def test_csp_allows_pocketbase_images():
+    src = _read("app/middleware.py")
+    assert "PB_ORIGIN" in src
+    assert "img-src 'self' data: https: blob:" in src
+
+
+def test_service_worker_ignores_cross_origin_assets():
+    src = _read("app/static/sw.js")
+    assert "url.origin !== self.location.origin" in src
+
+
+def test_progress_log_refresh_targets_its_own_fragment():
+    src = _read("app/templates/pages/owner/trainee/trainee_detail.html")
+    assert 'id="progress-logs-content"' in src
+    assert 'hx-select="#progress-logs-content"' in src
+    assert 'hx-select="unset"' in src  # nested edit button must not inherit it
+
+
+def test_duplicate_trainee_error_uses_immediate_toast():
+    src = _read("app/routes/trainee.py")
+    fn = src[src.index("def trainee_create") : src.index("def trainee_update")]
+    assert "hx_toast_now(error_msg" in fn
+
+
+def test_progress_log_edit_refresh_has_a_listener():
+    # The edit handler emits performListRefresh; the trainee detail must listen.
+    assert "performListRefresh" in _read("app/templates/pages/owner/trainee/trainee_detail.html")
+    assert "performListRefresh" in _read("app/routes/progress_logs.py")
