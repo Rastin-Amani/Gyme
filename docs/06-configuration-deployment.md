@@ -73,7 +73,7 @@ Operational notes:
 
 ### Versioning
 
-- `APP_VERSION` constant in `app/main.py` (currently `0.11.0`) is the release
+- `APP_VERSION` constant in `app/main.py` (currently `0.11.1`) is the release
   identity: it is exposed to templates as `app_version` and read by
   `app/version.text`, `package.json`, the git tag and the release. It is not
   the cache-buster.
@@ -87,7 +87,7 @@ Operational notes:
   `app/static/app.{css,js}`. Templates append it as `?v=`, and `sw.js` uses it
   as its cache version, so clients purge cached assets on every deploy that
   rebuilds the bundle — no manual bump can be forgotten.
-- `app/version.text` mirrors `APP_VERSION` (`"0.11.0"`); both are in sync.
+- `app/version.text` mirrors `APP_VERSION` (`"0.11.1"`); both are in sync.
 
 ## Part 2 — Deployment guide
 
@@ -191,5 +191,5 @@ no file handling or rotation is configured in-app.
 
 ## Documentation status
 
-- Last verified: 2026-10-31 against `main` (version 0.11.0); the earlier review
+- Last verified: 2026-10-31 against `main` (version 0.11.1); the earlier review
   of 2026-09-25 covered the 0.9.1 tree and the marketing-app extraction.

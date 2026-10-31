@@ -5,8 +5,8 @@
 - **Name:** Gyme
 - **Repository:** https://github.com/Rastin-Amani/Gyme
 - **Website:** https://gyme.cloud *(verified HTTP 200 on 2026-10-25)*
-- **Version:** 0.11.0 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
-- **Latest cycle:** 2026-10-31 — access hardening from a three-role walkthrough, initial-password hand-off, interaction fixes (see the cycle section at the end)
+- **Version:** 0.11.1 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
+- **Latest cycle:** 2026-10-31 — access hardening, interaction fixes, then UI polish and the 0.11.1 patch (see the cycle section at the end)
 - **License:** ISC
 - **Campaign date:** 2026-09-26
 - **Mode:** AUTONOMOUS (GitHub-safe actions + permitted submissions executed directly) — earlier repo P0 phase ran under explicit user approval
@@ -225,7 +225,7 @@
 
 ## Cycle 2026-10-31 — access hardening and interaction fixes
 
-**Version:** 0.11.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+**Version:** 0.11.1 · **Mode:** AUTONOMOUS · **Budget:** $0
 
 ### Executed (LIVE)
 
@@ -239,12 +239,16 @@
 | Default PWA icons, worker ignores PocketBase images, CSP img-src, single theme | commit `d5249da` | **PUSHED** |
 | Role-walkthrough regression tests | commit `c64b171` | **PUSHED** |
 | Release `v0.11.0` and GHCR image | tag `v0.11.0`, GitHub release, `ghcr.io/rastin-amani/gyme:v0.11.0` | **LIVE** |
+| Phone field inset label and dial-code-only selector | commit `069f681` | **PUSHED** |
+| Icon and status-dot alignment, dock active style | commits `6ce3fce`, `6306d82` | **PUSHED** |
+| Language switcher without emoji flags | commit `2102ec4` | **PUSHED** |
+| Release `v0.11.1` and GHCR image | tag `v0.11.1`, GitHub release, `ghcr.io/rastin-amani/gyme:v0.11.1` | **LIVE** |
 
 ### Verification
 
-- 78 tests pass; `ruff check .` and `black --check .` clean.
+- 84 tests pass; `ruff check .` and `black --check .` clean.
 - App booted against a live PocketBase: login failures render in-page, `/static/icons/*` return 200, CSP `img-src` includes the PocketBase origin, `data-theme="gyme"`, HTML gzipped, `/healthz` 200.
-- Registry pruned to `latest`, the two current release images (`v0.11.0`, `v0.10.0`) and their commit tags; no withdrawn tags remain.
+- Registry pruned to `latest`, the current release images and their commit tags; no withdrawn tags remain.
 
 ### Notes
 
