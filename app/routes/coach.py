@@ -197,7 +197,14 @@ def coach_create(
             headers = hx_toast(error_msg, "error")
             return HTMLResponse(content="", status_code=200, headers=headers)
 
-        headers = hx_toast(_("Coach registered successfully."), "success")
+        headers = hx_toast(
+            _(
+                "Coach registered. Initial password: %(password)s (copy it now, it is not shown again)"
+            )
+            % {"password": user_result.get("password", "")},
+            "success",
+            duration=15000,
+        )
         trigger_dict = json.loads(headers.get("HX-Trigger-After-Swap", "{}"))
         trigger_dict["delayed-redirect"] = {"url": "/coaches"}
         headers["HX-Trigger-After-Swap"] = json.dumps(trigger_dict)

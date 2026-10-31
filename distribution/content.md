@@ -28,8 +28,8 @@
 **Suggested framing (the author's own words, not a script):**
 - Point 1: built Gyme because gyms in [region] still run coaching through WhatsApp/PDF; each gym wanted *its own* branded app.
 - Point 2: the interesting engineering bit is hostname-based multi-tenancy + a dynamic per-gym PWA manifest, with PocketBase as the data layer and HTML-over-the-wire (HTMX) for interactivity.
-- Point 3: honest tradeoffs list (see DISTRIBUTION-REPORT.md): random 15-char passwords never shown in the UI (staff reset via PocketBase admin), login rate-limited 5 attempts/5 min, no formal Contributing process yet.
-- Point 4: release/roadmap (v0.9.1; multilingual en/es/tr/hy, all LTR).
+- Point 3: honest tradeoffs list (see DISTRIBUTION-REPORT.md): random 15-char initial passwords shown once at account creation (lost ones reset via PocketBase admin), login rate-limited 5 attempts/5 min, no formal Contributing process yet.
+- Point 4: release/roadmap (0.11.0; multilingual en/es/tr/hy, all LTR).
 - Link: https://github.com/Rastin-Amani/Gyme
 
 **Do NOT:** ask for upvotes, coordinate comments, post AI-generated body.

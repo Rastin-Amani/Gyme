@@ -68,11 +68,11 @@ medium format).
   5 minutes); exceeding the limit returns `429` with a toast.
 
 > ⚠️ **Important operational fact:** when staff create a new account, the app
-> generates a **random 15-character password** (verified in `services/auth.py`).
-> The UI does **not** display this password anywhere, so the staff member who
-> creates the account cannot hand it to the user. A new user can only log in
-> after staff resets the password through the PocketBase admin (or the account
-> owner resets it for them). There is no self-service "forgot password" flow.
+> generates a **random 15-character password** (verified in `services/auth.py`)
+> and shows it **once** in the success toast (15 s). Copy it then: it is never
+> displayed again and cannot be retrieved. If it is lost, staff reset the
+> password through the PocketBase admin; there is no self-service
+> "forgot password" flow.
 
 ### Trainee management
 
@@ -146,9 +146,9 @@ Stated so readers don't assume otherwise:
   or upload anything; their action set is view + daily "Done".
 - No notifications/push messaging, no scheduling/calendar beyond plan dates.
 - No self-service signup or password recovery; account lifecycle runs through
-  gym staff (or direct database administration). Because the app generates
-  random initial passwords and never displays them, new accounts must have
-  their password reset via PocketBase admin before first login.
+  gym staff (or direct database administration). The initial password is shown
+  once at creation, so copy it then; if it is lost, reset it via PocketBase
+  admin before the first login.
 - No CI configuration or LICENSE file; automated tests do ship under `tests/`
   (`test_i18n.py` and the security regression suite).
 

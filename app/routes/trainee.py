@@ -429,7 +429,14 @@ def trainee_create(
         new_trainee_id = created_trainee.id
 
         # --- STEP 3: Success! Delayed Redirect to Progress Logs ---
-        headers = hx_toast(_("Trainee registered successfully. Redirecting..."), "success")
+        headers = hx_toast(
+            _(
+                "Trainee registered. Initial password: %(password)s (copy it now, it is not shown again)"
+            )
+            % {"password": user_result.get("password", "")},
+            "success",
+            duration=15000,
+        )
 
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
         trigger_dict["delayed-redirect"] = {"url": f"/progress-log/new/{new_trainee_id}"}

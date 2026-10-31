@@ -88,11 +88,12 @@ Behavior details:
 
 - **Create** runs two writes: `services/auth.create_user` (random initial
   password — never the email — and `role="trainee"`), then `trainees.create`
-  (status defaults `active`). Success responds with toast "Trainee registered
-  successfully. Redirecting..." plus `delayed-redirect` to
-  `/progress-log/new/{trainee_id}`. The random password is **not displayed in
-  the UI**; staff must share/reset it via PocketBase admin. User-creation
-  failure surfaces the duplicate/short-email toast (a legacy message);
+  (status defaults `active`). Success responds with a toast carrying the
+  **initial password** ("Trainee registered. Initial password: …", 15 s) plus
+  `delayed-redirect` to `/progress-log/new/{trainee_id}`. That toast is the
+  only time the random password is shown; it cannot be retrieved later and is
+  reset via PocketBase admin. User-creation failure surfaces the
+  duplicate/short-email toast (a legacy message);
   profile write failures hit the generic server-error toast.
 - **Update** writes the contact fields to the linked `users` record and the
   rest to the `trainees` record, then `delayed-redirect` to the detail page.
@@ -107,7 +108,7 @@ Behavior details:
 | --- | --- | --- |
 | GET | `/coaches?page` | List page (20/page), users with `role="coach"` in tenant |
 | GET | `/coaches/new` | Create form |
-| POST | `/coaches/new` | Fields: `first_name`*, `last_name`*, `email`*, `phone`. Creates `users` record with `role="coach"` and a **random initial password** (never the email; not displayed in the UI — reset via PocketBase admin) |
+| POST | `/coaches/new` | Fields: `first_name`*, `last_name`*, `email`*, `phone`. Creates `users` record with `role="coach"` and a **random initial password** (never the email), shown once in the success toast (15 s; not retrievable later — reset via PocketBase admin) |
 | GET | `/coaches/{id}` | Detail page |
 | GET | `/coaches/{id}/edit` | Edit form |
 | POST | `/coaches/{id}` | Update the user record (verifies tenant+role first) |

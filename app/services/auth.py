@@ -63,7 +63,9 @@ def create_user(
     try:
         user_record = pb.collection("users").create(payload)
         logger.info("user_created", user_id=user_record.id, role=role, tenant=tenant_id)
-        return {"ok": True, "user": user_record}
+        # Return the one-time initial password so staff can hand it to the member
+        # (it is never shown again; staff can reset it in PocketBase admin later).
+        return {"ok": True, "user": user_record, "password": random_pwd}
     except Exception as e:
         logger.error("user_creation_failed", email=email, role=role, tenant=tenant_id, error=str(e))
         return {

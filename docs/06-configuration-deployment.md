@@ -158,9 +158,9 @@ Notes:
 - [ ] `PB_URL` explicitly set to the production PocketBase over **HTTPS**
 - [ ] Every served hostname has an up-to-date `tenants` record (`domain`,
       `name`, `logo`, theme fields)
-- [ ] Owner accounts exist; new accounts' random initial passwords (never
-      displayed by the UI) are shared or reset via PocketBase admin before
-      first login
+- [ ] Owner accounts exist; new accounts' initial passwords are shown once in
+      the create toast, so capture them then — a lost password is reset via
+      PocketBase admin before first login
 - [ ] PocketBase API rules reviewed for the nine collections the app now uses
       (see above; `leads` belongs to the separate marketing app)
 - [ ] `ALLOWED_HOSTS` set so `TrustedHostMiddleware` rejects spoofed hosts

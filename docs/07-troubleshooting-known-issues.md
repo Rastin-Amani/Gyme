@@ -36,8 +36,8 @@ The hostname you're browsing is not any gym's domain.
    `services/auth.py`).
 2. Check PocketBase reachability: look for `auth_refresh_failed` /
    `login_failed` warnings in app logs.
-3. Remember new accounts get a **random** initial password that the UI never
-   displays — if the user never changed it, neither you nor they can know it;
+3. Remember new accounts get a **random** initial password shown once at
+   creation — if it was never copied, neither you nor they can recover it;
    reset it in PocketBase admin (issue #3).
 4. Note the login rate limit: 5 wrong attempts within 5 minutes for the same
    IP+identity+gym trips the in-memory limiter, which then blocks further
@@ -137,22 +137,21 @@ Known navigation bug, issue #6.
   `test_training_payload_includes_category`, and
   `test_category_only_in_training_branch` in `tests/test_known_issue_fixes.py`.
 
-### #3 — New accounts get a random password that is never surfaced · **UX/OPERATIONS** → **REVISED (0.9.0)**
+### #3 — New accounts get a random password that is never surfaced · **UX/OPERATIONS** → **RESOLVED (0.11.0)**
 
 - **Evidence:** `services/auth.py` `create_user` no longer sets
   `password = email`; it generates a random 15-character password (12 random
-  alphanumeric chars + `"A1!"`), `emailVisibility=True`. **However, no UI
-  template displays this initial password** — trainee/coach create flows only
-  toast success and redirect.
+  alphanumeric chars + `"A1!"`), `emailVisibility=True`, and returns it. The
+  trainee and coach create flows show it once in the success toast
+  (`hx_toast(..., duration=15000)`) before redirecting.
 - **Impact (old):** anyone who knew a member's email could log in; fixed.
-- **Impact (new):** a brand-new user literally cannot log in — neither the new
-  user nor the staff member who created the account knows the password. Staff
-  must open PocketBase admin, find the user, and share/reset the password
-  before the member's first login. There is no "forgot password" flow in the
-  app.
-- **Mitigation today:** reset the password in PocketBase admin; consider an
-  invite email (PocketBase SMTP) or displaying the generated password once in
-  the UI.
+- **Impact (resolved):** staff copy the password from the create toast and hand
+  it to the member, who can log in immediately. The value is never shown again,
+  so a lost password still means a PocketBase admin reset — there is no
+  "forgot password" flow in the app.
+- **Mitigation today:** none needed at creation; for a lost password, reset it in
+  PocketBase admin. An invite email (PocketBase SMTP) would remove the manual
+  hand-off.
 
 ### #4 — Coaches read from two different sources · **LOW–MEDIUM** → **RESOLVED in 0.9.1**
 

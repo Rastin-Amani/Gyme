@@ -104,7 +104,7 @@ app/
 ## Gotchas
 - **Tailwind**: Vite + `@tailwindcss/vite`; edit `app/static/main.css`, rebuild with `npm run build`.
 - **Jinja2 Filters**: Must be registered before template rendering.
-- **New accounts**: initial password is random and never shown in the UI — staff must reset/share via PocketBase admin.
+- **New accounts**: the initial password is random and shown **once** in the success toast when the account is created — copy it then. It cannot be retrieved later; staff reset it via PocketBase admin.
 - **PocketBase**: No local mock → must be running for full functionality.
 
 ## References

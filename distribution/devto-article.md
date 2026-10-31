@@ -56,7 +56,7 @@ The pleasant surprise: because UI is server-rendered HTML with HTMX for interact
 - **PocketBase as the data layer:** no migration framework, and the app depends on an external service being up. We keep `GET /healthz` served before any PocketBase call so load balancers can probe without DB coupling.
 - **`Host` is the tenant boundary:** it works great for dedicated domains per gym, but it's a strong coupling to DNS/reverse-proxy configuration — documented prominently.
 - **Production hygiene:** Swagger/docs are disabled when `ENV=production`; `ALLOWED_HOSTS` enable Host-header hardening; auth cookies are `Secure` on HTTPS.
-- **One known rough edge:** an admin creates users with a random 15-character password that is never displayed — staff must reset passwords through PocketBase admin. It's a deliberate vault-ish default, but not a great UX yet.
+- **One known rough edge:** an admin creates users with a random 15-character password. It is shown once in the success toast (copy it then) and never again, so a lost password means a PocketBase admin reset. An invite-email flow would remove the manual hand-off.
 
 ### What ships
 

@@ -120,11 +120,11 @@ traffic lands on the login page, and submitting login there yields the
   changes can take up to 30 s to take effect** on a warm process. Login is rate
   limited in-memory to 5 attempts per 5 minutes per IP+identity+tenant.
 - **Account creation** (`services/auth.create_user`) generates a random
-  15-character password (never set to the email), with `emailVisibility=True`.
-  **The initial password is not displayed anywhere in the UI**, so staff must
-  share or reset it through PocketBase admin before first login. The legacy
-  error message still warns about duplicate/short emails (PocketBase enforces
-  ≥8-char passwords).
+  15-character password (never set to the email), with `emailVisibility=True`,
+  and returns it once so the create flow can show it in the success toast
+  (15 s, `duration=15000`). It is not readable afterwards; a lost password is
+  reset through PocketBase admin. The legacy error message still warns about
+  duplicate/short emails (PocketBase enforces ≥8-char passwords).
 - **Password change** (`POST /change-password`) validates confirmation +
   minimum length in the route, calls PocketBase's `oldPassword/password/
   passwordConfirm` update, then immediately re-authenticates with the new

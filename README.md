@@ -292,8 +292,9 @@ Documented in detail in
 [docs/07-troubleshooting-known-issues.md](docs/07-troubleshooting-known-issues.md).
 Highlights:
 
-- Accounts created in-app get a **random 15-character password** that the UI never
-  displays — staff must share or reset it before the new user can log in.
+- Accounts created in-app get a **random 15-character password**, shown **once** in
+  the success toast after creation — copy it then, it is never displayed again.
+  Recovering a lost one means a reset through the PocketBase admin.
 - There is **no self-service password reset**; staff reset passwords through the
   PocketBase admin.
 - A **rate limit** is enforced on the login route but not on password changes.
