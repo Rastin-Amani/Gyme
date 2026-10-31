@@ -93,7 +93,7 @@ def plan_list(
         request=request,
         name="pages/owner/plan/plans.html",
         context={
-            "title": _("Plan templates") if is_template_bool else _("Plans"),
+            "title": _("Templates") if is_template_bool else _("Plans"),
             "tenant": tenant_name,
             "user": user,
             "plans": plans.items if hasattr(plans, "items") else plans,

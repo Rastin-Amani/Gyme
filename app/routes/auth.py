@@ -90,7 +90,7 @@ def change_password_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="pages/auth/change_password.html",
-        context={"title": "", "tenant": tenant, "user": user},
+        context={"title": _("Change password"), "tenant": tenant, "user": user},
     )
 
 
