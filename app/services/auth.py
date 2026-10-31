@@ -16,7 +16,7 @@ def login_user(identity: str, password: str, tenant: str, pb=None):
         if user.tenant != tenant:
             pb.auth_store.clear()
             logger.warning("login_cross_tenant_denied", identity=identity, tenant=tenant)
-            return {"ok": False, "error": "Invalid tenant access"}
+            return {"ok": False, "error": _("Invalid credentials!")}
 
         logger.info("login_success", role=getattr(user, "role", None), tenant=tenant)
         return {"ok": True, "user": user, "token": auth_data.token}

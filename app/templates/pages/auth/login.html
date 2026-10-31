@@ -108,6 +108,12 @@
                 <div class="card-body gap-5 p-6 sm:p-8">
                     <h1 class="text-2xl font-semibold tracking-tight">{{ _('Log in') }}</h1>
 
+                    {% if error %}
+                        <div role="alert" class="alert alert-error alert-soft text-sm">
+                            <span>{{ error }}</span>
+                        </div>
+                    {% endif %}
+
                     <form method="post" action="/login" class="flex flex-col gap-4">
                         <label class="input w-full">
                             <span class="label">{{ _('Email') }}</span>

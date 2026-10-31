@@ -29,6 +29,17 @@ def _record_attempt(key: str):
 router = APIRouter(tags=["Authentication"])
 
 
+def _login_error(request: Request, tenant, message: str, status_code: int = 200):
+    """Re-render the login page with a visible error (the form is not HTMX)."""
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/auth/login.html",
+        context={"title": _("Log in"), "tenant": tenant, "error": message},
+        headers=hx_toast(message, "error"),
+        status_code=status_code,
+    )
+
+
 @router.get("/login")
 def login_page(request: Request):
     tenant = request.state.tenant
@@ -89,48 +100,36 @@ def login(request: Request, identity: str = Form(...), password: str = Form(...)
     # 1. Safe Tenant Extraction 🏢
     tenant = getattr(request.state, "tenant", None)
     if not tenant:
-        headers = hx_toast(_("System error: Gym not found!"), "error")
-        return HTMLResponse(content="", headers=headers, status_code=400)
+        return _login_error(request, None, _("System error: Gym not found!"))
 
     # Rate limiting per IP + identity
     client_ip = request.client.host if request.client else "unknown"
     rate_key = f"{client_ip}:{identity}:{tenant.id}"
     if _is_rate_limited(rate_key):
-        headers = hx_toast(_("Too many login attempts. Please wait a few minutes."), "error")
-        return HTMLResponse(content="", headers=headers, status_code=429)
+        return _login_error(
+            request, tenant, _("Too many login attempts. Please wait a few minutes."), 429
+        )
     _record_attempt(rate_key)
 
     # Input trimming and basic validation
     identity = str(identity).strip()[:254]
     password = str(password)[:128]
     if not identity or not password:
-        headers = hx_toast(_("Email and password are required"), "error")
-        return HTMLResponse(content="", headers=headers, status_code=400)
+        return _login_error(request, tenant, _("Email and password are required"))
     # Optional email format check, but allow username if needed
     if "@" in identity:
         try:
             identity = validate_email(identity)
         except ValueError:
-            headers = hx_toast(_("Invalid email format"), "error")
-            return HTMLResponse(content="", headers=headers, status_code=400)
+            return _login_error(request, tenant, _("Invalid email format"))
 
     # 2. Attempt Authentication 🔐
     result = login_user(identity, password, tenant.id)
 
-    # 3. Handle Failure with HTMX Toasts 🚨
+    # 3. Handle Failure: re-render the form with a visible error message
     if not result.get("ok"):
         error_msg = result.get("error", _("Wrong email or password."))
-
-        # Attach the beautiful DaisyUI toast to the response headers!
-        headers = hx_toast(error_msg, "error")
-
-        return templates.TemplateResponse(
-            request=request,
-            name="pages/auth/login.html",
-            # 🟢 FIXED: We must pass 'tenant' so base.html can render the theme!
-            context={"error": error_msg, "tenant": tenant},
-            headers=headers,
-        )
+        return _login_error(request, tenant, error_msg)
     # 4. Handle Success & Role Routing 🧭
     user = result["user"]
 
