@@ -83,6 +83,6 @@ The pleasant surprise: because UI is server-rendered HTML with HTMX for interact
 
 [ ] Verify gyme.cloud is reachable (or drop the link)
 [ ] Add one real screenshot when available (cover + in-body)
-[ ] Confirm version text (0.10.0) and repo URL
+[ ] Confirm version text (0.11.0) and repo URL
 [ ] Publish with your Dev.to handle; set canonical URL
 [ ] Don't reuse this body on HN/Reddit — those have their own drafts

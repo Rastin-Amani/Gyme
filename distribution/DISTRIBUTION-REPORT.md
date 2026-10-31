@@ -5,8 +5,8 @@
 - **Name:** Gyme
 - **Repository:** https://github.com/Rastin-Amani/Gyme
 - **Website:** https://gyme.cloud *(verified HTTP 200 on 2026-10-25)*
-- **Version:** 0.10.0 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
-- **Latest cycle:** 2026-10-30 — DaisyUI interface rebuild, request-path speed, version line reset to 0.10.0 (see the cycle section at the end)
+- **Version:** 0.11.0 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
+- **Latest cycle:** 2026-10-31 — access hardening from a three-role walkthrough, initial-password hand-off, interaction fixes (see the cycle section at the end)
 - **License:** ISC
 - **Campaign date:** 2026-09-26
 - **Mode:** AUTONOMOUS (GitHub-safe actions + permitted submissions executed directly) — earlier repo P0 phase ran under explicit user approval
@@ -220,3 +220,32 @@
 
 - The 1.x numbering shipped in error: `v1.5.0`/`v1.6.0` carried a billing experiment that was reverted on `main`, and `v1.7.0` inherited the number. The project is pre-1.0, so the line resumes at `0.10.0`; no commit was rewritten and the withdrawn release notes are preserved in the repository.
 - Container images published under the withdrawn tags are unsupported and are being removed from GHCR by the pruning workflow above.
+
+---
+
+## Cycle 2026-10-31 — access hardening and interaction fixes
+
+**Version:** 0.11.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+
+### Executed (LIVE)
+
+| Action | Evidence | Status |
+| --- | --- | --- |
+| Enforced staff-only mutations and coach record ownership server-side | commit `fb4f32d` | **PUSHED** |
+| Show the generated initial password once; operational docs updated | commit `a9e176a` | **PUSHED** |
+| Login failures render on the page; cross-tenant message no longer leaks | commit `da695b3` | **PUSHED** |
+| Immediate + timed toasts, no click-blocking toast layer | commit `8b502d9` | **PUSHED** |
+| HTMX filters, pagination, post-edit refresh and logout control | commits `e23d25d`, `6d7e940` | **PUSHED** |
+| Default PWA icons, worker ignores PocketBase images, CSP img-src, single theme | commit `d5249da` | **PUSHED** |
+| Role-walkthrough regression tests | commit `c64b171` | **PUSHED** |
+| Release `v0.11.0` and GHCR image | tag `v0.11.0`, GitHub release, `ghcr.io/rastin-amani/gyme:v0.11.0` | **LIVE** |
+
+### Verification
+
+- 78 tests pass; `ruff check .` and `black --check .` clean.
+- App booted against a live PocketBase: login failures render in-page, `/static/icons/*` return 200, CSP `img-src` includes the PocketBase origin, `data-theme="gyme"`, HTML gzipped, `/healthz` 200.
+- Registry pruned to `latest`, `v0.11.0` and the current commit tags.
+
+### Notes
+
+- Displaying the initial password once is a deliberate trade-off: it removes the PocketBase-admin round-trip for every new trainee/coach until an invite-email flow exists. It is never retrievable after the create response.
