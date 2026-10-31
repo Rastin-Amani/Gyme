@@ -2,7 +2,7 @@
 
 **Verification status:** every issue below was confirmed by reading the source
 of the tree released as 0.9.1 (verified 2026-09-25); the current tree is
-0.11.1, the current release of the corrected pre-1.0 line. File/line
+0.12.0, the current release of the corrected pre-1.0 line. File/line
 references are included so each claim can be checked. Issues are numbered;
 other documents reference these numbers. Statuses: **OPEN** (still true),
 **RESOLVED** (fixed in the current tree), **PARTIAL**.
@@ -198,8 +198,8 @@ Known navigation bug, issue #6.
 
 - **Evidence (historical):** `APP_VERSION = "0.9.0"` (`main.py`),
   `app/version.text` `"0.8.1"`, and `base.html` registered `/sw.js?v=0.8.1`.
-- **Current code:** `APP_VERSION = "0.11.1"` (`main.py`), `app/version.text` is
-  `"0.11.1"` (single source, quoted value), and `base.html` registers
+- **Current code:** `APP_VERSION = "0.12.0"` (`main.py`), `app/version.text` is
+  `"0.12.0"` (single source, quoted value), and `base.html` registers
   `/sw.js?v={{ asset_version }}` — the build-derived `ASSET_VERSION` bound in
   `main.py`, which also stamps the CSS/JS URLs.
 - **Impact (today):** none — version strings are consistent and cache

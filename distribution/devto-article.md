@@ -47,7 +47,7 @@ Roles are scoped to the tenant context too: `owner` (the gym), `coach` (their ow
 | Styling | Tailwind + daisyUI within Vite | one design system, built once, cached everywhere |
 | Data | PocketBase (external) | realtime-capable, SQLite-backed per instance; no ORM/migrations to maintain |
 | PWA | per-tenant manifest + service worker | each gym gets an installable, offline-capable home-screen app |
-| i18n | gettext (Babel) | `en` (default), `es`, `tr`, `hy` — all LTR with Gregorian dates |
+| i18n | gettext (Babel) | `en` (default), `es`, `tr`, `hy`, `ru` — all LTR with Gregorian dates |
 
 The pleasant surprise: because UI is server-rendered HTML with HTMX for interactivity, a "branded app per gym" is mostly a template concern — theme variables, manifest JSON, and locale plumbing — not N front-end builds.
 
@@ -61,7 +61,7 @@ The pleasant surprise: because UI is server-rendered HTML with HTMX for interact
 ### What ships
 
 - **Self-host:** one Dockerfile (`python:3.11-slim`, uvicorn on `:8000`, non-root). Node is not in the image — static assets are pre-built with Vite and committed.
-- **i18n that matters locally:** four locales (en/es/tr/hy) behind gettext, all left-to-right with Gregorian dates — not an afterthought.
+- **i18n that matters locally:** five locales (en/es/tr/hy/ru) behind gettext, all left-to-right with Gregorian dates — not an afterthought.
 - **Progress tracking:** trainee body metrics auto-compute BMI, body-fat percentage, BMR, TDEE, LBM, and waist-to-hip ratio, with up to 5 photos per log.
 
 ### Numbers
@@ -83,6 +83,6 @@ The pleasant surprise: because UI is server-rendered HTML with HTMX for interact
 
 [ ] Verify gyme.cloud is reachable (or drop the link)
 [ ] Add one real screenshot when available (cover + in-body)
-[ ] Confirm version text (0.11.1) and repo URL
+[ ] Confirm version text (0.12.0) and repo URL
 [ ] Publish with your Dev.to handle; set canonical URL
 [ ] Don't reuse this body on HN/Reddit — those have their own drafts

@@ -8,7 +8,7 @@ web
 
 ## Users
 
-Primary: gym owners and coaches running a small gym — they manage trainees, build training/diet/medication plans from reusable templates, and log body-metric progress with photos. Secondary: trainees on their phones following the "Today" slice of each plan and tapping Done daily. All authenticated, multilingual (en default + es/tr/hy), mobile-first PWA installed per gym.
+Primary: gym owners and coaches running a small gym — they manage trainees, build training/diet/medication plans from reusable templates, and log body-metric progress with photos. Secondary: trainees on their phones following the "Today" slice of each plan and tapping Done daily. All authenticated, multilingual (en default + es/tr/hy/ru), mobile-first PWA installed per gym.
 
 ## Product Purpose
 

@@ -51,7 +51,7 @@ items per page (20 for coaches). Responses carry `page`, `total_pages`,
 | POST | `/logout` | Logout | Same clearing as GET; `303` + `HX-Redirect: /login` |
 | GET | `/change-password` | Change-password page | Requires login (`303 /login` otherwise) |
 | POST | `/change-password` | Rotate password | Fields: `old_password`*, `new_password`*, `confirm_password`*. Server checks match, length 8–72 chars, and that the new password is not a substring of the account email (toasts "New password and its confirmation do not match." / "Password must be at least 8 characters." / "Password is too long" / "Password must not be similar to the email"). On PocketBase success (toast "Password changed successfully! 🔒") it re-authenticates with the new password, resets the cookie, and answers `HX-Redirect` to the role's dashboard; if re-auth fails the stale cookie is cleared and the redirect goes to `/login` |
-| GET | `/locale/{code}?next=…` | Switch language | `code` must be in the enabled locales (`en`,`es`,`tr`,`hy`) else `404`; sets the `locale` cookie (1 year) and `303`s to `next` (open-redirect guarded) |
+| GET | `/locale/{code}?next=…` | Switch language | `code` must be in the enabled locales (`en`,`es`,`tr`,`hy`,`ru`) else `404`; sets the `locale` cookie (1 year) and `303`s to `next` (open-redirect guarded) |
 | GET | `/healthz` | Liveness | Served by middleware before tenant lookup; returns `{"status": "ok"}` with **no PocketBase call** |
 
 ## Owner / coach area

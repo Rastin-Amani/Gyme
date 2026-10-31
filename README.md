@@ -40,7 +40,7 @@ server work.
 </p>
 
 <p align="center">
-  <sub>v0.11.1 · pre-1.0 · ISC licensed · 84 tests · CI runs ruff, black and pytest</sub>
+  <sub>v0.12.0 · pre-1.0 · ISC licensed · 89 tests · CI runs ruff, black and pytest</sub>
 </p>
 
 ## Contents
@@ -145,7 +145,7 @@ plain terms. Choosing the cloud does not remove the self-hosted option.
 | [Roles](https://gyme.cloud/en/features/manage) | `owner`, `coach` (scoped to own trainees/plans), `trainee` (own plan only) |
 | Dashboard | Trainee/plan counters and per-coach stats with week/month/all-time frames |
 | PWA | Dynamic per-gym manifest, service worker caching, offline page/banner, iOS install flow |
-| i18n | English (default), Spanish, Turkish and Armenian; cookie-based locale switching |
+| i18n | English (default), Spanish, Turkish, Armenian and Russian; cookie-based locale switching |
 
 ## Quick start
 
@@ -341,7 +341,7 @@ the patch.
 
 ## Internationalization
 
-Languages (cookie-based): **en** (default, LTR, source msgids), **es**, **tr**, **hy**.
+Languages (cookie-based): **en** (default, LTR, source msgids), **es**, **tr**, **hy**, **ru**.
 
 - The switcher sets the `locale` cookie for 1 year via `GET /locale/{code}?next=...`
   and reloads the page.

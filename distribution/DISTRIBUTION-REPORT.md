@@ -5,8 +5,8 @@
 - **Name:** Gyme
 - **Repository:** https://github.com/Rastin-Amani/Gyme
 - **Website:** https://gyme.cloud *(verified HTTP 200 on 2026-10-25)*
-- **Version:** 0.11.1 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
-- **Latest cycle:** 2026-10-31 — access hardening, interaction fixes, then UI polish and the 0.11.1 patch (see the cycle section at the end)
+- **Version:** 0.12.0 (pre-1.0 release line; the withdrawn `v1.x` identifiers are archived in `docs/releases-withdrawn-1x.md`)
+- **Latest cycle:** 2026-10-31 — access hardening, interaction fixes, UI polish, then a shared interface system and five complete locales in 0.12.0 (see the cycle section at the end)
 - **License:** ISC
 - **Campaign date:** 2026-09-26
 - **Mode:** AUTONOMOUS (GitHub-safe actions + permitted submissions executed directly) — earlier repo P0 phase ran under explicit user approval
@@ -253,3 +253,33 @@
 ### Notes
 
 - Displaying the initial password once is a deliberate trade-off: it removes the PocketBase-admin round-trip for every new trainee/coach until an invite-email flow exists. It is never retrievable after the create response.
+
+---
+
+## Cycle 2026-10-31 — shared interface system and five complete locales
+
+**Version:** 0.12.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+
+### Executed (LIVE)
+
+| Action | Evidence | Status |
+| --- | --- | --- |
+| One icon registry plus shared page-header/section macros | commits `17094f9`, `be58f8a` | **PUSHED** |
+| Language menu anchored to its own trigger, no flags | commit `543ec3d` | **PUSHED** |
+| Complete `es`/`tr`/`hy` catalogues, Russian enabled | commit `168cb99` | **PUSHED** |
+| Translated document titles for change-password and templates | commit `64c1cdb` | **PUSHED** |
+| Regression tests for the icon set, page chrome and catalogues | commits `29b57a2`, `df28d03` | **PUSHED** |
+| Rebuilt static bundle | commit `68c07c1` | **PUSHED** |
+| Design rules recorded for icons, chrome and language menu | commit `131e1ab` | **PUSHED** |
+| Release `v0.12.0` and GHCR image | tag `v0.12.0`, GitHub release, `ghcr.io/rastin-amani/gyme:v0.12.0` | **LIVE** |
+
+### Verification
+
+- 89 tests pass; `ruff check .` and `black --check .` clean.
+- App booted against a live PocketBase: Russian and Spanish log-in pages render translated copy, one language icon in the switcher, `app.css?v=0.12.0-…` and `sw.js` cache version stamped from `ASSET_VERSION`.
+- Registry keeps `latest`, `v0.12.0`, `v0.11.1` and the current commit tag.
+
+### Notes
+
+- The previous catalogues were empty stubs, so "translated" locales silently rendered English; the completeness test now makes that a CI failure. Three strings Babel had marked fuzzy (`KG`, `Share`, `Add to Home Screen`) were dropped at compile time and are now shipped.
+- Flags stay out of the language menu: emoji flags render as letter pairs or tofu on Windows, and the native names already identify each language.

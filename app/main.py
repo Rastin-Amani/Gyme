@@ -65,7 +65,7 @@ else:
             "ALLOWED_HOSTS not set in production - relying on tenant host validation only"
         )
 
-APP_VERSION = "0.11.1"
+APP_VERSION = "0.12.0"
 templates.env.globals["app_version"] = APP_VERSION
 
 

@@ -1,7 +1,7 @@
 # 01 — Product Overview
 
 **Verification status:** written against the current implementation (app version
-0.11.1, `main` branch; the project is pre-1.0). All features described here are traceable to code in this
+0.12.0, `main` branch; the project is pre-1.0). All features described here are traceable to code in this
 repository; where behavior depends on data configured in the external PocketBase
 instance, that is called out explicitly.
 
@@ -19,7 +19,7 @@ the app on its own domain. Inside a gym:
   training, nutrition, and supplement plan with a single "Done" action per day.
 
 The user interface is **multilingual**: English is the default language, and
-Spanish, Turkish, and Armenian are also available. Visitors switch language with
+Spanish, Turkish, Armenian, and Russian are also available. Visitors switch language with
 a selector in the header; the choice is stored in a `locale` cookie. Every
 locale is left-to-right, and dates render in the Gregorian calendar (Babel
 medium format).
