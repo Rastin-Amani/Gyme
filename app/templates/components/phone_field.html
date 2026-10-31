@@ -1,32 +1,37 @@
 {% set phone_name = phone_name | default("phone") %}
-{% set phone_label = phone_label | default(_("Phone number")) %}
+{% set phone_label = phone_label | default(_("Phone")) %}
 {% set phone_value = phone_value | default("") %}
 {% set phone_required = phone_required | default("required") %}
 
-<div class="w-full" x-data="phoneField('{{ phone_value }}')">
-    <span class="label mb-1 block text-base-content/70">{{ phone_label }}</span>
-    <div class="input w-full">
-        <select
-            class="select select-ghost w-28 shrink-0 tabular-nums"
-            aria-label="{{ _('Country code') }}"
-            x-model="dialCode"
-            @change="sync()"
-            {{ phone_required }}
-        >
-            <template x-for="c in countries" :key="c.dial + c.name">
-                <option :value="'+' + c.dial" x-text="c.flag + ' +' + c.dial"></option>
-            </template>
-        </select>
-        <input
-            type="tel"
-            inputmode="numeric"
-            autocomplete="tel-national"
-            class="w-full bg-transparent tabular-nums outline-none"
-            placeholder="{{ _('Phone number') }}"
-            x-model="nationalNumber"
-            @input="onNationalInput($event)"
-            {{ phone_required }}
-        />
-    </div>
+<div class="w-full" x-data='phoneField({{ phone_value|tojson }})'>
+    <label class="input w-full">
+        <span class="label">{{ phone_label }}</span>
+        <div class="flex w-full min-w-0 items-center gap-1">
+            <div class="relative shrink-0">
+                <select
+                    class="select select-ghost w-auto min-w-0 appearance-none bg-transparent ps-0 pe-5 text-sm tabular-nums"
+                    aria-label="{{ _('Country code') }}"
+                    x-model="dialCode"
+                    x-init="$nextTick(() => { $el.value = dialCode; })"
+                    @change="sync()"
+                    {{ phone_required }}
+                >
+                    <template x-for="c in countries" :key="c.dial">
+                        <option :value="'+' + c.dial" x-text="'+' + c.dial"></option>
+                    </template>
+                </select>
+            </div>
+            <input
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel-national"
+                class="w-full min-w-0 bg-transparent tabular-nums outline-none"
+                placeholder="{{ _('Phone number') }}"
+                x-model="nationalNumber"
+                @input="onNationalInput($event)"
+                {{ phone_required }}
+            />
+        </div>
+    </label>
     <input type="hidden" name="{{ phone_name }}" x-model="phone" value="{{ phone_value }}" />
 </div>

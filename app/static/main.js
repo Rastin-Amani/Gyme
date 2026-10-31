@@ -89,6 +89,12 @@ const PHONE_COUNTRIES = [
     { name: 'Vietnam', dial: '84', flag: '🇻🇳' },
 ].sort((a, b) => a.name.localeCompare(b.name));
 
+/* The field only needs the dial codes; flags are emoji and render as letter
+   pairs (or tofu) on Windows, so the selector stays plain and unambiguous. */
+const PHONE_DIALS = [...new Set(PHONE_COUNTRIES.map((c) => c.dial))]
+    .sort((a, b) => Number(a) - Number(b))
+    .map((dial) => ({ dial }));
+
 /* ── Global UI store (UI state only; backend stays source of truth) ── */
 Alpine.store('ui', {
     sidebarOpen: false,
@@ -118,7 +124,7 @@ Alpine.store('ui', {
 });
 
 Alpine.data('phoneField', (initialValue) => ({
-    countries: PHONE_COUNTRIES,
+    countries: PHONE_DIALS,
     dialCode: '+1',
     nationalNumber: '',
     phone: '',
