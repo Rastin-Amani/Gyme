@@ -38,9 +38,14 @@ the theme tokens change, not the markup contract.
   Press compresses (`active:scale-[0.98]` on primary CTAs), hover is a tone change or 1px border shift.
 - Translucency is structural: the sticky header (`bg-base-100/80 backdrop-blur-xl`) and the mobile
   dock are the only blurred surfaces. Never stack glass on glass.
-- Icons are drawn SVG (1.6–1.8 stroke, `currentColor`), one system. Languages are listed by native name; emoji flags are not used as iconography.
-  Emoji are not iconography.
-- No kicker/eyebrow above titles. Section labels are small caps above a hairline (`divider divider-start`).
+- Icons are drawn SVG (1.6–1.8 stroke, `currentColor`), one system, and they come from one
+  registry: `icon("name", "classes")` in `app/templates.py`, never inline `<svg>` in a template.
+  Page chrome is the same idea — `page_header`, `detail_header` and `section_title` from
+  `components/ui.html`, so titles, badges, actions and section labels land in the same place on
+  every page. Emoji are not iconography; languages are listed by native name behind one language
+  icon (flags render as letter pairs or tofu on Windows).
+- No kicker/eyebrow above titles. Section labels are small caps from `section_title`, with no rule
+  above them.
 - Motion: CSS/DaisyUI transitions + existing `motion/mini` settle, stagger and count-up. Nothing
   gesture-driven is hand-animated; all of it collapses under `prefers-reduced-motion`.
 - States everywhere: hover, active, focus-visible (2px pine outline), disabled, loading (DaisyUI
