@@ -190,12 +190,19 @@
                     document.querySelectorAll('#bottom-dock a, aside .menu a').forEach(function (link) {
                         var href = link.getAttribute('href');
                         if (!href) return;
+                        var inDock = !!link.closest('#bottom-dock');
                         if (isActive(href, path)) {
-                            link.classList.add('menu-active', 'dock-active');
+                            link.classList.add('menu-active');
                             link.setAttribute('aria-current', 'page');
+                            if (inDock) {
+                                link.classList.add('bg-primary', 'text-primary-content', 'rounded-field');
+                            }
                         } else {
                             link.classList.remove('menu-active', 'dock-active');
                             link.removeAttribute('aria-current');
+                            if (inDock) {
+                                link.classList.remove('bg-primary', 'text-primary-content', 'rounded-field');
+                            }
                         }
                     });
                     // Sync header title from partial content (persistent shell)
