@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 
 import pytest
+from babel.messages.pofile import read_po
 from fastapi.testclient import TestClient
 
 from app.i18n import (
@@ -31,7 +33,7 @@ def client():
 
 def test_registry_enabled_languages():
     assert DEFAULT_LOCALE.code == "en" and not DEFAULT_LOCALE.is_rtl
-    for code in ("en", "es", "tr", "hy"):
+    for code in ("en", "es", "tr", "hy", "ru"):
         assert code in ENABLED_LOCALES
     # Every supported locale is LTR — the app is English-only and LTR.
     for code, loc in LOCALES.items():
@@ -73,8 +75,12 @@ def test_locale_switch_open_redirect_guard(client):
 def test_html_lang_dir_follows_cookie(client):
     r = client.get("/login")
     assert 'lang="en"' in r.text and 'dir="ltr"' in r.text
-    for name in ("English", "Español", "Türkçe", "Հայերեն"):
+    for name in ("English", "Español", "Türkçe", "Հայերեն", "Русский"):
         assert name in r.text
+    # One shared language icon; no flags (emoji and hand-drawn flags look
+    # broken at 16px and the language names already say which is which).
+    assert "m10.5 21 5.25-11.25" in r.text
+    assert 'viewBox="0 0 20 15"' not in r.text
 
     # Non-default enabled locales are all LTR as well.
     r = client.get("/login", cookies={"locale": "tr"})
@@ -93,3 +99,31 @@ def test_locale_switcher_full_reload_attr(client):
     r = client.get("/login")
     assert 'hx-boost="false"' in r.text
     assert "/locale/" in r.text
+
+
+def test_russian_catalog_renders(client):
+    r = client.get("/login", cookies={"locale": "ru"})
+    assert 'lang="ru"' in r.text
+    assert "Войти" in r.text
+
+
+def test_every_enabled_catalog_is_complete():
+    """An unmaintained empty catalog silently looks like English on switch."""
+    pot = read_po(open(Path("app/locales/messages.pot"), "rb"))
+    ids = {m.id for m in pot if m.id}
+    for code in ENABLED_LOCALES:
+        if code == DEFAULT_LOCALE.code:
+            continue
+        po = read_po(open(Path(f"app/locales/{code}/LC_MESSAGES/messages.po"), "rb"))
+        missing = [
+            m.id for m in po if m.id in ids and not m.string and not getattr(m, "obsolete", False)
+        ]
+        assert not missing, (code, missing[:5])
+
+
+def test_switcher_placement_is_scoped():
+    """`up` must not leak from the sidebar include into the header include."""
+    src = Path("app/templates/layouts/dashboard.html").read_text(encoding="utf-8")
+    includes = [line for line in src.splitlines() if "components/locale_switcher.html" in line]
+    assert includes
+    assert all("{% with" in line for line in includes), includes
