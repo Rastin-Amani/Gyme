@@ -15,7 +15,7 @@
                 hx-get="/dashboard"
                 hx-target="#dashboard-content"
                 hx-swap="outerHTML"
-                hx-sync="closest form:replace"
+                hx-sync="this:replace"
                 hx-indicator="#dashboard-content"
             >
                 <option value="all" {% if timeframe == 'all' %}selected{% endif %}>

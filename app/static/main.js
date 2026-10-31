@@ -171,16 +171,21 @@ Alpine.start();
             target: '#page-content',
             swap: 'innerHTML show:window:top',
             select: '#page-content',
-            pushUrl: true,
+            push: 'true',
         });
     };
 
     function clearModal() {
-        const c = document.getElementById('modal-container');
-        if (c) c.innerHTML = '';
-        try {
-            Alpine.store('ui').modalOpen = false;
-        } catch (e) { /* store not ready yet */ }
+        // Defer: HX-Trigger fires every event on the request element, in JSON
+        // order. Clearing the modal synchronously on closeModal would detach the
+        // form before refreshList/show-toast can bubble to their document handlers.
+        setTimeout(() => {
+            const c = document.getElementById('modal-container');
+            if (c) c.innerHTML = '';
+            try {
+                Alpine.store('ui').modalOpen = false;
+            } catch (e) { /* store not ready yet */ }
+        }, 0);
     }
 
     // Server mutation events → local UI sync (no full reload).

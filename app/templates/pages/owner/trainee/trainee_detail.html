@@ -91,7 +91,14 @@
     <h2 class="mt-8 mb-3 text-xs font-semibold tracking-wide text-base-content/50 uppercase">{{ _('History') }}</h2>
 
     {% if progress_logs %}
-        <div class="flex flex-col gap-3">
+        <div
+            id="progress-logs-content"
+            class="flex flex-col gap-3"
+            hx-get="/trainees/{{ trainee.id }}"
+            hx-trigger="performListRefresh from:body"
+            hx-select="#progress-logs-content"
+            hx-swap="outerHTML"
+        >
             {% for log in progress_logs %}
                 <details class="collapse collapse-arrow border border-base-300 bg-base-100">
                     <summary class="collapse-title flex min-h-12 items-center gap-2 text-sm font-semibold">
@@ -170,6 +177,7 @@
                                     hx-get="/progress-log/{{ log.id }}/edit"
                                     hx-target="#modal-container"
                                     hx-trigger="click"
+                                    hx-select="unset"
                                     hx-swap="innerHTML">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7" stroke="currentColor" class="size-4" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />

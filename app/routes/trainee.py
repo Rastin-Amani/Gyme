@@ -75,9 +75,13 @@ def trainees_list(
                 "min_birthdate": request.query_params.get("min_birthdate"),
                 "max_birthdate": request.query_params.get("max_birthdate"),
             },
-            "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees)
-            == 0,
-            "empty_message": _("No trainee found with these criteria"),
+            "show_empty_state": len(trainees.items if hasattr(trainees, "items") else trainees) == 0
+            and bool(query or gender or status),
+            "empty_message": (
+                _("No trainee found with these criteria")
+                if (query or gender or status or min_birthdate or max_birthdate)
+                else ""
+            ),
             "page": page,
             "total_pages": total_pages,
             "total": total,
