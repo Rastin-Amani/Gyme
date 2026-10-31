@@ -107,7 +107,7 @@
         <div id="modal-container"></div>
         <div
             id="toast-container"
-            class="toast toast-center sm:toast-end top-4 z-[60] w-full max-w-sm px-4 sm:px-0"
+            class="toast toast-center sm:toast-end top-4 z-[60] w-full max-w-sm px-4 pointer-events-none sm:px-0"
             role="status"
             aria-live="polite"
             aria-atomic="true"
@@ -186,7 +186,7 @@
                         icon = `<svg xmlns="http://www.w3.org/2000/svg" class="size-5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
                     }
 
-                    toast.className = `alert ${colorClass} alert-soft flex items-center justify-between rounded-box border border-base-300 text-sm transition-all duration-300 ease-out opacity-0 translate-y-2`;
+                    toast.className = `alert ${colorClass} alert-soft pointer-events-auto flex items-center justify-between rounded-box border border-base-300 text-sm transition-all duration-300 ease-out opacity-0 translate-y-2`;
                     toast.setAttribute('role', 'status');
 
                     // Use safe DOM construction to prevent XSS via message
@@ -204,6 +204,12 @@
 
                     toastContainer.appendChild(toast);
 
+                    // A new service worker needs an explicit reload; make that toast clickable.
+                    if (evt.detail.action === 'reload') {
+                        toast.classList.add('cursor-pointer', 'pointer-events-auto');
+                        toast.addEventListener('click', () => window.location.reload());
+                    }
+
                     setTimeout(() => {
                         toast.classList.remove('translate-y-2', 'opacity-0');
                     }, 50);
@@ -211,7 +217,7 @@
                     setTimeout(() => {
                         toast.classList.add('opacity-0');
                         setTimeout(() => toast.remove(), 300);
-                    }, 4000);
+                    }, Number(evt.detail.duration) || 4000);
                 });
 
                 // 🟢 2. Delayed Redirect Listener — partial app navigation when possible,
@@ -251,6 +257,7 @@
                                         detail: {
                                             message: {{ _('A new version is available. Click to update.') | tojson }},
                                             type: 'info',
+                                            action: 'reload',
                                         },
                                     }));
                                 }

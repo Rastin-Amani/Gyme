@@ -4,7 +4,7 @@ from app.services.auth import create_user, update_user
 from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 import json
-from app.utils import hx_toast
+from app.utils import hx_toast, hx_toast_now
 from app.security import validate_email, validate_phone, validate_length
 from app.i18n import _
 
@@ -133,7 +133,7 @@ def coach_delete(request: Request, id: str):
     # Only owner can delete coaches
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("Access denied"), "error")
+        headers = hx_toast_now(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         pb = request.state.pb
@@ -166,7 +166,7 @@ def coach_create(
 ):
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("Access denied"), "error")
+        headers = hx_toast_now(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         # Validate inputs
@@ -177,7 +177,7 @@ def coach_create(
             first_name = validate_length(first_name, "first_name", 1, 50)
             last_name = validate_length(last_name, "last_name", 1, 50)
         except ValueError as ve:
-            headers = hx_toast(str(ve), "error")
+            headers = hx_toast_now(str(ve), "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
         pb = request.state.pb
         tenant_id = request.state.tenant.id
@@ -224,7 +224,7 @@ def coach_update(
 ):
     user = request.state.user
     if getattr(user, "role", None) in ("trainee", "coach"):
-        headers = hx_toast(_("Access denied"), "error")
+        headers = hx_toast_now(_("Access denied"), "error")
         return HTMLResponse(content="", status_code=403, headers=headers)
     try:
         try:
@@ -234,7 +234,7 @@ def coach_update(
             first_name = validate_length(first_name, "first_name", 1, 50)
             last_name = validate_length(last_name, "last_name", 1, 50)
         except ValueError as ve:
-            headers = hx_toast(str(ve), "error")
+            headers = hx_toast_now(str(ve), "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
         pb = request.state.pb
         tenant_id = request.state.tenant.id

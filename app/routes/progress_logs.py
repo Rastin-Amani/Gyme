@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from ..templates import templates
-from app.utils import hx_toast
+from app.utils import hx_toast, hx_toast_now
 from app.services.trainee import get_trainee_by_id, update_trainee
 from app.services.progress_logs import (
     create_progress_log,
@@ -77,14 +77,14 @@ async def save_progress_log(
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
             return HTMLResponse(
-                content="", status_code=403, headers=hx_toast(_("Access denied"), "error")
+                content="", status_code=403, headers=hx_toast_now(_("Access denied"), "error")
             )
         # Verify trainee belongs to tenant
         try:
             get_trainee_by_id(pb, tenant_id, trainee_id)
         except Exception:
             return HTMLResponse(
-                content="", status_code=404, headers=hx_toast(_("Trainee not found"), "error")
+                content="", status_code=404, headers=hx_toast_now(_("Trainee not found"), "error")
             )
 
         # 🟢 Helper function to safely convert strings to floats with bounds
@@ -282,14 +282,16 @@ async def save_progress_log_edit(
         user = request.state.user
         if getattr(user, "role", None) == "trainee":
             return HTMLResponse(
-                content="", status_code=403, headers=hx_toast(_("Access denied"), "error")
+                content="", status_code=403, headers=hx_toast_now(_("Access denied"), "error")
             )
         # Verify log belongs to tenant
         try:
             get_progress_log_with_tenant_check(pb, tenant_id, log_id)
         except Exception:
             return HTMLResponse(
-                content="", status_code=404, headers=hx_toast(_("Assessment not found"), "error")
+                content="",
+                status_code=404,
+                headers=hx_toast_now(_("Assessment not found"), "error"),
             )
 
         # 🟢 Helper function to safely convert strings to floats with bounds

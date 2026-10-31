@@ -370,7 +370,7 @@ def trainee_create(
             if notes:
                 notes = validate_length(notes, "notes", 0, 1000)
         except ValueError as ve:
-            headers = hx_toast(str(ve), "error")
+            headers = hx_toast_now(str(ve), "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
         # Validate birthdate format if provided
         if birthdate:
@@ -392,7 +392,7 @@ def trainee_create(
 
         if not user_result.get("ok"):
             error_msg = user_result.get("error", _("Error creating user."))
-            headers = hx_toast(error_msg, "error")
+            headers = hx_toast_now(error_msg, "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
 
         new_user = user_result["user"]
@@ -477,7 +477,7 @@ def trainee_update(
             first_name = validate_length(first_name, "first_name", 1, 50)
             last_name = validate_length(last_name, "last_name", 1, 50)
         except ValueError as ve:
-            headers = hx_toast(str(ve), "error")
+            headers = hx_toast_now(str(ve), "error")
             return HTMLResponse(content="", status_code=400, headers=headers)
         if birthdate:
             import re
@@ -495,10 +495,10 @@ def trainee_update(
                 coach_trainees = list_trainees(pb, tenant_id, coach_id=user.id, per_page=500)
                 ids = {t.id for t in getattr(coach_trainees, "items", [])}
                 if id not in ids:
-                    headers = hx_toast(_("Access denied"), "error")
+                    headers = hx_toast_now(_("Access denied"), "error")
                     return HTMLResponse(content="", status_code=403, headers=headers)
         except Exception:
-            headers = hx_toast(_("Trainee not found."), "error")
+            headers = hx_toast_now(_("Trainee not found."), "error")
             return HTMLResponse(content="", status_code=404, headers=headers)
 
         # --- STEP 2: Update Auth User ---

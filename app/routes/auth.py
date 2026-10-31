@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Form
 from fastapi.responses import RedirectResponse, HTMLResponse
 from ..templates import templates
 from app.services.auth import login_user, update_user_password
-from app.utils import hx_toast
+from app.utils import hx_toast, hx_toast_now
 from app.security import set_auth_cookie, clear_auth_cookie, validate_email
 from app.i18n import _
 import time
@@ -158,24 +158,24 @@ def handle_change_password(
     tenant = getattr(request.state, "tenant", None)
 
     if not user or not pb:
-        headers = hx_toast(_("You are not logged in!"), "error")
+        headers = hx_toast_now(_("You are not logged in!"), "error")
         headers["HX-Redirect"] = "/login"
         return HTMLResponse(content="", headers=headers)
 
     if new_password != confirm_password:
-        headers = hx_toast(_("New password and its confirmation do not match."), "warning")
+        headers = hx_toast_now(_("New password and its confirmation do not match."), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
 
     if len(new_password) < 8:
-        headers = hx_toast(_("Password must be at least 8 characters."), "warning")
+        headers = hx_toast_now(_("Password must be at least 8 characters."), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
     if len(new_password) > 72:
-        headers = hx_toast(_("Password is too long"), "warning")
+        headers = hx_toast_now(_("Password is too long"), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
     # Password complexity: at least one upper/lower/digit optional but enforce not common
     # Prevent reusing same as old is handled by PB; also prevent identity reuse
     if new_password.lower() in str(getattr(user, "email", "")).lower():
-        headers = hx_toast(_("Password must not be similar to the email"), "warning")
+        headers = hx_toast_now(_("Password must not be similar to the email"), "warning")
         return HTMLResponse(content="", headers=headers, status_code=400)
 
     collection_name = getattr(user, "collectionName", "users")
