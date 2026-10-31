@@ -2,7 +2,9 @@
 <html
     lang="{{ locale.code }}"
     dir="{{ locale.direction }}"
-    data-theme="{{ 'light' if tenant.theme == 'custom' else (tenant.theme or 'gyme') }}"
+    {# One DaisyUI theme is built (app/static/main.css); tenant colours come from
+       the :root brand_theme overrides below, not from data-theme. #}
+    data-theme="gyme"
 >
     <head>
         <meta charset="UTF-8" />

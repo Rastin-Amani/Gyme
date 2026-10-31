@@ -64,12 +64,21 @@ self.addEventListener('fetch', (event) => {
     if (url.pathname === '/sw.js') return;
     // Skip Workbox JS modules
     if (url.pathname.startsWith('/js/workbox')) return;
+    // Cross-origin assets (PocketBase photos, tenant logo) are not this worker's
+    // business: proxying them through the SW fails under the page CSP.
+    if (url.origin !== self.location.origin) return;
     // Skip same-origin CSS/JS/fonts (handled by Workbox above)
     if (url.origin === self.location.origin && /\.(css|js|woff2?|json)(\?.*)?$/.test(url.pathname))
         return;
 
-    // ---- Image caching: same-origin (under /static/) AND cross-origin (PocketBase) ----
-    if (/\.(png|ico|svg|jpg|jpeg|gif|webp|avif)(\?.*)?$/i.test(url.pathname)) {
+    // ---- Image caching: same-origin only ----
+    // Cross-origin images (PocketBase photos/logo) are left to the browser:
+    // re-fetching them from the worker fails under the page CSP/SW tainting rules
+    // and broke progress-photo thumbnails.
+    if (
+        url.origin === self.location.origin &&
+        /\.(png|ico|svg|jpg|jpeg|gif|webp|avif)(\?.*)?$/i.test(url.pathname)
+    ) {
         event.respondWith(
             caches.match(request).then((cached) => {
                 if (cached) return cached;

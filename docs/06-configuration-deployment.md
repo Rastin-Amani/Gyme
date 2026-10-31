@@ -35,7 +35,7 @@ The `tenants` collection drives per-domain behavior and all branding:
 | `domain` | middleware | Exact hostname (without port) that maps requests to this gym. One record per served hostname |
 | `name` | header, login card, manifest | Display name ("Gym" fallback in UI) |
 | `logo` (file) | login, dashboard header, favicon redirect, manifest icons, iOS splash | Served via PocketBase thumbnails (`?thumb=…`) |
-| `theme` | `base.html` `data-theme` | daisyUI theme name: default `gyme`; `custom` enables CSS-variable injection; `light` also supported |
+| `theme` | `base.html` brand injection | Only `custom` changes rendering (enables the `brand_theme` CSS-variable block); the daisyUI theme itself is always `gyme` |
 | `brand_theme` | `base.html` `<style>` block when `theme == "custom"` | Map of CSS variable names → values (`_` rendered as `-`) |
 | `primary_color`, `brand_colors.base_100`, `brand_colors.base_content` | iOS splash generator | Splash background/text colors with sensible fallbacks |
 | `is_main` | (no longer read by the app) | Previously flagged the tenant serving the marketing landing page; the app now always redirects `/` → app and hosts no landing page |

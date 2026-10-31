@@ -238,9 +238,10 @@ PocketBase datetime strings (`YYYY-MM-DD[ HH:MM:SS(.f)]`, optional trailing
 locale, falling back to `%Y-%m-%d`. On bad input they return the raw string
 with a `date_parse_error` warning.
 
-Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
-'custom'` else `tenant.theme` (default `gyme`); custom tenants may inject a
-`:root { --var: value }` block from the `brand_theme` map.
+Theme resolution (`base.html`): `data-theme` is always `gyme`, the single theme
+built into `app/static/main.css`; custom tenants inject a
+`:root { --var: value }` block from the `brand_theme` map when
+`tenant.theme == 'custom'`.
 
 ## 7. Frontend build pipeline
 
@@ -271,8 +272,10 @@ Theme resolution (`base.html`): `data-theme` = `light` if `tenant.theme ==
   `/static/js/`):
   - same-origin css/js/font/json: StaleWhileRevalidate, max 60 entries /
     30 days;
-  - images (any origin — covers PocketBase photo URLs): cache-first, add to
-    image cache on success;
+  - same-origin images: cache-first, add to image cache on success.
+    Cross-origin images (PocketBase photos/logo) bypass the worker — proxying
+    them broke thumbnails under the page CSP, so the browser loads them
+    directly;
   - navigations/HTML: network-first; on failure fall back to cached copy of
     that URL, then cached `/offline/`, then an inline offline response
     (503).

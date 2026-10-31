@@ -11,10 +11,19 @@ from fastapi.responses import RedirectResponse, JSONResponse
 from structlog import get_logger
 
 from app.services.tenants import get_tenant_by_domain
-from app.pb import get_pb
+from app.pb import get_pb, PB_URL
 from app.logging_config import bind_request_context, clear_request_context
 from app.security import is_valid_host
 from app.i18n import LOCALE_COOKIE, _, set_request_locale
+
+# Progress photos, tenant logos and favicons are <img> elements served by
+# PocketBase; CSP must allow that origin (self is the FastAPI app, not PB).
+_pb_url_parts = urlparse(PB_URL)
+PB_ORIGIN = (
+    f"{_pb_url_parts.scheme}://{_pb_url_parts.netloc}"
+    if _pb_url_parts.scheme in ("http", "https")
+    else ""
+)
 
 # 🟢 1. Define routes that anyone can access without a token.
 # Notice "/" is REMOVED from this list so .startswith() doesn't match everything.
@@ -346,7 +355,7 @@ class TenantMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "img-src 'self' data: https: blob:; "
+            f"img-src 'self' data: https: blob:{' ' + PB_ORIGIN if PB_ORIGIN else ''}; "
             "font-src 'self' data: https:; "
             "connect-src 'self' https:; "
             "frame-ancestors 'none'; "
