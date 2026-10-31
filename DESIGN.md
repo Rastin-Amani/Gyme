@@ -38,7 +38,7 @@ the theme tokens change, not the markup contract.
   Press compresses (`active:scale-[0.98]` on primary CTAs), hover is a tone change or 1px border shift.
 - Translucency is structural: the sticky header (`bg-base-100/80 backdrop-blur-xl`) and the mobile
   dock are the only blurred surfaces. Never stack glass on glass.
-- Icons are drawn SVG (1.6–1.8 stroke, `currentColor`), one system. Flags stay in the locale switcher.
+- Icons are drawn SVG (1.6–1.8 stroke, `currentColor`), one system. Languages are listed by native name; emoji flags are not used as iconography.
   Emoji are not iconography.
 - No kicker/eyebrow above titles. Section labels are small caps above a hairline (`divider divider-start`).
 - Motion: CSS/DaisyUI transitions + existing `motion/mini` settle, stagger and count-up. Nothing

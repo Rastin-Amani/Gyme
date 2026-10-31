@@ -31,7 +31,6 @@ class Locale:
     direction: str  # "rtl" | "ltr"
     enabled: bool = False
     default: bool = False
-    flag: str = ""  # emoji shown in the language switcher
 
     @property
     def is_rtl(self) -> bool:
@@ -44,19 +43,19 @@ class Locale:
 # English first: the application's default (first-visit) language is English,
 # and English is the *source* language for msgids (see module docstring).
 LOCALES: dict[str, Locale] = {
-    "en": Locale("en", "English", "ltr", enabled=True, default=True, flag="🇬🇧"),
-    "es": Locale("es", "Español", "ltr", enabled=True, flag="🇪🇸"),
-    "tr": Locale("tr", "Türkçe", "ltr", enabled=True, flag="🇹🇷"),
-    "hy": Locale("hy", "Հայերեն", "ltr", enabled=True, flag="🇦🇲"),
+    "en": Locale("en", "English", "ltr", enabled=True, default=True),
+    "es": Locale("es", "Español", "ltr", enabled=True),
+    "tr": Locale("tr", "Türkçe", "ltr", enabled=True),
+    "hy": Locale("hy", "Հայերեն", "ltr", enabled=True),
     # --- prepared but disabled (same workflow, no architecture changes) ---
-    "ru": Locale("ru", "Русский", "ltr", flag="🇷🇺"),
-    "de": Locale("de", "Deutsch", "ltr", flag="🇩🇪"),
-    "fr": Locale("fr", "Français", "ltr", flag="🇫🇷"),
-    "pt-BR": Locale("pt-BR", "Português (Brasil)", "ltr", flag="🇧🇷"),
-    "zh-CN": Locale("zh-CN", "简体中文", "ltr", flag="🇨🇳"),
-    "ja": Locale("ja", "日本語", "ltr", flag="🇯🇵"),
-    "ko": Locale("ko", "한국어", "ltr", flag="🇰🇷"),
-    "hi": Locale("hi", "हिन्दी", "ltr", flag="🇮🇳"),
+    "ru": Locale("ru", "Русский", "ltr"),
+    "de": Locale("de", "Deutsch", "ltr"),
+    "fr": Locale("fr", "Français", "ltr"),
+    "pt-BR": Locale("pt-BR", "Português (Brasil)", "ltr"),
+    "zh-CN": Locale("zh-CN", "简体中文", "ltr"),
+    "ja": Locale("ja", "日本語", "ltr"),
+    "ko": Locale("ko", "한국어", "ltr"),
+    "hi": Locale("hi", "हिन्दी", "ltr"),
 }
 
 DEFAULT_LOCALE = next(loc for loc in LOCALES.values() if loc.default)
