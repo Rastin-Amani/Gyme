@@ -75,8 +75,9 @@ def test_profile_has_no_plans_edit_link():
 
 
 def test_profile_links_to_change_password():
-    src = _read("app/templates/pages/owner/profile/profile.html")
-    assert 'href="/change-password"' in src
+    for role in ("owner", "user"):
+        src = _read(f"app/templates/pages/{role}/profile/profile.html")
+        assert "/change-password" in src
 
 
 # --- Issue #7: app version is a single source of truth -------------------
@@ -421,17 +422,16 @@ def test_dock_active_item_is_primary_filled_not_underlined():
 def test_dashboard_plan_icons_match_the_plan_list():
     stats = _read("app/templates/components/dashboard_stats.html")
     plans = _read("app/templates/pages/owner/plan/plans.html")
-    dumbbell = "M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5"
-    diet = "M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6"
-    assert dumbbell in plans and dumbbell in stats
-    assert diet in plans and diet in stats
+    for name in ("dumbbell", "apple"):
+        assert f'icon("{name}"' in stats
+        assert f'icon("{name}"' in plans
 
 
-def test_nav_icons_use_users_and_user_circle():
+def test_nav_icons_use_users_and_profile():
     src = _read("app/templates/layouts/dashboard.html")
-    assert "M15 19.128a9.38 9.38 0 0 0 2.625.372" in src  # users (Trainees)
-    assert "M17.982 18.725A7.488 7.488 0 0 0 12 15.75" in src  # user-circle (Profile)
-    assert "M9.594 3.94" not in src  # old gear icon is gone
+    assert 'icon("users"' in src
+    assert 'icon("profile"' in src
+    assert 'icon("gear"' not in src
 
 
 def test_favicon_fallback_is_a_real_file():
@@ -442,6 +442,29 @@ def test_favicon_fallback_is_a_real_file():
 
 def test_trainee_status_dot_is_a_plain_circle():
     src = _read("app/templates/pages/owner/trainee/trainees.html")
-    dot = src[src.index("indicator-item") : src.index("indicator-item") + 160]
+    dot = src[src.index("absolute end-0 bottom-0") : src.index("absolute end-0 bottom-0") + 160]
     assert "badge" not in dot
     assert "rounded-full" in dot
+
+
+def test_every_icon_used_exists_in_the_shared_set():
+    import pathlib
+    import re
+
+    from app.templates import _ICONS
+
+    used = set()
+    for path in pathlib.Path("app/templates").rglob("*.html"):
+        used |= set(re.findall(r'icon\("([a-z-]+)"', path.read_text()))
+    assert used, "expected templates to use the shared icon set"
+    assert used <= set(_ICONS), f"missing icons: {sorted(used - set(_ICONS))}"
+
+
+def test_pages_share_the_same_max_width():
+    import pathlib
+
+    layout = _read("app/templates/layouts/dashboard.html")
+    assert "max-w-3xl" in layout
+    # No page narrows itself differently from the shell.
+    for path in pathlib.Path("app/templates/pages").rglob("*.html"):
+        assert "max-w-2xl" not in path.read_text(), path
