@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-09-26 12:03+0000\n"
+"POT-Creation-Date: 2026-10-31 12:07+0000\n"
 "PO-Revision-Date: 2026-09-26 12:03+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: es\n"
@@ -16,1504 +16,1645 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.18.0\n"
 
-#: app/middleware.py:171 app/middleware.py:197
+#: app/middleware.py:225 app/middleware.py:251
 msgid "Invalid request (CSRF)"
-msgstr ""
+msgstr "Solicitud no válida (CSRF)"
 
-#: app/routes/auth.py:46 app/templates/pages/auth/login.html:150
-#: app/templates/pages/auth/login.html:239
+#: app/routes/coach.py:136 app/routes/coach.py:169 app/routes/coach.py:234
+#: app/routes/item.py:130 app/routes/item.py:208 app/routes/item.py:315
+#: app/routes/plan.py:528 app/routes/plan.py:620 app/routes/progress_logs.py:80
+#: app/routes/progress_logs.py:285 app/routes/trainee.py:509 app/utils.py:30
+msgid "Access denied"
+msgstr "Acceso denegado"
+
+#: app/routes/auth.py:37 app/routes/auth.py:57
+#: app/templates/pages/auth/login.html:109 app/templates/pages/auth/login.html:155
 msgid "Log in"
-msgstr ""
+msgstr "Iniciar sesión"
 
-#: app/routes/auth.py:92
+#: app/routes/auth.py:103
 msgid "System error: Gym not found!"
-msgstr ""
+msgstr "Error del sistema: ¡gimnasio no encontrado!"
 
-#: app/routes/auth.py:100
+#: app/routes/auth.py:110
 msgid "Too many login attempts. Please wait a few minutes."
-msgstr ""
+msgstr "Demasiados intentos de inicio de sesión. Espera unos minutos."
 
-#: app/routes/auth.py:109
+#: app/routes/auth.py:118
 msgid "Email and password are required"
-msgstr ""
-
-#: app/routes/auth.py:116
-msgid "Invalid email format"
-msgstr ""
+msgstr "El correo y la contraseña son obligatorios"
 
 #: app/routes/auth.py:124
+msgid "Invalid email format"
+msgstr "Formato de correo no válido"
+
+#: app/routes/auth.py:131
 msgid "Wrong email or password."
-msgstr ""
+msgstr "Correo o contraseña incorrectos."
 
-#: app/routes/auth.py:163
+#: app/routes/auth.py:160
 msgid "You are not logged in!"
-msgstr ""
+msgstr "¡No has iniciado sesión!"
 
-#: app/routes/auth.py:168
+#: app/routes/auth.py:165
 msgid "New password and its confirmation do not match."
-msgstr ""
+msgstr "La nueva contraseña y su confirmación no coinciden."
+
+#: app/routes/auth.py:169
+msgid "Password must be at least 8 characters."
+msgstr "La contraseña debe tener al menos 8 caracteres."
 
 #: app/routes/auth.py:172
-msgid "Password must be at least 8 characters."
-msgstr ""
-
-#: app/routes/auth.py:175
 msgid "Password is too long"
-msgstr ""
+msgstr "La contraseña es demasiado larga"
 
-#: app/routes/auth.py:180
+#: app/routes/auth.py:177
 msgid "Password must not be similar to the email"
-msgstr ""
+msgstr "La contraseña no debe parecerse al correo"
 
-#: app/routes/auth.py:205
+#: app/routes/auth.py:202
 msgid "Password changed successfully! 🔒"
-msgstr ""
+msgstr "¡Contraseña cambiada correctamente! 🔒"
 
 #: app/routes/coach.py:37 app/templates/pages/owner/coach/coaches.html:6
-#: app/templates/pages/owner/profile/profile.html:65
+#: app/templates/pages/owner/profile/profile.html:48
 msgid "Coaches"
-msgstr ""
+msgstr "Entrenadores"
 
-#: app/routes/coach.py:60 app/templates/pages/owner/coach/coaches.html:9
+#: app/routes/coach.py:60 app/templates/pages/owner/coach/coaches.html:10
 msgid "New coach"
-msgstr ""
+msgstr "Nuevo entrenador"
 
 #: app/routes/coach.py:88
 msgid "Coach details"
-msgstr ""
+msgstr "Datos del entrenador"
 
 #: app/routes/coach.py:114
 msgid "Edit coach"
-msgstr ""
+msgstr "Editar entrenador"
 
-#: app/routes/coach.py:127
+#: app/routes/coach.py:127 app/templates/forms/coaches_form.html:70
+#: app/templates/forms/coaches_form.html:83
 msgid "Delete coach"
-msgstr ""
-
-#: app/routes/coach.py:136 app/routes/coach.py:169 app/routes/coach.py:227
-#: app/routes/item.py:195 app/routes/plan.py:498 app/routes/progress_logs.py:80
-#: app/routes/progress_logs.py:284 app/routes/trainee.py:486
-msgid "Access denied"
-msgstr ""
+msgstr "Eliminar entrenador"
 
 #: app/routes/coach.py:142
 msgid "Coach deleted successfully."
-msgstr ""
+msgstr "Entrenador eliminado correctamente."
 
 #: app/routes/coach.py:152
 msgid "Error deleting coach."
-msgstr ""
+msgstr "Error al eliminar el entrenador."
 
-#: app/routes/coach.py:196 app/routes/trainee.py:385
+#: app/routes/coach.py:196 app/routes/trainee.py:398
 msgid "Error creating user."
-msgstr ""
+msgstr "Error al crear el usuario."
 
-#: app/routes/coach.py:200
-msgid "Coach registered successfully."
+#: app/routes/coach.py:202
+#, python-format
+msgid ""
+"Coach registered. Initial password: %(password)s (copy it now, it is not "
+"shown again)"
 msgstr ""
+"Entrenador registrado. Contraseña inicial: %(password)s (cópiala ahora; no "
+"se volverá a mostrar)"
 
-#: app/routes/coach.py:212 app/routes/trainee.py:432
+#: app/routes/coach.py:219 app/routes/trainee.py:452
 msgid "Server error: check the entered information."
-msgstr ""
+msgstr "Error del servidor: revisa la información introducida."
 
-#: app/routes/coach.py:256
+#: app/routes/coach.py:263
 msgid "Coach information updated successfully."
-msgstr ""
+msgstr "Información del entrenador actualizada correctamente."
 
-#: app/routes/coach.py:268 app/routes/plan.py:554 app/routes/trainee.py:534
+#: app/routes/coach.py:275 app/routes/plan.py:595 app/routes/trainee.py:557
 msgid "Error updating information."
-msgstr ""
+msgstr "Error al actualizar la información."
 
 #: app/routes/dashboard.py:36
 msgid "Management dashboard"
-msgstr ""
+msgstr "Panel de gestión"
 
-#: app/routes/debug.py:113 app/routes/user/dashboard.py:74
+#: app/routes/debug.py:113
 msgid "User dashboard"
-msgstr ""
+msgstr "Panel del usuario"
 
-#: app/routes/item.py:63 app/routes/item.py:97
+#: app/routes/item.py:64 app/routes/item.py:98
 msgid "Edit item"
-msgstr ""
+msgstr "Editar elemento"
 
-#: app/routes/item.py:129
+#: app/routes/item.py:139
 msgid "Item deleted successfully."
-msgstr ""
+msgstr "Elemento eliminado correctamente."
 
-#: app/routes/item.py:137 app/routes/item.py:256 app/routes/item.py:362
+#: app/routes/item.py:147 app/routes/item.py:269 app/routes/item.py:384
 msgid "Something went wrong. Please try again."
-msgstr ""
+msgstr "Algo salió mal. Inténtalo de nuevo."
 
-#: app/routes/item.py:149
+#: app/routes/item.py:159
 msgid "Delete item"
-msgstr ""
+msgstr "Eliminar elemento"
 
-#: app/routes/item.py:183 app/routes/item.py:289 app/routes/plan.py:391
-#: app/routes/plan.py:501
+#: app/routes/item.py:196 app/routes/item.py:306 app/routes/plan.py:417
+#: app/routes/plan.py:531
 msgid "Invalid plan type"
-msgstr ""
+msgstr "Tipo de plan no válido"
 
-#: app/routes/item.py:199 app/routes/plan.py:495
+#: app/routes/item.py:212 app/routes/plan.py:525
 msgid "Plan not found"
-msgstr ""
+msgstr "Plan no encontrado"
 
-#: app/routes/item.py:248
+#: app/routes/item.py:261
 msgid "Item added successfully."
-msgstr ""
+msgstr "Elemento añadido correctamente."
 
-#: app/routes/item.py:300
+#: app/routes/item.py:322
 msgid "Item not found"
-msgstr ""
+msgstr "Elemento no encontrado"
 
-#: app/routes/item.py:354
+#: app/routes/item.py:376
 msgid "Item updated successfully."
-msgstr ""
+msgstr "Elemento actualizado correctamente."
 
 #: app/routes/plan.py:96
 msgid "Plan templates"
-msgstr ""
+msgstr "Plantillas de planes"
 
 #: app/routes/plan.py:96 app/routes/user/plan.py:30
-#: app/templates/components/coach_stats.html:11
+#: app/templates/components/coach_stats.html:14
 #: app/templates/components/coach_stats.html:42
-#: app/templates/layouts/dashboard.html:92
-#: app/templates/layouts/dashboard.html:166
-#: app/templates/pages/owner/plan/plans.html:15
-#: app/templates/pages/owner/plan/plans.html:34
-#: app/templates/pages/owner/trainee/trainee_detail.html:155
+#: app/templates/components/dashboard_stats.html:15
+#: app/templates/components/dashboard_stats.html:20
+#: app/templates/components/dashboard_stats.html:26
+#: app/templates/layouts/dashboard.html:41 app/templates/layouts/dashboard.html:66
+#: app/templates/layouts/dashboard.html:151
+#: app/templates/layouts/dashboard.html:168
+#: app/templates/pages/owner/plan/plans.html:13
+#: app/templates/pages/owner/plan/plans.html:30
+#: app/templates/pages/owner/trainee/trainee_detail.html:193
 msgid "Plans"
-msgstr ""
+msgstr "Planes"
 
 #: app/routes/plan.py:109
 msgid "No plan found with these criteria"
-msgstr ""
+msgstr "No se encontró ningún plan con estos criterios"
 
 #: app/routes/plan.py:157
 msgid "New plan template"
-msgstr ""
+msgstr "Nueva plantilla de plan"
 
-#: app/routes/plan.py:157 app/templates/pages/owner/plan/plans.html:42
+#: app/routes/plan.py:157 app/templates/pages/owner/plan/plans.html:10
 msgid "New plan"
-msgstr ""
+msgstr "Nuevo plan"
 
-#: app/routes/plan.py:206 app/routes/user/plan.py:61
-#: app/templates/pages/user/plan/plan_detail.html:34
+#: app/routes/plan.py:206 app/routes/user/plan.py:67
+#: app/templates/pages/user/plan/plan_detail.html:19
 msgid "Plan details"
-msgstr ""
+msgstr "Detalles del plan"
 
-#: app/routes/plan.py:258
+#: app/routes/plan.py:261
 msgid "Edit plan"
-msgstr ""
+msgstr "Editar plan"
 
-#: app/routes/plan.py:348
+#: app/routes/plan.py:292
+msgid "Template not found"
+msgstr "Plantilla no encontrada"
+
+#: app/routes/plan.py:365
 msgid "Plan created from template successfully"
-msgstr ""
+msgstr "Plan creado desde la plantilla correctamente"
 
-#: app/routes/plan.py:356
+#: app/routes/plan.py:375
 msgid "Error connecting to the database."
-msgstr ""
+msgstr "Error al conectar con la base de datos."
 
-#: app/routes/plan.py:358
+#: app/routes/plan.py:377
 msgid "Template or trainee not found!"
-msgstr ""
+msgstr "¡Plantilla o alumno no encontrado!"
 
-#: app/routes/plan.py:360
+#: app/routes/plan.py:379
 msgid "Invalid input. Please check the dates."
-msgstr ""
+msgstr "Entrada no válida. Revisa las fechas."
 
-#: app/routes/plan.py:397
+#: app/routes/plan.py:414 app/routes/plan.py:539
+msgid "Select a trainee"
+msgstr "Seleccionar un alumno"
+
+#: app/routes/plan.py:423
 msgid "Days per week must be between 1 and 7"
-msgstr ""
+msgstr "Los días por semana deben estar entre 1 y 7"
 
-#: app/routes/plan.py:404 app/routes/plan.py:512 app/routes/progress_logs.py:87
+#: app/routes/plan.py:430 app/routes/plan.py:552 app/routes/progress_logs.py:87
 msgid "Trainee not found"
-msgstr ""
+msgstr "Alumno no encontrado"
 
-#: app/routes/plan.py:442
+#: app/routes/plan.py:468
 msgid "New template saved successfully"
-msgstr ""
+msgstr "Nueva plantilla guardada correctamente"
 
-#: app/routes/plan.py:444
+#: app/routes/plan.py:470
 msgid "New plan created successfully"
-msgstr ""
+msgstr "Nuevo plan creado correctamente"
 
-#: app/routes/plan.py:461
+#: app/routes/plan.py:487
 msgid "Error creating. Please check the fields."
-msgstr ""
+msgstr "Error al crear. Revisa los campos."
 
-#: app/routes/plan.py:506
+#: app/routes/plan.py:536
+msgid "Plan type cannot be changed after creation"
+msgstr "El tipo de plan no se puede cambiar después de crearlo"
+
+#: app/routes/plan.py:545
 msgid "Invalid number of days per week"
-msgstr ""
+msgstr "Número de días por semana no válido"
 
-#: app/routes/plan.py:546
+#: app/routes/plan.py:586
 msgid "Changes saved successfully"
-msgstr ""
+msgstr "Cambios guardados correctamente"
 
-#: app/routes/plan.py:563
+#: app/routes/plan.py:605
 msgid "Delete plan"
-msgstr ""
+msgstr "Eliminar plan"
 
-#: app/routes/plan.py:573
+#: app/routes/plan.py:622
 msgid "Plan deleted successfully."
-msgstr ""
+msgstr "Plan eliminado correctamente."
 
-#: app/routes/plan.py:580
+#: app/routes/plan.py:629
 msgid "Error deleting plan."
-msgstr ""
+msgstr "Error al eliminar el plan."
 
 #: app/routes/profile.py:21 app/routes/user/profile.py:21
-#: app/templates/layouts/dashboard.html:148
-#: app/templates/layouts/dashboard.html:205
+#: app/templates/layouts/dashboard.html:53 app/templates/layouts/dashboard.html:72
+#: app/templates/layouts/dashboard.html:159
+#: app/templates/layouts/dashboard.html:172
 msgid "Profile"
-msgstr ""
+msgstr "Perfil"
 
 #: app/routes/progress_logs.py:43
 msgid "Record initial assessment"
-msgstr ""
+msgstr "Registrar valoración inicial"
 
-#: app/routes/progress_logs.py:146 app/routes/progress_logs.py:342
+#: app/routes/progress_logs.py:146 app/routes/progress_logs.py:345
+#, python-brace-format
 msgid "Maximum {max_files} files allowed"
-msgstr ""
+msgstr "Máximo {max_files} archivos permitidos"
 
-#: app/routes/progress_logs.py:154 app/routes/progress_logs.py:348
+#: app/routes/progress_logs.py:154 app/routes/progress_logs.py:351
 msgid "Invalid file name"
-msgstr ""
+msgstr "Nombre de archivo no válido"
 
-#: app/routes/progress_logs.py:158 app/routes/progress_logs.py:352
+#: app/routes/progress_logs.py:159 app/routes/progress_logs.py:356
+#, python-brace-format
 msgid "Extension {fname} is not allowed"
-msgstr ""
+msgstr "La extensión {fname} no está permitida"
 
-#: app/routes/progress_logs.py:163 app/routes/progress_logs.py:357
+#: app/routes/progress_logs.py:164 app/routes/progress_logs.py:361
+#, python-brace-format
 msgid "Format {filename} is not allowed (JPEG, PNG, WebP, GIF)"
-msgstr ""
+msgstr "El formato {filename} no está permitido (JPEG, PNG, WebP, GIF)"
 
-#: app/routes/progress_logs.py:172 app/routes/progress_logs.py:365
+#: app/routes/progress_logs.py:173 app/routes/progress_logs.py:369
+#, python-brace-format
 msgid "{filename} is larger than 5MB"
-msgstr ""
+msgstr "{filename} supera los 5 MB"
 
-#: app/routes/progress_logs.py:175 app/routes/progress_logs.py:368
+#: app/routes/progress_logs.py:176 app/routes/progress_logs.py:372
 msgid "Corrupted file"
-msgstr ""
+msgstr "Archivo dañado"
 
-#: app/routes/progress_logs.py:183 app/routes/progress_logs.py:189
-#: app/routes/progress_logs.py:373
+#: app/routes/progress_logs.py:184 app/routes/progress_logs.py:190
+#: app/routes/progress_logs.py:377
 msgid "Invalid image file"
-msgstr ""
+msgstr "Archivo de imagen no válido"
 
-#: app/routes/progress_logs.py:201
+#: app/routes/progress_logs.py:202
 msgid "Assessment recorded successfully. Redirecting..."
-msgstr ""
+msgstr "Valoración registrada correctamente. Redirigiendo..."
 
-#: app/routes/progress_logs.py:214
+#: app/routes/progress_logs.py:215
 msgid "Error saving assessment. Please check the values."
-msgstr ""
+msgstr "Error al guardar la valoración. Revisa los valores."
 
-#: app/routes/progress_logs.py:239
+#: app/routes/progress_logs.py:240
 msgid "Error loading assessment."
-msgstr ""
+msgstr "Error al cargar la valoración."
 
-#: app/routes/progress_logs.py:246
-#: app/templates/modals/progress_log_edit.html:3
+#: app/routes/progress_logs.py:247 app/templates/modals/progress_log_edit.html:3
 msgid "Edit assessment"
-msgstr ""
+msgstr "Editar valoración"
 
-#: app/routes/progress_logs.py:291
+#: app/routes/progress_logs.py:294
 msgid "Assessment not found"
-msgstr ""
+msgstr "Valoración no encontrada"
 
-#: app/routes/progress_logs.py:388
+#: app/routes/progress_logs.py:392
 msgid "Assessment updated successfully."
-msgstr ""
+msgstr "Valoración actualizada correctamente."
 
-#: app/routes/progress_logs.py:403
+#: app/routes/progress_logs.py:406
 msgid "Error updating assessment. Please check the values."
-msgstr ""
+msgstr "Error al actualizar la valoración. Revisa los valores."
 
 #: app/routes/pwa.py:84
 msgid "Offline"
-msgstr ""
+msgstr "Sin conexión"
 
 #: app/routes/pwa.py:85
 msgid "You are offline"
-msgstr ""
+msgstr "Estás sin conexión"
 
-#: app/routes/pwa.py:88
+#: app/routes/pwa.py:89
 msgid ""
-"Pages you've already seen are still available.<br />After reconnecting to"
-" the internet, try again."
+"Pages you've already seen are still available.<br />After reconnecting to "
+"the internet, try again."
 msgstr ""
+"Las páginas que ya has visto siguen disponibles.<br />Cuando vuelvas a "
+"conectarte a internet, inténtalo de nuevo."
 
 #: app/routes/pwa.py:92
 msgid "Try again"
-msgstr ""
+msgstr "Intentar de nuevo"
 
-#: app/routes/pwa.py:125
+#: app/routes/pwa.py:128
+#, python-brace-format
 msgid "The dedicated app for {tenant_name}"
-msgstr ""
+msgstr "La app dedicada de {tenant_name}"
 
-#: app/routes/trainee.py:66 app/routes/trainee.py:127 app/routes/trainee.py:187
-#: app/templates/components/coach_stats.html:16
-#: app/templates/components/dashboard_stats.html:2
-#: app/templates/layouts/dashboard.html:126
+#: app/routes/trainee.py:66 app/routes/trainee.py:131 app/routes/trainee.py:191
+#: app/templates/components/coach_stats.html:19
+#: app/templates/components/dashboard_stats.html:10
+#: app/templates/layouts/dashboard.html:47
+#: app/templates/layouts/dashboard.html:155
 #: app/templates/pages/owner/trainee/trainees.html:6
 msgid "Trainees"
-msgstr ""
+msgstr "Alumnos"
 
-#: app/routes/trainee.py:80 app/routes/trainee.py:141
+#: app/routes/trainee.py:81 app/routes/trainee.py:145
 msgid "No trainee found with these criteria"
-msgstr ""
+msgstr "No se encontró ningún alumno con estos criterios"
 
-#: app/routes/trainee.py:201
+#: app/routes/trainee.py:205
 msgid "No trainee found with these filters"
-msgstr ""
+msgstr "No se encontró ningún alumno con estos filtros"
 
-#: app/routes/trainee.py:222 app/templates/pages/owner/trainee/trainees.html:9
+#: app/routes/trainee.py:226 app/templates/pages/owner/trainee/trainees.html:10
+#: app/templates/pages/owner/trainee/trainees.html:105
 msgid "New trainee"
-msgstr ""
+msgstr "Nuevo alumno"
 
-#: app/routes/trainee.py:262
+#: app/routes/trainee.py:266
 msgid "Trainee details"
-msgstr ""
+msgstr "Datos del alumno"
 
-#: app/routes/trainee.py:278
+#: app/routes/trainee.py:282 app/templates/forms/trainees_form.html:121
+#: app/templates/forms/trainees_form.html:134
 msgid "Delete trainee"
-msgstr ""
+msgstr "Eliminar alumno"
 
-#: app/routes/trainee.py:290
+#: app/routes/trainee.py:297
 msgid "Trainee deleted successfully."
-msgstr ""
+msgstr "Alumno eliminado correctamente."
 
-#: app/routes/trainee.py:300
+#: app/routes/trainee.py:307
 msgid "Error deleting trainee."
-msgstr ""
+msgstr "Error al eliminar el alumno."
 
-#: app/routes/trainee.py:318
+#: app/routes/trainee.py:328
 msgid "Edit trainee"
-msgstr ""
+msgstr "Editar alumno"
 
-#: app/routes/trainee.py:419
-msgid "Trainee registered successfully. Redirecting..."
-msgstr ""
-
-#: app/routes/trainee.py:489
-msgid "Trainee not found."
-msgstr ""
-
-#: app/routes/trainee.py:521
-msgid "Trainee information updated successfully."
-msgstr ""
-
-#: app/services/auth.py:26
-msgid "Invalid credentials!"
-msgstr ""
-
-#: app/services/auth.py:71
+#: app/routes/trainee.py:434
+#, python-format
 msgid ""
-"Could not create the user. (The email may already be in use or the "
-"password is too short)"
+"Trainee registered. Initial password: %(password)s (copy it now, it is not "
+"shown again)"
 msgstr ""
+"Alumno registrado. Contraseña inicial: %(password)s (cópiala ahora; no se "
+"volverá a mostrar)"
 
-#: app/services/auth.py:141
+#: app/routes/trainee.py:512
+msgid "Trainee not found."
+msgstr "Alumno no encontrado."
+
+#: app/routes/trainee.py:544
+msgid "Trainee information updated successfully."
+msgstr "Información del alumno actualizada correctamente."
+
+#: app/routes/user/dashboard.py:79 app/templates/layouts/dashboard.html:60
+#: app/templates/layouts/dashboard.html:164
+msgid "Today"
+msgstr "Hoy"
+
+#: app/services/auth.py:19 app/services/auth.py:26
+msgid "Invalid credentials!"
+msgstr "¡Credenciales no válidas!"
+
+#: app/services/auth.py:74
+msgid ""
+"Could not create the user. (The email may already be in use or the password "
+"is too short)"
+msgstr ""
+"No se pudo crear el usuario. (Es posible que el correo ya esté en uso o que "
+"la contraseña sea demasiado corta)"
+
+#: app/services/auth.py:143
 msgid "Current password is incorrect or an error occurred."
-msgstr ""
+msgstr "La contraseña actual es incorrecta o se produjo un error."
 
-#: app/templates/base.html:20 app/templates/pages/auth/login.html:130
-#: app/templates/pages/auth/login.html:251
+#: app/templates/base.html:29 app/templates/pages/auth/login.html:102
+#: app/templates/pages/auth/login.html:163
 msgid "Gyme"
-msgstr ""
+msgstr "Gyme"
 
-#: app/templates/base.html:43
+#: app/templates/base.html:52
 msgid "⚠️ You are offline — showing saved data"
-msgstr ""
+msgstr "⚠️ Estás sin conexión: mostrando datos guardados"
 
-#: app/templates/base.html:236
+#: app/templates/base.html:260
 msgid "A new version is available. Click to update."
-msgstr ""
+msgstr "Hay una nueva versión disponible. Haz clic para actualizar."
 
-#: app/templates/components/coach_stats.html:4
+#: app/templates/components/coach_stats.html:5
 msgid "No coaches found."
-msgstr ""
+msgstr "No se encontraron entrenadores."
 
-#: app/templates/components/coach_stats.html:20
-#: app/templates/components/dashboard_stats.html:57
-#: app/templates/forms/plans_form.html:34
-#: app/templates/pages/owner/plan/plan_detail.html:49
-#: app/templates/pages/owner/plan/plans.html:96
-#: app/templates/pages/owner/plan/plans.html:161
-#: app/templates/pages/owner/plan/templates_list.html:11
-#: app/templates/pages/user/dashboard.html:54
+#: app/templates/components/coach_stats.html:23
+#: app/templates/components/dashboard_stats.html:18
+#: app/templates/components/dashboard_stats.html:41
+#: app/templates/forms/plans_form.html:26
+#: app/templates/pages/owner/plan/plan_detail.html:25
+#: app/templates/pages/owner/plan/plans.html:87
+#: app/templates/pages/owner/plan/plans.html:131
+#: app/templates/pages/owner/plan/templates_list.html:18
+#: app/templates/pages/user/dashboard.html:34
 msgid "Diet"
-msgstr ""
+msgstr "Dieta"
 
-#: app/templates/components/coach_stats.html:24
-#: app/templates/components/dashboard_stats.html:51
-#: app/templates/forms/plans_form.html:31
-#: app/templates/pages/owner/plan/plan_detail.html:51
-#: app/templates/pages/owner/plan/plans.html:102
-#: app/templates/pages/owner/plan/plans.html:163
-#: app/templates/pages/owner/plan/templates_list.html:13
-#: app/templates/pages/user/dashboard.html:65
+#: app/templates/components/coach_stats.html:27
+#: app/templates/components/dashboard_stats.html:13
+#: app/templates/components/dashboard_stats.html:34
+#: app/templates/forms/plans_form.html:25
+#: app/templates/pages/owner/plan/plan_detail.html:27
+#: app/templates/pages/owner/plan/plans.html:88
+#: app/templates/pages/owner/plan/plans.html:133
+#: app/templates/pages/owner/plan/templates_list.html:20
+#: app/templates/pages/user/dashboard.html:47
 msgid "Training"
-msgstr ""
+msgstr "Entrenamiento"
 
-#: app/templates/components/coach_stats.html:29
+#: app/templates/components/coach_stats.html:32
 msgid "Medication"
-msgstr ""
+msgstr "Medicación"
 
 #: app/templates/components/coach_stats.html:40
-#: app/templates/forms/plans_form.html:46
+#: app/templates/forms/plans_form.html:33
 #: app/templates/modals/apply_template.html:15
-#: app/templates/pages/owner/plan/plan_detail.html:76
+#: app/templates/pages/owner/plan/plan_detail.html:52
 msgid "Coach"
-msgstr ""
+msgstr "Entrenador"
 
 #: app/templates/components/coach_stats.html:41
-#: app/templates/forms/plans_form.html:64
+#: app/templates/forms/plans_form.html:48
 msgid "Trainee"
-msgstr ""
+msgstr "Alumno"
 
-#: app/templates/components/dashboard_content.html:13
+#: app/templates/components/dashboard_content.html:10
 msgid "Coach performance"
-msgstr ""
+msgstr "Rendimiento del entrenador"
 
-#: app/templates/components/dashboard_content.html:24
+#: app/templates/components/dashboard_content.html:22
 msgid "Your performance"
-msgstr ""
+msgstr "Tu rendimiento"
 
-#: app/templates/components/dashboard_stats.html:20
+#: app/templates/components/dashboard_stats.html:3
 msgid "Active trainees"
-msgstr ""
+msgstr "Alumnos activos"
 
-#: app/templates/components/dashboard_stats.html:40
-msgid "Inactive trainees"
-msgstr ""
+#: app/templates/components/dashboard_stats.html:5
+#: app/templates/pages/owner/dashboard.html:6
+msgid "Live count"
+msgstr "Recuento en vivo"
 
-#: app/templates/components/dashboard_stats.html:47
+#: app/templates/components/dashboard_stats.html:8
+#: app/templates/forms/plans_form.html:94
+#: app/templates/pages/owner/plan/plan_detail.html:43
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/owner/trainee/trainees.html:59
+#: app/templates/pages/user/plan/plan_detail.html:27
+#: app/templates/pages/user/plan/plans.html:52
+msgid "Inactive"
+msgstr "Inactivo"
+
+#: app/templates/components/dashboard_stats.html:27
 msgid "Registered plans"
-msgstr ""
+msgstr "Planes registrados"
 
-#: app/templates/components/dashboard_stats.html:63
-#: app/templates/forms/plans_form.html:37
-#: app/templates/modals/items_form.html:118
-#: app/templates/pages/owner/plan/plan_detail.html:53
-#: app/templates/pages/owner/plan/plans.html:108
-#: app/templates/pages/owner/plan/plans.html:165
-#: app/templates/pages/owner/plan/templates_list.html:15
-#: app/templates/pages/user/dashboard.html:76
+#: app/templates/components/dashboard_stats.html:48
+#: app/templates/forms/plans_form.html:27 app/templates/modals/items_form.html:114
+#: app/templates/pages/owner/plan/plan_detail.html:29
+#: app/templates/pages/owner/plan/plans.html:89
+#: app/templates/pages/owner/plan/plans.html:135
+#: app/templates/pages/owner/plan/templates_list.html:22
+#: app/templates/pages/user/dashboard.html:60
 msgid "Steroid"
-msgstr ""
+msgstr "Esteroides"
 
 #: app/templates/components/datepicker.html:3
 #: app/templates/components/datepicker.html:6
 msgid "Select date"
-msgstr ""
+msgstr "Seleccionar fecha"
 
 #: app/templates/components/datepicker.html:7
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmar"
 
 #: app/templates/components/datepicker.html:8
-#: app/templates/components/datepicker.html:69
-#: app/templates/pages/owner/trainee/trainee_detail.html:196
+#: app/templates/components/datepicker.html:64
+#: app/templates/pages/owner/trainee/trainee_detail.html:246
 msgid "Close"
-msgstr ""
+msgstr "Cerrar"
 
-#: app/templates/components/datepicker.html:31
-#: app/templates/components/phone_field.html:35
-#: app/templates/modals/items_form.html:31
-#: app/templates/modals/items_form.html:50
-#: app/templates/pages/auth/change_password.html:19
-msgid "This field is required."
-msgstr ""
-
-#: app/templates/components/locale_switcher.html:7
+#: app/templates/components/locale_switcher.html:50
 msgid "Change language"
-msgstr ""
+msgstr "Cambiar idioma"
 
-#: app/templates/components/locale_switcher.html:17
+#: app/templates/components/locale_switcher.html:59
 msgid "Available languages"
-msgstr ""
+msgstr "Idiomas disponibles"
 
 #: app/templates/components/phone_field.html:2
+#: app/templates/pages/owner/coach/coach_detail.html:16
+#: app/templates/pages/owner/trainee/trainee_detail.html:17
+msgid "Phone"
+msgstr "Teléfono"
+
+#: app/templates/components/phone_field.html:13
+msgid "Country code"
+msgstr "Código de país"
+
 #: app/templates/components/phone_field.html:29
 msgid "Phone number"
-msgstr ""
+msgstr "Número de teléfono"
 
-#: app/templates/components/phone_field.html:15
-msgid "Country code"
-msgstr ""
+#: app/templates/forms/coaches_form.html:14
+#: app/templates/forms/coaches_form.html:20
+#: app/templates/forms/trainees_form.html:15
+#: app/templates/forms/trainees_form.html:21
+msgid "First name"
+msgstr "Nombre"
 
-#: app/templates/forms/plans_form.html:12
+#: app/templates/forms/coaches_form.html:26
+#: app/templates/forms/coaches_form.html:32
+#: app/templates/forms/trainees_form.html:27
+#: app/templates/forms/trainees_form.html:33
+msgid "Last name"
+msgstr "Apellidos"
+
+#: app/templates/forms/coaches_form.html:40
+#: app/templates/forms/trainees_form.html:41
+#: app/templates/pages/auth/login.html:119
+#: app/templates/pages/owner/coach/coach_detail.html:20
+msgid "Email"
+msgstr "Correo"
+
+#: app/templates/forms/coaches_form.html:86
+#: app/templates/forms/plans_form.html:112
+#: app/templates/forms/trainees_form.html:137 app/templates/layouts/modal.html:34
+#: app/templates/modals/apply_template.html:55
+#: app/templates/modals/confirm_delete.html:7
+#: app/templates/modals/items_form.html:140
+#: app/templates/modals/progress_log_edit.html:71
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: app/templates/forms/coaches_form.html:88
+#: app/templates/forms/trainees_form.html:139 app/templates/layouts/modal.html:25
+#: app/templates/modals/progress_log_edit.html:74
+#: app/templates/pages/auth/change_password.html:82
+msgid "Save changes"
+msgstr "Guardar cambios"
+
+#: app/templates/forms/coaches_form.html:88
+msgid "Add coach"
+msgstr "Añadir entrenador"
+
+#: app/templates/forms/plans_form.html:11
 msgid "Template name"
-msgstr ""
+msgstr "Nombre de la plantilla"
 
 #: app/templates/forms/plans_form.html:16
 msgid "e.g. Keto plan"
-msgstr ""
+msgstr "p. ej. Plan cetogénico"
 
-#: app/templates/forms/plans_form.html:25
-#: app/templates/pages/owner/plan/plans.html:111
+#: app/templates/forms/plans_form.html:23
+#: app/templates/pages/owner/plan/plans.html:72
 msgid "Plan type"
-msgstr ""
+msgstr "Tipo de plan"
 
-#: app/templates/forms/plans_form.html:81
-#: app/templates/modals/apply_template.html:36
-#: app/templates/pages/owner/plan/plan_detail.html:82
-msgid "Start date"
-msgstr ""
+#: app/templates/forms/plans_form.html:64
+msgid "Schedule"
+msgstr "Programación"
 
-#: app/templates/forms/plans_form.html:86
-#: app/templates/modals/apply_template.html:39
-#: app/templates/pages/owner/plan/plan_detail.html:86
-msgid "End date"
-msgstr ""
-
-#: app/templates/forms/plans_form.html:96
+#: app/templates/forms/plans_form.html:69
+#: app/templates/modals/apply_template.html:38
 #: app/templates/pages/owner/plan/plan_detail.html:58
-msgid "Days per week"
-msgstr ""
+msgid "Start date"
+msgstr "Fecha de inicio"
 
-#: app/templates/forms/plans_form.html:106
+#: app/templates/forms/plans_form.html:72
+#: app/templates/modals/apply_template.html:41
 #: app/templates/pages/owner/plan/plan_detail.html:62
-#: app/templates/pages/owner/profile/profile.html:26
-#: app/templates/pages/owner/trainee/trainee_detail.html:169
-#: app/templates/pages/owner/trainee/trainees.html:47
-#: app/templates/pages/user/profile/profile.html:19
-msgid "Status"
-msgstr ""
+msgid "End date"
+msgstr "Fecha de fin"
 
-#: app/templates/forms/plans_form.html:112
-#: app/templates/modals/progress_log_edit.html:96
-#: app/templates/pages/owner/plan/plan_detail.html:65
-#: app/templates/pages/owner/profile/profile.html:27
-#: app/templates/pages/owner/trainee/trainee_detail.html:169
-#: app/templates/pages/owner/trainee/trainees.html:56
-#: app/templates/pages/user/plan/plan_detail.html:11
-#: app/templates/pages/user/plan/plans.html:62
-#: app/templates/pages/user/profile/profile.html:20
+#: app/templates/forms/plans_form.html:80
+#: app/templates/pages/owner/plan/plan_detail.html:34
+msgid "Days per week"
+msgstr "Días por semana"
+
+#: app/templates/forms/plans_form.html:91
+#: app/templates/pages/owner/plan/plan_detail.html:38
+#: app/templates/pages/owner/profile/profile.html:15
+#: app/templates/pages/owner/trainee/trainees.html:48
+#: app/templates/pages/user/profile/profile.html:15
+msgid "Status"
+msgstr "Estado"
+
+#: app/templates/forms/plans_form.html:93
+#: app/templates/modals/progress_log_edit.html:55
+#: app/templates/pages/owner/plan/plan_detail.html:41
+#: app/templates/pages/owner/profile/profile.html:16
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/owner/trainee/trainees.html:58
+#: app/templates/pages/user/plan/plan_detail.html:23
+#: app/templates/pages/user/plan/plans.html:48
+#: app/templates/pages/user/profile/profile.html:16
 msgid "Active"
-msgstr ""
+msgstr "Activo"
+
+#: app/templates/forms/plans_form.html:100 app/templates/forms/plans_form.html:101
+#: app/templates/forms/trainees_form.html:100
+#: app/templates/modals/apply_template.html:47
+#: app/templates/modals/apply_template.html:48
+#: app/templates/modals/items_form.html:129
+#: app/templates/modals/items_form.html:130
+#: app/templates/modals/progress_log_edit.html:61
+#: app/templates/pages/owner/trainee/trainee_detail.html:160
+msgid "Notes"
+msgstr "Notas"
+
+#: app/templates/forms/plans_form.html:116
+msgid "Update plan"
+msgstr "Actualizar plan"
 
 #: app/templates/forms/plans_form.html:118
-#: app/templates/pages/owner/plan/plan_detail.html:67
-#: app/templates/pages/owner/trainee/trainee_detail.html:169
-#: app/templates/pages/owner/trainee/trainees.html:57
-#: app/templates/pages/user/plan/plan_detail.html:19
-#: app/templates/pages/user/plan/plans.html:74
-msgid "Inactive"
-msgstr ""
-
-#: app/templates/forms/plans_form.html:136
-#: app/templates/modals/apply_template.html:43
-#: app/templates/modals/items_form.html:135
-#: app/templates/modals/progress_log_edit.html:102
-#: app/templates/pages/owner/trainee/trainee_detail.html:118
-msgid "Notes"
-msgstr ""
-
-#: app/templates/forms/plans_form.html:148 app/templates/layouts/modal.html:34
-#: app/templates/modals/apply_template.html:47
-#: app/templates/modals/confirm_delete.html:7
-#: app/templates/modals/items_form.html:145
-#: app/templates/modals/progress_log_edit.html:117
-msgid "Cancel"
-msgstr ""
-
-#: app/templates/forms/plans_form.html:152
-msgid "Update plan"
-msgstr ""
-
-#: app/templates/forms/plans_form.html:154
 msgid "Save template"
-msgstr ""
+msgstr "Guardar plantilla"
 
-#: app/templates/forms/plans_form.html:156
-#: app/templates/modals/apply_template.html:50
+#: app/templates/forms/plans_form.html:120
+#: app/templates/modals/apply_template.html:58
 msgid "Create plan"
-msgstr ""
+msgstr "Crear plan"
 
-#: app/templates/forms/plans_form.html:168
+#: app/templates/forms/plans_form.html:134
 #: app/templates/modals/confirm_delete.html:17
-#: app/templates/modals/items_form.html:156
+#: app/templates/modals/items_form.html:151
 #: app/templates/pages/owner/plan/plan_detail.html:15
-#: app/templates/pages/owner/plan/plan_detail.html:32
 msgid "Delete"
-msgstr ""
+msgstr "Eliminar"
 
-#: app/templates/forms/progress_logs.html:10
-msgid ""
-"Please enter your body measurements. Calculations will be done "
-"automatically."
-msgstr ""
+#: app/templates/forms/progress_logs.html:8
+msgid "Please enter your body measurements. Calculations will be done automatically."
+msgstr "Introduce tus medidas corporales. Los cálculos se harán automáticamente."
 
-#: app/templates/forms/progress_logs.html:32
+#: app/templates/forms/progress_logs.html:26
 #: app/templates/modals/progress_log_edit.html:24
-#: app/templates/pages/owner/trainee/trainee_detail.html:33
-#: app/templates/pages/owner/trainee/trainee_detail.html:67
+#: app/templates/pages/owner/trainee/trainee_detail.html:29
+#: app/templates/pages/owner/trainee/trainee_detail.html:106
 msgid "Height"
-msgstr ""
+msgstr "Altura"
 
-#: app/templates/forms/progress_logs.html:45
-#: app/templates/modals/items_form.html:67
-#: app/templates/modals/progress_log_edit.html:35
-#: app/templates/pages/owner/trainee/trainee_detail.html:34
-#: app/templates/pages/owner/trainee/trainee_detail.html:71
+#: app/templates/forms/progress_logs.html:31
+#: app/templates/modals/items_form.html:63
+#: app/templates/modals/progress_log_edit.html:28
+#: app/templates/pages/owner/trainee/trainee_detail.html:33
+#: app/templates/pages/owner/trainee/trainee_detail.html:110
 msgid "Weight"
-msgstr ""
+msgstr "Peso"
 
-#: app/templates/forms/progress_logs.html:59
-#: app/templates/modals/progress_log_edit.html:47
+#: app/templates/forms/progress_logs.html:36
+#: app/templates/modals/progress_log_edit.html:32
 msgid "Chest"
-msgstr ""
+msgstr "Pecho"
 
-#: app/templates/forms/progress_logs.html:70
-#: app/templates/modals/progress_log_edit.html:57
+#: app/templates/forms/progress_logs.html:40
+#: app/templates/modals/progress_log_edit.html:36
 msgid "Waist"
-msgstr ""
+msgstr "Cintura"
+
+#: app/templates/forms/progress_logs.html:44
+#: app/templates/modals/progress_log_edit.html:40
+msgid "Hips"
+msgstr "Caderas"
+
+#: app/templates/forms/progress_logs.html:48
+#: app/templates/modals/progress_log_edit.html:44
+msgid "Arms"
+msgstr "Brazos"
+
+#: app/templates/forms/progress_logs.html:52
+#: app/templates/modals/progress_log_edit.html:50
+msgid "Activity level"
+msgstr "Nivel de actividad"
+
+#: app/templates/forms/progress_logs.html:54
+msgid "Sedentary (desk job)"
+msgstr "Sedentario (trabajo de oficina)"
+
+#: app/templates/forms/progress_logs.html:55
+msgid "Light (1-3 days of exercise)"
+msgstr "Ligero (1-3 días de ejercicio)"
+
+#: app/templates/forms/progress_logs.html:56
+msgid "Moderate (3-5 days of exercise)"
+msgstr "Moderado (3-5 días de ejercicio)"
+
+#: app/templates/forms/progress_logs.html:57
+msgid "Intense (6-7 days of exercise)"
+msgstr "Intenso (6-7 días de ejercicio)"
+
+#: app/templates/forms/progress_logs.html:58
+msgid "Very intense (professional athlete)"
+msgstr "Muy intenso (deportista profesional)"
+
+#: app/templates/forms/progress_logs.html:66
+msgid "Body mass index (BMI)"
+msgstr "Índice de masa corporal (IMC)"
+
+#: app/templates/forms/progress_logs.html:73
+msgid "Body fat percentage (BFP)"
+msgstr "Porcentaje de grasa corporal (PGC)"
+
+#: app/templates/forms/progress_logs.html:80
+msgid "Lean body mass (LBM)"
+msgstr "Masa corporal magra (MCM)"
 
 #: app/templates/forms/progress_logs.html:82
-#: app/templates/modals/progress_log_edit.html:68
-msgid "Hips"
-msgstr ""
+#: app/templates/forms/progress_logs.html:88
+msgid "KG"
+msgstr "KG"
+
+#: app/templates/forms/progress_logs.html:86
+msgid "Fat mass"
+msgstr "Masa grasa"
+
+#: app/templates/forms/progress_logs.html:92
+msgid "Metabolism (BMR)"
+msgstr "Metabolismo (TMB)"
 
 #: app/templates/forms/progress_logs.html:94
-#: app/templates/modals/progress_log_edit.html:79
-msgid "Arms"
-msgstr ""
+#: app/templates/forms/progress_logs.html:100
+msgid "Kcal / Day"
+msgstr "KCAL / DÍA"
+
+#: app/templates/forms/progress_logs.html:98
+msgid "Maintenance calories (TDEE)"
+msgstr "Calorías de mantenimiento (TDEE)"
 
 #: app/templates/forms/progress_logs.html:106
-#: app/templates/modals/progress_log_edit.html:91
-msgid "Activity level"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:108
-msgid "Sedentary (desk job)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:109
-msgid "Light (1-3 days of exercise)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:110
-msgid "Moderate (3-5 days of exercise)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:111
-msgid "Intense (6-7 days of exercise)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:112
-msgid "Very intense (professional athlete)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:120
-msgid "Body mass index (BMI)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:132
-msgid "Body fat percentage (BFP)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:144
-msgid "Lean body mass (LBM)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:150
-msgid "Fat mass"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:156
-msgid "Metabolism (BMR)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:164
-msgid "Maintenance calories (TDEE)"
-msgstr ""
-
-#: app/templates/forms/progress_logs.html:176
 msgid "Progress photos (optional)"
-msgstr ""
+msgstr "Fotos de progreso (opcional)"
 
-#: app/templates/forms/progress_logs.html:200
+#: app/templates/forms/progress_logs.html:121
+#: app/templates/forms/progress_logs.html:122
 msgid "Assessment notes"
-msgstr ""
+msgstr "Notas de la valoración"
 
-#: app/templates/forms/progress_logs.html:204
+#: app/templates/forms/progress_logs.html:125
 msgid "Save assessment"
-msgstr ""
+msgstr "Guardar valoración"
 
-#: app/templates/forms/progress_logs.html:267
+#: app/templates/forms/progress_logs.html:188
 msgid "Underweight"
-msgstr ""
+msgstr "Bajo peso"
 
-#: app/templates/forms/progress_logs.html:272
+#: app/templates/forms/progress_logs.html:193
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
-#: app/templates/forms/progress_logs.html:277
+#: app/templates/forms/progress_logs.html:198
 msgid "Overweight"
-msgstr ""
+msgstr "Sobrepeso"
 
-#: app/templates/forms/progress_logs.html:282
-#: app/templates/forms/progress_logs.html:327
-#: app/templates/forms/progress_logs.html:345
+#: app/templates/forms/progress_logs.html:203
+#: app/templates/forms/progress_logs.html:247
+#: app/templates/forms/progress_logs.html:264
 msgid "Obesity"
-msgstr ""
+msgstr "Obesidad"
 
-#: app/templates/forms/progress_logs.html:315
-#: app/templates/forms/progress_logs.html:333
+#: app/templates/forms/progress_logs.html:235
+#: app/templates/forms/progress_logs.html:252
 msgid "Essential fat"
-msgstr ""
+msgstr "Grasa esencial"
 
-#: app/templates/forms/progress_logs.html:318
-#: app/templates/forms/progress_logs.html:336
+#: app/templates/forms/progress_logs.html:238
+#: app/templates/forms/progress_logs.html:255
 msgid "Athletic"
-msgstr ""
+msgstr "Atlético"
 
-#: app/templates/forms/progress_logs.html:321
-#: app/templates/forms/progress_logs.html:339
+#: app/templates/forms/progress_logs.html:241
+#: app/templates/forms/progress_logs.html:258
 msgid "Fit"
-msgstr ""
+msgstr "En forma"
 
-#: app/templates/forms/progress_logs.html:324
-#: app/templates/forms/progress_logs.html:342
+#: app/templates/forms/progress_logs.html:244
+#: app/templates/forms/progress_logs.html:261
 msgid "Acceptable"
-msgstr ""
+msgstr "Aceptable"
 
-#: app/templates/forms/progress_logs.html:441
+#: app/templates/forms/progress_logs.html:333
+msgid "Remove"
+msgstr "Quitar"
+
+#: app/templates/forms/progress_logs.html:361
+#, python-brace-format
 msgid "Maximum {0} files allowed ({1} selected)"
-msgstr ""
+msgstr "Máximo {0} archivos permitidos ({1} seleccionados)"
 
-#: app/templates/forms/progress_logs.html:452
+#: app/templates/forms/progress_logs.html:372
 msgid "Only JPEG, PNG, WebP, GIF are allowed"
-msgstr ""
+msgstr "Solo se permiten JPEG, PNG, WebP, GIF"
 
-#: app/templates/forms/progress_logs.html:458
+#: app/templates/forms/progress_logs.html:378
+#, python-brace-format
 msgid "Each file must be at most 5MB ({0} {1}MB)"
-msgstr ""
+msgstr "Cada archivo debe pesar como máximo 5 MB ({0} {1} MB)"
 
-#: app/templates/layouts/dashboard.html:8
-msgid "Back to previous page"
-msgstr ""
+#: app/templates/forms/trainees_form.html:57
+#: app/templates/forms/trainees_form.html:58
+#: app/templates/pages/owner/trainee/trainee_detail.html:25
+msgid "Date of birth"
+msgstr "Fecha de nacimiento"
 
-#: app/templates/layouts/dashboard.html:33
+#: app/templates/forms/trainees_form.html:73
+#: app/templates/pages/owner/trainee/trainee_detail.html:21
+#: app/templates/pages/owner/trainee/trainees.html:32
+msgid "Gender"
+msgstr "Sexo"
+
+#: app/templates/forms/trainees_form.html:75
+#: app/templates/pages/owner/trainee/trainee_detail.html:13
+#: app/templates/pages/owner/trainee/trainees.html:43
+msgid "Male"
+msgstr "Hombre"
+
+#: app/templates/forms/trainees_form.html:76
+#: app/templates/pages/owner/trainee/trainee_detail.html:13
+#: app/templates/pages/owner/trainee/trainees.html:44
+msgid "Female"
+msgstr "Mujer"
+
+#: app/templates/forms/trainees_form.html:80
+#: app/templates/pages/owner/trainee/trainee_detail.html:37
+msgid "Blood type"
+msgstr "Grupo sanguíneo"
+
+#: app/templates/forms/trainees_form.html:82
+msgid "Unknown"
+msgstr "Desconocido"
+
+#: app/templates/forms/trainees_form.html:92
+#: app/templates/pages/owner/trainee/trainee_detail.html:50
+msgid "Additional information"
+msgstr "Información adicional"
+
+#: app/templates/forms/trainees_form.html:96
+#: app/templates/pages/owner/trainee/trainee_detail.html:73
+msgid "Abnormalities and illnesses"
+msgstr "Anomalías y enfermedades"
+
+#: app/templates/forms/trainees_form.html:97
+#: app/templates/pages/owner/trainee/trainee_detail.html:55
+msgid "Training history"
+msgstr "Historial de entrenamiento"
+
+#: app/templates/forms/trainees_form.html:98
+#: app/templates/pages/owner/trainee/trainee_detail.html:61
+msgid "Steroid history"
+msgstr "Historial de esteroides"
+
+#: app/templates/forms/trainees_form.html:99
+#: app/templates/pages/owner/trainee/trainee_detail.html:67
+msgid "Supplement history"
+msgstr "Historial de suplementos"
+
+#: app/templates/forms/trainees_form.html:139
+msgid "Save and go to assessment"
+msgstr "Guardar e ir a la valoración"
+
+#: app/templates/layouts/dashboard.html:7 app/templates/layouts/dashboard.html:143
+msgid "Primary"
+msgstr "Principal"
+
+#: app/templates/layouts/dashboard.html:24
+#: app/templates/layouts/dashboard.html:106
 msgid "Gym"
-msgstr ""
+msgstr "Gimnasio"
 
-#: app/templates/layouts/dashboard.html:75
+#: app/templates/layouts/dashboard.html:35
+#: app/templates/layouts/dashboard.html:147
 msgid "Dashboard"
-msgstr ""
+msgstr "Panel"
 
-#: app/templates/layouts/dashboard.html:109
-msgid "Add trainee"
-msgstr ""
+#: app/templates/layouts/dashboard.html:93
+msgid "Back to previous page"
+msgstr "Volver a la página anterior"
 
-#: app/templates/layouts/dashboard.html:183
-msgid "Today"
-msgstr ""
-
-#: app/templates/layouts/modal.html:25
-#: app/templates/modals/progress_log_edit.html:110
-#: app/templates/pages/auth/change_password.html:171
-msgid "Save changes"
-msgstr ""
+#: app/templates/layouts/dashboard.html:113
+#: app/templates/layouts/dashboard.html:114
+msgid "Log out"
+msgstr "Cerrar sesión"
 
 #: app/templates/modals/apply_template.html:5
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: app/templates/modals/apply_template.html:5
-#: app/templates/pages/owner/plan/templates_list.html:7
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/plan/templates_list.html:15
 msgid "Template"
-msgstr ""
+msgstr "Plantilla"
 
-#: app/templates/modals/apply_template.html:25
+#: app/templates/modals/apply_template.html:26
 msgid "Select trainee"
-msgstr ""
+msgstr "Seleccionar alumno"
 
-#: app/templates/modals/apply_template.html:27
+#: app/templates/modals/apply_template.html:28
 msgid "Select a trainee..."
-msgstr ""
+msgstr "Selecciona un alumno..."
 
 #: app/templates/modals/confirm_delete.html:4
 msgid "Are you sure? This action cannot be undone."
-msgstr ""
+msgstr "¿Seguro? Esta acción no se puede deshacer."
 
 #: app/templates/modals/items_form.html:14
 msgid "Exercise name"
-msgstr ""
+msgstr "Nombre del ejercicio"
 
 #: app/templates/modals/items_form.html:20
 msgid "Exercise name (select or type)"
-msgstr ""
+msgstr "Nombre del ejercicio (selecciona o escribe)"
 
-#: app/templates/modals/items_form.html:34
+#: app/templates/modals/items_form.html:33
 msgid "Exercise category"
-msgstr ""
+msgstr "Categoría del ejercicio"
 
-#: app/templates/modals/items_form.html:47
-#: app/templates/pages/owner/plan/plan_detail.html:183
-#: app/templates/pages/user/plan/plan_detail.html:81
+#: app/templates/modals/items_form.html:44
+#: app/templates/pages/owner/plan/plan_detail.html:127
+#: app/templates/pages/user/plan/plan_detail.html:66
 msgid "Day"
-msgstr ""
+msgstr "Día"
+
+#: app/templates/modals/items_form.html:48
+msgid "Order"
+msgstr "Orden"
 
 #: app/templates/modals/items_form.html:52
-msgid "Order"
-msgstr ""
-
-#: app/templates/modals/items_form.html:56
-#: app/templates/pages/user/dashboard.html:208
-#: app/templates/pages/user/dashboard.html:265
-#: app/templates/pages/user/plan/plan_detail.html:194
-#: app/templates/pages/user/plan/plan_detail.html:266
 msgid "Sets"
-msgstr ""
+msgstr "Series"
 
-#: app/templates/modals/items_form.html:63
-#: app/templates/pages/user/dashboard.html:212
-#: app/templates/pages/user/dashboard.html:267
-#: app/templates/pages/user/plan/plan_detail.html:198
-#: app/templates/pages/user/plan/plan_detail.html:270
+#: app/templates/modals/items_form.html:59
 msgid "Reps"
-msgstr ""
+msgstr "Repeticiones"
 
-#: app/templates/modals/items_form.html:71
+#: app/templates/modals/items_form.html:67
 msgid "Rest (s)"
-msgstr ""
+msgstr "Descanso (s)"
 
-#: app/templates/modals/items_form.html:77
-#: app/templates/pages/owner/plan/plan_detail.html:137
+#: app/templates/modals/items_form.html:73
+#: app/templates/pages/owner/plan/plan_detail.html:117
 msgid "Meal"
-msgstr ""
+msgstr "Comida"
 
-#: app/templates/modals/items_form.html:79
+#: app/templates/modals/items_form.html:75
 msgid "Select a meal..."
-msgstr ""
+msgstr "Selecciona una comida..."
 
-#: app/templates/modals/items_form.html:88
+#: app/templates/modals/items_form.html:83
 msgid "Food name"
-msgstr ""
+msgstr "Nombre del alimento"
 
-#: app/templates/modals/items_form.html:94
+#: app/templates/modals/items_form.html:89
 msgid "Food name (select or type)"
-msgstr ""
+msgstr "Nombre del alimento (selecciona o escribe)"
 
-#: app/templates/modals/items_form.html:105
+#: app/templates/modals/items_form.html:101
 msgid "Quantity / unit"
-msgstr ""
+msgstr "Cantidad / unidad"
 
-#: app/templates/modals/items_form.html:110
+#: app/templates/modals/items_form.html:106
 msgid "Supplement/medication name"
-msgstr ""
+msgstr "Nombre del suplemento/medicamento"
 
-#: app/templates/modals/items_form.html:115
-#: app/templates/pages/owner/plan/plan_detail.html:46
+#: app/templates/modals/items_form.html:111
+#: app/templates/pages/owner/plan/plan_detail.html:22
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
-#: app/templates/modals/items_form.html:117
+#: app/templates/modals/items_form.html:113
 msgid "Supplement"
-msgstr ""
+msgstr "Suplemento"
 
-#: app/templates/modals/items_form.html:122
+#: app/templates/modals/items_form.html:118
 msgid "Dosage"
-msgstr ""
+msgstr "Dosis"
 
-#: app/templates/modals/items_form.html:127
+#: app/templates/modals/items_form.html:123
 msgid "Timing / frequency"
-msgstr ""
+msgstr "Momento / frecuencia"
 
-#: app/templates/modals/items_form.html:160
+#: app/templates/modals/items_form.html:155
 msgid "Update"
-msgstr ""
+msgstr "Actualizar"
 
-#: app/templates/modals/items_form.html:160
+#: app/templates/modals/items_form.html:155
 msgid "Add to list"
-msgstr ""
+msgstr "Añadir a la lista"
 
-#: app/templates/modals/progress_log_edit.html:93
+#: app/templates/modals/progress_log_edit.html:52
 msgid "Sedentary"
-msgstr ""
+msgstr "Sedentario"
 
-#: app/templates/modals/progress_log_edit.html:94
+#: app/templates/modals/progress_log_edit.html:53
 msgid "Light"
-msgstr ""
+msgstr "Ligero"
 
-#: app/templates/modals/progress_log_edit.html:95
+#: app/templates/modals/progress_log_edit.html:54
 msgid "Moderate"
-msgstr ""
+msgstr "Moderado"
 
-#: app/templates/modals/progress_log_edit.html:97
+#: app/templates/modals/progress_log_edit.html:56
 msgid "Very active"
-msgstr ""
+msgstr "Muy activo"
 
 #: app/templates/pages/auth/change_password.html:3
 #: app/templates/pages/auth/change_password.html:7
-#: app/templates/pages/owner/profile/profile.html:11
-#: app/templates/pages/user/profile/profile.html:5
+#: app/templates/pages/owner/profile/profile.html:9
+#: app/templates/pages/user/profile/profile.html:9
 msgid "Change password"
-msgstr ""
+msgstr "Cambiar contraseña"
 
 #: app/templates/pages/auth/change_password.html:11
 #: app/templates/pages/auth/change_password.html:15
 msgid "Current password"
-msgstr ""
+msgstr "Contraseña actual"
 
-#: app/templates/pages/auth/change_password.html:64
-#: app/templates/pages/auth/change_password.html:68
-msgid "New password"
-msgstr ""
-
+#: app/templates/pages/auth/change_password.html:25
+#: app/templates/pages/auth/change_password.html:49
 #: app/templates/pages/auth/change_password.html:74
-#: app/templates/pages/auth/change_password.html:128
-msgid "Enter at least 8 characters."
-msgstr ""
+#: app/templates/pages/auth/login.html:147
+msgid "Show password"
+msgstr "Mostrar contraseña"
 
-#: app/templates/pages/auth/change_password.html:118
-#: app/templates/pages/auth/change_password.html:122
+#: app/templates/pages/auth/change_password.html:34
+#: app/templates/pages/auth/change_password.html:38
+msgid "New password"
+msgstr "Nueva contraseña"
+
+#: app/templates/pages/auth/change_password.html:55
+msgid "Enter at least 8 characters."
+msgstr "Introduce al menos 8 caracteres."
+
+#: app/templates/pages/auth/change_password.html:59
+#: app/templates/pages/auth/change_password.html:63
 msgid "Confirm new password"
-msgstr ""
+msgstr "Confirmar nueva contraseña"
+
+#: app/templates/pages/auth/login.html:18
+msgid "Install the app"
+msgstr "Instalar la app"
 
 #: app/templates/pages/auth/login.html:20
-msgid "Install the app"
-msgstr ""
-
-#: app/templates/pages/auth/login.html:22
 msgid "Add the web app to your home screen."
-msgstr ""
+msgstr "Añade la aplicación web a tu pantalla de inicio."
 
-#: app/templates/pages/auth/login.html:35
+#: app/templates/pages/auth/login.html:27
 msgid "Tap the"
-msgstr ""
+msgstr "Toca el"
 
-#: app/templates/pages/auth/login.html:38
+#: app/templates/pages/auth/login.html:28
+msgid "Share"
+msgstr "Compartir"
+
+#: app/templates/pages/auth/login.html:30
 msgid "button in the bottom bar."
-msgstr ""
+msgstr "botón de la barra inferior."
 
-#: app/templates/pages/auth/login.html:48
+#: app/templates/pages/auth/login.html:36
 msgid "In the menu that opens, choose"
-msgstr ""
+msgstr "En el menú que se abre, elige"
 
-#: app/templates/pages/auth/login.html:59
+#: app/templates/pages/auth/login.html:37
+msgid "Add to Home Screen"
+msgstr "Añadir a la pantalla de inicio"
+
+#: app/templates/pages/auth/login.html:43
 msgid "In the next step, tap"
-msgstr ""
+msgstr "En el siguiente paso, toca"
 
-#: app/templates/pages/auth/login.html:65
+#: app/templates/pages/auth/login.html:44
+msgid "Add"
+msgstr "Añadir"
+
+#: app/templates/pages/auth/login.html:49
 msgid "Got it"
-msgstr ""
+msgstr "Entendido"
 
-#: app/templates/pages/auth/login.html:137
-msgid "User panel"
-msgstr ""
-
-#: app/templates/pages/auth/login.html:156
-#: app/templates/pages/auth/login.html:160
-#: app/templates/pages/owner/coach/coach_detail.html:22
-#: app/templates/pages/owner/profile/profile.html:22
-#: app/templates/pages/user/profile/profile.html:15
-msgid "Email"
-msgstr ""
-
-#: app/templates/pages/auth/login.html:166
-msgid "Enter a valid email address."
-msgstr ""
-
-#: app/templates/pages/auth/login.html:174
-#: app/templates/pages/auth/login.html:178
+#: app/templates/pages/auth/login.html:132
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
-#: app/templates/pages/auth/login.html:183
-msgid "Password is required."
-msgstr ""
-
-#: app/templates/pages/auth/login.html:233
-msgid "Forgot your password?"
-msgstr ""
-
-#: app/templates/pages/owner/dashboard.html:7
+#: app/templates/pages/owner/dashboard.html:6
 msgid "Overall statistics"
-msgstr ""
+msgstr "Estadísticas generales"
 
-#: app/templates/pages/owner/dashboard.html:13
+#: app/templates/pages/owner/dashboard.html:10
 msgid "Time period"
-msgstr ""
+msgstr "Periodo de tiempo"
 
-#: app/templates/pages/owner/dashboard.html:19
+#: app/templates/pages/owner/dashboard.html:18
 msgid "All time"
-msgstr ""
+msgstr "Todo el tiempo"
 
-#: app/templates/pages/owner/dashboard.html:22
+#: app/templates/pages/owner/dashboard.html:21
 msgid "This month"
-msgstr ""
+msgstr "Este mes"
 
-#: app/templates/pages/owner/dashboard.html:25
+#: app/templates/pages/owner/dashboard.html:24
 msgid "This week"
-msgstr ""
+msgstr "Esta semana"
 
-#: app/templates/pages/owner/coach/coach_detail.html:5
+#: app/templates/pages/owner/coach/coach_detail.html:10
 #: app/templates/pages/owner/plan/plan_detail.html:9
-#: app/templates/pages/owner/plan/plan_detail.html:26
-#: app/templates/pages/owner/plan/plan_detail.html:152
-#: app/templates/pages/owner/plan/plan_detail.html:174
-#: app/templates/pages/owner/plan/plan_detail.html:199
-#: app/templates/pages/owner/trainee/trainee_detail.html:6
-#: app/templates/pages/owner/trainee/trainee_detail.html:132
+#: app/templates/pages/owner/plan/plan_detail.html:148
+#: app/templates/pages/owner/trainee/trainee_detail.html:10
+#: app/templates/pages/owner/trainee/trainee_detail.html:173
 msgid "Edit"
-msgstr ""
-
-#: app/templates/pages/owner/coach/coach_detail.html:21
-#: app/templates/pages/owner/trainee/trainee_detail.html:30
-msgid "Phone"
-msgstr ""
+msgstr "Editar"
 
 #: app/templates/pages/owner/coach/coaches.html:7
 msgid "Manage registered coaches"
-msgstr ""
+msgstr "Gestionar entrenadores registrados"
 
-#: app/templates/pages/owner/coach/coaches.html:26
+#: app/templates/pages/owner/coach/coaches.html:28
 msgid "View coach"
-msgstr ""
+msgstr "Ver entrenador"
 
 #: app/templates/pages/owner/coach/coaches.html:37
 msgid "You haven't added any coaches yet!"
-msgstr ""
+msgstr "¡Todavía no has añadido ningún entrenador!"
 
-#: app/templates/pages/owner/coach/coaches.html:44
-#: app/templates/pages/owner/trainee/trainees.html:109
+#: app/templates/pages/owner/coach/coaches.html:43
+#: app/templates/pages/owner/trainee/trainees.html:112
 msgid "Pagination"
-msgstr ""
+msgstr "Paginación"
+
+#: app/templates/pages/owner/coach/coaches.html:45
+#: app/templates/pages/owner/trainee/trainees.html:115
+msgid "Previous"
+msgstr "Anterior"
 
 #: app/templates/pages/owner/coach/coaches.html:46
-#: app/templates/pages/owner/trainee/trainees.html:112
-msgid "Previous"
-msgstr ""
-
-#: app/templates/pages/owner/coach/coaches.html:47
-#: app/templates/pages/owner/plan/plans.html:228
-#: app/templates/pages/owner/trainee/trainees.html:113
+#: app/templates/pages/owner/plan/plans.html:178
+#: app/templates/pages/owner/trainee/trainees.html:116
 msgid "Page"
-msgstr ""
+msgstr "Página"
 
-#: app/templates/pages/owner/coach/coaches.html:47
-#: app/templates/pages/owner/plan/plans.html:228
-#: app/templates/pages/owner/trainee/trainees.html:113
+#: app/templates/pages/owner/coach/coaches.html:46
+#: app/templates/pages/owner/plan/plans.html:178
+#: app/templates/pages/owner/trainee/trainees.html:116
 msgid "of"
-msgstr ""
+msgstr "de"
 
-#: app/templates/pages/owner/coach/coaches.html:49
-#: app/templates/pages/owner/trainee/trainees.html:115
+#: app/templates/pages/owner/coach/coaches.html:48
+#: app/templates/pages/owner/trainee/trainees.html:118
 msgid "Next"
-msgstr ""
+msgstr "Siguiente"
 
-#: app/templates/pages/owner/plan/plan_detail.html:19
-msgid "Template:"
-msgstr ""
-
-#: app/templates/pages/owner/plan/plan_detail.html:21
+#: app/templates/pages/owner/plan/plan_detail.html:6
 msgid "Untitled"
-msgstr ""
+msgstr "Sin título"
 
-#: app/templates/pages/owner/plan/plan_detail.html:36
-msgid "Plan:"
-msgstr ""
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:13
+#: app/templates/pages/user/plan/plans.html:37
+msgid "Training plan"
+msgstr "Plan de entrenamiento"
 
-#: app/templates/pages/owner/plan/plan_detail.html:107
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:15
+#: app/templates/pages/user/plan/plans.html:39
+msgid "Diet plan"
+msgstr "Plan de dieta"
+
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:17
+#: app/templates/pages/user/plan/plans.html:41
+msgid "Steroid plan"
+msgstr "Plan de esteroides"
+
+#: app/templates/pages/owner/plan/plan_detail.html:84
 #: app/templates/pages/owner/plan/templates_list.html:35
 msgid "Apply to trainee"
-msgstr ""
+msgstr "Aplicar al alumno"
 
-#: app/templates/pages/owner/plan/plan_detail.html:112
+#: app/templates/pages/owner/plan/plan_detail.html:89
 msgid "Plan items"
-msgstr ""
+msgstr "Elementos del plan"
 
-#: app/templates/pages/owner/plan/plan_detail.html:121
+#: app/templates/pages/owner/plan/plan_detail.html:99
 msgid "Add item"
-msgstr ""
+msgstr "Añadir elemento"
 
-#: app/templates/pages/owner/plan/plan_detail.html:140
+#: app/templates/pages/owner/plan/plan_detail.html:120
 msgid "Quantity:"
-msgstr ""
+msgstr "Cantidad:"
 
-#: app/templates/pages/owner/plan/plan_detail.html:156
-#: app/templates/pages/owner/plan/plan_detail.html:178
-msgid "Notes:"
-msgstr ""
-
-#: app/templates/pages/owner/plan/plan_detail.html:161
+#: app/templates/pages/owner/plan/plan_detail.html:123
 msgid "Medication/Supplement"
-msgstr ""
+msgstr "Medicación/Suplemento"
 
-#: app/templates/pages/owner/plan/plan_detail.html:163
+#: app/templates/pages/owner/plan/plan_detail.html:125
 msgid "Day:"
-msgstr ""
+msgstr "Día:"
 
-#: app/templates/pages/owner/plan/plan_detail.html:186
+#: app/templates/pages/owner/plan/plan_detail.html:130
 msgid "Sets:"
-msgstr ""
+msgstr "Series:"
 
-#: app/templates/pages/owner/plan/plan_detail.html:186
+#: app/templates/pages/owner/plan/plan_detail.html:130
 msgid "Reps:"
-msgstr ""
+msgstr "Repeticiones:"
 
-#: app/templates/pages/owner/plan/plan_detail.html:186
+#: app/templates/pages/owner/plan/plan_detail.html:130
 msgid "Weight:"
-msgstr ""
+msgstr "Peso:"
 
-#: app/templates/pages/owner/plan/plan_detail.html:210
+#: app/templates/pages/owner/plan/plan_detail.html:130
+#: app/templates/pages/owner/trainee/trainee_detail.html:123
+#: app/templates/pages/user/dashboard.html:172
+#: app/templates/pages/user/dashboard.html:201
+#: app/templates/pages/user/plan/plan_detail.html:142
+#: app/templates/pages/user/plan/plan_detail.html:172
+msgid "kg"
+msgstr "kg"
+
+#: app/templates/pages/owner/plan/plan_detail.html:136
+msgid "Notes:"
+msgstr "Notas:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:155
 msgid "No items recorded."
-msgstr ""
+msgstr "No hay elementos registrados."
 
-#: app/templates/pages/owner/plan/plans.html:26
-#: app/templates/pages/owner/plan/plans.html:34
-msgid "Templates"
-msgstr ""
-
-#: app/templates/pages/owner/plan/plans.html:40
+#: app/templates/pages/owner/plan/plans.html:7
 msgid "New template"
-msgstr ""
+msgstr "Nueva plantilla"
 
-#: app/templates/pages/owner/plan/plans.html:52
-#: app/templates/pages/owner/trainee/trainees.html:13
+#: app/templates/pages/owner/plan/plans.html:13
+#: app/templates/pages/owner/plan/plans.html:42
+msgid "Templates"
+msgstr "Plantillas"
+
+#: app/templates/pages/owner/plan/plans.html:14
+msgid "Reusable plans you can apply to any trainee"
+msgstr "Planes reutilizables que puedes aplicar a cualquier alumno"
+
+#: app/templates/pages/owner/plan/plans.html:14
+msgid "Create and track plans for your trainees"
+msgstr "Crea y sigue los planes de tus alumnos"
+
+#: app/templates/pages/owner/plan/plans.html:48
 #: app/templates/pages/owner/trainee/trainees.html:15
 msgid "Search and filter"
-msgstr ""
+msgstr "Buscar y filtrar"
 
-#: app/templates/pages/owner/plan/plans.html:60
-#: app/templates/pages/owner/plan/plans.html:70
+#: app/templates/pages/owner/plan/plans.html:52
+#: app/templates/pages/owner/trainee/trainees.html:19
+msgid "Search"
+msgstr "Buscar"
+
+#: app/templates/pages/owner/plan/plans.html:57
 msgid "Search (trainee name, coach name...)"
-msgstr ""
+msgstr "Buscar (nombre del alumno, del entrenador...)"
 
-#: app/templates/pages/owner/plan/plans.html:90
-#: app/templates/pages/owner/trainee/trainees.html:41
-#: app/templates/pages/owner/trainee/trainees.html:55
+#: app/templates/pages/owner/plan/plans.html:86
+#: app/templates/pages/owner/trainee/trainees.html:42
+#: app/templates/pages/owner/trainee/trainees.html:57
 msgid "All"
-msgstr ""
+msgstr "Todos"
 
-#: app/templates/pages/owner/plan/plans.html:121
-#: app/templates/pages/owner/trainee/trainees.html:62
+#: app/templates/pages/owner/plan/plans.html:99
+#: app/templates/pages/owner/trainee/trainees.html:64
 msgid "Clear filters"
-msgstr ""
+msgstr "Borrar filtros"
 
-#: app/templates/pages/owner/plan/plans.html:167
+#: app/templates/pages/owner/plan/plans.html:137
+#: app/templates/pages/owner/plan/templates_list.html:24
 msgid "days/week"
-msgstr ""
+msgstr "días/semana"
 
-#: app/templates/pages/owner/plan/plans.html:204
-msgid "You haven't created any plans yet!"
-msgstr ""
-
-#: app/templates/pages/owner/plan/templates_list.html:17
-msgid "days per week"
-msgstr ""
-
-#: app/templates/pages/owner/plan/templates_list.html:20
-#: app/templates/pages/owner/profile/profile.html:68
-#: app/templates/pages/owner/trainee/trainee_detail.html:173
+#: app/templates/pages/owner/plan/plans.html:140
+#: app/templates/pages/owner/plan/templates_list.html:37
+#: app/templates/pages/owner/profile/profile.html:51
+#: app/templates/pages/owner/trainee/trainee_detail.html:220
+#: app/templates/pages/user/plan/plans.html:68
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
-#: app/templates/pages/owner/plan/templates_list.html:45
+#: app/templates/pages/owner/plan/plans.html:153
+msgid "You haven't created any plans yet!"
+msgstr "¡Todavía no has creado ningún plan!"
+
+#: app/templates/pages/owner/plan/templates_list.html:47
 msgid "No templates created yet."
-msgstr ""
+msgstr "Aún no hay plantillas creadas."
 
 #: app/templates/pages/owner/plan/templates_list.html:48
 msgid "Create new template"
-msgstr ""
+msgstr "Crear nueva plantilla"
+
+#: app/templates/pages/owner/profile/profile.html:19
+#: app/templates/pages/user/profile/profile.html:19
+msgid "Account created"
+msgstr "Cuenta creada"
+
+#: app/templates/pages/owner/profile/profile.html:23
+#: app/templates/pages/user/profile/profile.html:23
+msgid "Last updated"
+msgstr "Última actualización"
 
 #: app/templates/pages/owner/profile/profile.html:30
-#: app/templates/pages/user/profile/profile.html:23
-msgid "Account created"
-msgstr ""
+msgid "App information and settings"
+msgstr "Información y ajustes de la app"
 
 #: app/templates/pages/owner/profile/profile.html:34
-#: app/templates/pages/user/profile/profile.html:27
-msgid "Last updated"
-msgstr ""
-
-#: app/templates/pages/owner/profile/profile.html:43
-#: app/templates/pages/user/profile/profile.html:36
-msgid "App information and settings"
-msgstr ""
-
-#: app/templates/pages/owner/profile/profile.html:46
 msgid "Domain"
-msgstr ""
+msgstr "Dominio"
 
-#: app/templates/pages/owner/profile/profile.html:50
+#: app/templates/pages/owner/profile/profile.html:38
 msgid "Theme"
-msgstr ""
+msgstr "Tema"
 
-#: app/templates/pages/owner/profile/profile.html:60
+#: app/templates/pages/owner/profile/profile.html:44
 msgid "Management"
-msgstr ""
+msgstr "Gestión"
 
-#: app/templates/pages/owner/profile/profile.html:66
+#: app/templates/pages/owner/profile/profile.html:49
 msgid "Manage your gym's coaches"
-msgstr ""
+msgstr "Gestiona los entrenadores de tu gimnasio"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:28
-#: app/templates/pages/owner/trainee/trainees.html:42
-msgid "Male"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:28
-#: app/templates/pages/owner/trainee/trainees.html:43
-msgid "Female"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:31
-#: app/templates/pages/owner/trainee/trainees.html:32
-msgid "Gender"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:31
-msgid "-"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:32
-msgid "Date of birth"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:35
-msgid "Blood type"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:45
-msgid "Additional information"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:47
-msgid "Training history"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:48
-msgid "Steroid history"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:49
-msgid "Supplement history"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:50
-msgid "Abnormalities and illnesses"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:54
+#: app/templates/pages/owner/trainee/trainee_detail.html:81
 msgid "History"
-msgstr ""
+msgstr "Historial"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:79
+#: app/templates/pages/owner/trainee/trainee_detail.html:114
+msgid "BMI"
+msgstr "IMC"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:118
 msgid "Body fat %"
-msgstr ""
+msgstr "% de grasa corporal"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:83
+#: app/templates/pages/owner/trainee/trainee_detail.html:122
 msgid "Lean body mass"
-msgstr ""
+msgstr "Masa corporal magra"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:84
-#: app/templates/pages/user/dashboard.html:219
-#: app/templates/pages/user/dashboard.html:274
-#: app/templates/pages/user/plan/plan_detail.html:205
-#: app/templates/pages/user/plan/plan_detail.html:277
-msgid "kg"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:87
+#: app/templates/pages/owner/trainee/trainee_detail.html:126
 msgid "Basal metabolic rate"
-msgstr ""
+msgstr "Tasa metabólica basal"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:88
-#: app/templates/pages/owner/trainee/trainee_detail.html:92
+#: app/templates/pages/owner/trainee/trainee_detail.html:127
+#: app/templates/pages/owner/trainee/trainee_detail.html:131
 msgid "kcal"
-msgstr ""
+msgstr "kcal"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:91
+#: app/templates/pages/owner/trainee/trainee_detail.html:130
 msgid "Activity-adjusted metabolism"
-msgstr ""
+msgstr "Metabolismo ajustado a la actividad"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:95
+#: app/templates/pages/owner/trainee/trainee_detail.html:134
 msgid "Waist-to-hip ratio"
-msgstr ""
+msgstr "Índice cintura-cadera"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:101
+#: app/templates/pages/owner/trainee/trainee_detail.html:140
 msgid "Progress photos"
-msgstr ""
+msgstr "Fotos de progreso"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:107
+#: app/templates/pages/owner/trainee/trainee_detail.html:147
 msgid "Progress photo"
-msgstr ""
+msgstr "Foto de progreso"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:141
+#: app/templates/pages/owner/trainee/trainee_detail.html:183
 msgid "No assessments recorded yet!"
-msgstr ""
+msgstr "¡Todavía no hay valoraciones registradas!"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:150
+#: app/templates/pages/owner/trainee/trainee_detail.html:190
 msgid "Record assessment"
-msgstr ""
+msgstr "Registrar valoración"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:165
-#: app/templates/pages/user/plan/plan_detail.html:28
-#: app/templates/pages/user/plan/plans.html:48
-msgid "Training plan"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:165
-#: app/templates/pages/user/plan/plan_detail.html:30
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/user/plan/plan_detail.html:25
 #: app/templates/pages/user/plan/plans.html:50
-msgid "Diet plan"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:165
-#: app/templates/pages/user/plan/plan_detail.html:32
-#: app/templates/pages/user/plan/plans.html:52
-msgid "Steroid plan"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:169
-#: app/templates/pages/user/plan/plan_detail.html:15
-#: app/templates/pages/user/plan/plans.html:68
 msgid "Draft"
-msgstr ""
+msgstr "Borrador"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:170
-#: app/templates/pages/user/plan/plans.html:106
-msgid "Start"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:170
-#: app/templates/pages/user/plan/plans.html:130
-msgid "End"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainee_detail.html:178
-#: app/templates/pages/user/plan/plans.html:174
+#: app/templates/pages/owner/trainee/trainee_detail.html:228
+#: app/templates/pages/user/plan/plans.html:80
 msgid "No plans recorded yet!"
-msgstr ""
+msgstr "¡Todavía no hay planes registrados!"
 
-#: app/templates/pages/owner/trainee/trainee_detail.html:193
+#: app/templates/pages/owner/trainee/trainee_detail.html:242
 msgid "Full progress photo"
-msgstr ""
+msgstr "Foto de progreso completa"
 
 #: app/templates/pages/owner/trainee/trainees.html:7
 msgid "Manage registered trainees"
-msgstr ""
+msgstr "Gestionar alumnos registrados"
 
-#: app/templates/pages/owner/trainee/trainees.html:21
-msgid "Search"
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainees.html:21
+#: app/templates/pages/owner/trainee/trainees.html:20
 msgid "name, email..."
-msgstr ""
+msgstr "nombre, correo..."
 
-#: app/templates/pages/owner/trainee/trainees.html:22
-msgid "Search..."
-msgstr ""
-
-#: app/templates/pages/owner/trainee/trainees.html:87
+#: app/templates/pages/owner/trainee/trainees.html:92
 msgid "View trainee"
-msgstr ""
+msgstr "Ver alumno"
 
-#: app/templates/pages/owner/trainee/trainees.html:100
+#: app/templates/pages/owner/trainee/trainees.html:102
 msgid "You haven't added any trainees yet!"
-msgstr ""
+msgstr "¡Todavía no has añadido ningún alumno!"
 
-#: app/templates/pages/user/dashboard.html:8
-msgid "Champion"
-msgstr ""
-
-#: app/templates/pages/user/dashboard.html:10
+#: app/templates/pages/user/dashboard.html:16
 msgid "Welcome back"
-msgstr ""
+msgstr "Bienvenido de nuevo"
 
-#: app/templates/pages/user/dashboard.html:27
-msgid ""
-"For the app to work correctly, make sure to mark \"Done\" at the end of "
-"each day!"
-msgstr ""
+#: app/templates/pages/user/dashboard.html:17
+msgid "Champion"
+msgstr "Campeón"
 
-#: app/templates/pages/user/dashboard.html:92
-#: app/templates/pages/user/dashboard.html:179
-#: app/templates/pages/user/dashboard.html:321
+#: app/templates/pages/user/dashboard.html:19
+msgid "Tap Done when the day is complete."
+msgstr "Toca «Hecho» cuando hayas completado el día."
+
+#: app/templates/pages/user/dashboard.html:24
+msgid "Plan types"
+msgstr "Tipos de plan"
+
+#: app/templates/pages/user/dashboard.html:78
+#: app/templates/pages/user/dashboard.html:151
+#: app/templates/pages/user/dashboard.html:242
 msgid "Done"
-msgstr ""
+msgstr "Hecho"
 
-#: app/templates/pages/user/dashboard.html:132
-#: app/templates/pages/user/dashboard.html:249
-#: app/templates/pages/user/plan/plan_detail.html:139
+#: app/templates/pages/user/dashboard.html:107
+#: app/templates/pages/user/dashboard.html:190
+#: app/templates/pages/user/plan/plan_detail.html:106
 msgid "Other"
-msgstr ""
+msgstr "Otros"
 
-#: app/templates/pages/user/dashboard.html:160
-#: app/templates/pages/user/dashboard.html:302
-#: app/templates/pages/user/dashboard.html:334
+#: app/templates/pages/user/dashboard.html:128
+#: app/templates/pages/user/dashboard.html:219
+#: app/templates/pages/user/dashboard.html:264
 msgid "No items yet"
-msgstr ""
+msgstr "Aún no hay elementos"
 
-#: app/templates/pages/user/dashboard.html:165
+#: app/templates/pages/user/dashboard.html:135
 msgid "No diet plan"
-msgstr ""
+msgstr "Sin plan de dieta"
+
+#: app/templates/pages/user/dashboard.html:175
+#: app/templates/pages/user/dashboard.html:204
+#: app/templates/pages/user/plan/plan_detail.html:175
+msgid "sec"
+msgstr "s"
 
 #: app/templates/pages/user/dashboard.html:226
-#: app/templates/pages/user/dashboard.html:281
-#: app/templates/pages/user/plan/plan_detail.html:284
-msgid "sec"
-msgstr ""
-
-#: app/templates/pages/user/dashboard.html:307
 msgid "No training plan"
-msgstr ""
+msgstr "Sin plan de entrenamiento"
 
-#: app/templates/pages/user/dashboard.html:339
+#: app/templates/pages/user/dashboard.html:271
 msgid "No steroid plan"
-msgstr ""
+msgstr "Sin plan de esteroides"
 
-#: app/templates/pages/user/plan/plan_detail.html:39
+#: app/templates/pages/user/plan/plan_detail.html:33
 msgid "From"
-msgstr ""
+msgstr "Desde"
 
-#: app/templates/pages/user/plan/plan_detail.html:42
+#: app/templates/pages/user/plan/plan_detail.html:34
 msgid "To"
-msgstr ""
+msgstr "Hasta"
 
-#: app/templates/pages/user/plan/plan_detail.html:225
+#: app/templates/pages/user/plan/plan_detail.html:145
 msgid "sec rest"
-msgstr ""
+msgstr "s de descanso"
 
-#: app/templates/pages/user/plan/plan_detail.html:250
+#: app/templates/pages/user/plan/plan_detail.html:161
 msgid "Other exercises"
-msgstr ""
+msgstr "Otros ejercicios"
 
-#: app/templates/pages/user/plan/plan_detail.html:335
+#: app/templates/pages/user/plan/plan_detail.html:210
 msgid "No items found"
-msgstr ""
+msgstr "No se encontraron elementos"
 
-#: app/templates/pages/user/plan/plan_detail.html:337
+#: app/templates/pages/user/plan/plan_detail.html:211
 msgid "No items have been added to this plan yet."
-msgstr ""
+msgstr "Todavía no se han añadido elementos a este plan."
 
-#: app/templates/pages/user/plan/plans.html:9
+#: app/templates/pages/user/plan/plans.html:8
 msgid "My plans"
-msgstr ""
+msgstr "Mis planes"
 
-#: app/templates/pages/user/plan/plans.html:11
+#: app/templates/pages/user/plan/plans.html:10
 msgid "View and track the plans your coach created for you"
-msgstr ""
+msgstr "Consulta y sigue los planes que tu entrenador creó para ti"
 
-#: app/templates/pages/user/plan/plans.html:54
+#: app/templates/pages/user/plan/plans.html:43
 msgid "Unknown plan"
-msgstr ""
+msgstr "Plan desconocido"
 
-#: app/templates/pages/user/plan/plans.html:178
+#: app/templates/pages/user/plan/plans.html:60
+msgid "Start"
+msgstr "Inicio"
+
+#: app/templates/pages/user/plan/plans.html:63
+msgid "End"
+msgstr "Fin"
+
+#: app/templates/pages/user/plan/plans.html:83
 msgid ""
-"Your coach hasn't created any plans for you yet. As soon as a new plan is"
-" created, it will show up here."
+"Your coach hasn't created any plans for you yet. As soon as a new plan is "
+"created, it will show up here."
 msgstr ""
+"Tu entrenador aún no ha creado ningún plan para ti. En cuanto se cree uno "
+"nuevo, aparecerá aquí."
 
-#: app/templates/pages/user/plan/plans.html:187
-msgid "Waiting for your plan..."
-msgstr ""
+#~ msgid "Coach registered successfully."
+#~ msgstr ""
+
+#~ msgid "Trainee registered successfully. Redirecting..."
+#~ msgstr ""
+
+#~ msgid "Inactive trainees"
+#~ msgstr ""
+
+#~ msgid "This field is required."
+#~ msgstr ""
+
+#~ msgid "Add trainee"
+#~ msgstr ""
+
+#~ msgid "User panel"
+#~ msgstr ""
+
+#~ msgid "Enter a valid email address."
+#~ msgstr ""
+
+#~ msgid "Password is required."
+#~ msgstr ""
+
+#~ msgid "Forgot your password?"
+#~ msgstr ""
+
+#~ msgid "Template:"
+#~ msgstr ""
+
+#~ msgid "Plan:"
+#~ msgstr ""
+
+#~ msgid "-"
+#~ msgstr ""
+
+#~ msgid "Search..."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For the app to work correctly, make"
+#~ " sure to mark \"Done\" at the end"
+#~ " of each day!"
+#~ msgstr ""
+
+#~ msgid "Waiting for your plan..."
+#~ msgstr ""
+
+#~ msgid "days per week"
+#~ msgstr "días por semana"
+
+#~ msgid "Plan"
+#~ msgstr "Plan"
 

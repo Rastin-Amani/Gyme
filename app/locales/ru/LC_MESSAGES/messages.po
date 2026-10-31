@@ -1,0 +1,1613 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-10-31 12:07+0000\n"
+"PO-Revision-Date: 2026-10-31 12:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/middleware.py:225 app/middleware.py:251
+msgid "Invalid request (CSRF)"
+msgstr "Неверный запрос (CSRF)"
+
+#: app/routes/coach.py:136 app/routes/coach.py:169 app/routes/coach.py:234
+#: app/routes/item.py:130 app/routes/item.py:208 app/routes/item.py:315
+#: app/routes/plan.py:528 app/routes/plan.py:620 app/routes/progress_logs.py:80
+#: app/routes/progress_logs.py:285 app/routes/trainee.py:509 app/utils.py:30
+msgid "Access denied"
+msgstr "Доступ запрещён"
+
+#: app/routes/auth.py:37 app/routes/auth.py:57
+#: app/templates/pages/auth/login.html:109 app/templates/pages/auth/login.html:155
+msgid "Log in"
+msgstr "Войти"
+
+#: app/routes/auth.py:103
+msgid "System error: Gym not found!"
+msgstr "Системная ошибка: зал не найден!"
+
+#: app/routes/auth.py:110
+msgid "Too many login attempts. Please wait a few minutes."
+msgstr "Слишком много попыток входа. Подождите несколько минут."
+
+#: app/routes/auth.py:118
+msgid "Email and password are required"
+msgstr "Требуются электронная почта и пароль"
+
+#: app/routes/auth.py:124
+msgid "Invalid email format"
+msgstr "Неверный формат электронной почты"
+
+#: app/routes/auth.py:131
+msgid "Wrong email or password."
+msgstr "Неверная почта или пароль."
+
+#: app/routes/auth.py:160
+msgid "You are not logged in!"
+msgstr "Вы не вошли в систему!"
+
+#: app/routes/auth.py:165
+msgid "New password and its confirmation do not match."
+msgstr "Новый пароль и его подтверждение не совпадают."
+
+#: app/routes/auth.py:169
+msgid "Password must be at least 8 characters."
+msgstr "Пароль должен содержать не менее 8 символов."
+
+#: app/routes/auth.py:172
+msgid "Password is too long"
+msgstr "Пароль слишком длинный"
+
+#: app/routes/auth.py:177
+msgid "Password must not be similar to the email"
+msgstr "Пароль не должен быть похож на электронную почту"
+
+#: app/routes/auth.py:202
+msgid "Password changed successfully! 🔒"
+msgstr "Пароль успешно изменён! 🔒"
+
+#: app/routes/coach.py:37 app/templates/pages/owner/coach/coaches.html:6
+#: app/templates/pages/owner/profile/profile.html:48
+msgid "Coaches"
+msgstr "Тренеры"
+
+#: app/routes/coach.py:60 app/templates/pages/owner/coach/coaches.html:10
+msgid "New coach"
+msgstr "Новый тренер"
+
+#: app/routes/coach.py:88
+msgid "Coach details"
+msgstr "Данные тренера"
+
+#: app/routes/coach.py:114
+msgid "Edit coach"
+msgstr "Изменить тренера"
+
+#: app/routes/coach.py:127 app/templates/forms/coaches_form.html:70
+#: app/templates/forms/coaches_form.html:83
+msgid "Delete coach"
+msgstr "Удалить тренера"
+
+#: app/routes/coach.py:142
+msgid "Coach deleted successfully."
+msgstr "Тренер успешно удалён."
+
+#: app/routes/coach.py:152
+msgid "Error deleting coach."
+msgstr "Ошибка при удалении тренера."
+
+#: app/routes/coach.py:196 app/routes/trainee.py:398
+msgid "Error creating user."
+msgstr "Ошибка при создании пользователя."
+
+#: app/routes/coach.py:202
+#, python-format
+msgid ""
+"Coach registered. Initial password: %(password)s (copy it now, it is not "
+"shown again)"
+msgstr ""
+"Тренер зарегистрирован. Начальный пароль: %(password)s (скопируйте сейчас, "
+"он больше не будет показан)"
+
+#: app/routes/coach.py:219 app/routes/trainee.py:452
+msgid "Server error: check the entered information."
+msgstr "Ошибка сервера: проверьте введённые данные."
+
+#: app/routes/coach.py:263
+msgid "Coach information updated successfully."
+msgstr "Данные тренера успешно обновлены."
+
+#: app/routes/coach.py:275 app/routes/plan.py:595 app/routes/trainee.py:557
+msgid "Error updating information."
+msgstr "Ошибка при обновлении данных."
+
+#: app/routes/dashboard.py:36
+msgid "Management dashboard"
+msgstr "Панель управления"
+
+#: app/routes/debug.py:113
+msgid "User dashboard"
+msgstr "Панель пользователя"
+
+#: app/routes/item.py:64 app/routes/item.py:98
+msgid "Edit item"
+msgstr "Изменить элемент"
+
+#: app/routes/item.py:139
+msgid "Item deleted successfully."
+msgstr "Элемент успешно удалён."
+
+#: app/routes/item.py:147 app/routes/item.py:269 app/routes/item.py:384
+msgid "Something went wrong. Please try again."
+msgstr "Что-то пошло не так. Попробуйте ещё раз."
+
+#: app/routes/item.py:159
+msgid "Delete item"
+msgstr "Удалить элемент"
+
+#: app/routes/item.py:196 app/routes/item.py:306 app/routes/plan.py:417
+#: app/routes/plan.py:531
+msgid "Invalid plan type"
+msgstr "Неверный тип плана"
+
+#: app/routes/item.py:212 app/routes/plan.py:525
+msgid "Plan not found"
+msgstr "План не найден"
+
+#: app/routes/item.py:261
+msgid "Item added successfully."
+msgstr "Элемент успешно добавлен."
+
+#: app/routes/item.py:322
+msgid "Item not found"
+msgstr "Элемент не найден"
+
+#: app/routes/item.py:376
+msgid "Item updated successfully."
+msgstr "Элемент успешно обновлён."
+
+#: app/routes/plan.py:96
+msgid "Plan templates"
+msgstr "Шаблоны планов"
+
+#: app/routes/plan.py:96 app/routes/user/plan.py:30
+#: app/templates/components/coach_stats.html:14
+#: app/templates/components/coach_stats.html:42
+#: app/templates/components/dashboard_stats.html:15
+#: app/templates/components/dashboard_stats.html:20
+#: app/templates/components/dashboard_stats.html:26
+#: app/templates/layouts/dashboard.html:41 app/templates/layouts/dashboard.html:66
+#: app/templates/layouts/dashboard.html:151
+#: app/templates/layouts/dashboard.html:168
+#: app/templates/pages/owner/plan/plans.html:13
+#: app/templates/pages/owner/plan/plans.html:30
+#: app/templates/pages/owner/trainee/trainee_detail.html:193
+msgid "Plans"
+msgstr "Планы"
+
+#: app/routes/plan.py:109
+msgid "No plan found with these criteria"
+msgstr "По этим критериям планы не найдены"
+
+#: app/routes/plan.py:157
+msgid "New plan template"
+msgstr "Новый шаблон плана"
+
+#: app/routes/plan.py:157 app/templates/pages/owner/plan/plans.html:10
+msgid "New plan"
+msgstr "Новый план"
+
+#: app/routes/plan.py:206 app/routes/user/plan.py:67
+#: app/templates/pages/user/plan/plan_detail.html:19
+msgid "Plan details"
+msgstr "Данные плана"
+
+#: app/routes/plan.py:261
+msgid "Edit plan"
+msgstr "Изменить план"
+
+#: app/routes/plan.py:292
+msgid "Template not found"
+msgstr "Шаблон не найден"
+
+#: app/routes/plan.py:365
+msgid "Plan created from template successfully"
+msgstr "План успешно создан из шаблона"
+
+#: app/routes/plan.py:375
+msgid "Error connecting to the database."
+msgstr "Ошибка подключения к базе данных."
+
+#: app/routes/plan.py:377
+msgid "Template or trainee not found!"
+msgstr "Шаблон или ученик не найден!"
+
+#: app/routes/plan.py:379
+msgid "Invalid input. Please check the dates."
+msgstr "Неверные данные. Проверьте даты."
+
+#: app/routes/plan.py:414 app/routes/plan.py:539
+msgid "Select a trainee"
+msgstr "Выбрать ученика"
+
+#: app/routes/plan.py:423
+msgid "Days per week must be between 1 and 7"
+msgstr "Количество дней в неделю должно быть от 1 до 7"
+
+#: app/routes/plan.py:430 app/routes/plan.py:552 app/routes/progress_logs.py:87
+msgid "Trainee not found"
+msgstr "Ученик не найден"
+
+#: app/routes/plan.py:468
+msgid "New template saved successfully"
+msgstr "Новый шаблон успешно сохранён"
+
+#: app/routes/plan.py:470
+msgid "New plan created successfully"
+msgstr "Новый план успешно создан"
+
+#: app/routes/plan.py:487
+msgid "Error creating. Please check the fields."
+msgstr "Ошибка при создании. Проверьте поля."
+
+#: app/routes/plan.py:536
+msgid "Plan type cannot be changed after creation"
+msgstr "Тип плана нельзя изменить после создания"
+
+#: app/routes/plan.py:545
+msgid "Invalid number of days per week"
+msgstr "Неверное количество дней в неделю"
+
+#: app/routes/plan.py:586
+msgid "Changes saved successfully"
+msgstr "Изменения успешно сохранены"
+
+#: app/routes/plan.py:605
+msgid "Delete plan"
+msgstr "Удалить план"
+
+#: app/routes/plan.py:622
+msgid "Plan deleted successfully."
+msgstr "План успешно удалён."
+
+#: app/routes/plan.py:629
+msgid "Error deleting plan."
+msgstr "Ошибка при удалении плана."
+
+#: app/routes/profile.py:21 app/routes/user/profile.py:21
+#: app/templates/layouts/dashboard.html:53 app/templates/layouts/dashboard.html:72
+#: app/templates/layouts/dashboard.html:159
+#: app/templates/layouts/dashboard.html:172
+msgid "Profile"
+msgstr "Профиль"
+
+#: app/routes/progress_logs.py:43
+msgid "Record initial assessment"
+msgstr "Записать первичную оценку"
+
+#: app/routes/progress_logs.py:146 app/routes/progress_logs.py:345
+#, python-brace-format
+msgid "Maximum {max_files} files allowed"
+msgstr "Максимум {max_files} файлов"
+
+#: app/routes/progress_logs.py:154 app/routes/progress_logs.py:351
+msgid "Invalid file name"
+msgstr "Неверное имя файла"
+
+#: app/routes/progress_logs.py:159 app/routes/progress_logs.py:356
+#, python-brace-format
+msgid "Extension {fname} is not allowed"
+msgstr "Расширение {fname} не разрешено"
+
+#: app/routes/progress_logs.py:164 app/routes/progress_logs.py:361
+#, python-brace-format
+msgid "Format {filename} is not allowed (JPEG, PNG, WebP, GIF)"
+msgstr "Формат {filename} не разрешён (JPEG, PNG, WebP, GIF)"
+
+#: app/routes/progress_logs.py:173 app/routes/progress_logs.py:369
+#, python-brace-format
+msgid "{filename} is larger than 5MB"
+msgstr "{filename} больше 5 МБ"
+
+#: app/routes/progress_logs.py:176 app/routes/progress_logs.py:372
+msgid "Corrupted file"
+msgstr "Повреждённый файл"
+
+#: app/routes/progress_logs.py:184 app/routes/progress_logs.py:190
+#: app/routes/progress_logs.py:377
+msgid "Invalid image file"
+msgstr "Неверный файл изображения"
+
+#: app/routes/progress_logs.py:202
+msgid "Assessment recorded successfully. Redirecting..."
+msgstr "Оценка успешно записана. Перенаправление..."
+
+#: app/routes/progress_logs.py:215
+msgid "Error saving assessment. Please check the values."
+msgstr "Ошибка при сохранении оценки. Проверьте значения."
+
+#: app/routes/progress_logs.py:240
+msgid "Error loading assessment."
+msgstr "Ошибка при загрузке оценки."
+
+#: app/routes/progress_logs.py:247 app/templates/modals/progress_log_edit.html:3
+msgid "Edit assessment"
+msgstr "Изменить оценку"
+
+#: app/routes/progress_logs.py:294
+msgid "Assessment not found"
+msgstr "Оценка не найдена"
+
+#: app/routes/progress_logs.py:392
+msgid "Assessment updated successfully."
+msgstr "Оценка успешно обновлена."
+
+#: app/routes/progress_logs.py:406
+msgid "Error updating assessment. Please check the values."
+msgstr "Ошибка при обновлении оценки. Проверьте значения."
+
+#: app/routes/pwa.py:84
+msgid "Offline"
+msgstr "Офлайн"
+
+#: app/routes/pwa.py:85
+msgid "You are offline"
+msgstr "Вы не в сети"
+
+#: app/routes/pwa.py:89
+msgid ""
+"Pages you've already seen are still available.<br />After reconnecting to "
+"the internet, try again."
+msgstr ""
+"Страницы, которые вы уже просмотрели, по-прежнему доступны.<br />После "
+"подключения к интернету попробуйте снова."
+
+#: app/routes/pwa.py:92
+msgid "Try again"
+msgstr "Попробовать снова"
+
+#: app/routes/pwa.py:128
+#, python-brace-format
+msgid "The dedicated app for {tenant_name}"
+msgstr "Отдельное приложение для {tenant_name}"
+
+#: app/routes/trainee.py:66 app/routes/trainee.py:131 app/routes/trainee.py:191
+#: app/templates/components/coach_stats.html:19
+#: app/templates/components/dashboard_stats.html:10
+#: app/templates/layouts/dashboard.html:47
+#: app/templates/layouts/dashboard.html:155
+#: app/templates/pages/owner/trainee/trainees.html:6
+msgid "Trainees"
+msgstr "Ученики"
+
+#: app/routes/trainee.py:81 app/routes/trainee.py:145
+msgid "No trainee found with these criteria"
+msgstr "По этим критериям ученики не найдены"
+
+#: app/routes/trainee.py:205
+msgid "No trainee found with these filters"
+msgstr "По этим фильтрам ученики не найдены"
+
+#: app/routes/trainee.py:226 app/templates/pages/owner/trainee/trainees.html:10
+#: app/templates/pages/owner/trainee/trainees.html:105
+msgid "New trainee"
+msgstr "Новый ученик"
+
+#: app/routes/trainee.py:266
+msgid "Trainee details"
+msgstr "Данные ученика"
+
+#: app/routes/trainee.py:282 app/templates/forms/trainees_form.html:121
+#: app/templates/forms/trainees_form.html:134
+msgid "Delete trainee"
+msgstr "Удалить ученика"
+
+#: app/routes/trainee.py:297
+msgid "Trainee deleted successfully."
+msgstr "Ученик успешно удалён."
+
+#: app/routes/trainee.py:307
+msgid "Error deleting trainee."
+msgstr "Ошибка при удалении ученика."
+
+#: app/routes/trainee.py:328
+msgid "Edit trainee"
+msgstr "Изменить ученика"
+
+#: app/routes/trainee.py:434
+#, python-format
+msgid ""
+"Trainee registered. Initial password: %(password)s (copy it now, it is not "
+"shown again)"
+msgstr ""
+"Ученик зарегистрирован. Начальный пароль: %(password)s (скопируйте сейчас, "
+"он больше не будет показан)"
+
+#: app/routes/trainee.py:512
+msgid "Trainee not found."
+msgstr "Ученик не найден."
+
+#: app/routes/trainee.py:544
+msgid "Trainee information updated successfully."
+msgstr "Данные ученика успешно обновлены."
+
+#: app/routes/user/dashboard.py:79 app/templates/layouts/dashboard.html:60
+#: app/templates/layouts/dashboard.html:164
+msgid "Today"
+msgstr "Сегодня"
+
+#: app/services/auth.py:19 app/services/auth.py:26
+msgid "Invalid credentials!"
+msgstr "Неверные учётные данные!"
+
+#: app/services/auth.py:74
+msgid ""
+"Could not create the user. (The email may already be in use or the password "
+"is too short)"
+msgstr ""
+"Не удалось создать пользователя. (Возможно, почта уже используется или "
+"пароль слишком короткий)"
+
+#: app/services/auth.py:143
+msgid "Current password is incorrect or an error occurred."
+msgstr "Текущий пароль неверен или произошла ошибка."
+
+#: app/templates/base.html:29 app/templates/pages/auth/login.html:102
+#: app/templates/pages/auth/login.html:163
+msgid "Gyme"
+msgstr "Gyme"
+
+#: app/templates/base.html:52
+msgid "⚠️ You are offline — showing saved data"
+msgstr "⚠️ Вы не в сети — показаны сохранённые данные"
+
+#: app/templates/base.html:260
+msgid "A new version is available. Click to update."
+msgstr "Доступна новая версия. Нажмите, чтобы обновить."
+
+#: app/templates/components/coach_stats.html:5
+msgid "No coaches found."
+msgstr "Тренеры не найдены."
+
+#: app/templates/components/coach_stats.html:23
+#: app/templates/components/dashboard_stats.html:18
+#: app/templates/components/dashboard_stats.html:41
+#: app/templates/forms/plans_form.html:26
+#: app/templates/pages/owner/plan/plan_detail.html:25
+#: app/templates/pages/owner/plan/plans.html:87
+#: app/templates/pages/owner/plan/plans.html:131
+#: app/templates/pages/owner/plan/templates_list.html:18
+#: app/templates/pages/user/dashboard.html:34
+msgid "Diet"
+msgstr "Диета"
+
+#: app/templates/components/coach_stats.html:27
+#: app/templates/components/dashboard_stats.html:13
+#: app/templates/components/dashboard_stats.html:34
+#: app/templates/forms/plans_form.html:25
+#: app/templates/pages/owner/plan/plan_detail.html:27
+#: app/templates/pages/owner/plan/plans.html:88
+#: app/templates/pages/owner/plan/plans.html:133
+#: app/templates/pages/owner/plan/templates_list.html:20
+#: app/templates/pages/user/dashboard.html:47
+msgid "Training"
+msgstr "Тренировки"
+
+#: app/templates/components/coach_stats.html:32
+msgid "Medication"
+msgstr "Лекарства"
+
+#: app/templates/components/coach_stats.html:40
+#: app/templates/forms/plans_form.html:33
+#: app/templates/modals/apply_template.html:15
+#: app/templates/pages/owner/plan/plan_detail.html:52
+msgid "Coach"
+msgstr "Тренер"
+
+#: app/templates/components/coach_stats.html:41
+#: app/templates/forms/plans_form.html:48
+msgid "Trainee"
+msgstr "Ученик"
+
+#: app/templates/components/dashboard_content.html:10
+msgid "Coach performance"
+msgstr "Результативность тренера"
+
+#: app/templates/components/dashboard_content.html:22
+msgid "Your performance"
+msgstr "Ваша результативность"
+
+#: app/templates/components/dashboard_stats.html:3
+msgid "Active trainees"
+msgstr "Активные ученики"
+
+#: app/templates/components/dashboard_stats.html:5
+#: app/templates/pages/owner/dashboard.html:6
+msgid "Live count"
+msgstr "Живой подсчёт"
+
+#: app/templates/components/dashboard_stats.html:8
+#: app/templates/forms/plans_form.html:94
+#: app/templates/pages/owner/plan/plan_detail.html:43
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/owner/trainee/trainees.html:59
+#: app/templates/pages/user/plan/plan_detail.html:27
+#: app/templates/pages/user/plan/plans.html:52
+msgid "Inactive"
+msgstr "Неактивен"
+
+#: app/templates/components/dashboard_stats.html:27
+msgid "Registered plans"
+msgstr "Зарегистрированные планы"
+
+#: app/templates/components/dashboard_stats.html:48
+#: app/templates/forms/plans_form.html:27 app/templates/modals/items_form.html:114
+#: app/templates/pages/owner/plan/plan_detail.html:29
+#: app/templates/pages/owner/plan/plans.html:89
+#: app/templates/pages/owner/plan/plans.html:135
+#: app/templates/pages/owner/plan/templates_list.html:22
+#: app/templates/pages/user/dashboard.html:60
+msgid "Steroid"
+msgstr "Стероиды"
+
+#: app/templates/components/datepicker.html:3
+#: app/templates/components/datepicker.html:6
+msgid "Select date"
+msgstr "Выберите дату"
+
+#: app/templates/components/datepicker.html:7
+msgid "Confirm"
+msgstr "Подтвердить"
+
+#: app/templates/components/datepicker.html:8
+#: app/templates/components/datepicker.html:64
+#: app/templates/pages/owner/trainee/trainee_detail.html:246
+msgid "Close"
+msgstr "Закрыть"
+
+#: app/templates/components/locale_switcher.html:50
+msgid "Change language"
+msgstr "Сменить язык"
+
+#: app/templates/components/locale_switcher.html:59
+msgid "Available languages"
+msgstr "Доступные языки"
+
+#: app/templates/components/phone_field.html:2
+#: app/templates/pages/owner/coach/coach_detail.html:16
+#: app/templates/pages/owner/trainee/trainee_detail.html:17
+msgid "Phone"
+msgstr "Телефон"
+
+#: app/templates/components/phone_field.html:13
+msgid "Country code"
+msgstr "Код страны"
+
+#: app/templates/components/phone_field.html:29
+msgid "Phone number"
+msgstr "Номер телефона"
+
+#: app/templates/forms/coaches_form.html:14
+#: app/templates/forms/coaches_form.html:20
+#: app/templates/forms/trainees_form.html:15
+#: app/templates/forms/trainees_form.html:21
+msgid "First name"
+msgstr "Имя"
+
+#: app/templates/forms/coaches_form.html:26
+#: app/templates/forms/coaches_form.html:32
+#: app/templates/forms/trainees_form.html:27
+#: app/templates/forms/trainees_form.html:33
+msgid "Last name"
+msgstr "Фамилия"
+
+#: app/templates/forms/coaches_form.html:40
+#: app/templates/forms/trainees_form.html:41
+#: app/templates/pages/auth/login.html:119
+#: app/templates/pages/owner/coach/coach_detail.html:20
+msgid "Email"
+msgstr "Почта"
+
+#: app/templates/forms/coaches_form.html:86
+#: app/templates/forms/plans_form.html:112
+#: app/templates/forms/trainees_form.html:137 app/templates/layouts/modal.html:34
+#: app/templates/modals/apply_template.html:55
+#: app/templates/modals/confirm_delete.html:7
+#: app/templates/modals/items_form.html:140
+#: app/templates/modals/progress_log_edit.html:71
+msgid "Cancel"
+msgstr "Отмена"
+
+#: app/templates/forms/coaches_form.html:88
+#: app/templates/forms/trainees_form.html:139 app/templates/layouts/modal.html:25
+#: app/templates/modals/progress_log_edit.html:74
+#: app/templates/pages/auth/change_password.html:82
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+#: app/templates/forms/coaches_form.html:88
+msgid "Add coach"
+msgstr "Добавить тренера"
+
+#: app/templates/forms/plans_form.html:11
+msgid "Template name"
+msgstr "Название шаблона"
+
+#: app/templates/forms/plans_form.html:16
+msgid "e.g. Keto plan"
+msgstr "например, Кето-план"
+
+#: app/templates/forms/plans_form.html:23
+#: app/templates/pages/owner/plan/plans.html:72
+msgid "Plan type"
+msgstr "Тип плана"
+
+#: app/templates/forms/plans_form.html:64
+msgid "Schedule"
+msgstr "Расписание"
+
+#: app/templates/forms/plans_form.html:69
+#: app/templates/modals/apply_template.html:38
+#: app/templates/pages/owner/plan/plan_detail.html:58
+msgid "Start date"
+msgstr "Дата начала"
+
+#: app/templates/forms/plans_form.html:72
+#: app/templates/modals/apply_template.html:41
+#: app/templates/pages/owner/plan/plan_detail.html:62
+msgid "End date"
+msgstr "Дата окончания"
+
+#: app/templates/forms/plans_form.html:80
+#: app/templates/pages/owner/plan/plan_detail.html:34
+msgid "Days per week"
+msgstr "Дней в неделю"
+
+#: app/templates/forms/plans_form.html:91
+#: app/templates/pages/owner/plan/plan_detail.html:38
+#: app/templates/pages/owner/profile/profile.html:15
+#: app/templates/pages/owner/trainee/trainees.html:48
+#: app/templates/pages/user/profile/profile.html:15
+msgid "Status"
+msgstr "Статус"
+
+#: app/templates/forms/plans_form.html:93
+#: app/templates/modals/progress_log_edit.html:55
+#: app/templates/pages/owner/plan/plan_detail.html:41
+#: app/templates/pages/owner/profile/profile.html:16
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/owner/trainee/trainees.html:58
+#: app/templates/pages/user/plan/plan_detail.html:23
+#: app/templates/pages/user/plan/plans.html:48
+#: app/templates/pages/user/profile/profile.html:16
+msgid "Active"
+msgstr "Активен"
+
+#: app/templates/forms/plans_form.html:100 app/templates/forms/plans_form.html:101
+#: app/templates/forms/trainees_form.html:100
+#: app/templates/modals/apply_template.html:47
+#: app/templates/modals/apply_template.html:48
+#: app/templates/modals/items_form.html:129
+#: app/templates/modals/items_form.html:130
+#: app/templates/modals/progress_log_edit.html:61
+#: app/templates/pages/owner/trainee/trainee_detail.html:160
+msgid "Notes"
+msgstr "Заметки"
+
+#: app/templates/forms/plans_form.html:116
+msgid "Update plan"
+msgstr "Обновить план"
+
+#: app/templates/forms/plans_form.html:118
+msgid "Save template"
+msgstr "Сохранить шаблон"
+
+#: app/templates/forms/plans_form.html:120
+#: app/templates/modals/apply_template.html:58
+msgid "Create plan"
+msgstr "Создать план"
+
+#: app/templates/forms/plans_form.html:134
+#: app/templates/modals/confirm_delete.html:17
+#: app/templates/modals/items_form.html:151
+#: app/templates/pages/owner/plan/plan_detail.html:15
+msgid "Delete"
+msgstr "Удалить"
+
+#: app/templates/forms/progress_logs.html:8
+msgid "Please enter your body measurements. Calculations will be done automatically."
+msgstr "Введите измерения тела. Расчёты выполнятся автоматически."
+
+#: app/templates/forms/progress_logs.html:26
+#: app/templates/modals/progress_log_edit.html:24
+#: app/templates/pages/owner/trainee/trainee_detail.html:29
+#: app/templates/pages/owner/trainee/trainee_detail.html:106
+msgid "Height"
+msgstr "Рост"
+
+#: app/templates/forms/progress_logs.html:31
+#: app/templates/modals/items_form.html:63
+#: app/templates/modals/progress_log_edit.html:28
+#: app/templates/pages/owner/trainee/trainee_detail.html:33
+#: app/templates/pages/owner/trainee/trainee_detail.html:110
+msgid "Weight"
+msgstr "Вес"
+
+#: app/templates/forms/progress_logs.html:36
+#: app/templates/modals/progress_log_edit.html:32
+msgid "Chest"
+msgstr "Грудь"
+
+#: app/templates/forms/progress_logs.html:40
+#: app/templates/modals/progress_log_edit.html:36
+msgid "Waist"
+msgstr "Талия"
+
+#: app/templates/forms/progress_logs.html:44
+#: app/templates/modals/progress_log_edit.html:40
+msgid "Hips"
+msgstr "Бёдра"
+
+#: app/templates/forms/progress_logs.html:48
+#: app/templates/modals/progress_log_edit.html:44
+msgid "Arms"
+msgstr "Руки"
+
+#: app/templates/forms/progress_logs.html:52
+#: app/templates/modals/progress_log_edit.html:50
+msgid "Activity level"
+msgstr "Уровень активности"
+
+#: app/templates/forms/progress_logs.html:54
+msgid "Sedentary (desk job)"
+msgstr "Сидячий (офисная работа)"
+
+#: app/templates/forms/progress_logs.html:55
+msgid "Light (1-3 days of exercise)"
+msgstr "Лёгкий (1-3 дня тренировок)"
+
+#: app/templates/forms/progress_logs.html:56
+msgid "Moderate (3-5 days of exercise)"
+msgstr "Умеренный (3-5 дней тренировок)"
+
+#: app/templates/forms/progress_logs.html:57
+msgid "Intense (6-7 days of exercise)"
+msgstr "Интенсивный (6-7 дней тренировок)"
+
+#: app/templates/forms/progress_logs.html:58
+msgid "Very intense (professional athlete)"
+msgstr "Очень интенсивный (профессиональный спортсмен)"
+
+#: app/templates/forms/progress_logs.html:66
+msgid "Body mass index (BMI)"
+msgstr "Индекс массы тела (ИМТ)"
+
+#: app/templates/forms/progress_logs.html:73
+msgid "Body fat percentage (BFP)"
+msgstr "Процент жира в теле (BFP)"
+
+#: app/templates/forms/progress_logs.html:80
+msgid "Lean body mass (LBM)"
+msgstr "Сухая масса тела (LBM)"
+
+#: app/templates/forms/progress_logs.html:82
+#: app/templates/forms/progress_logs.html:88
+msgid "KG"
+msgstr "КГ"
+
+#: app/templates/forms/progress_logs.html:86
+msgid "Fat mass"
+msgstr "Жировая масса"
+
+#: app/templates/forms/progress_logs.html:92
+msgid "Metabolism (BMR)"
+msgstr "Метаболизм (BMR)"
+
+#: app/templates/forms/progress_logs.html:94
+#: app/templates/forms/progress_logs.html:100
+msgid "Kcal / Day"
+msgstr "ККАЛ / ДЕНЬ"
+
+#: app/templates/forms/progress_logs.html:98
+msgid "Maintenance calories (TDEE)"
+msgstr "Поддерживающие калории (TDEE)"
+
+#: app/templates/forms/progress_logs.html:106
+msgid "Progress photos (optional)"
+msgstr "Фото прогресса (необязательно)"
+
+#: app/templates/forms/progress_logs.html:121
+#: app/templates/forms/progress_logs.html:122
+msgid "Assessment notes"
+msgstr "Заметки к оценке"
+
+#: app/templates/forms/progress_logs.html:125
+msgid "Save assessment"
+msgstr "Сохранить оценку"
+
+#: app/templates/forms/progress_logs.html:188
+msgid "Underweight"
+msgstr "Недостаточный вес"
+
+#: app/templates/forms/progress_logs.html:193
+msgid "Normal"
+msgstr "Норма"
+
+#: app/templates/forms/progress_logs.html:198
+msgid "Overweight"
+msgstr "Избыточный вес"
+
+#: app/templates/forms/progress_logs.html:203
+#: app/templates/forms/progress_logs.html:247
+#: app/templates/forms/progress_logs.html:264
+msgid "Obesity"
+msgstr "Ожирение"
+
+#: app/templates/forms/progress_logs.html:235
+#: app/templates/forms/progress_logs.html:252
+msgid "Essential fat"
+msgstr "Необходимый жир"
+
+#: app/templates/forms/progress_logs.html:238
+#: app/templates/forms/progress_logs.html:255
+msgid "Athletic"
+msgstr "Спортивный"
+
+#: app/templates/forms/progress_logs.html:241
+#: app/templates/forms/progress_logs.html:258
+msgid "Fit"
+msgstr "В форме"
+
+#: app/templates/forms/progress_logs.html:244
+#: app/templates/forms/progress_logs.html:261
+msgid "Acceptable"
+msgstr "Приемлемо"
+
+#: app/templates/forms/progress_logs.html:333
+msgid "Remove"
+msgstr "Удалить"
+
+#: app/templates/forms/progress_logs.html:361
+#, python-brace-format
+msgid "Maximum {0} files allowed ({1} selected)"
+msgstr "Максимум {0} файлов ({1} выбрано)"
+
+#: app/templates/forms/progress_logs.html:372
+msgid "Only JPEG, PNG, WebP, GIF are allowed"
+msgstr "Разрешены только JPEG, PNG, WebP, GIF"
+
+#: app/templates/forms/progress_logs.html:378
+#, python-brace-format
+msgid "Each file must be at most 5MB ({0} {1}MB)"
+msgstr "Каждый файл должен быть не больше 5 МБ ({0} {1} МБ)"
+
+#: app/templates/forms/trainees_form.html:57
+#: app/templates/forms/trainees_form.html:58
+#: app/templates/pages/owner/trainee/trainee_detail.html:25
+msgid "Date of birth"
+msgstr "Дата рождения"
+
+#: app/templates/forms/trainees_form.html:73
+#: app/templates/pages/owner/trainee/trainee_detail.html:21
+#: app/templates/pages/owner/trainee/trainees.html:32
+msgid "Gender"
+msgstr "Пол"
+
+#: app/templates/forms/trainees_form.html:75
+#: app/templates/pages/owner/trainee/trainee_detail.html:13
+#: app/templates/pages/owner/trainee/trainees.html:43
+msgid "Male"
+msgstr "Мужской"
+
+#: app/templates/forms/trainees_form.html:76
+#: app/templates/pages/owner/trainee/trainee_detail.html:13
+#: app/templates/pages/owner/trainee/trainees.html:44
+msgid "Female"
+msgstr "Женский"
+
+#: app/templates/forms/trainees_form.html:80
+#: app/templates/pages/owner/trainee/trainee_detail.html:37
+msgid "Blood type"
+msgstr "Группа крови"
+
+#: app/templates/forms/trainees_form.html:82
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: app/templates/forms/trainees_form.html:92
+#: app/templates/pages/owner/trainee/trainee_detail.html:50
+msgid "Additional information"
+msgstr "Дополнительная информация"
+
+#: app/templates/forms/trainees_form.html:96
+#: app/templates/pages/owner/trainee/trainee_detail.html:73
+msgid "Abnormalities and illnesses"
+msgstr "Отклонения и заболевания"
+
+#: app/templates/forms/trainees_form.html:97
+#: app/templates/pages/owner/trainee/trainee_detail.html:55
+msgid "Training history"
+msgstr "История тренировок"
+
+#: app/templates/forms/trainees_form.html:98
+#: app/templates/pages/owner/trainee/trainee_detail.html:61
+msgid "Steroid history"
+msgstr "История стероидов"
+
+#: app/templates/forms/trainees_form.html:99
+#: app/templates/pages/owner/trainee/trainee_detail.html:67
+msgid "Supplement history"
+msgstr "История добавок"
+
+#: app/templates/forms/trainees_form.html:139
+msgid "Save and go to assessment"
+msgstr "Сохранить и перейти к оценке"
+
+#: app/templates/layouts/dashboard.html:7 app/templates/layouts/dashboard.html:143
+msgid "Primary"
+msgstr "Основное"
+
+#: app/templates/layouts/dashboard.html:24
+#: app/templates/layouts/dashboard.html:106
+msgid "Gym"
+msgstr "Зал"
+
+#: app/templates/layouts/dashboard.html:35
+#: app/templates/layouts/dashboard.html:147
+msgid "Dashboard"
+msgstr "Обзор"
+
+#: app/templates/layouts/dashboard.html:93
+msgid "Back to previous page"
+msgstr "Назад"
+
+#: app/templates/layouts/dashboard.html:113
+#: app/templates/layouts/dashboard.html:114
+msgid "Log out"
+msgstr "Выйти"
+
+#: app/templates/modals/apply_template.html:5
+msgid "Apply"
+msgstr "Применить"
+
+#: app/templates/modals/apply_template.html:5
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/plan/templates_list.html:15
+msgid "Template"
+msgstr "Шаблон"
+
+#: app/templates/modals/apply_template.html:26
+msgid "Select trainee"
+msgstr "Выбрать ученика"
+
+#: app/templates/modals/apply_template.html:28
+msgid "Select a trainee..."
+msgstr "Выберите ученика..."
+
+#: app/templates/modals/confirm_delete.html:4
+msgid "Are you sure? This action cannot be undone."
+msgstr "Вы уверены? Это действие нельзя отменить."
+
+#: app/templates/modals/items_form.html:14
+msgid "Exercise name"
+msgstr "Название упражнения"
+
+#: app/templates/modals/items_form.html:20
+msgid "Exercise name (select or type)"
+msgstr "Название упражнения (выберите или введите)"
+
+#: app/templates/modals/items_form.html:33
+msgid "Exercise category"
+msgstr "Категория упражнения"
+
+#: app/templates/modals/items_form.html:44
+#: app/templates/pages/owner/plan/plan_detail.html:127
+#: app/templates/pages/user/plan/plan_detail.html:66
+msgid "Day"
+msgstr "День"
+
+#: app/templates/modals/items_form.html:48
+msgid "Order"
+msgstr "Порядок"
+
+#: app/templates/modals/items_form.html:52
+msgid "Sets"
+msgstr "Подходы"
+
+#: app/templates/modals/items_form.html:59
+msgid "Reps"
+msgstr "Повторения"
+
+#: app/templates/modals/items_form.html:67
+msgid "Rest (s)"
+msgstr "Отдых (с)"
+
+#: app/templates/modals/items_form.html:73
+#: app/templates/pages/owner/plan/plan_detail.html:117
+msgid "Meal"
+msgstr "Приём пищи"
+
+#: app/templates/modals/items_form.html:75
+msgid "Select a meal..."
+msgstr "Выберите приём пищи..."
+
+#: app/templates/modals/items_form.html:83
+msgid "Food name"
+msgstr "Название продукта"
+
+#: app/templates/modals/items_form.html:89
+msgid "Food name (select or type)"
+msgstr "Название продукта (выберите или введите)"
+
+#: app/templates/modals/items_form.html:101
+msgid "Quantity / unit"
+msgstr "Количество / единица"
+
+#: app/templates/modals/items_form.html:106
+msgid "Supplement/medication name"
+msgstr "Название добавки/лекарства"
+
+#: app/templates/modals/items_form.html:111
+#: app/templates/pages/owner/plan/plan_detail.html:22
+msgid "Type"
+msgstr "Тип"
+
+#: app/templates/modals/items_form.html:113
+msgid "Supplement"
+msgstr "Добавка"
+
+#: app/templates/modals/items_form.html:118
+msgid "Dosage"
+msgstr "Дозировка"
+
+#: app/templates/modals/items_form.html:123
+msgid "Timing / frequency"
+msgstr "Время / частота"
+
+#: app/templates/modals/items_form.html:155
+msgid "Update"
+msgstr "Обновить"
+
+#: app/templates/modals/items_form.html:155
+msgid "Add to list"
+msgstr "Добавить в список"
+
+#: app/templates/modals/progress_log_edit.html:52
+msgid "Sedentary"
+msgstr "Сидячий"
+
+#: app/templates/modals/progress_log_edit.html:53
+msgid "Light"
+msgstr "Лёгкий"
+
+#: app/templates/modals/progress_log_edit.html:54
+msgid "Moderate"
+msgstr "Умеренный"
+
+#: app/templates/modals/progress_log_edit.html:56
+msgid "Very active"
+msgstr "Очень активный"
+
+#: app/templates/pages/auth/change_password.html:3
+#: app/templates/pages/auth/change_password.html:7
+#: app/templates/pages/owner/profile/profile.html:9
+#: app/templates/pages/user/profile/profile.html:9
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: app/templates/pages/auth/change_password.html:11
+#: app/templates/pages/auth/change_password.html:15
+msgid "Current password"
+msgstr "Текущий пароль"
+
+#: app/templates/pages/auth/change_password.html:25
+#: app/templates/pages/auth/change_password.html:49
+#: app/templates/pages/auth/change_password.html:74
+#: app/templates/pages/auth/login.html:147
+msgid "Show password"
+msgstr "Показать пароль"
+
+#: app/templates/pages/auth/change_password.html:34
+#: app/templates/pages/auth/change_password.html:38
+msgid "New password"
+msgstr "Новый пароль"
+
+#: app/templates/pages/auth/change_password.html:55
+msgid "Enter at least 8 characters."
+msgstr "Введите не менее 8 символов."
+
+#: app/templates/pages/auth/change_password.html:59
+#: app/templates/pages/auth/change_password.html:63
+msgid "Confirm new password"
+msgstr "Подтвердите новый пароль"
+
+#: app/templates/pages/auth/login.html:18
+msgid "Install the app"
+msgstr "Установить приложение"
+
+#: app/templates/pages/auth/login.html:20
+msgid "Add the web app to your home screen."
+msgstr "Добавьте веб-приложение на главный экран."
+
+#: app/templates/pages/auth/login.html:27
+msgid "Tap the"
+msgstr "Нажмите"
+
+#: app/templates/pages/auth/login.html:28
+msgid "Share"
+msgstr "Поделиться"
+
+#: app/templates/pages/auth/login.html:30
+msgid "button in the bottom bar."
+msgstr "кнопку на нижней панели."
+
+#: app/templates/pages/auth/login.html:36
+msgid "In the menu that opens, choose"
+msgstr "В открывшемся меню выберите"
+
+#: app/templates/pages/auth/login.html:37
+msgid "Add to Home Screen"
+msgstr "На главный экран"
+
+#: app/templates/pages/auth/login.html:43
+msgid "In the next step, tap"
+msgstr "На следующем шаге нажмите"
+
+#: app/templates/pages/auth/login.html:44
+msgid "Add"
+msgstr "Добавить"
+
+#: app/templates/pages/auth/login.html:49
+msgid "Got it"
+msgstr "Понятно"
+
+#: app/templates/pages/auth/login.html:132
+msgid "Password"
+msgstr "Пароль"
+
+#: app/templates/pages/owner/dashboard.html:6
+msgid "Overall statistics"
+msgstr "Общая статистика"
+
+#: app/templates/pages/owner/dashboard.html:10
+msgid "Time period"
+msgstr "Период"
+
+#: app/templates/pages/owner/dashboard.html:18
+msgid "All time"
+msgstr "За всё время"
+
+#: app/templates/pages/owner/dashboard.html:21
+msgid "This month"
+msgstr "В этом месяце"
+
+#: app/templates/pages/owner/dashboard.html:24
+msgid "This week"
+msgstr "На этой неделе"
+
+#: app/templates/pages/owner/coach/coach_detail.html:10
+#: app/templates/pages/owner/plan/plan_detail.html:9
+#: app/templates/pages/owner/plan/plan_detail.html:148
+#: app/templates/pages/owner/trainee/trainee_detail.html:10
+#: app/templates/pages/owner/trainee/trainee_detail.html:173
+msgid "Edit"
+msgstr "Изменить"
+
+#: app/templates/pages/owner/coach/coaches.html:7
+msgid "Manage registered coaches"
+msgstr "Управление тренерами"
+
+#: app/templates/pages/owner/coach/coaches.html:28
+msgid "View coach"
+msgstr "Профиль тренера"
+
+#: app/templates/pages/owner/coach/coaches.html:37
+msgid "You haven't added any coaches yet!"
+msgstr "Вы ещё не добавили ни одного тренера!"
+
+#: app/templates/pages/owner/coach/coaches.html:43
+#: app/templates/pages/owner/trainee/trainees.html:112
+msgid "Pagination"
+msgstr "Постраничная навигация"
+
+#: app/templates/pages/owner/coach/coaches.html:45
+#: app/templates/pages/owner/trainee/trainees.html:115
+msgid "Previous"
+msgstr "Назад"
+
+#: app/templates/pages/owner/coach/coaches.html:46
+#: app/templates/pages/owner/plan/plans.html:178
+#: app/templates/pages/owner/trainee/trainees.html:116
+msgid "Page"
+msgstr "Страница"
+
+#: app/templates/pages/owner/coach/coaches.html:46
+#: app/templates/pages/owner/plan/plans.html:178
+#: app/templates/pages/owner/trainee/trainees.html:116
+msgid "of"
+msgstr "из"
+
+#: app/templates/pages/owner/coach/coaches.html:48
+#: app/templates/pages/owner/trainee/trainees.html:118
+msgid "Next"
+msgstr "Далее"
+
+#: app/templates/pages/owner/plan/plan_detail.html:6
+msgid "Untitled"
+msgstr "Без названия"
+
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:13
+#: app/templates/pages/user/plan/plans.html:37
+msgid "Training plan"
+msgstr "План тренировок"
+
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:15
+#: app/templates/pages/user/plan/plans.html:39
+msgid "Diet plan"
+msgstr "План питания"
+
+#: app/templates/pages/owner/plan/plan_detail.html:7
+#: app/templates/pages/owner/trainee/trainee_detail.html:212
+#: app/templates/pages/user/plan/plan_detail.html:17
+#: app/templates/pages/user/plan/plans.html:41
+msgid "Steroid plan"
+msgstr "План стероидов"
+
+#: app/templates/pages/owner/plan/plan_detail.html:84
+#: app/templates/pages/owner/plan/templates_list.html:35
+msgid "Apply to trainee"
+msgstr "Применить к ученику"
+
+#: app/templates/pages/owner/plan/plan_detail.html:89
+msgid "Plan items"
+msgstr "Элементы плана"
+
+#: app/templates/pages/owner/plan/plan_detail.html:99
+msgid "Add item"
+msgstr "Добавить элемент"
+
+#: app/templates/pages/owner/plan/plan_detail.html:120
+msgid "Quantity:"
+msgstr "Количество:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:123
+msgid "Medication/Supplement"
+msgstr "Лекарство/Добавка"
+
+#: app/templates/pages/owner/plan/plan_detail.html:125
+msgid "Day:"
+msgstr "День:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:130
+msgid "Sets:"
+msgstr "Подходы:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:130
+msgid "Reps:"
+msgstr "Повторения:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:130
+msgid "Weight:"
+msgstr "Вес:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:130
+#: app/templates/pages/owner/trainee/trainee_detail.html:123
+#: app/templates/pages/user/dashboard.html:172
+#: app/templates/pages/user/dashboard.html:201
+#: app/templates/pages/user/plan/plan_detail.html:142
+#: app/templates/pages/user/plan/plan_detail.html:172
+msgid "kg"
+msgstr "кг"
+
+#: app/templates/pages/owner/plan/plan_detail.html:136
+msgid "Notes:"
+msgstr "Заметки:"
+
+#: app/templates/pages/owner/plan/plan_detail.html:155
+msgid "No items recorded."
+msgstr "Элементы не записаны."
+
+#: app/templates/pages/owner/plan/plans.html:7
+msgid "New template"
+msgstr "Новый шаблон"
+
+#: app/templates/pages/owner/plan/plans.html:13
+#: app/templates/pages/owner/plan/plans.html:42
+msgid "Templates"
+msgstr "Шаблоны"
+
+#: app/templates/pages/owner/plan/plans.html:14
+msgid "Reusable plans you can apply to any trainee"
+msgstr "Многоразовые планы, которые можно применить к любому ученику"
+
+#: app/templates/pages/owner/plan/plans.html:14
+msgid "Create and track plans for your trainees"
+msgstr "Создавайте планы для своих учеников и следите за ними"
+
+#: app/templates/pages/owner/plan/plans.html:48
+#: app/templates/pages/owner/trainee/trainees.html:15
+msgid "Search and filter"
+msgstr "Поиск и фильтры"
+
+#: app/templates/pages/owner/plan/plans.html:52
+#: app/templates/pages/owner/trainee/trainees.html:19
+msgid "Search"
+msgstr "Поиск"
+
+#: app/templates/pages/owner/plan/plans.html:57
+msgid "Search (trainee name, coach name...)"
+msgstr "Поиск (имя ученика, имя тренера...)"
+
+#: app/templates/pages/owner/plan/plans.html:86
+#: app/templates/pages/owner/trainee/trainees.html:42
+#: app/templates/pages/owner/trainee/trainees.html:57
+msgid "All"
+msgstr "Все"
+
+#: app/templates/pages/owner/plan/plans.html:99
+#: app/templates/pages/owner/trainee/trainees.html:64
+msgid "Clear filters"
+msgstr "Сбросить фильтры"
+
+#: app/templates/pages/owner/plan/plans.html:137
+#: app/templates/pages/owner/plan/templates_list.html:24
+msgid "days/week"
+msgstr "дн./нед."
+
+#: app/templates/pages/owner/plan/plans.html:140
+#: app/templates/pages/owner/plan/templates_list.html:37
+#: app/templates/pages/owner/profile/profile.html:51
+#: app/templates/pages/owner/trainee/trainee_detail.html:220
+#: app/templates/pages/user/plan/plans.html:68
+msgid "View"
+msgstr "Просмотр"
+
+#: app/templates/pages/owner/plan/plans.html:153
+msgid "You haven't created any plans yet!"
+msgstr "Вы ещё не создали ни одного плана!"
+
+#: app/templates/pages/owner/plan/templates_list.html:47
+msgid "No templates created yet."
+msgstr "Шаблоны ещё не созданы."
+
+#: app/templates/pages/owner/plan/templates_list.html:48
+msgid "Create new template"
+msgstr "Создать новый шаблон"
+
+#: app/templates/pages/owner/profile/profile.html:19
+#: app/templates/pages/user/profile/profile.html:19
+msgid "Account created"
+msgstr "Аккаунт создан"
+
+#: app/templates/pages/owner/profile/profile.html:23
+#: app/templates/pages/user/profile/profile.html:23
+msgid "Last updated"
+msgstr "Последнее обновление"
+
+#: app/templates/pages/owner/profile/profile.html:30
+msgid "App information and settings"
+msgstr "Информация и настройки приложения"
+
+#: app/templates/pages/owner/profile/profile.html:34
+msgid "Domain"
+msgstr "Домен"
+
+#: app/templates/pages/owner/profile/profile.html:38
+msgid "Theme"
+msgstr "Тема"
+
+#: app/templates/pages/owner/profile/profile.html:44
+msgid "Management"
+msgstr "Управление"
+
+#: app/templates/pages/owner/profile/profile.html:49
+msgid "Manage your gym's coaches"
+msgstr "Управляйте тренерами вашего зала"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:81
+msgid "History"
+msgstr "История"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:114
+msgid "BMI"
+msgstr "ИМТ"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:118
+msgid "Body fat %"
+msgstr "Жир в теле %"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:122
+msgid "Lean body mass"
+msgstr "Сухая масса тела"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:126
+msgid "Basal metabolic rate"
+msgstr "Базальный метаболизм"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:127
+#: app/templates/pages/owner/trainee/trainee_detail.html:131
+msgid "kcal"
+msgstr "ккал"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:130
+msgid "Activity-adjusted metabolism"
+msgstr "Метаболизм с учётом активности"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:134
+msgid "Waist-to-hip ratio"
+msgstr "Соотношение талии и бёдер"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:140
+msgid "Progress photos"
+msgstr "Фото прогресса"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:147
+msgid "Progress photo"
+msgstr "Фото прогресса"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:183
+msgid "No assessments recorded yet!"
+msgstr "Оценки ещё не записаны!"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:190
+msgid "Record assessment"
+msgstr "Записать оценку"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:216
+#: app/templates/pages/user/plan/plan_detail.html:25
+#: app/templates/pages/user/plan/plans.html:50
+msgid "Draft"
+msgstr "Черновик"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:228
+#: app/templates/pages/user/plan/plans.html:80
+msgid "No plans recorded yet!"
+msgstr "Планы ещё не записаны!"
+
+#: app/templates/pages/owner/trainee/trainee_detail.html:242
+msgid "Full progress photo"
+msgstr "Фото прогресса полностью"
+
+#: app/templates/pages/owner/trainee/trainees.html:7
+msgid "Manage registered trainees"
+msgstr "Управление учениками"
+
+#: app/templates/pages/owner/trainee/trainees.html:20
+msgid "name, email..."
+msgstr "имя, почта..."
+
+#: app/templates/pages/owner/trainee/trainees.html:92
+msgid "View trainee"
+msgstr "Профиль ученика"
+
+#: app/templates/pages/owner/trainee/trainees.html:102
+msgid "You haven't added any trainees yet!"
+msgstr "Вы ещё не добавили ни одного ученика!"
+
+#: app/templates/pages/user/dashboard.html:16
+msgid "Welcome back"
+msgstr "С возвращением"
+
+#: app/templates/pages/user/dashboard.html:17
+msgid "Champion"
+msgstr "Чемпион"
+
+#: app/templates/pages/user/dashboard.html:19
+msgid "Tap Done when the day is complete."
+msgstr "Нажмите «Готово», когда день завершён."
+
+#: app/templates/pages/user/dashboard.html:24
+msgid "Plan types"
+msgstr "Типы планов"
+
+#: app/templates/pages/user/dashboard.html:78
+#: app/templates/pages/user/dashboard.html:151
+#: app/templates/pages/user/dashboard.html:242
+msgid "Done"
+msgstr "Готово"
+
+#: app/templates/pages/user/dashboard.html:107
+#: app/templates/pages/user/dashboard.html:190
+#: app/templates/pages/user/plan/plan_detail.html:106
+msgid "Other"
+msgstr "Другое"
+
+#: app/templates/pages/user/dashboard.html:128
+#: app/templates/pages/user/dashboard.html:219
+#: app/templates/pages/user/dashboard.html:264
+msgid "No items yet"
+msgstr "Элементов пока нет"
+
+#: app/templates/pages/user/dashboard.html:135
+msgid "No diet plan"
+msgstr "Нет плана питания"
+
+#: app/templates/pages/user/dashboard.html:175
+#: app/templates/pages/user/dashboard.html:204
+#: app/templates/pages/user/plan/plan_detail.html:175
+msgid "sec"
+msgstr "с"
+
+#: app/templates/pages/user/dashboard.html:226
+msgid "No training plan"
+msgstr "Нет плана тренировок"
+
+#: app/templates/pages/user/dashboard.html:271
+msgid "No steroid plan"
+msgstr "Нет плана стероидов"
+
+#: app/templates/pages/user/plan/plan_detail.html:33
+msgid "From"
+msgstr "С"
+
+#: app/templates/pages/user/plan/plan_detail.html:34
+msgid "To"
+msgstr "По"
+
+#: app/templates/pages/user/plan/plan_detail.html:145
+msgid "sec rest"
+msgstr "с отдыха"
+
+#: app/templates/pages/user/plan/plan_detail.html:161
+msgid "Other exercises"
+msgstr "Другие упражнения"
+
+#: app/templates/pages/user/plan/plan_detail.html:210
+msgid "No items found"
+msgstr "Элементы не найдены"
+
+#: app/templates/pages/user/plan/plan_detail.html:211
+msgid "No items have been added to this plan yet."
+msgstr "В этот план ещё не добавлены элементы."
+
+#: app/templates/pages/user/plan/plans.html:8
+msgid "My plans"
+msgstr "Мои планы"
+
+#: app/templates/pages/user/plan/plans.html:10
+msgid "View and track the plans your coach created for you"
+msgstr "Просматривайте планы, созданные для вас тренером, и следите за ними"
+
+#: app/templates/pages/user/plan/plans.html:43
+msgid "Unknown plan"
+msgstr "Неизвестный план"
+
+#: app/templates/pages/user/plan/plans.html:60
+msgid "Start"
+msgstr "Начало"
+
+#: app/templates/pages/user/plan/plans.html:63
+msgid "End"
+msgstr "Конец"
+
+#: app/templates/pages/user/plan/plans.html:83
+msgid ""
+"Your coach hasn't created any plans for you yet. As soon as a new plan is "
+"created, it will show up here."
+msgstr ""
+"Ваш тренер ещё не создал для вас ни одного плана. Как только новый план "
+"появится, он отобразится здесь."
+
+#~ msgid "days per week"
+#~ msgstr "дней в неделю"
+
+#~ msgid "Plan"
+#~ msgstr "План"
+

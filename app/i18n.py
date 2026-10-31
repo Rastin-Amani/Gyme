@@ -47,8 +47,8 @@ LOCALES: dict[str, Locale] = {
     "es": Locale("es", "Español", "ltr", enabled=True),
     "tr": Locale("tr", "Türkçe", "ltr", enabled=True),
     "hy": Locale("hy", "Հայերեն", "ltr", enabled=True),
+    "ru": Locale("ru", "Русский", "ltr", enabled=True),
     # --- prepared but disabled (same workflow, no architecture changes) ---
-    "ru": Locale("ru", "Русский", "ltr"),
     "de": Locale("de", "Deutsch", "ltr"),
     "fr": Locale("fr", "Français", "ltr"),
     "pt-BR": Locale("pt-BR", "Português (Brasil)", "ltr"),

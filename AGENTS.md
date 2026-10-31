@@ -60,7 +60,7 @@ black .
 - **Frontend**: HTMX + Alpine.js + Tailwind CSS 4, built with Vite
 - **Templates**: Jinja2 (locale-aware date filters; `_` / `ngettext` gettext)
 - **DB**: PocketBase (via SDK)
-- **i18n**: gettext catalogs under `app/locales/` (default locale **en**, which is also the source of msgids; `es`/`tr`/`hy` also enabled; all locales are LTR)
+- **i18n**: gettext catalogs under `app/locales/` (default locale **en**, which is also the source of msgids; `es`/`tr`/`hy`/`ru` also enabled; all locales are LTR)
 
 ### Key Directories
 ```
