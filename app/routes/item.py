@@ -10,6 +10,7 @@ from fastapi.responses import RedirectResponse
 from app.security import sanitize_collection_name
 from structlog import get_logger
 from app.i18n import _
+from app.utils import deny_trainee, hx_toast_now
 
 logger = get_logger(__name__)
 
@@ -110,6 +111,10 @@ def item_edit_form_by_id(request: Request, id: str, plan_type: str = Query(...))
 def item_delete(request: Request, id: str, plan_type: str = Query(...)):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+    denied = deny_trainee(user)
+    if denied:
+        return denied
     try:
         collection_name = sanitize_collection_name(plan_type)
     except ValueError:
@@ -117,7 +122,12 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
 
     try:
         # Verify item ownership before delete
-        get_item_by_id(pb, tenant, collection_name, id)
+        item = get_item_by_id(pb, tenant, collection_name, id)
+        plan_obj = get_plan_by_id(pb, tenant, getattr(item, "plan", None))
+        if getattr(user, "role", None) == "coach" and str(getattr(plan_obj, "coach", "")) != str(
+            user.id
+        ):
+            return HTMLResponse(status_code=403, headers=hx_toast_now(_("Access denied"), "error"))
         from app.services.item import delete_item
 
         delete_item(pb, id, collection_name)
@@ -143,9 +153,9 @@ def item_delete(request: Request, id: str, plan_type: str = Query(...)):
 @router.get("/items/{id}/confirm-delete")
 def item_confirm_delete(request: Request, id: str, plan_type: str = Query(...)):
     return templates.TemplateResponse(
-        "modals/confirm_delete.html",
-        {
-            "request": request,
+        request=request,
+        name="modals/confirm_delete.html",
+        context={
             "title": _("Delete item"),
             "delete_url": f"/items/{id}?plan_type={plan_type}",
         },
@@ -177,6 +187,9 @@ def item_create(
 ):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    denied = deny_trainee(request.state.user)
+    if denied:
+        return denied
     try:
         collection_name = sanitize_collection_name(plan_type)
     except ValueError:
@@ -283,6 +296,10 @@ def item_update(
 ):
     pb = request.state.pb
     tenant = request.state.tenant.id
+    user = request.state.user
+    denied = deny_trainee(user)
+    if denied:
+        return denied
     try:
         collection_name = sanitize_collection_name(plan_type)
     except ValueError:
@@ -290,7 +307,12 @@ def item_update(
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     # Verify existing item tenant ownership
     try:
-        get_item_by_id(pb, tenant, collection_name, id)
+        item = get_item_by_id(pb, tenant, collection_name, id)
+        existing_plan = get_plan_by_id(pb, tenant, getattr(item, "plan", None))
+        if getattr(user, "role", None) == "coach" and str(
+            getattr(existing_plan, "coach", "")
+        ) != str(user.id):
+            return HTMLResponse(status_code=403, headers=hx_toast_now(_("Access denied"), "error"))
         # If plan change requested, verify new plan belongs to tenant
         if plan:
             plan_obj = get_plan_by_id(pb, tenant, plan)

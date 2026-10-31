@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.plan import get_plans_by_trainee
 from app.services.progress_logs import get_progress_logs_by_trainee
 import json
-from app.utils import hx_toast
+from app.utils import hx_toast, hx_toast_now, deny_trainee
 from app.security import (
     validate_email,
     validate_phone,
@@ -284,6 +284,9 @@ def trainee_delete(request: Request, id: str):
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        denied = deny_trainee(request.state.user)
+        if denied:
+            return denied
         from app.services.trainee import delete_trainee
 
         delete_trainee(pb, tenant_id, id)
@@ -308,7 +311,10 @@ def trainee_edit_form(request: Request, id: str):
     user = request.state.user
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
-    trainee_data = get_trainee_by_id(pb, tenant, id)
+    try:
+        trainee_data = get_trainee_by_id(pb, tenant, id)
+    except Exception:
+        return RedirectResponse(url="/trainees")
     tenant_name = request.state.tenant
 
     return templates.TemplateResponse(
@@ -345,6 +351,9 @@ def trainee_create(
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        denied = deny_trainee(request.state.user)
+        if denied:
+            return denied
         # --- Input validation ---
         try:
             email = validate_email(email)
@@ -453,6 +462,9 @@ def trainee_update(
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        denied = deny_trainee(request.state.user)
+        if denied:
+            return denied
         # Validate inputs
         try:
             email = validate_email(email)

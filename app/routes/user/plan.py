@@ -42,7 +42,13 @@ def show_plan_detail(request: Request, id: str):
     trainee = get_trainee_by_user(pb, tenant, user.id)
     if not trainee:
         return RedirectResponse(url="/login")
-    plan_data = get_plan_by_id(pb, tenant, id)
+    plan_data = None
+    try:
+        plan_data = get_plan_by_id(pb, tenant, id)
+    except Exception:
+        pass
+    if plan_data is None:
+        return RedirectResponse(url="/user/plans")
     # Ensure plan belongs to this trainee
     if str(getattr(plan_data, "trainee", "")) != str(trainee.id):
         return RedirectResponse(url="/user/plans")

@@ -21,11 +21,12 @@
 
                 <label class="select w-full">
                     <span class="label">{{ _('Plan type') }}</span>
-                    <select name="type" class="w-full">
+                    <select name="type" class="w-full" {% if plan %}disabled{% endif %}>
                         <option value="training" {{ 'selected' if plan.type == 'training' else '' }}>{{ _('Training') }}</option>
                         <option value="diet" {{ 'selected' if plan.type == 'diet' else '' }}>{{ _('Diet') }}</option>
                         <option value="steroid" {{ 'selected' if plan.type == 'steroid' else '' }}>{{ _('Steroid') }}</option>
                     </select>
+                    {% if plan %}<input type="hidden" name="type" value="{{ plan.type }}" />{% endif %}
                 </label>
 
                 <label class="select w-full">
@@ -45,7 +46,7 @@
                 {% if not is_template %}
                     <label class="select w-full">
                         <span class="label">{{ _('Trainee') }}</span>
-                        <select name="trainee" class="w-full">
+                        <select name="trainee" class="w-full" required>
                             {% for trainee in trainees %}
                                 <option
                                     value="{{ trainee.id }}"

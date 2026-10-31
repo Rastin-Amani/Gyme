@@ -12,7 +12,7 @@ from app.services.item import list_items_by_plan
 from ..templates import templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.services.trainee import list_trainees, get_trainee_by_id
-from app.utils import hx_toast
+from app.utils import hx_toast, hx_toast_now, deny_trainee
 import json
 from structlog import get_logger
 from app.security import (
@@ -155,7 +155,7 @@ def plan_new_form(request: Request, template: str = Query("false")):
         name="forms/plans_form.html",
         context={
             "title": _("New plan template") if is_template else _("New plan"),
-            "tenant": tenant,
+            "tenant": request.state.tenant,
             "user": user,
             "plan": None,
             "trainees": trainees.items if hasattr(trainees, "items") else trainees,
@@ -221,7 +221,10 @@ def plan_edit_form(request: Request, id: str):
     tenant = request.state.tenant.id
     user = request.state.user
     # Enforce ownership; get_plan_by_id will raise if not in tenant
-    plan_data = get_plan_by_id(pb, tenant, id)
+    try:
+        plan_data = get_plan_by_id(pb, tenant, id)
+    except Exception:
+        return RedirectResponse(url="/plans")
     trainees = list_trainees(pb, tenant)
     tenant_name = request.state.tenant
 
@@ -278,7 +281,16 @@ def template_apply_form(request: Request, id: str):
     if user.role == "trainee":
         return RedirectResponse(url="/user/dashboard")
 
-    template = get_template_by_id(pb, tenant, id)
+    template = None
+    try:
+        template = get_template_by_id(pb, tenant, id)
+    except Exception:
+        pass
+    if template is None:
+        return HTMLResponse(
+            status_code=404,
+            headers=hx_toast_now(_("Template not found"), "error"),
+        )
     trainees = list_trainees(pb, tenant)
 
     # Fetch coaches (users with role="coach") for this tenant
@@ -329,6 +341,10 @@ def template_apply(
     pb = request.state.pb
     tenant = request.state.tenant.id
     user = request.state.user
+
+    denied = deny_trainee(user)
+    if denied:
+        return denied
 
     try:
         new_plan = apply_template(
@@ -389,7 +405,14 @@ def plan_create(
     tenant = request.state.tenant.id
     user = request.state.user
 
+    denied = deny_trainee(user)
+    if denied:
+        return denied
+
     # --- Input validation ---
+    if not is_template_bool and not trainee:
+        trigger_data = {"show-toast": {"message": _("Select a trainee"), "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if type not in ALLOWED_PLAN_TYPES:
         trigger_data = {"show-toast": {"message": _("Invalid plan type"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
@@ -491,6 +514,10 @@ def plan_update(
     tenant = request.state.tenant.id
     user = request.state.user
 
+    denied = deny_trainee(user)
+    if denied:
+        return denied
+
     # Verify ownership and role before update
     try:
         existing = get_plan_by_id(pb, tenant, id)
@@ -502,6 +529,14 @@ def plan_update(
         return HTMLResponse(status_code=403, headers={"HX-Trigger": json.dumps(trigger_data)})
     if type not in ALLOWED_PLAN_TYPES:
         trigger_data = {"show-toast": {"message": _("Invalid plan type"), "type": "error"}}
+        return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
+    if type != str(getattr(existing, "type", type)):
+        return HTMLResponse(
+            status_code=400,
+            headers=hx_toast_now(_("Plan type cannot be changed after creation"), "error"),
+        )
+    if not is_template_bool and not trainee:
+        trigger_data = {"show-toast": {"message": _("Select a trainee"), "type": "error"}}
         return HTMLResponse(status_code=400, headers={"HX-Trigger": json.dumps(trigger_data)})
     if status and status not in ALLOWED_PLAN_STATUS:
         status = getattr(existing, "status", "active")
@@ -576,6 +611,13 @@ def plan_delete(request: Request, id: str):
     try:
         pb = request.state.pb
         tenant_id = request.state.tenant.id
+        user = request.state.user
+        denied = deny_trainee(user)
+        if denied:
+            return denied
+        plan = get_plan_by_id(pb, tenant_id, id)
+        if getattr(user, "role", None) == "coach" and getattr(plan, "coach", None) != user.id:
+            return HTMLResponse(status_code=403, headers=hx_toast_now(_("Access denied"), "error"))
         delete_plan(pb, tenant_id, id)
         headers = hx_toast(_("Plan deleted successfully."), "success")
         trigger_dict = json.loads(headers.get("HX-Trigger", "{}"))
