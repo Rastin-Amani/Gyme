@@ -394,3 +394,54 @@ def test_progress_log_edit_refresh_has_a_listener():
     # The edit handler emits performListRefresh; the trainee detail must listen.
     assert "performListRefresh" in _read("app/templates/pages/owner/trainee/trainee_detail.html")
     assert "performListRefresh" in _read("app/routes/progress_logs.py")
+
+
+# --- UI polish regressions (phone field, dock, icons) ---------------------
+
+
+def test_phone_field_uses_inset_label_and_dial_codes_only():
+    src = _read("app/templates/components/phone_field.html")
+    # Same inset-label structure as the date field, so the two align in a grid.
+    assert '<label class="input w-full">' in src
+    # Plain dial codes: emoji flags render as letter pairs/tofu on Windows.
+    assert "x-text=\"'+' + c.dial\"" in src
+    assert "c.flag" not in src
+    # Native arrow is suppressed; the DaisyUI select chevron remains.
+    assert "appearance-none" in src
+    assert 'x-init="$nextTick(() => { $el.value = dialCode; })"' in src
+
+
+def test_dock_active_item_is_primary_filled_not_underlined():
+    src = _read("app/templates/layouts/dashboard.html")
+    assert "link.classList.add('menu-active');" in src
+    assert "classList.add('menu-active', 'dock-active')" not in src  # no underline bar
+    assert "'bg-primary', 'text-primary-content', 'rounded-field'" in src
+
+
+def test_dashboard_plan_icons_match_the_plan_list():
+    stats = _read("app/templates/components/dashboard_stats.html")
+    plans = _read("app/templates/pages/owner/plan/plans.html")
+    dumbbell = "M6.75 6.75v10.5M17.25 6.75v10.5M3.75 9v6M20.25 9v6M6.75 12h10.5"
+    diet = "M12 21a9 9 0 0 0 9-9c0-1.5-.5-3-1.5-4.5S17 4 15 4c-1 0-2 .5-3 1S10 6 9 6"
+    assert dumbbell in plans and dumbbell in stats
+    assert diet in plans and diet in stats
+
+
+def test_nav_icons_use_users_and_user_circle():
+    src = _read("app/templates/layouts/dashboard.html")
+    assert "M15 19.128a9.38 9.38 0 0 0 2.625.372" in src  # users (Trainees)
+    assert "M17.982 18.725A7.488 7.488 0 0 0 12 15.75" in src  # user-circle (Profile)
+    assert "M9.594 3.94" not in src  # old gear icon is gone
+
+
+def test_favicon_fallback_is_a_real_file():
+    src = _read("app/templates/base.html")
+    assert 'href="/static/icons/favicon.ico"' in src
+    assert "data:image/svg+xml,%3Csvg xmlns=http://" not in src
+
+
+def test_trainee_status_dot_is_a_plain_circle():
+    src = _read("app/templates/pages/owner/trainee/trainees.html")
+    dot = src[src.index("indicator-item") : src.index("indicator-item") + 160]
+    assert "badge" not in dot
+    assert "rounded-full" in dot
