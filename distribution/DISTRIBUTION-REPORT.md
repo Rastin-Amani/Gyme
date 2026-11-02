@@ -283,3 +283,28 @@
 
 - The previous catalogues were empty stubs, so "translated" locales silently rendered English; the completeness test now makes that a CI failure. Three strings Babel had marked fuzzy (`KG`, `Share`, `Add to Home Screen`) were dropped at compile time and are now shipped.
 - Flags stay out of the language menu: emoji flags render as letter pairs or tofu on Windows, and the native names already identify each language.
+
+---
+
+## Cycle 2026-11-02 — screenshots for the Slate Pine interface
+
+**Version:** 0.12.0 · **Mode:** AUTONOMOUS · **Budget:** $0
+
+### Executed
+
+| Action | Evidence | Status |
+| --- | --- | --- |
+| Recaptured all nine README screenshots on the current build | `docs/screenshots/` (1280×900 desktop @2×, 390×844 phone @3×) | **PUSHED** |
+| README screenshot copy now describes the shell it shows (one theme, sidebar, dock) | `README.md` | **PUSHED** |
+| Fixed missing space in the plan-detail weight line | `app/templates/pages/owner/plan/plan_detail.html` | **PUSHED** |
+
+### Verification
+
+- Demo instance rebuilt from an empty PocketBase: `tenants`, `users`, `trainees`, `plans`, `training_items`, `diet_items`, `steroid_items`, `progress_logs`, `plan_progress`; 1 owner, 3 coaches, 24 trainees, 57 plans, 5 assessments for the featured trainee.
+- Every capture comes from the running app — no mocked HTML. Screens taken after login as owner and as a trainee so the real role-scoped navigation is visible.
+- 89 tests pass; `ruff check .` and `black --check .` clean.
+
+### Notes
+
+- The seed data was tightened for the shots: training items carry a `category` so the trainee sees `Main` instead of `Other`, and weights are stored numerically so the `kg` suffix is not duplicated.
+- The screenshots now show the shared icon set and page chrome (title, sub, action, section labels) that `17094f9` introduced, so the README no longer advertises the previous chrome.

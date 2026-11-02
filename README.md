@@ -87,8 +87,10 @@ server work.
 
 ## Screenshots
 
-Demo data is fictional: a seeded “Northline Strength” gym, its coaches, and 24 trainees,
-all running the same build shown here. The full walkthrough is on the
+Demo data is fictional: a seeded “Northline Strength” gym with three coaches and 24
+trainees, all running the build in this repository. One DaisyUI theme carries the
+interface — pine only where action lives, hairlines where structure lives, a
+persistent sidebar on desktop and a dock on the phone. The full walkthrough is on the
 [product tour](https://gyme.cloud/en/).
 
 **Coach workspace** — live counters, a searchable roster, and every plan in one ledger.
